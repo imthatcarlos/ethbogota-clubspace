@@ -36,11 +36,11 @@ export const Hero = () => {
             <div className="flex w-full items-center justify-between md:w-auto">
               <a href="#">
                 <span className="sr-only">{APP_NAME}</span>
-                <img
+                {/* <Image
                   className="h-8 w-auto sm:h-10"
                   src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
                   alt={APP_NAME}
-                />
+                /> */}
               </a>
             </div>
             <div className="hidden space-x-10 md:ml-10 md:flex"></div>

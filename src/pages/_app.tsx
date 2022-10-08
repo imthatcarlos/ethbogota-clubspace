@@ -5,18 +5,24 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 60 * 5,
+    },
+  },
+});
 
 const App = ({ Component, pageProps }) => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class">
+    <ThemeProvider attribute="class">
+      <QueryClientProvider client={queryClient}>
         <Web3Provider>
           <Component {...pageProps} />
         </Web3Provider>
-      </ThemeProvider>
-      <ReactQueryDevtools />
-    </QueryClientProvider>
+        <ReactQueryDevtools />
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 };
 
