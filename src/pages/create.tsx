@@ -6,13 +6,17 @@ import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
+import axios from "axios";
+import { createGroup } from "@/lib/semaphore/semaphore";
 
 const CreateSpace = ({ defaultProfile }) => {
+  const { address } = useAccount();
   const [playlist, setPlaylist] = useState<IPlaylist>();
   const [productData, setProductData] = useState<any>();
   const [lensPost, setLensPost] = useState<any>();
   const [goody, setGoody] = useState<any>();
-  const [uploading, setUploading] = useState<boolean>()
+  const [uploading, setUploading] = useState<boolean>();
+  const [shareUrl, setShareUrl] = useState<string>();
 
   const selectPlaylist = (playlist) => {
     setPlaylist(playlist);
@@ -35,11 +39,11 @@ const CreateSpace = ({ defaultProfile }) => {
     );
 
     // upload to ipfs
-    console.log('uploading files')
+    console.log("uploading files");
     const _music = await pinFileToIPFS(music);
     const _image = await pinFileToIPFS(cover);
 
-    console.log('uploading metadata')
+    console.log("uploading metadata");
     const metadata: any = await pinJson({
       name: goody.name,
       description: goody.description,
@@ -52,15 +56,46 @@ const CreateSpace = ({ defaultProfile }) => {
   };
 
   const submit = async () => {
-    setUploading(true)
+    setUploading(true);
     console.log(playlist, productData, lensPost, goody);
 
-    // TODO: send all api calls
-    const goodyUri = await uploadToIPFS()
-    console.log(goodyUri)
+    // upload content to ipfs
+    const goodyUri = await uploadToIPFS();
+    console.log("goody uri:", goodyUri);
 
-    setUploading(false)
+    //create lens post
+    const lensPubId = ""; // TODO: post to lens
+
+    // call redis api
+    const spaceData = {
+      creatorAddress: address,
+      creatorLensHandle: defaultProfile.handle,
+      creatorLensProfileId: defaultProfile.id,
+      spinampPlaylistId: playlist.id,
+      decentContractAddress: productData.address,
+      decentContractChainId: 80001,
+      lensPubId,
+    };
+    const { data } = await axios.post(`/space/create`, spaceData);
+    const { url, semGroupIdHex } = data;
+
+    // call sempahore/create-group
+    await createGroup(semGroupIdHex, goodyUri, lensPubId, defaultProfile.id);
+
+    setUploading(false);
+
+    // show share button
+    setShareUrl(url);
   };
+
+  if (shareUrl) {
+    return (
+      <div>
+        <h2 className="mt-4 mb-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">You did it!</h2>
+        {shareUrl}
+      </div>
+    );
+  }
 
   return (
     <div className="">

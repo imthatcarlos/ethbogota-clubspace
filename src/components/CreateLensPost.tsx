@@ -3,7 +3,7 @@ import { useState } from "react";
 const CreateLensPost = ({ setPostData, defaultProfile }) => {
   const [text, setText] = useState("");
 
-  const url = () => `https://www.joinclubspace.xyz/live/${defaultProfile}`;
+  const url = () => `https://www.joinclubspace.xyz/live/${defaultProfile.handle}`;
 
   const fullText = () => `${text} Join: ${url()}`;
 

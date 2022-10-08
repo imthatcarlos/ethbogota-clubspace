@@ -16,7 +16,7 @@ const SetDecentProduct = ({ setDecentProduct }) => {
 
   const _getContractData = async (address) => {
     const { data } = await getContractData(address, chain.id, signer);
-    setDecentProduct(data);
+    setDecentProduct({ address, ...data });
   };
 
   return (
