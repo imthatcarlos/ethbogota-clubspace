@@ -85,7 +85,7 @@ export const Hero = () => {
                               autoComplete="name"
                               placeholder="Full name"
                               required
-                              className="block w-full rounded-md dark:bg-gray-800 dark:text-white dark:border-gray-600 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              className="input"
                             />
                           </div>
 
@@ -100,7 +100,7 @@ export const Hero = () => {
                               autoComplete="email"
                               placeholder="Mobile number or email"
                               required
-                              className="block w-full rounded-md dark:bg-gray-800 dark:text-white dark:border-gray-600 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              className="input"
                             />
                           </div>
 
@@ -115,15 +115,12 @@ export const Hero = () => {
                               placeholder="Password"
                               autoComplete="current-password"
                               required
-                              className="block w-full rounded-md dark:bg-gray-800 dark:text-white dark:border-gray-600 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              className="input"
                             />
                           </div>
 
                           <div>
-                            <button
-                              type="submit"
-                              className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                            >
+                            <button type="submit" className="btn">
                               Create your account
                             </button>
                           </div>
