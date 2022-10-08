@@ -1,9 +1,22 @@
 import { APP_NAME } from "@/lib/consts";
 import { useAccount } from "wagmi";
+import { useState, useEffect } from "react";
 import { ConnectWallet } from "./ConnectWallet";
+import { useLensLogin } from "@/services/lens/login";
+import { useGetProfilesOwned } from "@/services/lens/getProfile";
 
 export const Hero = () => {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
+  const { login, ...rest } = useLensLogin();
+  const [defaultProfile, setDefaultProfile] = useState();
+  const { isLoading: loadingProfiles, data: profiles } = useGetProfilesOwned(address);
+
+  useEffect(() => {
+    if (profiles?.length) {
+      console.log(profiles[0]);
+      setDefaultProfile(profiles[0]);
+    }
+  }, [address, profiles]);
 
   return (
     <div className="relative overflow-hidden">
@@ -57,8 +70,11 @@ export const Hero = () => {
                 <div>
                   <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">Clubspace</h1>
                   <p className="mt-3 text-base sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
-                    Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit sunt
-                    amet fugiat veniam occaecat fugiat aliqua ad ad non deserunt sunt.
+                    Host an online live listening party for all your Lens frens 🔥
+                    <br/>
+                    Music NFTs. Live Reactions. Good vibes.
+                    <br/>
+                    Everyone that parties - and can <strong>prove</strong> it - gets swag NFTs
                   </p>
                   {!isConnected && (
                     <div className="pt-4">
@@ -71,6 +87,9 @@ export const Hero = () => {
                 <div className="bg-transparent sm:mx-auto sm:w-full sm:max-w-md sm:overflow-hidden sm:rounded-lg">
                   <div className="px-4 py-8 sm:px-10">
                     <div className="mt-6">
+                      <button onClick={login} className="flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        {!Object.keys(rest).length ? "Login with Lens" : "Logged in"}
+                      </button>
                       <form action="#" method="POST">
                         <fieldset disabled={!isConnected} className="space-y-6">
                           {!isConnected ? "form disabled" : "form enabled"}
