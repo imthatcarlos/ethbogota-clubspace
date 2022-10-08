@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Identity } from "@semaphore-protocol/identity";
 
-export const useCurrSeason = () => {
+export const useIdentity = () => {
   const [identity, setIdentity] = useState<any>();
 
   useEffect(() => {
@@ -13,6 +13,7 @@ export const useCurrSeason = () => {
       setIdentity(identity);
     } else {
       console.log("need new identity");
+      createIdentity();
     }
   }, []);
 
