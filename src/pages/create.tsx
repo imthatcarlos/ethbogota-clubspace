@@ -50,7 +50,7 @@ const CreateSpace = () => {
       <p>Create a Space</p>
       {!playlist ? <SelectPlaylist selectPlaylist={selectPlaylist} /> : <p>Playlist: {playlist.title}</p>}
       {!productData ? <SetDecentProduct setDecentProduct={setDecentProduct} /> : <p>NFT FOUND! RENDER AN NFT COMPONENT</p>}
-      {!lensPost ? <CreateLensPost setPostData={setPostData}/> : <div>
+      {!lensPost ? <CreateLensPost setPostData={setPostData} defaultProfile={defaultProfile}/> : <div>
         <p>Lens Post:</p>
         <p>{lensPost}</p>
       </div> }

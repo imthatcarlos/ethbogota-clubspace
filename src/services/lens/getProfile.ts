@@ -252,12 +252,6 @@ export const getHandleById = async (id?: string): Promise<string> => {
   }
 };
 
-<<<<<<< HEAD
-export const useGetHandleById = (id?: string) => {
-  return useQuery(["handle", id], () => getHandleById(id), {
-    enabled: !!id,
-  });
-=======
 export const useGetHandleById = (options: UseQueryOptions = {}, id?: string) => {
   const result = useQuery<string>(
     ["profiles", id],
@@ -273,5 +267,4 @@ export const useGetHandleById = (options: UseQueryOptions = {}, id?: string) => 
   );
 
   return result;
->>>>>>> 744a9c8bcfa6297f01515de5fc64f611dfd02b72
 };
