@@ -9,16 +9,21 @@
 		"lint": "next lint"
 	},
 	"dependencies": {
+		"@decent.xyz/sdk": "^0.1.2",
 		"@heroicons/react": "^1.0.6",
+		"@privy-io/privy-node": "^0.0.2",
 		"@rainbow-me/rainbowkit": "^0.7.1",
+		"@spinamp/spinamp-sdk": "^0.0.7",
 		"autoprefixer": "^10.4.7",
 		"ethers": "^5.7.1",
+		"ioredis": "^5.2.3",
 		"next": "12.1.6",
 		"next-themes": "^0.2.0",
 		"postcss": "^8.4.14",
 		"react": "18.1.0",
 		"react-dom": "18.1.0",
 		"tailwindcss": "^3.0.24",
+		"uuid": "^9.0.0",
 		"wagmi": "^0.6.8"
 	},
 	"devDependencies": {
