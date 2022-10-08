@@ -7,12 +7,15 @@ const ClaimGoodyBag = ({ groupId }) => {
   const { address } = useAccount();
   const { identity } = useIdentity();
   const [claimed, setClaimed] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const submit = async () => {
+    setLoading(true);
     const success = await claimReward(groupId, address, identity);
     if (success) {
       setClaimed(true);
     }
+    setLoading(false);
   };
 
   if (claimed) {
@@ -26,7 +29,7 @@ const ClaimGoodyBag = ({ groupId }) => {
         className="flex w-36 mt-4 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
         onClick={submit}
       >
-        Claim Reward
+        {loading ? "..." : "Claim Reward"}
       </button>
     </div>
   );
