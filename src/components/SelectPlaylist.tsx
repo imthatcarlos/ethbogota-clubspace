@@ -18,7 +18,7 @@ const SelectPlaylist = ({ selectPlaylist }) => {
 
   return (
     <div>
-      <p>Select a Playlist</p>
+      <h2>Select a Playlist</h2>
       {playlists.map(({ title, id }) => (
         <div key={id}>
           <p>{title}</p>
