@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-const CreateLensPost = ({ setPostData }) => {
+const CreateLensPost = ({ setPostData, defaultProfile }) => {
   const [text, setText] = useState("");
 
-  const url = () => "https://www.joinclubspace.xyz/live/placeholder.lens";
+  const url = () => `https://www.joinclubspace.xyz/live/${defaultProfile}`;
 
   const fullText = () => `${text} Join: ${url()}`;
 

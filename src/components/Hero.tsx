@@ -13,7 +13,6 @@ export const Hero = () => {
 
   useEffect(() => {
     if (profiles?.length) {
-      console.log(profiles[0]);
       setDefaultProfile(profiles[0]);
     }
   }, [address, profiles]);
@@ -63,7 +62,7 @@ export const Hero = () => {
           <div className="md:flex gap-4 justify-center md:min-w-[300px]">
             {isConnected && (
               <button onClick={() => login()} className="btn justify-center items-center">
-                {!data ? "Login lens" : "Logged in"}
+                {!data ? "Login with lens" : defaultProfile?.handle }
               </button>
             )}
             <ConnectWallet showBalance={false} />
@@ -95,7 +94,7 @@ export const Hero = () => {
                   <div className="px-4 py-8 sm:px-10">
                     <div className="mt-6">
 
-                      <CreateSpace />
+                      <CreateSpace defaultProfile={defaultProfile} />
                       {/* <form action="#" method="POST">
                         <fieldset disabled={!isConnected} className="space-y-6">
                           {!isConnected ? "form disabled" : "form enabled"}

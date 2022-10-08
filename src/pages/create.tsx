@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import SetGoodyBag from "@/components/SetGoodyBag";
 
-const CreateSpace = () => {
+const CreateSpace = ({ defaultProfile }) => {
   const [playlist, setPlaylist] = useState<IPlaylist>();
   const [productData, setProductData] = useState<any>();
   const [lensPost, setLensPost] = useState<any>();
