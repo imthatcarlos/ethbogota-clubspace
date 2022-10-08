@@ -30,7 +30,13 @@ const Web3Provider = ({ children }) => {
     setMounted(true);
   }, []);
 
-  const theme = useMemo(() => (resolvedTheme === "dark" ? darkTheme() : lightTheme()), [resolvedTheme]);
+  const theme = useMemo(
+    () =>
+      resolvedTheme === "dark"
+        ? darkTheme({ accentColor: "#4f46e5", borderRadius: "small" })
+        : lightTheme({ accentColor: "#4f46e5", borderRadius: "small" }),
+    [resolvedTheme]
+  );
   if (!mounted) return null;
   return (
     <WagmiConfig client={wagmiClient}>

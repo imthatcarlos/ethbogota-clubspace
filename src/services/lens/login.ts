@@ -1,5 +1,5 @@
 import { apiUrls } from "@/constants/apiUrls";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { gql, request } from "graphql-request";
 import { useAccount, useSigner } from "wagmi";
 
@@ -40,33 +40,30 @@ const authenticate = (address: string, signature) => {
   });
 };
 
-export const useLensLogin = () => {
+type AuthenticateType = {
+  accessToken: string;
+  refreshToken: string;
+};
+
+export const useLensLogin = (options: UseQueryOptions = {}) => {
   const { address } = useAccount();
   const { data: signer } = useSigner();
 
-  const { data: challenge, refetch: refetchChallenge } = useQuery(
-    ["challenge", address],
-    () => generateChallenge(address),
-    {
-      enabled: false,
-    }
-  );
-
-  const { data: signature } = useQuery(
-    ["signature"],
-    () => {
-      return signer?.signMessage(challenge?.challenge?.text);
+  const result = useQuery<AuthenticateType | null>(
+    ["lens-login", address],
+    async () => {
+      const challenge = await generateChallenge(address);
+      const signature = await signer?.signMessage(challenge?.challenge?.text);
+      const result = await authenticate(address, signature);
+      return result;
     },
     {
-      enabled: !!challenge,
-      staleTime: 1000 * 60 * 60 * 24 * 7, // 1 week
+      ...(options as any),
+      enabled: false,
+      staleTime: 1000 * 60 * 60 * 24,
+      cacheTime: 1000 * 60 * 60 * 24,
     }
   );
 
-  const { data: authentication } = useQuery(["authentication", address], () => authenticate(address, signature), {
-    enabled: !!address && !!signature,
-    staleTime: 1000 * 60 * 60 * 24 * 7,
-  });
-
-  return { ...authentication?.authenticate, login: refetchChallenge };
+  return result;
 };

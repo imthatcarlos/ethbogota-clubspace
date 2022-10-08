@@ -1,4 +1,5 @@
 import { APP_NAME } from "@/lib/consts";
+import { useLensLogin } from "@/services/lens/login";
 import { useAccount } from "wagmi";
 import { useState, useEffect } from "react";
 import { ConnectWallet } from "./ConnectWallet";
@@ -15,6 +16,8 @@ export const Hero = () => {
       setDefaultProfile(profiles[0]);
     }
   }, [address, profiles]);
+
+  const { data, refetch: login } = useLensLogin();
 
   return (
     <div className="relative overflow-hidden">
@@ -56,8 +59,13 @@ export const Hero = () => {
             </div>
             <div className="hidden space-x-10 md:ml-10 md:flex"></div>
           </div>
-          <div className="md:flex">
-            <ConnectWallet />
+          <div className="md:flex gap-4 justify-center md:min-w-[300px]">
+            {isConnected && (
+              <button onClick={() => login()} className="btn justify-center items-center">
+                {!data ? "Login lens" : "Logged in"}
+              </button>
+            )}
+            <ConnectWallet showBalance={false} />
           </div>
         </nav>
 
