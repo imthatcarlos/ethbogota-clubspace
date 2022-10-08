@@ -70,7 +70,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     // shareable URL to join
-    const url = `${UUID_NAMESPACE_URL}/${creatorLensHandle}`;
+    const url = `${UUID_NAMESPACE_URL}/live/${creatorLensHandle}`;
 
     return res.status(200).json({ url });
   } catch (e) {
