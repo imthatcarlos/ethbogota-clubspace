@@ -9,7 +9,7 @@ export const Hero = () => {
   const { isConnected, address } = useAccount();
   const { login, ...rest } = useLensLogin();
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
-  const { isLoading: loadingProfiles, data: profiles } = useGetProfilesOwned(address);
+  const { data: profiles } = useGetProfilesOwned({}, address);
 
   useEffect(() => {
     if (profiles?.length) {
