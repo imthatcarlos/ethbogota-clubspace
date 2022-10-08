@@ -2,12 +2,10 @@ import { APP_NAME } from "@/lib/consts";
 import { useAccount } from "wagmi";
 import { useState, useEffect } from "react";
 import { ConnectWallet } from "./ConnectWallet";
-import { useLensLogin } from "@/services/lens/login";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 
 export const Hero = () => {
   const { isConnected, address } = useAccount();
-  const { login, ...rest } = useLensLogin();
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
   const { data: profiles } = useGetProfilesOwned({}, address);
 
@@ -87,9 +85,6 @@ export const Hero = () => {
                 <div className="bg-transparent sm:mx-auto sm:w-full sm:max-w-md sm:overflow-hidden sm:rounded-lg">
                   <div className="px-4 py-8 sm:px-10">
                     <div className="mt-6">
-                      <button onClick={login} className="flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                        {!Object.keys(rest).length ? "Login with Lens" : "Logged in"}
-                      </button>
                       <form action="#" method="POST">
                         <fieldset disabled={!isConnected} className="space-y-6">
                           {!isConnected ? "form disabled" : "form enabled"}
