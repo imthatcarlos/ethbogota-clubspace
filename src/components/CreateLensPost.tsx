@@ -8,6 +8,7 @@ const CreateLensPost = ({ setPostData }) => {
 
   const fullText = () =>
     `${text}
+
 ${url()}`;
 
   return (
