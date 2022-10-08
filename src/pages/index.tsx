@@ -5,7 +5,9 @@ import { useLensLogin } from "@/services/lens/login";
 
 const Home: FC = () => {
   const [mounted, setMounted] = useState(false);
-  const data = useLensLogin(mounted);
+  const { login, ...rest } = useLensLogin();
+
+  console.log(rest, "rest");
 
   useEffect(() => {
     setMounted(true);
@@ -16,7 +18,7 @@ const Home: FC = () => {
   return (
     <>
       <Hero />
-      {JSON.stringify(data, null, 2)}
+      <button onClick={login}>{!Object.keys(rest).length ? "Login lens" : "Logged in"}</button>
       <ThemeSwitcher className="absolute bottom-6 right-6" />
     </>
   );
