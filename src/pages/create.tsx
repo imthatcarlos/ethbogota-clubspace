@@ -8,6 +8,7 @@ import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
 import axios from "axios";
 import { createGroup } from "@/lib/semaphore/semaphore";
+import { sendNotification } from "@/services/push/push";
 
 const CreateSpace = ({ defaultProfile }) => {
   const { address } = useAccount();
@@ -82,9 +83,10 @@ const CreateSpace = ({ defaultProfile }) => {
     // call sempahore/create-group
     await createGroup(semGroupIdHex, goodyUri, lensPubId, defaultProfile.id);
 
-    setUploading(false);
+    // PUSH
+    await sendNotification(url);
 
-    // show share button
+    setUploading(false);
     setShareUrl(url);
   };
 
