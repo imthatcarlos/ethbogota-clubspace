@@ -1,19 +1,34 @@
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
-const CreateLensPost = () => {
+const CreateLensPost = ({ setPostData }) => {
   const [text, setText] = useState("");
 
   const url = () => "https://joinclubspace.xyz/handle.lens/uuid";
+
+  const fullText = () =>
+    `${text}
+${url()}`;
 
   return (
     <div>
       <p>Share to Lens</p>
       <div>
-        <input type="text" value={text} onChange={(e) => setText(e.target.value)} />
+        <textarea
+          rows={3}
+          className="w-72 bg-inherit rounded-xl select-none"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
+        <button
+          className="flex w-36 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          onClick={() => setPostData(fullText())}
+        >
+          Post
+        </button>
       </div>
       <div>
-        <p>{text + "\n" + url()}</p>
+        <div className="whitespace-pre-line max-w-md p-3 border-white border-2 rounded-xl">{fullText()}</div>
       </div>
     </div>
   );

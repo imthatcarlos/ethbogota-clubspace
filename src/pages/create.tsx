@@ -6,6 +6,7 @@ import { useState } from "react";
 const CreateSpace = () => {
   const [playlist, setPlaylist] = useState<any>();
   const [productData, setProductData] = useState<any>();
+  const [lensPost, setLensPost] = useState<any>();
   const [step, setStep] = useState(0);
 
   const selectPlaylist = (playlist) => {
@@ -18,6 +19,11 @@ const CreateSpace = () => {
     setStep(2);
   };
 
+  const setPostData = (postData) => {
+    setLensPost(postData)
+    setStep(3)
+  }
+
   const submit = () => {
     // TODO: send all api calls
   };
@@ -27,7 +33,7 @@ const CreateSpace = () => {
       <p>Create a Space</p>
       {step === 0 ? <SelectPlaylist selectPlaylist={selectPlaylist} /> : <p>Playlist: {playlist.title}</p>}
       {step === 1 ? <SetDecentProduct setDecentProduct={setDecentProduct} /> : <p>some nice component</p>}
-      {step === 2 && <CreateLensPost /> }
+      {step === 2 && <CreateLensPost setPostData={setPostData}/> }
     </div>
   );
 };
