@@ -4,7 +4,7 @@ import { useAccount } from "wagmi";
 const CreateLensPost = ({ setPostData }) => {
   const [text, setText] = useState("");
 
-  const url = () => "https://joinclubspace.xyz/handle.lens/uuid";
+  const url = () => "https://joinclubspace.xyz/handle.lens";
 
   const fullText = () =>
     `${text}
@@ -13,7 +13,7 @@ ${url()}`;
 
   return (
     <div>
-      <p>Share to Lens</p>
+      <h2>Share to Lens</h2>
       <div>
         <textarea
           rows={3}
@@ -25,7 +25,7 @@ ${url()}`;
           className="flex w-36 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           onClick={() => setPostData(fullText())}
         >
-          Post
+          Save
         </button>
       </div>
       <div>
