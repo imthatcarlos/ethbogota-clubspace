@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import redisClient from '@/lib/utils/redisClient';
+import { getContractData } from '@/lib/utils/decent';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
