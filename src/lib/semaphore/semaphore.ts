@@ -12,9 +12,8 @@ const provider = new providers.JsonRpcProvider(process.env.MUMBAI_URL);
 const signer = new Wallet(process.env.ADMIN_KEY, provider);
 export const contract = new Contract(contractAddress, contractAbi, signer);
 
-export const joinGroup = async () => {
-  const username = ""; // TODO: lens username
-  const identityCommitment = ""; // TODO: from semaphore?
+export const joinGroup = async (lensUsername, identity) => {
+  const identityCommitment = identity.generateCommitment().toString()
 
   console.log(`Joining the group...`);
 
@@ -23,7 +22,7 @@ export const joinGroup = async () => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       identityCommitment,
-      username,
+      username: lensUsername,
     }),
   });
 
@@ -34,7 +33,7 @@ export const joinGroup = async () => {
   }
 };
 
-export const createGroup = async ({ groupId, uri, lensPubId, lensProfileId }) => {
+export const createGroup = async (groupId, uri, lensPubId, lensProfileId) => {
   console.log(`Creating group...`);
 
   const { status } = await fetch(`/create-group`, {
