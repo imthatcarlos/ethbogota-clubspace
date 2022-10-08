@@ -7,8 +7,6 @@ const Home: FC = () => {
   const [mounted, setMounted] = useState(false);
   const { login, ...rest } = useLensLogin();
 
-  console.log(rest, "rest");
-
   useEffect(() => {
     setMounted(true);
   }, []);
