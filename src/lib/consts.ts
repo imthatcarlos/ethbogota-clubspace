@@ -8,3 +8,4 @@ export const REDIS_LIVE_SPACE_HANDLES = 'LIVE_SPACE_HANDLES';
 export const REDIS_SPACE_EXP = 3600;
 
 export const UUID_NAMESPACE_URL = 'https://www.joinclubspace.xyz';
+export const VERIFIER_ADDRESS = '0x5FC8d32690cc91D4c39d9d3abcBD16989F875707'
