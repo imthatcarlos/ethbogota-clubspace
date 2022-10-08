@@ -1,3 +1,4 @@
+import CreateLensPost from "@/components/CreateLensPost";
 import SelectPlaylist from "@/components/SelectPlaylist";
 import SetDecentProduct from '@/components/SetDecentProduct';
 import { useState } from "react";
@@ -26,7 +27,7 @@ const CreateSpace = () => {
       <p>Create a Space</p>
       {step === 0 ? <SelectPlaylist selectPlaylist={selectPlaylist} /> : <p>Playlist: {playlist.title}</p>}
       {step === 1 ? <SetDecentProduct setDecentProduct={setDecentProduct} /> : <p>some nice component</p>}
-
+      {step === 2 && <CreateLensPost /> }
     </div>
   );
 };
