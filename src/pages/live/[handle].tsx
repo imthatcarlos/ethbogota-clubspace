@@ -4,6 +4,7 @@ import { GetServerSideProps } from "next";
 import { useState } from "react";
 import { STREAMR_PUBLIC_ID } from "@/lib/consts";
 import redisClient from "@/lib/utils/redisClient";
+import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 
 // @TODO: this component probably is not enough for the actual page, but a start
 // - needs connected lens account
@@ -15,6 +16,14 @@ const LiveSpace = ({ clubSpaceId }) => {
   } = useRouter();
   const client = useClient();
   const [latestMessage, setLatestMessage] = useState();
+  const [defaultProfile, setDefaultProfile] = useState<Profile>();
+  const { data: profiles } = useGetProfilesOwned({}, address);
+
+  useEffect(() => {
+    if (profiles?.length) {
+      setDefaultProfile(profiles[0]);
+    }
+  }, [address, profiles]);
 
   if (!clubSpaceId) {
     push("/404");
@@ -26,9 +35,10 @@ const LiveSpace = ({ clubSpaceId }) => {
 
   const sendMessage = (reactionUnicode: string) => {
     const message = {
+      type: 'reaction',
       clubSpaceId,
       reactionUnicode,
-      lensHandle: "carlosbeltran.lens", // @TODO: get from connected account?
+      lensHandle: defaultProfile?.handle, // @TODO: get from connected account?
     };
     client.publish(STREAMR_PUBLIC_ID, message);
   };
