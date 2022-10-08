@@ -5,6 +5,7 @@ import { IPlaylist } from "@spinamp/spinamp-sdk";
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useGetProfilesOwned } from "@/services/lens/getProfile";
+import SetGoodyBag from "@/components/SetGoodyBag";
 
 const CreateSpace = () => {
   const { address } = useAccount();
@@ -12,6 +13,7 @@ const CreateSpace = () => {
   const [productData, setProductData] = useState<any>();
   const [lensPost, setLensPost] = useState<any>();
   const [defaultProfile, setDefaultProfile] = useState();
+  const [uri, setUri] = useState<any>()
   const { isLoading: loadingProfiles, data: profiles } = useGetProfilesOwned(address);
 
   useEffect(() => {
@@ -34,6 +36,11 @@ const CreateSpace = () => {
     setLensPost(postData)
   }
 
+  const setGoodyBag = (uri) => {
+    setUri(uri)
+    console.log(uri)
+  }
+
   const submit = () => {
     // TODO: send all api calls
   };
@@ -43,7 +50,11 @@ const CreateSpace = () => {
       <p>Create a Space</p>
       {!playlist ? <SelectPlaylist selectPlaylist={selectPlaylist} /> : <p>Playlist: {playlist.title}</p>}
       {!productData ? <SetDecentProduct setDecentProduct={setDecentProduct} /> : <p>NFT FOUND! RENDER AN NFT COMPONENT</p>}
-      {!lensPost ? <CreateLensPost setPostData={setPostData}/> : null }
+      {!lensPost ? <CreateLensPost setPostData={setPostData}/> : <div>
+        <p>Lens Post:</p>
+        <p>{lensPost}</p>
+      </div> }
+      {!uri ? <SetGoodyBag setGoodyBag={setGoodyBag}/> : <p>GoodyBag URI: {uri}</p>}
     </div>
   );
 };

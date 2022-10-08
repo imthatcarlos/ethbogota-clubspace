@@ -4,7 +4,8 @@ import Web3Provider from "@/components/Web3Provider";
 import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import StreamrProvider, { useSubscription } from 'streamr-client-react'
+import StreamrProvider from "streamr-client-react";
+import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,22 +16,13 @@ const queryClient = new QueryClient({
 });
 
 const App = ({ Component, pageProps }) => {
-  let auth;
-  // if (typeof window !== "undefined") {
-  //   auth = window.ethereum;
-  //
-  //   // Error: /auth must NOT have additional properties: _events
-  //   delete auth._events;
-  //
-  //   console.log(auth)
-  // }
-  const streamrClientOptions = { auth };
+  const streamrClientOptions = new MetaMaskConnector().getProvider();
 
   return (
     <ThemeProvider attribute="class">
       <QueryClientProvider client={queryClient}>
         <Web3Provider>
-          <StreamrProvider { ...streamrClientOptions }>
+          <StreamrProvider {...streamrClientOptions}>
             <Component {...pageProps} />
           </StreamrProvider>
         </Web3Provider>

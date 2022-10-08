@@ -49,7 +49,7 @@ export const pinFileToIPFS = (file: any) => {
 export const pinJson = (data: any, address?: string) => {
   const options = {
     pinataMetadata: {
-      name: `campaign_${address?.toLowerCase() ?? 'unknown'}`,
+      name: `goody_bag_${address || ""}`
     },
     pinataOptions: {
       cidVersion: 0,
