@@ -1,5 +1,5 @@
 import { apiUrls } from "@/constants/apiUrls";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { BigNumber } from "ethers";
 import request, { gql } from "graphql-request";
 
@@ -174,10 +174,9 @@ const GET_PROFILE_HANDLE_BY_ID = gql`
   }
 `;
 
-
-export const getProfileByHandle = async (handle: string): Promise<Profile[] | null> => {
+export const getProfileByHandle = async (handle: string): Promise<Profile | null> => {
   try {
-    const profiles = await request({
+    const { profiles } = await request({
       url: apiUrls.lensAPI,
       document: GET_PROFILE_BY_HANDLE,
       variables: { handle },
@@ -189,15 +188,26 @@ export const getProfileByHandle = async (handle: string): Promise<Profile[] | nu
   }
 };
 
-export const useGetProfileByHandle = (handle: string) => {
-  return useQuery(["profile", handle], () => getProfileByHandle(handle), {
-    enabled: !!handle,
-  });
+export const useGetProfileByHandle = (options: UseQueryOptions = {}, handle: string) => {
+  const result = useQuery<Profile | null>(
+    ["profiles", handle],
+    async () => {
+      const result = await getProfileByHandle(handle);
+
+      return result;
+    },
+    {
+      ...(options as any),
+      enabled: !!handle,
+    }
+  );
+
+  return result;
 };
 
 export const getProfilesOwned = async (ownedBy: string): Promise<Profile[]> => {
   try {
-    const profiles = await request({
+    const { profiles } = await request({
       url: apiUrls.lensAPI,
       document: GET_PROFILES_OWNED,
       variables: { ownedBy },
@@ -209,17 +219,28 @@ export const getProfilesOwned = async (ownedBy: string): Promise<Profile[]> => {
   }
 };
 
-export const useGetProfilesOwned = (ownedBy: string) => {
-  return useQuery(["profiles", ownedBy], () => getProfilesOwned(ownedBy), {
-    enabled: !!ownedBy,
-  });
+export const useGetProfilesOwned = (options: UseQueryOptions = {}, ownedBy: string) => {
+  const result = useQuery<Profile[]>(
+    ["profiles", ownedBy],
+    async () => {
+      const result = await getProfilesOwned(ownedBy);
+
+      return result;
+    },
+    {
+      ...(options as any),
+      enabled: !!ownedBy,
+    }
+  );
+
+  return result;
 };
 
 export const getHandleById = async (id?: string): Promise<string> => {
   try {
     if (!id) return null;
 
-    const profile = await request({
+    const { profile } = await request({
       url: apiUrls.lensAPI,
       document: GET_PROFILE_HANDLE_BY_ID,
       variables: { id: BigNumber.from(id).toHexString() },
@@ -231,8 +252,19 @@ export const getHandleById = async (id?: string): Promise<string> => {
   }
 };
 
-export const useGetHandleById = (id?: string) => {
-  return useQuery(["handle", id], () => getHandleById(id), {
-    enabled: !!id,
-  });
+export const useGetHandleById = (options: UseQueryOptions = {}, id?: string) => {
+  const result = useQuery<string>(
+    ["profiles", id],
+    async () => {
+      const result = await getHandleById(id);
+
+      return result;
+    },
+    {
+      ...(options as any),
+      enabled: !!id,
+    }
+  );
+
+  return result;
 };
