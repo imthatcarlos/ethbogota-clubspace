@@ -1,5 +1,5 @@
 import { Contract, providers, Wallet } from "ethers";
-import { abi as contractAbi } from "./abi.json";
+import contractAbi from "./abi.json";
 
 import { Group } from "@semaphore-protocol/group";
 import { generateProof, packToSolidityProof } from "@semaphore-protocol/proof";
@@ -10,7 +10,7 @@ const signer = new Wallet(process.env.ADMIN_KEY, provider);
 export const contract = new Contract(VERIFIER_ADDRESS, contractAbi, signer);
 
 export const joinGroup = async (lensUsername, identity) => {
-  const identityCommitment = identity.generateCommitment().toString()
+  const identityCommitment = identity.generateCommitment().toString();
 
   console.log(`Joining the group...`);
 
