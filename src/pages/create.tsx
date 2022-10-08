@@ -1,10 +1,11 @@
 import CreateLensPost from "@/components/CreateLensPost";
 import SelectPlaylist from "@/components/SelectPlaylist";
 import SetDecentProduct from '@/components/SetDecentProduct';
+import { IPlaylist } from "@spinamp/spinamp-sdk";
 import { useState } from "react";
 
 const CreateSpace = () => {
-  const [playlist, setPlaylist] = useState<any>();
+  const [playlist, setPlaylist] = useState<IPlaylist>();
   const [productData, setProductData] = useState<any>();
   const [lensPost, setLensPost] = useState<any>();
 

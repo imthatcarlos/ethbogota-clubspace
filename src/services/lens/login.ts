@@ -1,7 +1,7 @@
 import { apiUrls } from "@/constants/apiUrls";
 import { useQuery } from "@tanstack/react-query";
 import { gql, request } from "graphql-request";
-import { useAccount, useSigner, useSignMessage } from "wagmi";
+import { useAccount, useSigner } from "wagmi";
 
 const AUTHENTICATION = gql`
   mutation ($request: SignedAuthChallenge!) {
@@ -40,34 +40,33 @@ const authenticate = (address: string, signature) => {
   });
 };
 
-export const useLensLogin = (enabled = false) => {
+export const useLensLogin = () => {
   const { address } = useAccount();
   const { data: signer } = useSigner();
 
-  const {
-    data: challenge,
-    isLoading: isLoadingChallenge,
-    error: challengeError,
-    refetch: refetchChallenge,
-  } = useQuery(["challenge", address], () => generateChallenge(address), {
-    enabled,
-  });
-
-  const { data: signature, refetch: refetchSignature } = useQuery(
-    ["signature"],
-    () => signer?.signMessage(challenge?.challenge?.text),
+  const { data: challenge, refetch: refetchChallenge } = useQuery(
+    ["challenge", address],
+    () => generateChallenge(address),
     {
-      enabled: !!signer && !!challenge && enabled,
+      enabled: false,
     }
   );
 
-  const {
-    data: authentication,
-    isLoading: isLoadingAuthentication,
-    error: authenticationError,
-    refetch: refetchAuthentication,
-  } = useQuery(["authentication", address], () => authenticate(address, signature), {
-    enabled: !!signature,
+  const { data: signature } = useQuery(
+    ["signature"],
+    () => {
+      return signer?.signMessage(challenge?.challenge?.text);
+    },
+    {
+      enabled: !!challenge,
+      staleTime: 1000 * 60 * 60 * 24 * 7, // 1 week
+    }
+  );
+
+  const { data: authentication } = useQuery(["authentication", address], () => authenticate(address, signature), {
+    enabled: !!address && !!signature,
+    staleTime: 1000 * 60 * 60 * 24 * 7,
   });
-  return { ...authentication?.authenticate };
+
+  return { ...authentication?.authenticate, login: refetchChallenge };
 };
