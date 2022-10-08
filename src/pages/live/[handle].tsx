@@ -2,7 +2,7 @@ import { useSubscription, useClient } from 'streamr-client-react'
 import { useRouter } from 'next/router';
 import { GetServerSideProps } from "next";
 import { useState } from "react";
-import { STREAMR_PUBLIC_ID } from '@/lib/consts.ts';
+import { NEXT_PUBLIC_STREAMR_STREAM_ID_PUBLIC } from '@/lib/consts.ts';
 import redisClient from '@/lib/utils/redisClient';
 
 // @TODO: this component probably is not enough for the actual page, but a start

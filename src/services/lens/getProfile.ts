@@ -197,7 +197,8 @@ export const useGetProfileByHandle = (handle: string) => {
 
 export const getProfilesOwned = async (ownedBy: string): Promise<Profile[]> => {
   try {
-    const profiles = await request({
+    console.log(ownedBy);
+    const { profiles } = await request({
       url: apiUrls.lensAPI,
       document: GET_PROFILES_OWNED,
       variables: { ownedBy },

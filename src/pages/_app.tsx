@@ -16,14 +16,14 @@ const queryClient = new QueryClient({
 
 const App = ({ Component, pageProps }) => {
   let auth;
-  if (typeof window !== "undefined") {
-    auth = window.ethereum;
-
-    // Error: /auth must NOT have additional properties: _events
-    delete auth._events;
-
-    console.log(auth)
-  }
+  // if (typeof window !== "undefined") {
+  //   auth = window.ethereum;
+  //
+  //   // Error: /auth must NOT have additional properties: _events
+  //   delete auth._events;
+  //
+  //   console.log(auth)
+  // }
   const streamrClientOptions = { auth };
 
   return (
