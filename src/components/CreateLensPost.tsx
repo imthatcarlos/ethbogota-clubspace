@@ -8,22 +8,23 @@ const CreateLensPost = ({ setPostData, defaultProfile }) => {
   const fullText = () => `${text} Join: ${url()}`;
 
   const onChange = (_text) => {
-    setText(_text)
-    setPostData(fullText())
-  }
+    setText(_text);
+    setPostData(fullText());
+  };
 
   return (
-    <div>
-      <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Create a Lens Post</h2>
-      <div>
-        <textarea
-          rows={3}
-          className="block mt-4 w-fullI rounded-md dark:bg-gray-800 dark:text-white dark:border-gray-600 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          value={text}
-          placeholder="Join my Club Space!"
-          onChange={(e) => onChange(e.target.value)}
-        />
-      </div>
+    <div className="w-full flex flex-col gap-3">
+      <label htmlFor="lens-post" className="text-md font-bold tracking-tight sm:text-lg md:text-xl">
+        Create a Lens Post
+      </label>
+      <textarea
+        id="lens-post"
+        rows={3}
+        className="input"
+        value={text}
+        placeholder="Join my Club Space!"
+        onChange={(e) => onChange(e.target.value)}
+      />
     </div>
   );
 };

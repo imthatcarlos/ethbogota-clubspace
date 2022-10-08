@@ -4,7 +4,7 @@ import { useAccount } from "wagmi";
 import { useState, useEffect } from "react";
 import { ConnectWallet } from "./ConnectWallet";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
-import CreateSpace from "../pages/create"
+import CreateSpace from "@/components/CreateSpace";
 
 export const Hero = () => {
   const { isConnected, address } = useAccount();
@@ -59,10 +59,10 @@ export const Hero = () => {
             </div>
             <div className="hidden space-x-10 md:ml-10 md:flex"></div>
           </div>
-          <div className="md:flex gap-4 justify-center md:min-w-[300px]">
+          <div className="flex gap-4 justify-center md:min-w-[300px]">
             {isConnected && (
               <button onClick={() => login()} className="btn justify-center items-center">
-                {!data ? "Login with lens" : defaultProfile?.handle }
+                {!data ? "Login with lens" : defaultProfile?.handle}
               </button>
             )}
             <ConnectWallet showBalance={false} />
@@ -70,16 +70,16 @@ export const Hero = () => {
         </nav>
 
         <main className="mt-16 sm:mt-24">
-          <div className="mx-auto max-w-7xl">
-            <div className="lg:grid lg:grid-cols-12 lg:gap-8">
-              <div className="px-4 sm:px-6 sm:text-center md:mx-auto md:max-w-2xl lg:col-span-6 lg:flex lg:items-center lg:text-left">
+          <div className="max-w-7xl lg:mx-auto">
+            <div className="lg:mt-16 lg:grid lg:grid-cols-12 lg:gap-8">
+              <div className="px-4 sm:px-6 sm:text-center md:mx-auto md:max-w-2xl lg:col-span-6 lg:flex  lg:text-left">
                 <div>
                   <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">Clubspace</h1>
                   <p className="mt-3 text-base sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
                     Host an online live listening party for all your Lens frens 🔥
-                    <br/>
+                    <br />
                     Music NFTs. Live Reactions. Good vibes.
-                    <br/>
+                    <br />
                     Everyone that parties - and can <strong>prove</strong> it - gets swag NFTs
                   </p>
                   {!isConnected && (
@@ -89,67 +89,11 @@ export const Hero = () => {
                   )}
                 </div>
               </div>
-              <div className="mt-16 sm:mt-24 lg:col-span-6 lg:mt-0">
+              <div className="mt-24 md:mt-0 lg:col-span-6 lg:mt-0">
                 <div className="bg-transparent sm:mx-auto sm:w-full sm:max-w-md sm:overflow-hidden sm:rounded-lg">
-                  <div className="px-4 py-8 sm:px-10">
-                    <div className="mt-6">
-
+                  <div className="px-4 sm:px-10">
+                    <div className="w-full">
                       <CreateSpace defaultProfile={defaultProfile} />
-                      {/* <form action="#" method="POST">
-                        <fieldset disabled={!isConnected} className="space-y-6">
-                          {!isConnected ? "form disabled" : "form enabled"}
-                          <div>
-                            <label htmlFor="name" className="sr-only">
-                              Full name
-                            </label>
-                            <input
-                              type="text"
-                              name="name"
-                              id="name"
-                              autoComplete="name"
-                              placeholder="Full name"
-                              required
-                              className="input"
-                            />
-                          </div>
-
-                          <div>
-                            <label htmlFor="mobile-or-email" className="sr-only">
-                              Mobile number or email
-                            </label>
-                            <input
-                              type="text"
-                              name="mobile-or-email"
-                              id="mobile-or-email"
-                              autoComplete="email"
-                              placeholder="Mobile number or email"
-                              required
-                              className="input"
-                            />
-                          </div>
-
-                          <div>
-                            <label htmlFor="password" className="sr-only">
-                              Password
-                            </label>
-                            <input
-                              id="password"
-                              name="password"
-                              type="password"
-                              placeholder="Password"
-                              autoComplete="current-password"
-                              required
-                              className="input"
-                            />
-                          </div>
-
-                          <div>
-                            <button type="submit" className="btn">
-                              Create your account
-                            </button>
-                          </div>
-                        </fieldset>
-                      </form> */}
                     </div>
                   </div>
                 </div>
