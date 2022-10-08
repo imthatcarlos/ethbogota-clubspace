@@ -93,7 +93,7 @@ const SetGoodyBag = ({ setGoodyBag }) => {
           onClick={() => uploadToIPFS()}
           disabled={uploading || acceptedFiles.length !== 2}
         >
-          Submit
+          Upload Goody Bag
         </button>
       </div>
     </div>

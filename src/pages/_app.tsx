@@ -1,7 +1,8 @@
 import "tailwindcss/tailwind.css";
+import "@rainbow-me/rainbowkit/styles.css";
+import "@/styles/globals.css";
 import { ThemeProvider } from "next-themes";
 import Web3Provider from "@/components/Web3Provider";
-import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import StreamrProvider from "streamr-client-react";
