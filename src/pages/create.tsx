@@ -42,7 +42,6 @@ const CreateSpace = () => {
 
   return (
     <div className="">
-      <p>Create a Space</p>
       {!playlist ? <SelectPlaylist selectPlaylist={selectPlaylist} /> : <p>Playlist: {playlist.title}</p>}
       {!productData ? (
         <SetDecentProduct setDecentProduct={setDecentProduct} />
@@ -50,13 +49,12 @@ const CreateSpace = () => {
         <p>NFT FOUND! RENDER AN NFT COMPONENT</p>
       )}
       <div>
-        <p>Lens Post:</p>
         <CreateLensPost setPostData={setPostData} defaultProfile={defaultProfile} />
       </div>
       {!uri ? <SetGoodyBag setGoodyBag={setGoodyBag} /> : <p>GoodyBag URI: {uri}</p>}
 
       <button
-          className="flex w-36 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          className="flex w-36 mt-4 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           onClick={submit}
           disabled={!uri || !playlist || !lensPost || !productData}
         >

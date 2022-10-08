@@ -4,6 +4,7 @@ import { useAccount } from "wagmi";
 import { useState, useEffect } from "react";
 import { ConnectWallet } from "./ConnectWallet";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
+import CreateSpace from "../pages/create"
 
 export const Hero = () => {
   const { isConnected, address } = useAccount();
@@ -93,7 +94,9 @@ export const Hero = () => {
                 <div className="bg-transparent sm:mx-auto sm:w-full sm:max-w-md sm:overflow-hidden sm:rounded-lg">
                   <div className="px-4 py-8 sm:px-10">
                     <div className="mt-6">
-                      <form action="#" method="POST">
+
+                      <CreateSpace />
+                      {/* <form action="#" method="POST">
                         <fieldset disabled={!isConnected} className="space-y-6">
                           {!isConnected ? "form disabled" : "form enabled"}
                           <div>
@@ -147,7 +150,7 @@ export const Hero = () => {
                             </button>
                           </div>
                         </fieldset>
-                      </form>
+                      </form> */}
                     </div>
                   </div>
                 </div>

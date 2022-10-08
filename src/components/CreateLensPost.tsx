@@ -14,17 +14,15 @@ const CreateLensPost = ({ setPostData }) => {
 
   return (
     <div>
-      <h2>Share to Lens</h2>
+      <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Create a Lens Post</h2>
       <div>
         <textarea
           rows={3}
-          className="w-72 bg-inherit rounded-xl select-none"
+          className="block mt-4 w-fullI rounded-md dark:bg-gray-800 dark:text-white dark:border-gray-600 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           value={text}
+          placeholder="Join my Club Space!"
           onChange={(e) => onChange(e.target.value)}
         />
-      </div>
-      <div>
-        <div className="whitespace-pre-line max-w-md p-3 border-white border-2 rounded-xl">{fullText()}</div>
       </div>
     </div>
   );
