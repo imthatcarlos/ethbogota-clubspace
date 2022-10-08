@@ -5,16 +5,14 @@ import { useState } from "react";
 const CreateSpace = () => {
   const [playlist, setPlaylist] = useState<any>();
   const [productData, setProductData] = useState<any>();
-  const [step, setStep] = useState(0);
 
   const selectPlaylist = (playlist) => {
     setPlaylist(playlist);
-    setStep(1);
   };
 
   const setDecentProduct = (data) => {
+    console.log(data);
     setProductData(data);
-    setStep(2);
   };
 
   const submit = () => {
@@ -24,8 +22,8 @@ const CreateSpace = () => {
   return (
     <div className="">
       <p>Create a Space</p>
-      {step === 0 ? <SelectPlaylist selectPlaylist={selectPlaylist} /> : <p>Playlist: {playlist.title}</p>}
-      {step === 1 ? <SetDecentProduct setDecentProduct={setDecentProduct} /> : <p>some nice component</p>}
+      {!playlist ? <SelectPlaylist selectPlaylist={selectPlaylist} /> : <p>Playlist: {playlist.title}</p>}
+      {!productData ? <SetDecentProduct setDecentProduct={setDecentProduct} /> : <p>NFT FOUND! RENDER AN NFT COMPONENT</p>}
 
     </div>
   );
