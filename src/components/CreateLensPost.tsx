@@ -1,15 +1,11 @@
-import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
+import { useState } from "react";
 
 const CreateLensPost = ({ setPostData }) => {
   const [text, setText] = useState("");
 
-  const url = () => "https://joinclubspace.xyz/handle.lens";
+  const url = () => "https://www.joinclubspace.xyz/live/placeholder.lens";
 
-  const fullText = () =>
-    `${text}
-
-${url()}`;
+  const fullText = () => `${text} Join: ${url()}`;
 
   return (
     <div>

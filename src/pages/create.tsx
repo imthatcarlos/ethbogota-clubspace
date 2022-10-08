@@ -11,9 +11,9 @@ const CreateSpace = () => {
   const { address } = useAccount();
   const [playlist, setPlaylist] = useState<IPlaylist>();
   const [productData, setProductData] = useState<any>();
-  const [lensPost, setLensPost] = useState<any>();
+  const [lensPost, setLensPost] = useState<string>();
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
-  const [uri, setUri] = useState<any>();
+  const [uri, setUri] = useState<string>();
   const { isLoading: loadingProfiles, data: profiles } = useGetProfilesOwned({}, address);
 
   useEffect(() => {

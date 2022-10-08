@@ -19,12 +19,12 @@ const SelectPlaylist = ({ selectPlaylist }) => {
   return (
     <div>
       <h2>Select a Playlist</h2>
-      {playlists.map(({ title, id }) => (
-        <div key={id}>
-          <p>{title}</p>
+      {playlists.map((p) => (
+        <div key={p.id}>
+          <p>{p.title}</p>
           <button
             className="flex w-36 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            onClick={() => selectPlaylist({ id, title })}
+            onClick={() => selectPlaylist(p)}
           >
             Select
           </button>
