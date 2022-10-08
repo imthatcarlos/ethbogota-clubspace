@@ -14,6 +14,7 @@
 		"@heroicons/react": "^1.0.6",
 		"@privy-io/privy-node": "^0.0.2",
 		"@rainbow-me/rainbowkit": "^0.7.1",
+		"@spinamp/spinamp-sdk": "^0.0.7",
 		"@tailwindcss/forms": "^0.5.3",
 		"@tanstack/react-query": "^4.10.3",
 		"autoprefixer": "^10.4.7",
