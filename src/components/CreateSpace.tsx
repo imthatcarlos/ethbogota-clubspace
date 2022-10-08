@@ -64,7 +64,8 @@ const CreateSpace = ({ defaultProfile }) => {
 
   return (
     <div className="w-full shadow-xl border border-gray-700 p-8 flex flex-col gap-3">
-      {!playlist ? <SelectPlaylist selectPlaylist={selectPlaylist} /> : <p>Playlist: {playlist.title}</p>}
+      <SelectPlaylist selectPlaylist={selectPlaylist} playlist={playlist} />
+
       {!productData ? (
         <SetDecentProduct setDecentProduct={setDecentProduct} />
       ) : (
