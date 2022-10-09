@@ -39,7 +39,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const list = await Promise.all(groups.map((group) => client.get(checkSummed, group.args[0].toString())));
 
     // return those in props
-    clubSpaceObject = list.flatMap((e, i) => (e === null ? [] : [groups[i].args[0].toString()]));
+    clubSpaceObject = list.flatMap((e, i) => (e === null ? [] : [groups[i].args[0].toString()])).reverse();
 
     return { props: { clubSpaceObject } };
   } catch (error) {

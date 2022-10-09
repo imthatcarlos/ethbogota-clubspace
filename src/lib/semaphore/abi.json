@@ -91,6 +91,11 @@
         "type": "address"
       },
       {
+        "internalType": "bytes32",
+        "name": "signal",
+        "type": "bytes32"
+      },
+      {
         "internalType": "uint256",
         "name": "merkleTreeRoot",
         "type": "uint256"
