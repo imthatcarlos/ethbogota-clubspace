@@ -14,8 +14,7 @@ const Home: FC = () => {
   return (
     <>
       <Hero />
-      {/** List of the parties you went to, fetch from API (get contract events, use the clubSpaceId, check privy) **/}
-      <ThemeSwitcher className="absolute bottom-6 right-6" />
+      <ThemeSwitcher className="sticky bottom-28 left-[88%] md:bottom-12 md:left-5" />
     </>
   );
 };

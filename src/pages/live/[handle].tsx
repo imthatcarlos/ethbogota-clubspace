@@ -16,7 +16,6 @@ import { useRouter } from "next/router";
 import { FC, Fragment, useEffect, useMemo, useRef, useState } from "react";
 import StreamrClient from "streamr-client";
 import { useAccount, useQuery } from "wagmi";
-import axios from "axios";
 import { joinGroup } from "@/lib/semaphore/semaphore";
 import { useIdentity } from "@/hooks/identity";
 import { SpectrumVisualizer, SpectrumVisualizerTheme } from "react-audio-visualizers";
@@ -39,11 +38,13 @@ type Props = {
 };
 
 const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
-  const [hasMounted, setHasMounted] = useState(false);
-  const [latestMessage, setLatestMessage] = useState();
   const { identity } = useIdentity();
-  const { push } = useRouter();
-  const { address } = useAccount();
+  const {
+    push,
+    query: { handle },
+  } = useRouter();
+
+  const { address, isConnected } = useAccount();
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
   const [liveProfiles, setLiveProfiles] = useState<string[]>();
   const { data: profiles } = useGetProfilesOwned({}, address);
@@ -146,9 +147,9 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
         .filter((h) => h);
 
       // HACK
-      console.log(grouped[defaultProfile.handle])
+      console.log(grouped[defaultProfile.handle]);
       if (!stillHereYo.includes(defaultProfile.handle)) {
-        stillHereYo.push(defaultProfile.handle)
+        stillHereYo.push(defaultProfile.handle);
       }
 
       console.log("liveProfiles");
@@ -305,7 +306,7 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
         {({ open }) => (
           <>
             <Menu as="div" className="relative flex-shrink-0">
-              <div className="w-36">
+              <div className="w-36 flex gap-4 mt-4">
                 <Menu.Button className="btn">react</Menu.Button>
               </div>
               <Transition
