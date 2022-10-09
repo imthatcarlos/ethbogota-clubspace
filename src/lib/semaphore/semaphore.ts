@@ -1,4 +1,4 @@
-import { Contract, providers } from "ethers";
+import { Contract, providers, utils } from "ethers";
 import contractAbi from "./abi.json";
 
 import { Group } from "@semaphore-protocol/group";
@@ -8,10 +8,10 @@ import { VERIFIER_ADDRESS } from "../consts";
 const provider = new providers.JsonRpcProvider(process.env.NEXT_PUBLIC_MUMBAI_URL);
 export const contract = new Contract(VERIFIER_ADDRESS, contractAbi, provider);
 
-export const joinGroup = async (lensUsername, identity) => {
+export const joinGroup = async (lensUsername, identity, groupId) => {
   const identityCommitment = identity.generateCommitment().toString();
 
-  console.log(`Joining the group...`);
+  console.log(`Joining the group...`, identityCommitment, lensUsername, groupId);
 
   const { status } = await fetch(`/api/semaphore/join-group`, {
     method: "POST",
@@ -19,6 +19,7 @@ export const joinGroup = async (lensUsername, identity) => {
     body: JSON.stringify({
       identityCommitment,
       username: lensUsername,
+      groupId,
     }),
   });
 
@@ -47,25 +48,23 @@ export const createGroup = async (groupId, uri, lensPubId, lensProfileId) => {
 
 export const claimReward = async (groupId, recipientAddress, identity) => {
   try {
-    console.log(contract)
     const users = await contract.queryFilter(contract.filters.NewUser(), 28522249);
-    console.log(users)
     const group = new Group();
 
     group.addMembers(users.map((e) => e.args![0].toString()));
 
-    console.log(group)
+    const signal = "club space";
 
-    const { proof, publicSignals } = await generateProof(identity, group, groupId.toString(), recipientAddress);
+    const { proof, publicSignals } = await generateProof(identity, group, groupId.toString(), signal);
     const solidityProof = packToSolidityProof(proof);
 
-    console.log(solidityProof)
-
+    console.log("sending tx");
     const { status } = await fetch(`/api/semaphore/claim-reward`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        recipientAddress,
+        groupId,
+        recipient: recipientAddress,
         merkleRoot: publicSignals.merkleRoot,
         nullifierHash: publicSignals.nullifierHash,
         solidityProof,

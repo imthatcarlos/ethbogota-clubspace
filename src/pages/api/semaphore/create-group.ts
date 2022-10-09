@@ -3,7 +3,7 @@ import { Contract, providers, Wallet } from "ethers";
 import { NextApiRequest, NextApiResponse } from "next";
 import contractAbi from "../../../lib/semaphore/abi.json";
 
-const provider = new providers.JsonRpcProvider(process.env.MUMBAI_URL);
+const provider = new providers.JsonRpcProvider(process.env.NEXT_PUBLIC_MUMBAI_URL);
 const signer = new Wallet(process.env.ADMIN_KEY, provider);
 const contract = new Contract(VERIFIER_ADDRESS, contractAbi, signer);
 
