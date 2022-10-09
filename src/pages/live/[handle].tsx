@@ -72,7 +72,12 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
   }, [address, profiles]);
 
   const logPrivy = async (impressionPayload) => {
-    await fetch(`/api/privy/write`, { method: "POST", body: JSON.stringify(impressionPayload) });
+    console.log('logging privy impression...')
+    const { status } = await fetch(`/api/privy/write`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(impressionPayload),
+    });
   };
 
   const handleEntry = async () => {
@@ -109,6 +114,14 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
         })
         .filter((h) => h);
 
+      // sometimes wont be there the first time
+      if (isEmpty(grouped[defaultProfile.handle])) {
+        stillHereYo.push(defaultProfile.handle)
+      }
+
+      console.log('liveProfiles')
+      console.log(stillHereYo)
+
       setLiveProfiles(stillHereYo);
 
       // console.log(logs)
@@ -124,19 +137,18 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
       console.log("publishing JOIN....");
       window.client.publish(STREAMR_PUBLIC_ID, message);
 
+      // log the impression for this clubspace
+      logPrivy({
+        address,
+        semGroupIdHex: clubSpaceObject.semGroupIdHex,
+        impression: "JOIN",
+      });
+
       if (isEmpty(hasJoined)) {
-        // log the impression for this clubspace
-        logPrivy({
-          address,
-          semGroupIdHex: clubSpaceObject.semGroupIdHex,
-          impression: "JOIN",
-        });
+
         // join semaphore group
         joinGroup(defaultProfile.handle, identity);
       }
-
-      console.log("liveProfiles");
-      console.log(liveProfiles);
 
       setIsLoadingEntry(false); // TODO: lucas - render the stuff
     });

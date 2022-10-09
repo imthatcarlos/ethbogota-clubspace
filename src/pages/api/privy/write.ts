@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { PrivyClient } from "@privy-io/privy-node";
 import { getAddress } from "ethers/lib/utils";
+import { BigNumber } from "ethers";
 
 const client = new PrivyClient(
   process.env.PRIVY_API_KEY!,
@@ -22,11 +23,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       typeof semGroupIdHex !== "string" ||
       typeof impression !== "string"
     )
-      return;
+      return res.status(400).end();
+
+    const fieldId = BigNumber.from(semGroupIdHex).toString();
 
     // get current contents of field
     const checkSummed = getAddress(address);
-    const previousData = await client.get(checkSummed, semGroupIdHex);
+    const previousData = await client.get(checkSummed, fieldId);
     const decoded = getDecoded(previousData);
 
     // format the current data to include the new impression
@@ -39,7 +42,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const newDataString = JSON.stringify(newData);
 
     // write it back
-    await client.put(checkSummed, semGroupIdHex, newDataString);
+    await client.put(checkSummed, fieldId, newDataString);
     console.log(`wrote to privy for semGroupIdHex: ${semGroupIdHex}`);
 
     return res.status(200).end();
