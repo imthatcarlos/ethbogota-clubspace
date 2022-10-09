@@ -1,14 +1,14 @@
 // import { useSubscription, useClient } from "streamr-client-react";
-import StreamrClient from 'streamr-client';
-import { useRouter } from "next/router";
-import { GetServerSideProps } from "next";
-import { useState, useEffect } from "react";
-import { useAccount, useProvider } from "wagmi";
-import { groupBy } from "lodash/collection";
-import { isEmpty } from "lodash/lang";
 import { STREAMR_PUBLIC_ID } from "@/lib/consts";
 import redisClient from "@/lib/utils/redisClient";
-import { Profile, useGetProfilesOwned, useGetProfilesByHandles } from "@/services/lens/getProfile";
+import { Profile, useGetProfilesByHandles, useGetProfilesOwned } from "@/services/lens/getProfile";
+import { groupBy } from "lodash/collection";
+import { isEmpty } from "lodash/lang";
+import { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import StreamrClient from "streamr-client";
+import { useAccount, useProvider } from "wagmi";
 
 const LiveSpace = ({ clubSpaceObject }) => {
   const {
@@ -16,11 +16,10 @@ const LiveSpace = ({ clubSpaceObject }) => {
     push,
   } = useRouter();
   const { isConnected, address } = useAccount();
-  const provider = useProvider();
   const [hasMounted, setHasMounted] = useState(false);
   const [latestMessage, setLatestMessage] = useState();
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
-  const [liveProfiles, setLiveProfiles] = useState([]);
+  const [liveProfiles, setLiveProfiles] = useState<string[]>();
   const { data: profiles } = useGetProfilesOwned({}, address);
   const [isLoadingEntry, setIsLoadingEntry] = useState(true);
   const [logs, setLogs] = useState([]);
@@ -28,9 +27,9 @@ const LiveSpace = ({ clubSpaceObject }) => {
 
   console.log(liveProfilesData);
 
-  if (typeof window !== 'undefined' && !window.client) {
+  if (typeof window !== "undefined" && !window.client) {
     const { address, privateKey } = StreamrClient.generateEthereumAccount();
-    window.client = new StreamrClient({ auth: { privateKey }});
+    window.client = new StreamrClient({ auth: { privateKey } });
   }
 
   useEffect(() => {
@@ -39,13 +38,8 @@ const LiveSpace = ({ clubSpaceObject }) => {
     }
   }, [address, profiles]);
 
-  if (!clubSpaceObject) {
-    push("/404");
-    return;
-  }
-
   const logPrivy = async (impressionPayload) => {
-    await fetch(`/api/privy/write`, { method: 'POST', body: JSON.stringify(impressionPayload) });
+    await fetch(`/api/privy/write`, { method: "POST", body: JSON.stringify(impressionPayload) });
   };
 
   const handleEntry = async () => {
@@ -59,22 +53,25 @@ const LiveSpace = ({ clubSpaceObject }) => {
       { from: { timestamp: clubSpaceObject.createdAt } },
       (content) => {
         // :shrug:
-        if (content.clubSpaceId === clubSpaceObject.clubSpaceId && (content.type === 'JOIN' || content.type === 'LEAVE')) {
+        if (
+          content.clubSpaceId === clubSpaceObject.clubSpaceId &&
+          (content.type === "JOIN" || content.type === "LEAVE")
+        ) {
           logs.push(content);
           setLogs(logs);
         }
       }
     );
 
-    console.log('fetching historical');
+    console.log("fetching historical");
 
     historical.onFinally(() => {
-      console.log('done fetching historical');
-      const grouped = groupBy(logs, 'lensHandle');
+      console.log("done fetching historical");
+      const grouped = groupBy(logs, "lensHandle");
       // JOIN, LEAVE, JOIN
       // console.log(grouped);
       const stillHereYo = Object.keys(grouped)
-        .map((handle) => (grouped[handle].length % 2 !== 0 || grouped[handle].length === 1) ? handle : null)
+        .map((handle) => (grouped[handle].length % 2 !== 0 || grouped[handle].length === 1 ? handle : null))
         .filter((f) => f);
       setLiveProfiles(stillHereYo);
 
@@ -84,11 +81,11 @@ const LiveSpace = ({ clubSpaceObject }) => {
 
       // publish a message to the stream
       const message = {
-        type: 'JOIN',
+        type: "JOIN",
         clubSpaceId: clubSpaceObject.clubSpaceId,
         lensHandle: defaultProfile.handle,
       };
-      console.log('publishing JOIN....');
+      console.log("publishing JOIN....");
       window.client.publish(STREAMR_PUBLIC_ID, message);
 
       if (isEmpty(hasJoined)) {
@@ -96,11 +93,11 @@ const LiveSpace = ({ clubSpaceObject }) => {
         logPrivy({
           address,
           semGroupIdHex: clubSpaceObject.semGroupIdHex,
-          impression: 'JOIN'
+          impression: "JOIN",
         });
       }
 
-      console.log('liveProfiles');
+      console.log("liveProfiles");
       console.log(liveProfiles);
 
       setIsLoadingEntry(false); // TODO: lucas - render the stuff
@@ -113,55 +110,60 @@ const LiveSpace = ({ clubSpaceObject }) => {
   // - send JOINED event
   // - log privy impression with profileId/postId
   useEffect(() => {
-    if (hasMounted && defaultProfile) {
+    if (defaultProfile) {
       handleEntry();
 
       window.onbeforeunload = () => {
-        // publish a message to the stream
         const message = {
-          type: 'LEAVE',
+          type: "LEAVE",
           clubSpaceId: clubSpaceObject.clubSpaceId,
           lensHandle: defaultProfile.handle,
         };
-        console.log('publishing LEAVE....');
+        console.log("publishing LEAVE....");
         window.client.publish(STREAMR_PUBLIC_ID, message);
-        return 'Thanks for partying. Come back later to claim your swag';
+      };
+      return () => {
+        window.client.unsubscribe(STREAMR_PUBLIC_ID);
+        // publish a message to the stream
       };
     }
-
-    setHasMounted(true);
-  }, [hasMounted, defaultProfile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultProfile]);
 
   const onMessage = (content, metadata) => {
     if (content.lensHandle === defaultProfile.lensHandle) return;
-    console.log('MESSAGE RECEIVED');
+    console.log("MESSAGE RECEIVED");
     console.log(content);
 
-    if (content.type === 'JOIN') {
+    if (content.type === "JOIN") {
       liveProfiles.push(content.lensHandle);
       setLiveProfiles(liveProfiles);
-    } else if (content.type === 'LEAVE') {
+    } else if (content.type === "LEAVE") {
       const idx = liveProfiles.findIndex((l) => l === content.lensHandle);
       liveProfiles.splice(idx, 1);
       setLiveProfiles(liveProfiles);
-    } else if (content.type === 'REACTION') {
+    } else if (content.type === "REACTION") {
       // TODO: lucas - set animation `content.reactionUnicode`
     }
   };
 
   const sendMessage = (reactionUnicode: string) => {
     const message = {
-      type: 'REACTION',
+      type: "REACTION",
       clubSpaceId: clubSpaceObject.clubSpaceId,
       reactionUnicode,
       lensHandle: defaultProfile?.handle,
     };
-    console.log('publishing REACTION....');
+    console.log("publishing REACTION....");
     window.client.publish(STREAMR_PUBLIC_ID, message);
   };
 
+  if (!clubSpaceObject) {
+    push("/404");
+    return;
+  }
   if (isLoadingEntry) {
-    return <>Entering the ClubSpace...</>
+    return <>Entering the ClubSpace...</>;
   }
 
   return (

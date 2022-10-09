@@ -22,6 +22,7 @@ export type Profile = {
     totalFollowing: number;
   };
   followModule: string | null;
+  lensHandle: string | null;
 };
 
 const GET_PROFILE_BY_HANDLE = gql`
@@ -319,7 +320,7 @@ export const useGetHandleById = (options: UseQueryOptions = {}, id?: string) => 
   return result;
 };
 
-export const getProfilesByHandles = async (handles?: [string], limit = 50): Promise<any> => {
+export const getProfilesByHandles = async (handles?: string[], limit = 50): Promise<any> => {
   if (!handles?.length) return null;
 
   try {
@@ -327,9 +328,7 @@ export const getProfilesByHandles = async (handles?: [string], limit = 50): Prom
     let items: any[] = [];
 
     do {
-      const _request = cursor
-        ? { handles, limit, cursor }
-        : { handles, limit };
+      const _request = cursor ? { handles, limit, cursor } : { handles, limit };
 
       const { profiles } = await request({
         url: apiUrls.lensAPI,
@@ -337,14 +336,13 @@ export const getProfilesByHandles = async (handles?: [string], limit = 50): Prom
         variables: { request: _request },
       });
 
-      console.log(profiles)
+      console.log(profiles);
 
       items.push(profiles!.items.map((profile) => profile));
 
-      cursor = JSON.parse(profiles!.pageInfo?.next).offset != profiles!.pageInfo?.totalCount
-        ? profiles!.pageInfo!.next
-        : null;
-    } while (cursor)
+      cursor =
+        JSON.parse(profiles!.pageInfo?.next).offset != profiles!.pageInfo?.totalCount ? profiles!.pageInfo!.next : null;
+    } while (cursor);
 
     return items.flat();
   } catch (error) {
@@ -353,7 +351,7 @@ export const getProfilesByHandles = async (handles?: [string], limit = 50): Prom
   }
 };
 
-export const useGetProfilesByHandles = (options: UseQueryOptions = {}, handles?: [string]) => {
+export const useGetProfilesByHandles = (options: UseQueryOptions = {}, handles?: string[]) => {
   const result = useQuery<string>(
     ["profilesByHandles", handles],
     async () => {
