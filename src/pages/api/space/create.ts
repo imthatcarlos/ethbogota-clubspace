@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getAddress } from "ethers/lib/utils";
-import { v5 as uuidv5 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import redisClient from "@/lib/utils/redisClient";
 import { REDIS_LIVE_SPACE_HANDLES, REDIS_SPACE_EXP, UUID_NAMESPACE_URL } from "@/lib/consts";
 
@@ -30,7 +30,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       return res.status(400).end({ error: "missing a param sonnn" });
     }
 
-    const clubSpaceId = uuidv5(UUID_NAMESPACE_URL, uuidv5.URL);
+    const clubSpaceId = uuidv4();
     const semGroupIdHex = `0x${clubSpaceId.split("-").join("")}`;
     const createdAt = Date.now();
     const endAt = Math.floor(Date.now() / 1000) + REDIS_SPACE_EXP;

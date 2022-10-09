@@ -13,7 +13,7 @@ export const joinGroup = async (lensUsername, identity) => {
 
   console.log(`Joining the group...`);
 
-  const { status } = await fetch(`/semaphore/join-group`, {
+  const { status } = await fetch(`/api/semaphore/join-group`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -32,7 +32,7 @@ export const joinGroup = async (lensUsername, identity) => {
 export const createGroup = async (groupId, uri, lensPubId, lensProfileId) => {
   console.log(`Creating group...`);
 
-  const { status } = await fetch(`/semaphore/create-group`, {
+  const { status } = await fetch(`/api/semaphore/create-group`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ groupId, uri, lensPubId, lensProfileId }),
@@ -55,7 +55,7 @@ export const claimReward = async (groupId, recipientAddress, identity) => {
     const { proof, publicSignals } = await generateProof(identity, group, groupId.toString(), recipientAddress);
     const solidityProof = packToSolidityProof(proof);
 
-    const { status } = await fetch(`/semaphore/claim-reward`, {
+    const { status } = await fetch(`/api/semaphore/claim-reward`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

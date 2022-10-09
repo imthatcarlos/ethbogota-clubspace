@@ -80,6 +80,7 @@ const CreateSpace = ({ defaultProfile }) => {
     await makePost(contract, defaultProfile.id, lensContentUri);
     const pubCount = await contract.getPubCount(defaultProfile.id);
     const lensPubId = pubCount.toHexString();
+    console.log("pubId:", lensPubId);
 
     // call redis api
     const spaceData = {
@@ -91,14 +92,16 @@ const CreateSpace = ({ defaultProfile }) => {
       decentContractChainId: 80001,
       lensPubId,
     };
-    const { data } = await axios.post(`/space/create`, spaceData);
+    const { data } = await axios.post(`/api/space/create`, spaceData);
     const { url, semGroupIdHex } = data;
 
     // call sempahore/create-group
+    console.log("creating semaphore group");
     await createGroup(semGroupIdHex, goodyUri, lensPubId, defaultProfile.id);
 
     // PUSH
-    await axios.post(`/push/send`, { url });
+    console.log("pushin");
+    await axios.post(`/api/push/send`, { url });
 
     setUploading(false);
     setShareUrl(url);

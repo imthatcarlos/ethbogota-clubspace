@@ -9,7 +9,8 @@ export const REDIS_SPACE_EXP = 3600;
 
 export const LOCALSTORAGE_DEFAULT_PROFILE_ID = "DEFAULT_PROFILE_ID";
 export const UUID_NAMESPACE_URL = "https://www.joinclubspace.xyz";
-export const VERIFIER_ADDRESS = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707";
+export const VERIFIER_ADDRESS = "0xCBE08AeA5254011D73E00482613C87b0829623ba";
+export const REWARD_NFT_ADDRESS = "0x41c976200df8f14aF5422597A5A346e95b0A3E77"
 
 const calculateSum = (arr) => {
   return arr.reduce((total, current) => {
