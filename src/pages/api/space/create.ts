@@ -30,12 +30,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       return res.status(400).end({ error: 'missing a param sonnn' });
     }
 
-    const {
-      REDIS_HOST,
-      REDIS_PORT,
-      REDIS_PASSWORD
-    } = process.env;
-
     const clubSpaceId = uuidv5(UUID_NAMESPACE_URL, uuidv5.URL);
     const semGroupIdHex = `0x${clubSpaceId.split('-').join('')}`;
     const createdAt = Date.now();
