@@ -8,7 +8,6 @@ import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
 import axios from "axios";
 import { createGroup } from "@/lib/semaphore/semaphore";
-import { sendNotification } from "@/services/push/push";
 
 const CreateSpace = ({ defaultProfile }) => {
   const { address } = useAccount();
@@ -84,7 +83,7 @@ const CreateSpace = ({ defaultProfile }) => {
     await createGroup(semGroupIdHex, goodyUri, lensPubId, defaultProfile.id);
 
     // PUSH
-    await sendNotification(url);
+    await axios.post(`/push/send`, { url });
 
     setUploading(false);
     setShareUrl(url);
