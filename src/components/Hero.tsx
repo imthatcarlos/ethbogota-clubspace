@@ -20,7 +20,7 @@ export const Hero = () => {
   const { data, refetch: login } = useLensLogin();
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden animate-destroy">
       <div className="hidden sm:absolute sm:inset-0 sm:block" aria-hidden="true">
         <svg
           className="absolute bottom-0 right-0 mb-48 translate-x-1/2 transform text-gray-700 lg:top-0 lg:mt-28 lg:mb-0 xl:translate-x-0 xl:transform-none"
@@ -44,8 +44,11 @@ export const Hero = () => {
           <rect width={364} height={384} fill="url(#eab71dd9-9d7a-47bd-8044-256344ee00d0)" />
         </svg>
       </div>
-      <div className="relative pt-6 pb-16 sm:pb-24">
-        <nav className="relative mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6" aria-label="Global">
+      <div className="relative pt-6 pb-16">
+        <nav
+          className="relative mx-auto hidden md:flex max-w-7xl items-center justify-between px-4 sm:px-6"
+          aria-label="Global"
+        >
           <div className="flex flex-1 items-center">
             <div className="flex w-full items-center justify-between md:w-auto">
               <a href="#">
@@ -69,12 +72,14 @@ export const Hero = () => {
           </div>
         </nav>
 
-        <main className="mt-16 sm:mt-24">
+        <main className="mt-16 sm:mt-24 pb-16 md:pb-0">
           <div className="max-w-7xl lg:mx-auto">
             <div className="lg:mt-16 lg:grid lg:grid-cols-12 lg:gap-8">
-              <div className="px-4 sm:px-6 sm:text-center md:mx-auto md:max-w-2xl lg:col-span-6 lg:flex  lg:text-left">
+              <div className="px-4 sm:px-6 sm:text-center md:mx-auto md:max-w-2xl lg:col-span-6 lg:flex lg:text-left">
                 <div>
-                  <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">Clubspace</h1>
+                  <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl md:text-8xl drop-shadow-sm">
+                    Clubspace
+                  </h1>
                   <p className="mt-3 text-base sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
                     Host an online live listening party for all your Lens frens 🔥
                     <br />
@@ -87,6 +92,10 @@ export const Hero = () => {
                       <ConnectWallet label="Get started now" />
                     </div>
                   )}
+
+                  <div className="w-full mt-12 relative h-full aspect-square">
+                    <img src="/lil_buddy.png" alt="lil_buddy" className="aspect-square w-full h-96 animate-crash" />
+                  </div>
                 </div>
               </div>
               <div className="mt-24 md:mt-0 lg:col-span-6 lg:mt-0">
@@ -101,6 +110,32 @@ export const Hero = () => {
             </div>
           </div>
         </main>
+        <nav
+          className="mx-auto md:hidden flex fixed bottom-0 bg-white dark:bg-black/20 backdrop-blur backdrop-filter max-w-7xl items-center py-6 justify-between px-4 sm:px-6"
+          aria-label="Global"
+        >
+          <div className="flex flex-1 items-center">
+            <div className="flex w-full items-center justify-between md:w-auto">
+              <a href="#">
+                <span className="sr-only">{APP_NAME}</span>
+                {/* <Image
+                  className="h-8 w-auto sm:h-10"
+                  src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                  alt={APP_NAME}
+                /> */}
+              </a>
+            </div>
+            <div className="hidden space-x-10 md:ml-10 md:flex"></div>
+          </div>
+          <div className="flex gap-4 justify-center md:min-w-[300px]">
+            {isConnected && (
+              <button onClick={() => login()} className="btn justify-center items-center">
+                {!data ? "Login with lens" : defaultProfile?.handle}
+              </button>
+            )}
+            <ConnectWallet showBalance={false} />
+          </div>
+        </nav>
       </div>
     </div>
   );
