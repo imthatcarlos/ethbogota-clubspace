@@ -1,10 +1,10 @@
-import { contract } from "@/lib/semaphore/semaphore";
 import { sendNotification } from "@/services/push/push";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { url } = req.body;
-
+  console.log('sending notification for url', url)
+  
   try {
     await sendNotification(url);
 
