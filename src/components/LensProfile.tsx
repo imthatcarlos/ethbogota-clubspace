@@ -1,15 +1,39 @@
-import { Profile } from "@/services/lens/getProfile";
 import { FC } from "react";
 
-type Props = {
-  profile: Profile;
+export const reactionsMap = {
+  clap: "👏",
+  heart: "❤️",
+  fire: "🔥",
+  rocket: "🚀",
+  star: "⭐",
+  party: "🎉",
+  money: "💰",
+  thumbsup: "👍",
 };
 
-export const LensProfile: FC<Props> = ({ profile }) => {
+export const reactionsEntries = Object.entries(reactionsMap);
+const reactionsKeys = Object.keys(reactionsMap);
+
+export type ReactionsTypes = keyof typeof reactionsMap;
+
+type Props = {
+  picture: string;
+  handle: string;
+  reaction?: ReactionsTypes;
+};
+
+export const LensProfile: FC<Props> = ({ picture, handle, reaction }) => {
   return (
-    <div className="flex items-center justify-center flex-col max-w-[80px]">
-      <img src={profile.picture.original.url} alt={profile?.id} className="rounded-full w-12 h-12 aspect-square" />
-      {/* <p className="text-xs truncate">{profile.name || profile.handle}</p> */}
+    <div className="flex items-center justify-center flex-col max-w-[80px] relative">
+      <img src={picture} alt={handle} className="rounded-full w-12 h-12 aspect-square" />
+      <p className="text-xs truncate">{handle}</p>
+      {reaction && reactionsKeys.includes(reaction) && (
+        <div className="absolute bottom-0 right-0">
+          <div className="opacity-0 flex items-center justify-center w-6 h-6 text-4xl rounded-full animate-fade-in-and-out-up">
+            {reactionsMap[reaction]}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

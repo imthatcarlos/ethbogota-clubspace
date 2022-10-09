@@ -16,21 +16,21 @@ const SetDecentProduct = ({ setDecentProduct }) => {
 
   const _getContractData = async (address) => {
     const { data } = await getContractData(address, chain.id, signer);
-    setDecentProduct(data);
+    setDecentProduct({ address, ...data });
   };
 
   return (
-    <div>
-      <form>
-        <div className="grid gap-6 mb-6 md:grid-cols-2 mt-4">
-          <div>
+    <div className="w-full">
+      <form className="w-full">
+        <div className="w-full">
+          <div className="w-full flex flex-col gap-4">
             <label htmlFor="contract_address" className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">
               Your Decent NFT Address
             </label>
             <input
               type="text"
               id="contract_address"
-              className="block mt-4 w-fullI rounded-md dark:bg-gray-800 dark:text-white dark:border-gray-600 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="input"
               placeholder="0x"
               required
               onChange={onContractAddressChanged}

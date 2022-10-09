@@ -40,7 +40,7 @@ export const createGroup = async (groupId, uri, lensPubId, lensProfileId) => {
   });
 
   if (status === 200) {
-    console.log(`created`);
+    console.log(`created groupid ${groupId}`);
   } else {
     console.log("Some error occurred, please try again!");
   }

@@ -10,6 +10,7 @@
 	},
 	"dependencies": {
 		"@decent.xyz/sdk": "^0.1.2",
+		"@epnsproject/backend-sdk-staging": "^2.0.3",
 		"@headlessui/react": "^1.7.3",
 		"@heroicons/react": "^1.0.6",
 		"@pinata/sdk": "^1.1.26",

@@ -6,17 +6,13 @@ import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
-import axios from "axios";
-import { createGroup } from "@/lib/semaphore/semaphore";
 
 const CreateSpace = ({ defaultProfile }) => {
-  const { address } = useAccount();
   const [playlist, setPlaylist] = useState<IPlaylist>();
   const [productData, setProductData] = useState<any>();
   const [lensPost, setLensPost] = useState<any>();
   const [goody, setGoody] = useState<any>();
   const [uploading, setUploading] = useState<boolean>();
-  const [shareUrl, setShareUrl] = useState<string>();
 
   const selectPlaylist = (playlist) => {
     setPlaylist(playlist);
@@ -59,60 +55,29 @@ const CreateSpace = ({ defaultProfile }) => {
     setUploading(true);
     console.log(playlist, productData, lensPost, goody);
 
-    // upload content to ipfs
+    // TODO: send all api calls
     const goodyUri = await uploadToIPFS();
-    console.log("goody uri:", goodyUri);
-
-    //create lens post
-    const lensPubId = ""; // TODO: post to lens
-
-    // call redis api
-    const spaceData = {
-      creatorAddress: address,
-      creatorLensHandle: defaultProfile.handle,
-      creatorLensProfileId: defaultProfile.id,
-      spinampPlaylistId: playlist.id,
-      decentContractAddress: productData.address,
-      decentContractChainId: 80001,
-      lensPubId,
-    };
-    const { data } = await axios.post(`/space/create`, spaceData);
-    const { url, semGroupIdHex } = data;
-
-    // call sempahore/create-group
-    await createGroup(semGroupIdHex, goodyUri, lensPubId, defaultProfile.id);
-
-    // PUSH
-    await axios.post(`/push/send`, { url });
+    console.log(goodyUri);
 
     setUploading(false);
-    setShareUrl(url);
   };
 
-  if (shareUrl) {
-    return (
-      <div>
-        <h2 className="mt-4 mb-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">You did it!</h2>
-        {shareUrl}
-      </div>
-    );
-  }
-
   return (
-    <div className="">
-      {!playlist ? <SelectPlaylist selectPlaylist={selectPlaylist} /> : <p>Playlist: {playlist.title}</p>}
+    <div className="w-full shadow-xl border border-gray-700 p-8 flex flex-col gap-3">
+      <SelectPlaylist selectPlaylist={selectPlaylist} playlist={playlist} />
+
       {!productData ? (
         <SetDecentProduct setDecentProduct={setDecentProduct} />
       ) : (
         <p>NFT FOUND! RENDER AN NFT COMPONENT</p>
       )}
-      <div>
-        <CreateLensPost setPostData={setPostData} defaultProfile={defaultProfile} />
-      </div>
+
+      <CreateLensPost setPostData={setPostData} defaultProfile={defaultProfile} />
+
       <SetGoodyBag setGoody={setGoody} />
 
       <button
-        className="flex w-36 mt-4 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        className="btn mt-4"
         onClick={submit}
         disabled={!goody || !playlist || !lensPost || !productData || uploading}
       >
