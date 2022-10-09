@@ -350,7 +350,7 @@ export const getProfilesByHandles = async (handles?: string[], limit = 50): Prom
 };
 
 export const useGetProfilesByHandles = (options: UseQueryOptions = {}, handles?: string[]) => {
-  const result = useQuery<string>(
+  const result = useQuery<Profile[]>(
     ["profilesByHandles", handles],
     async () => {
       const result = await getProfilesByHandles(handles);

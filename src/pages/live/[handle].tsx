@@ -1,18 +1,40 @@
 // import { useSubscription, useClient } from "streamr-client-react";
+import { LensProfile, reactionsEntries, ReactionsTypes } from "@/components/LensProfile";
 import { STREAMR_PUBLIC_ID } from "@/lib/consts";
+import { classNames } from "@/lib/utils/classNames";
 import redisClient from "@/lib/utils/redisClient";
 import { Profile, useGetProfilesByHandles, useGetProfilesOwned } from "@/services/lens/getProfile";
 import { groupBy, sortBy } from "lodash/collection";
 import { mapValues } from "lodash/object";
+import { getUrlForImageFromIpfs } from "@/utils/ipfs";
+import { Menu, Popover, Transition } from "@headlessui/react";
+import { fetchPlaylistById } from "@spinamp/spinamp-sdk";
 import { isEmpty } from "lodash/lang";
 import { last } from "lodash/array";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { FC, Fragment, useEffect, useState } from "react";
 import StreamrClient from "streamr-client";
-import { useAccount, useProvider } from "wagmi";
+import { useAccount, useQuery } from "wagmi";
 
-const LiveSpace = ({ clubSpaceObject }) => {
+type ClubSpaceObject = {
+  clubSpaceId: string;
+  createdAt: number;
+  creatorAddress: string;
+  creatorLensHandle: string;
+  creatorLensProfileId: string;
+  decentContractAddress: string;
+  endAt: number;
+  lensPubId: string;
+  semGroupIdHex: string;
+  spinampPlaylistId: string;
+};
+
+type Props = {
+  clubSpaceObject: ClubSpaceObject;
+};
+
+const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
   const {
     query: { handle },
     push,
@@ -25,9 +47,14 @@ const LiveSpace = ({ clubSpaceObject }) => {
   const { data: profiles } = useGetProfilesOwned({}, address);
   const [isLoadingEntry, setIsLoadingEntry] = useState(true);
   const [logs, setLogs] = useState([]);
+  const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }>();
   const { data: liveProfilesData } = useGetProfilesByHandles({}, liveProfiles); // TODO: not efficient but oh well
 
-  console.log(liveProfilesData);
+  const { data } = useQuery(["playlist", clubSpaceObject], () => fetchPlaylistById(clubSpaceObject.spinampPlaylistId), {
+    enabled: !!clubSpaceObject,
+  });
+
+  // console.log(liveProfilesData);
 
   if (typeof window !== "undefined" && !window.client) {
     const { address, privateKey } = StreamrClient.generateEthereumAccount();
@@ -72,9 +99,11 @@ const LiveSpace = ({ clubSpaceObject }) => {
       const grouped = mapValues(groupBy(logs, "lensHandle"), (_logs) => sortBy(_logs, _logs.timestamp));
       // JOIN, LEAVE, JOIN
       // console.log(grouped);
-      const stillHereYo = Object.keys(grouped).map((handle) => {
-        if (last(grouped[handle]).type !== "LEAVE") return handle;
-      }).filter((h) => h);
+      const stillHereYo = Object.keys(grouped)
+        .map((handle) => {
+          if (last(grouped[handle]).type !== "LEAVE") return handle;
+        })
+        .filter((h) => h);
 
       setLiveProfiles(stillHereYo);
 
@@ -134,8 +163,21 @@ const LiveSpace = ({ clubSpaceObject }) => {
   }, [defaultProfile]);
 
   const onMessage = (content, metadata) => {
-    if (content.lensHandle === defaultProfile.handle) return;
     if (content.clubSpaceId !== clubSpaceObject.clubSpaceId) return;
+    if (content.lensHandle === defaultProfile.handle) {
+      if (content.type === "REACTION") {
+        setCurrentReaction({
+          type: content.reactionUnicode,
+          handle: content.lensHandle,
+          reactionUnicode: content.reactionUnicode,
+        });
+      }
+      setTimeout(() => {
+        setCurrentReaction(undefined);
+      }, 2000);
+
+      return;
+    }
     console.log("MESSAGE RECEIVED");
     console.log(content);
 
@@ -146,8 +188,6 @@ const LiveSpace = ({ clubSpaceObject }) => {
       const idx = liveProfiles.findIndex((l) => l === content.lensHandle);
       liveProfiles.splice(idx, 1);
       setLiveProfiles(liveProfiles);
-    } else if (content.type === "REACTION") {
-      // TODO: lucas - set animation `content.reactionUnicode`
     }
   };
 
@@ -158,7 +198,7 @@ const LiveSpace = ({ clubSpaceObject }) => {
       reactionUnicode,
       lensHandle: defaultProfile?.handle,
     };
-    console.log("publishing REACTION....");
+    console.log("publishing REACTION....", message);
     window.client.publish(STREAMR_PUBLIC_ID, message);
   };
 
@@ -172,13 +212,54 @@ const LiveSpace = ({ clubSpaceObject }) => {
 
   return (
     <>
-      <p>Latest message: {latestMessage}</p>
-      <button
-        className="flex w-36 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-        onClick={() => sendMessage("👏")}
+      <div className="w-full border border-grey-700 shadow-xl flex flex-wrap gap-6 p-8 rounded-sm relative">
+        {liveProfilesData &&
+          liveProfilesData?.map((profile) => (
+            <LensProfile
+              key={profile.handle}
+              handle={profile.handle}
+              picture={getUrlForImageFromIpfs(profile.picture.original.url)}
+              reaction={currentReaction?.handle === profile.handle ? currentReaction : undefined}
+            />
+          ))}
+      </div>
+      <Popover
+        className={({ open }) =>
+          classNames(
+            open ? "fixed inset-0 z-40 overflow-y-auto" : "",
+            "shadow-sm lg:static bottom-0 lg:overflow-y-visible"
+          )
+        }
       >
-        Send 👏
-      </button>
+        {({ open }) => (
+          <>
+            <Menu as="div" className="relative flex-shrink-0">
+              <div className="w-36">
+                <Menu.Button className="btn">react</Menu.Button>
+              </div>
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items className="absolute z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 p-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none flex gap-4 flex-wrap">
+                  {reactionsEntries.map(([key, value]) => (
+                    <Menu.Item key={value}>
+                      {({ active }) => <button onClick={() => sendMessage(value)}>{value}</button>}
+                    </Menu.Item>
+                  ))}
+                </Menu.Items>
+              </Transition>
+            </Menu>
+
+            <Popover.Panel className="" aria-label="Global"></Popover.Panel>
+          </>
+        )}
+      </Popover>
     </>
   );
 };
