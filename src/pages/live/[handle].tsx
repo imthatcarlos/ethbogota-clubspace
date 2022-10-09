@@ -114,9 +114,9 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
         })
         .filter((h) => h);
 
-      // sometimes wont be there the first time
+      // HACK
       console.log(grouped[defaultProfile.handle])
-      if (isEmpty(grouped[defaultProfile.handle]) || grouped[defaultProfile.handle].length === 1) {
+      if (!stillHereYo.includes(defaultProfile.handle)) {
         stillHereYo.push(defaultProfile.handle)
       }
 
@@ -138,15 +138,13 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
       console.log("publishing JOIN....");
       window.client.publish(STREAMR_PUBLIC_ID, message);
 
-      // log the impression for this clubspace
-      logPrivy({
-        address,
-        semGroupIdHex: clubSpaceObject.semGroupIdHex,
-        impression: "JOIN",
-      });
-
       if (isEmpty(hasJoined)) {
-
+        // log the impression for this clubspace
+        logPrivy({
+          address,
+          semGroupIdHex: clubSpaceObject.semGroupIdHex,
+          impression: "JOIN",
+        });
         // join semaphore group
         joinGroup(defaultProfile.handle, identity);
       }
