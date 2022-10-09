@@ -1,4 +1,4 @@
-import { Contract, providers, Wallet } from "ethers";
+import { Contract, providers } from "ethers";
 import contractAbi from "./abi.json";
 
 import { Group } from "@semaphore-protocol/group";
@@ -6,8 +6,7 @@ import { generateProof, packToSolidityProof } from "@semaphore-protocol/proof";
 import { VERIFIER_ADDRESS } from "../consts";
 
 const provider = new providers.JsonRpcProvider(process.env.MUMBAI_URL);
-const signer = new Wallet(process.env.ADMIN_KEY, provider);
-export const contract = new Contract(VERIFIER_ADDRESS, contractAbi, signer);
+export const contract = new Contract(VERIFIER_ADDRESS, contractAbi, provider);
 
 export const joinGroup = async (lensUsername, identity) => {
   const identityCommitment = identity.generateCommitment().toString();
