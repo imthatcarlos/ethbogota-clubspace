@@ -164,23 +164,21 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
 
   const onMessage = (content, metadata) => {
     if (content.clubSpaceId !== clubSpaceObject.clubSpaceId) return;
-    if (content.lensHandle === defaultProfile.handle) {
-      if (content.type === "REACTION") {
-        setCurrentReaction({
-          type: content.reactionUnicode,
-          handle: content.lensHandle,
-          reactionUnicode: content.reactionUnicode,
-        });
-      }
+
+    if (content.type === "REACTION") {
+      setCurrentReaction({
+        type: content.reactionUnicode,
+        handle: content.lensHandle,
+        reactionUnicode: content.reactionUnicode,
+      });
       setTimeout(() => {
         setCurrentReaction(undefined);
       }, 2000);
-
-      return;
     }
+
+    if (content.lensHandle === defaultProfile.handle) return;
     console.log("MESSAGE RECEIVED");
     console.log(content);
-
     if (content.type === "JOIN") {
       liveProfiles.push(content.lensHandle);
       setLiveProfiles(liveProfiles);
