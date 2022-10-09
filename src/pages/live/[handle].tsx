@@ -115,6 +115,7 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
         .filter((h) => h);
 
       // sometimes wont be there the first time
+      console.log(grouped[defaultProfile.handle])
       if (isEmpty(grouped[defaultProfile.handle]) || grouped[defaultProfile.handle].length === 1) {
         stillHereYo.push(defaultProfile.handle)
       }
@@ -206,12 +207,14 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
     console.log("MESSAGE RECEIVED");
     console.log(content);
     if (content.type === "JOIN") {
-      liveProfiles.push(content.lensHandle);
-      setLiveProfiles(liveProfiles);
+      const copy = [...liveProfiles];
+      copy.push(content.lensHandle);
+      setLiveProfiles(copy);
     } else if (content.type === "LEAVE") {
       const idx = liveProfiles.findIndex((l) => l === content.lensHandle);
-      liveProfiles.splice(idx, 1);
-      setLiveProfiles(liveProfiles);
+      const copy = [...liveProfiles];
+      copy.splice(idx, 1);
+      setLiveProfiles(copy);
     }
   };
 
