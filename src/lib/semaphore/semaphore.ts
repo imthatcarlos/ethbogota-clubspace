@@ -5,7 +5,7 @@ import { Group } from "@semaphore-protocol/group";
 import { generateProof, packToSolidityProof } from "@semaphore-protocol/proof";
 import { VERIFIER_ADDRESS } from "../consts";
 
-const provider = new providers.JsonRpcProvider(process.env.MUMBAI_URL);
+const provider = new providers.JsonRpcProvider(process.env.NEXT_PUBLIC_MUMBAI_URL);
 export const contract = new Contract(VERIFIER_ADDRESS, contractAbi, provider);
 
 export const joinGroup = async (lensUsername, identity) => {
@@ -47,13 +47,19 @@ export const createGroup = async (groupId, uri, lensPubId, lensProfileId) => {
 
 export const claimReward = async (groupId, recipientAddress, identity) => {
   try {
+    console.log(contract)
     const users = await contract.queryFilter(contract.filters.NewUser());
+    console.log(users)
     const group = new Group();
 
     group.addMembers(users.map((e) => e.args![0].toString()));
 
+    console.log(group)
+
     const { proof, publicSignals } = await generateProof(identity, group, groupId.toString(), recipientAddress);
     const solidityProof = packToSolidityProof(proof);
+
+    console.log(solidityProof)
 
     const { status } = await fetch(`/api/semaphore/claim-reward`, {
       method: "POST",

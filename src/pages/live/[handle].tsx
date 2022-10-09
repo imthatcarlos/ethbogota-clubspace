@@ -16,6 +16,9 @@ import { useRouter } from "next/router";
 import { FC, Fragment, useEffect, useState } from "react";
 import StreamrClient from "streamr-client";
 import { useAccount, useQuery } from "wagmi";
+import axios from "axios";
+import { joinGroup } from "@/lib/semaphore/semaphore";
+import { useIdentity } from "@/hooks/identity";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -40,6 +43,7 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
     push,
   } = useRouter();
   const { isConnected, address } = useAccount();
+  const { identity } = useIdentity();
   const [hasMounted, setHasMounted] = useState(false);
   const [latestMessage, setLatestMessage] = useState();
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
@@ -127,6 +131,8 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
           semGroupIdHex: clubSpaceObject.semGroupIdHex,
           impression: "JOIN",
         });
+        // join semaphore group
+        joinGroup(defaultProfile.handle, identity);
       }
 
       console.log("liveProfiles");
