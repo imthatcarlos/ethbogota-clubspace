@@ -10,15 +10,15 @@
 	},
 	"dependencies": {
 		"@decent.xyz/sdk": "^0.1.2",
-		"@epnsproject/backend-sdk-staging": "^2.0.3",
 		"@headlessui/react": "^1.7.3",
 		"@heroicons/react": "^1.0.6",
 		"@pinata/sdk": "^1.1.26",
 		"@privy-io/privy-node": "^0.0.2",
+		"@pushprotocol/restapi": "^0.1.1",
 		"@rainbow-me/rainbowkit": "^0.7.1",
 		"@semaphore-protocol/group": "2.5.0",
-        "@semaphore-protocol/identity": "2.5.0",
-        "@semaphore-protocol/proof": "2.5.0",
+		"@semaphore-protocol/identity": "2.5.0",
+		"@semaphore-protocol/proof": "2.5.0",
 		"@spinamp/spinamp-sdk": "^0.0.7",
 		"@tailwindcss/forms": "^0.5.3",
 		"@tanstack/react-query": "^4.10.3",
@@ -59,5 +59,5 @@
 	},
 	"resolutions": {
 		"snarkjs": "0.4.19"
-	  }
+	}
 }
