@@ -6,7 +6,6 @@ import Web3Provider from "@/components/Web3Provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import StreamrProvider from "streamr-client-react";
-import { AudioProvider } from "@/components/Providers/AudioProvider";
 // import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 
 const queryClient = new QueryClient({
@@ -24,9 +23,7 @@ const App = ({ Component, pageProps }) => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class">
         <Web3Provider>
-          <AudioProvider>
             <Component {...pageProps} />
-          </AudioProvider>
         </Web3Provider>
       </ThemeProvider>
       <ReactQueryDevtools />

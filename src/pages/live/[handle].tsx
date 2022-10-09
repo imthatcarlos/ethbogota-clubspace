@@ -1,24 +1,25 @@
 // import { useSubscription, useClient } from "streamr-client-react";
-import { LensProfile, reactionsEntries, ReactionsTypes } from "@/components/LensProfile";
+import { LensProfile, reactionsEntries } from "@/components/LensProfile";
 import { STREAMR_PUBLIC_ID } from "@/lib/consts";
 import { classNames } from "@/lib/utils/classNames";
 import redisClient from "@/lib/utils/redisClient";
 import { Profile, useGetProfilesByHandles, useGetProfilesOwned } from "@/services/lens/getProfile";
-import { groupBy, sortBy } from "lodash/collection";
-import { mapValues } from "lodash/object";
 import { getUrlForImageFromIpfs } from "@/utils/ipfs";
 import { Menu, Popover, Transition } from "@headlessui/react";
 import { fetchPlaylistById } from "@spinamp/spinamp-sdk";
-import { isEmpty } from "lodash/lang";
 import { last } from "lodash/array";
+import { groupBy, sortBy } from "lodash/collection";
+import { isEmpty } from "lodash/lang";
+import { mapValues } from "lodash/object";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { FC, Fragment, useEffect, useState } from "react";
+import { FC, Fragment, useEffect, useMemo, useRef, useState } from "react";
 import StreamrClient from "streamr-client";
 import { useAccount, useQuery } from "wagmi";
 import axios from "axios";
 import { joinGroup } from "@/lib/semaphore/semaphore";
 import { useIdentity } from "@/hooks/identity";
+import { SpectrumVisualizer, SpectrumVisualizerTheme } from "react-audio-visualizers";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -38,14 +39,11 @@ type Props = {
 };
 
 const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
-  const {
-    query: { handle },
-    push,
-  } = useRouter();
-  const { isConnected, address } = useAccount();
-  const { identity } = useIdentity();
   const [hasMounted, setHasMounted] = useState(false);
   const [latestMessage, setLatestMessage] = useState();
+  const { identity } = useIdentity();
+  const { push } = useRouter();
+  const { address } = useAccount();
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
   const [liveProfiles, setLiveProfiles] = useState<string[]>();
   const { data: profiles } = useGetProfilesOwned({}, address);
@@ -53,10 +51,43 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
   const [logs, setLogs] = useState([]);
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
   const { data: liveProfilesData } = useGetProfilesByHandles({}, liveProfiles); // TODO: not efficient but oh well
+  let hasSongEnded = useRef(false);
 
-  const { data } = useQuery(["playlist", clubSpaceObject], () => fetchPlaylistById(clubSpaceObject.spinampPlaylistId), {
-    enabled: !!clubSpaceObject,
-  });
+  const { data: playlists } = useQuery(
+    ["playlist", clubSpaceObject],
+    () => fetchPlaylistById(clubSpaceObject.spinampPlaylistId),
+    {
+      enabled: !!clubSpaceObject,
+    }
+  );
+
+  const { data: durations } = useQuery(["playlist-durations", clubSpaceObject.spinampPlaylistId], () =>
+    Promise.all(
+      playlists.playlistTracks.map(async (track) => {
+        const context = new AudioContext();
+
+        const res = await fetch(track.lossyAudioUrl);
+
+        // get duration from audio from response
+        const audioBuffer = await res.arrayBuffer();
+        const audioBufferSourceNode = context.createBufferSource();
+        audioBufferSourceNode.buffer = await context.decodeAudioData(audioBuffer);
+        const duration = audioBufferSourceNode.buffer.duration;
+
+        return duration;
+      }, 0)
+    )
+  );
+
+  const wholePlaylistDuration = durations?.reduce((prev, curr) => prev + curr, 0);
+
+  let currentTrackIndex = Math.floor((Date.now() - clubSpaceObject.createdAt) / wholePlaylistDuration);
+  // normalize currentTrackIndex to be within playlistTracks length
+  const currentTrack = useMemo(
+    () => playlists?.playlistTracks[currentTrackIndex % playlists.playlistTracks.length],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [currentTrackIndex, playlists, hasSongEnded]
+  );
 
   // console.log(liveProfilesData);
 
@@ -72,7 +103,7 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
   }, [address, profiles]);
 
   const logPrivy = async (impressionPayload) => {
-    console.log('logging privy impression...')
+    console.log("logging privy impression...");
     const { status } = await fetch(`/api/privy/write`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -120,8 +151,8 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
         stillHereYo.push(defaultProfile.handle)
       }
 
-      console.log('liveProfiles')
-      console.log(stillHereYo)
+      console.log("liveProfiles");
+      console.log(stillHereYo);
 
       setLiveProfiles(stillHereYo);
 
@@ -237,6 +268,19 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
 
   return (
     <>
+      <div className="w-full relative h-[60vh]">
+        <SpectrumVisualizer
+          audio={currentTrack?.lossyAudioUrl}
+          theme={SpectrumVisualizerTheme.squaredBars}
+          colors={["#4f46e5", "#6366f1"]}
+          iconsColor="#4f46e5"
+          backgroundColor="#000"
+          showMainActionIcon={false}
+          showLoaderIcon
+          highFrequency={8000}
+        />
+      </div>
+      {/* <header className="w-full h-[60vh] relative"></header> */}
       <div className="w-full border border-grey-700 shadow-xl flex flex-wrap gap-6 p-8 rounded-sm relative">
         {liveProfilesData &&
           liveProfilesData?.map((profile) => {
