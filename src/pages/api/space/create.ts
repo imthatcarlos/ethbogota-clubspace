@@ -33,7 +33,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     const clubSpaceId = uuidv4();
-    const semGroupIdHex = `0x${clubSpaceId.split("-").join("")}`;
+    const parts = clubSpaceId.split("-");
+    parts.pop();
+    parts.pop();
+    const semGroupIdHex = `0x${parts.join("")}`;
     const createdAt = Date.now();
     const endAt = Math.floor(Date.now() / 1000) + REDIS_SPACE_EXP;
 
