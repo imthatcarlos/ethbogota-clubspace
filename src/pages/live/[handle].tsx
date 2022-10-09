@@ -115,7 +115,7 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
         .filter((h) => h);
 
       // sometimes wont be there the first time
-      if (isEmpty(grouped[defaultProfile.handle])) {
+      if (isEmpty(grouped[defaultProfile.handle]) || grouped[defaultProfile.handle].length === 1) {
         stillHereYo.push(defaultProfile.handle)
       }
 
