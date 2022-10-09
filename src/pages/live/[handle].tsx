@@ -47,7 +47,7 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
   const { data: profiles } = useGetProfilesOwned({}, address);
   const [isLoadingEntry, setIsLoadingEntry] = useState(true);
   const [logs, setLogs] = useState([]);
-  const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }>();
+  const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
   const { data: liveProfilesData } = useGetProfilesByHandles({}, liveProfiles); // TODO: not efficient but oh well
 
   const { data } = useQuery(["playlist", clubSpaceObject], () => fetchPlaylistById(clubSpaceObject.spinampPlaylistId), {
@@ -166,10 +166,18 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
     if (content.clubSpaceId !== clubSpaceObject.clubSpaceId) return;
 
     if (content.type === "REACTION") {
-      setCurrentReaction({
-        type: content.reactionUnicode,
-        handle: content.lensHandle,
-        reactionUnicode: content.reactionUnicode,
+      setCurrentReaction((prev) => {
+        const _prev = prev || [];
+        const _current = _prev.find((r) => r.handle === content.lensHandle);
+        if (_current) {
+          _current.reactionUnicode = content.reactionUnicode;
+          return _prev;
+        } else {
+          return [
+            ..._prev,
+            { type: content.type, handle: content.lensHandle, reactionUnicode: content.reactionUnicode },
+          ];
+        }
       });
       setTimeout(() => {
         setCurrentReaction(undefined);
@@ -212,14 +220,16 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
     <>
       <div className="w-full border border-grey-700 shadow-xl flex flex-wrap gap-6 p-8 rounded-sm relative">
         {liveProfilesData &&
-          liveProfilesData?.map((profile) => (
-            <LensProfile
-              key={profile.handle}
-              handle={profile.handle}
-              picture={getUrlForImageFromIpfs(profile.picture.original.url)}
-              reaction={currentReaction?.handle === profile.handle ? currentReaction : undefined}
-            />
-          ))}
+          liveProfilesData?.map((profile) => {
+            return (
+              <LensProfile
+                key={profile.handle}
+                handle={profile.handle}
+                picture={getUrlForImageFromIpfs(profile.picture.original.url)}
+                reaction={currentReaction?.find((r) => r.handle === profile.handle)}
+              />
+            );
+          })}
       </div>
       <Popover
         className={({ open }) =>
