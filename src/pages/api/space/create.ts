@@ -1,6 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getAddress } from "ethers/lib/utils";
 import { v4 as uuidv4 } from "uuid";
+import { BigNumber } from "ethers";
+import {PrivyClient} from '@privy-io/privy-node';
 import redisClient from "@/lib/utils/redisClient";
 import { REDIS_LIVE_SPACE_HANDLES, REDIS_SPACE_EXP, UUID_NAMESPACE_URL } from "@/lib/consts";
 
@@ -62,6 +64,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     } catch (error) {
       console.log(error.stack);
     }
+
+    // create privy field for impressions
+    const client = new PrivyClient(process.env.PRIVY_API_KEY, process.env.PRIVY_API_SECRET);
+
+    await client.createField({
+      name: BigNumber.from(semGroupIdHex).toString(),
+      description: `club space impressions for semaphone group id: ${semGroupIdHex}`,
+      default_access_group: 'self-admin',
+    });
 
     // shareable URL to join
     const url = `${UUID_NAMESPACE_URL}/live/${creatorLensHandle}`;
