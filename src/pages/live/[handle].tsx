@@ -2,8 +2,10 @@
 import { STREAMR_PUBLIC_ID } from "@/lib/consts";
 import redisClient from "@/lib/utils/redisClient";
 import { Profile, useGetProfilesByHandles, useGetProfilesOwned } from "@/services/lens/getProfile";
-import { groupBy } from "lodash/collection";
+import { groupBy, sortBy } from "lodash/collection";
+import { mapValues } from "lodash/object";
 import { isEmpty } from "lodash/lang";
+import { last } from "lodash/array";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -51,28 +53,29 @@ const LiveSpace = ({ clubSpaceObject }) => {
     const historical = await window.client.resend(
       STREAMR_PUBLIC_ID,
       { from: { timestamp: clubSpaceObject.createdAt } },
-      (content) => {
+      (content, metadata) => {
         // :shrug:
         if (
           content.clubSpaceId === clubSpaceObject.clubSpaceId &&
           (content.type === "JOIN" || content.type === "LEAVE")
         ) {
-          logs.push(content);
+          logs.push({ ...content, timestamp: metadata.messageId.timestamp });
           setLogs(logs);
         }
       }
     );
 
-    console.log("fetching historical");
+    console.log(`fetching historical from timestamp: ${clubSpaceObject.createdAt}`);
 
     historical.onFinally(() => {
       console.log("done fetching historical");
-      const grouped = groupBy(logs, "lensHandle");
+      const grouped = mapValues(groupBy(logs, "lensHandle"), (_logs) => sortBy(_logs, _logs.timestamp));
       // JOIN, LEAVE, JOIN
       // console.log(grouped);
-      const stillHereYo = Object.keys(grouped)
-        .map((handle) => (grouped[handle].length % 2 !== 0 || grouped[handle].length === 1 ? handle : null))
-        .filter((f) => f);
+      const stillHereYo = Object.keys(grouped).map((handle) => {
+        if (last(grouped[handle]).type !== "LEAVE") return handle;
+      }).filter((h) => h);
+
       setLiveProfiles(stillHereYo);
 
       // console.log(logs)
@@ -131,7 +134,8 @@ const LiveSpace = ({ clubSpaceObject }) => {
   }, [defaultProfile]);
 
   const onMessage = (content, metadata) => {
-    if (content.lensHandle === defaultProfile.lensHandle) return;
+    if (content.lensHandle === defaultProfile.handle) return;
+    if (content.clubSpaceId !== clubSpaceObject.clubSpaceId) return;
     console.log("MESSAGE RECEIVED");
     console.log(content);
 
