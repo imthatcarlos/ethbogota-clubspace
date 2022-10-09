@@ -48,7 +48,7 @@ export const createGroup = async (groupId, uri, lensPubId, lensProfileId) => {
 export const claimReward = async (groupId, recipientAddress, identity) => {
   try {
     console.log(contract)
-    const users = await contract.queryFilter(contract.filters.NewUser());
+    const users = await contract.queryFilter(contract.filters.NewUser(), 28522249);
     console.log(users)
     const group = new Group();
 
