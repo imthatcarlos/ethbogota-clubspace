@@ -14,19 +14,19 @@ const getDecoded = (data: any): string | null => {
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // write to privy
   try {
-    const { address, clubSpaceId, impression } = req.body;
+    const { address, semGroupIdHex, impression } = req.body;
 
     // enforce type check
     if (
       typeof address !== "string" ||
-      typeof clubSpaceId !== "string" ||
+      typeof semGroupIdHex !== "string" ||
       typeof impression !== "string"
     )
       return;
 
     // get current contents of field
     const checkSummed = getAddress(address);
-    const previousData = await client.get(checkSummed, clubSpaceId);
+    const previousData = await client.get(checkSummed, semGroupIdHex);
     const decoded = getDecoded(previousData);
 
     // format the current data to include the new impression
@@ -39,7 +39,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const newDataString = JSON.stringify(newData);
 
     // write it back
-    await client.put(checkSummed, clubSpaceId, newDataString);
+    await client.put(checkSummed, semGroupIdHex, newDataString);
+    console.log(`wrote to privy for semGroupIdHex: ${semGroupIdHex}`);
 
     return res.status(200).end();
   } catch (e) {
