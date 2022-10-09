@@ -8,7 +8,7 @@ import { groupBy } from "lodash/collection";
 import { isEmpty } from "lodash/lang";
 import { STREAMR_PUBLIC_ID } from "@/lib/consts";
 import redisClient from "@/lib/utils/redisClient";
-import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
+import { Profile, useGetProfilesOwned, useGetProfilesByHandles } from "@/services/lens/getProfile";
 
 const LiveSpace = ({ clubSpaceObject }) => {
   const {
@@ -24,6 +24,9 @@ const LiveSpace = ({ clubSpaceObject }) => {
   const { data: profiles } = useGetProfilesOwned({}, address);
   const [isLoadingEntry, setIsLoadingEntry] = useState(true);
   const [logs, setLogs] = useState([]);
+  const { data: liveProfilesData } = useGetProfilesByHandles({}, liveProfiles); // TODO: not efficient but oh well
+
+  console.log(liveProfilesData);
 
   if (typeof window !== 'undefined' && !window.client) {
     const { address, privateKey } = StreamrClient.generateEthereumAccount();

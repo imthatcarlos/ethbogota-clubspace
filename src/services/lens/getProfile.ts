@@ -174,6 +174,56 @@ const GET_PROFILE_HANDLE_BY_ID = gql`
   }
 `;
 
+const GET_PROFILES_BY_HANDLES = gql`
+  query ($request: ProfileQueryRequest!) {
+    profiles(request: $request) {
+      items {
+        handle
+        name
+        bio
+        stats {
+          totalFollowers
+        }
+        coverPicture {
+          ... on NftImage {
+            contractAddress
+            tokenId
+            uri
+            verified
+          }
+          ... on MediaSet {
+            original {
+              url
+              mimeType
+            }
+          }
+          __typename
+        }
+        picture {
+          ... on NftImage {
+            contractAddress
+            tokenId
+            uri
+            verified
+          }
+          ... on MediaSet {
+            original {
+              url
+              mimeType
+            }
+          }
+          __typename
+        }
+      }
+      pageInfo {
+        prev
+        next
+        totalCount
+      }
+    }
+  }
+`;
+
 export const getProfileByHandle = async (handle: string): Promise<Profile | null> => {
   try {
     const { profiles } = await request({
@@ -263,6 +313,57 @@ export const useGetHandleById = (options: UseQueryOptions = {}, id?: string) => 
     {
       ...(options as any),
       enabled: !!id,
+    }
+  );
+
+  return result;
+};
+
+export const getProfilesByHandles = async (handles?: [string], limit = 50): Promise<any> => {
+  if (!handles?.length) return null;
+
+  try {
+    let cursor = null;
+    let items: any[] = [];
+
+    do {
+      const _request = cursor
+        ? { handles, limit, cursor }
+        : { handles, limit };
+
+      const { profiles } = await request({
+        url: apiUrls.lensAPI,
+        document: GET_PROFILES_BY_HANDLES,
+        variables: { request: _request },
+      });
+
+      console.log(profiles)
+
+      items.push(profiles!.items.map((profile) => profile));
+
+      cursor = JSON.parse(profiles!.pageInfo?.next).offset != profiles!.pageInfo?.totalCount
+        ? profiles!.pageInfo!.next
+        : null;
+    } while (cursor)
+
+    return items.flat();
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+};
+
+export const useGetProfilesByHandles = (options: UseQueryOptions = {}, handles?: [string]) => {
+  const result = useQuery<string>(
+    ["profilesByHandles", handles],
+    async () => {
+      const result = await getProfilesByHandles(handles);
+
+      return result;
+    },
+    {
+      ...(options as any),
+      enabled: !!handles,
     }
   );
 
