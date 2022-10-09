@@ -28,7 +28,7 @@ const SelectPlaylist: FC<Props> = ({ selectPlaylist, playlist }) => {
               </Listbox.Label>
               <div className="relative mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md">
                 <Listbox.Button className="relative input py-2 pl-3 pr-10 text-left ">
-                  <span className="block truncate">{playlist ? playlist.title : "Select your favorite"}</span>
+                  <span className="block truncate">{playlist ? playlist.title : "Get this live!"}</span>
                   <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                     <ChevronDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                   </span>

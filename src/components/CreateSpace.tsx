@@ -63,7 +63,7 @@ const CreateSpace = ({ defaultProfile }) => {
   };
 
   return (
-    <div className="w-full shadow-xl border border-gray-700 p-8 flex flex-col gap-3">
+    <div className="w-full shadow-xl border dark:border-gray-700 border-grey-500 p-8 flex flex-col gap-3 rounded-md">
       <SelectPlaylist selectPlaylist={selectPlaylist} playlist={playlist} />
 
       {!productData ? (
