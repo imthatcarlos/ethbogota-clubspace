@@ -20,7 +20,7 @@ export const Hero = () => {
   const { data, refetch: login } = useLensLogin();
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden animate-destroy">
       <div className="hidden sm:absolute sm:inset-0 sm:block" aria-hidden="true">
         <svg
           className="absolute bottom-0 right-0 mb-48 translate-x-1/2 transform text-gray-700 lg:top-0 lg:mt-28 lg:mb-0 xl:translate-x-0 xl:transform-none"
@@ -92,6 +92,10 @@ export const Hero = () => {
                       <ConnectWallet label="Get started now" />
                     </div>
                   )}
+
+                  <div className="w-full mt-12 relative h-full aspect-square">
+                    <img src="/lil_buddy.png" alt="lil_buddy" className="aspect-square w-full h-96 animate-crash" />
+                  </div>
                 </div>
               </div>
               <div className="mt-24 md:mt-0 lg:col-span-6 lg:mt-0">
