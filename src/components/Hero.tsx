@@ -93,8 +93,8 @@ export const Hero = () => {
                     </div>
                   )}
 
-                  <div className="w-full mt-12 relative h-full aspect-square">
-                    <img src="/lil_buddy.png" alt="lil_buddy" className="aspect-square w-full h-96 animate-crash" />
+                  <div className="max-w-full mt-12 relative h-full aspect-square">
+                    <img src="/lil_buddy.png" alt="lil_buddy" className="aspect-square w-full h-80 animate-crash" />
                   </div>
                 </div>
               </div>
