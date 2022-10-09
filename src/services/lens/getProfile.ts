@@ -337,8 +337,6 @@ export const getProfilesByHandles = async (handles?: [string], limit = 50): Prom
         variables: { request: _request },
       });
 
-      console.log(profiles)
-
       items.push(profiles!.items.map((profile) => profile));
 
       cursor = JSON.parse(profiles!.pageInfo?.next).offset != profiles!.pageInfo?.totalCount
