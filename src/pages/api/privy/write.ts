@@ -40,6 +40,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     // write it back
     await client.put(checkSummed, semGroupIdHex, newDataString);
+    console.log(`wrote to privy for semGroupIdHex: ${semGroupIdHex}`);
 
     return res.status(200).end();
   } catch (e) {

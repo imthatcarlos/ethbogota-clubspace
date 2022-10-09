@@ -1,8 +1,9 @@
 import { useSubscription, useClient } from "streamr-client-react";
+import StreamrClient from 'streamr-client';
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { useState, useEffect } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useProvider } from "wagmi";
 import { groupBy } from "lodash/collection";
 import { STREAMR_PUBLIC_ID } from "@/lib/consts";
 import redisClient from "@/lib/utils/redisClient";
@@ -17,7 +18,8 @@ const LiveSpace = ({ clubSpaceObject }) => {
     push,
   } = useRouter();
   const { isConnected, address } = useAccount();
-  const client = useClient();
+  const provider = useProvider();
+  const [client, setClient] = useState();
   const [hasMounted, setHasMounted] = useState(false);
   const [latestMessage, setLatestMessage] = useState();
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
@@ -34,11 +36,18 @@ const LiveSpace = ({ clubSpaceObject }) => {
 
   if (!clubSpaceObject) {
     push("/404");
+    return;
   }
 
-  console.log(client);
+  const logPrivy = async (impressionPayload) => {
+    await fetch(`/api/privy/write`, { method: 'POST', body: JSON.stringify(impressionPayload) });
+  };
 
   const handleEntry = async () => {
+    // HACK: until their client accepts provider from rainbowkit :shrug:
+    const { address, privateKey } = StreamrClient.generateEthereumAccount();
+    const client = new StreamrClient({ auth: { privateKey }});
+    // const client = new StreamrClient(provider);
     const historical = await client.resend(
       STREAMR_PUBLIC_ID,
       { from: { timestamp: clubSpaceObject.createdAt } },
@@ -51,7 +60,7 @@ const LiveSpace = ({ clubSpaceObject }) => {
       }
     );
 
-    console.log(historical);
+    console.log('fetching historical');
 
     historical.onFinally(() => {
       const grouped = groupBy(logs, 'lensHandle');
@@ -73,14 +82,11 @@ const LiveSpace = ({ clubSpaceObject }) => {
         console.log('published JOIN')
 
         // log the impression for this clubspace
-        const impressionPayload = {
+        logPrivy({
           address,
           semGroupIdHex: clubSpaceObject.semGroupIdHex,
           impression: 'JOIN'
-        };
-
-        // fire + forget
-        fetch(`/api/privy/write`, { method: 'POST', body: JSON.stringify(body) });
+        });
 
         setIsLoadingEntry(false); // TODO: lucas - render the stuff
       }
@@ -94,6 +100,7 @@ const LiveSpace = ({ clubSpaceObject }) => {
   // - log privy impression with profileId/postId
   useEffect(() => {
     if (hasMounted) {
+      console.log('handle');
       handleEntry();
 
       window.onbeforeunload = () => {
@@ -110,7 +117,7 @@ const LiveSpace = ({ clubSpaceObject }) => {
     }
 
     setHasMounted(true);
-  }, []);
+  }, [hasMounted]);
 
   const onMessage = (content, metadata) => {
     console.log(content);
@@ -138,12 +145,12 @@ const LiveSpace = ({ clubSpaceObject }) => {
     client.publish(STREAMR_PUBLIC_ID, message);
   };
 
-  useSubscription(
-    {
-      stream: STREAMR_PUBLIC_ID,
-    },
-    onMessage
-  );
+  // useSubscription(
+  //   {
+  //     stream: STREAMR_PUBLIC_ID,
+  //   },
+  //   onMessage
+  // );
 
   if (isLoadingEntry) {
     return <>Entering the ClubSpace...</>
