@@ -7,15 +7,15 @@ import { GetServerSideProps } from "next";
 
 const ClaimsPage = ({ clubSpaceObject }) => {
   return (
-    <>
+    <div className="mt-12 ml-12">
       <h2 className="text-md font-bold tracking-tight sm:text-lg md:text-xl">Your Claims</h2>
       {clubSpaceObject.map((groupId) => (
-        <div key={groupId}>
+        <div key={groupId} className="mt-4">
           <p>Club Space {groupId}</p>
           <ClaimGoodyBag groupId={groupId} />
         </div>
       ))}
-    </>
+    </div>
   );
 };
 
@@ -32,7 +32,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   try {
     // get groups off contract
-    const groups = await contract.queryFilter(contract.filters.GroupCreated());
+    const groups = await contract.queryFilter(contract.filters.GroupCreated(), 28522249);
     let clubSpaceObject = [];
 
     // check group ids in privy for attendance
