@@ -141,27 +141,6 @@ const GET_PROFILES_OWNED = gql`
           totalFollowers
           totalFollowing
         }
-        followModule {
-          ... on FeeFollowModuleSettings {
-            type
-            amount {
-              asset {
-                symbol
-                name
-                decimals
-                address
-              }
-              value
-            }
-            recipient
-          }
-          ... on ProfileFollowModuleSettings {
-            type
-          }
-          ... on RevertFollowModuleSettings {
-            type
-          }
-        }
       }
     }
   }

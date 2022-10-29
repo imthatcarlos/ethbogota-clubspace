@@ -1,18 +1,23 @@
 import { useTheme } from "next-themes";
 import { createClient, WagmiConfig } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
-import { publicProvider } from "wagmi/providers/public";
 import { getDefaultWallets, RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
 import { chain, configureChains } from "wagmi";
 import { useEffect, useMemo, useState } from "react";
 
 export const { chains, provider } = configureChains(
-  [chain.polygonMumbai, chain.mainnet, chain.polygon, chain.optimism, chain.arbitrum],
-  [alchemyProvider({ apiKey: process.env.ALCHEMY_ID }), publicProvider()]
+  [
+    chain.polygon,
+    chain.polygonMumbai,
+    chain.mainnet
+  ],
+  [
+    alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY })
+  ]
 );
 
 export const { connectors } = getDefaultWallets({
-  appName: "Clubspace",
+  appName: "ClubSpace",
   chains,
 });
 
