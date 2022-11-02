@@ -178,7 +178,7 @@ const LiveSpace: FC<Props> = ({ clubSpaceObject }) => {
           impression: "JOIN",
         });
         // join semaphore group
-        joinGroup(defaultProfile.handle, identity, clubSpaceObject.semGroupIdHex);
+        joinGroup(defaultProfile.handle, identity, clubSpaceObject.semGroupIdHex, address);
       }
 
       setIsLoadingEntry(false); // TODO: lucas - render the stuff
