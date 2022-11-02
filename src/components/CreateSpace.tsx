@@ -10,6 +10,7 @@ import axios from "axios";
 import { createGroup } from "@/lib/semaphore/semaphore";
 import { LENSHUB_PROXY, makePost, publicationBody } from "@/services/lens/createPost";
 import { LensHubProxy } from "@/services/lens/abi";
+import Test from "./Test";
 
 const CreateSpace = ({ defaultProfile }) => {
   const { address } = useAccount();
@@ -118,6 +119,8 @@ const CreateSpace = ({ defaultProfile }) => {
 
   return (
     <div className="w-full shadow-xl border dark:border-gray-700 border-grey-500 p-8 flex flex-col gap-3 rounded-md">
+      {/* <Test defaultProfile={defaultProfile} /> */}
+
       <SelectPlaylist selectPlaylist={selectPlaylist} playlist={playlist} />
 
       {!productData ? (
