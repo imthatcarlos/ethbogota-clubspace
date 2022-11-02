@@ -1,8 +1,10 @@
-import { useIdentity } from "@/hooks/identity";
 import { claimReward } from "@/lib/semaphore/semaphore";
+import { JsonRpcProvider } from "@ethersproject/providers";
 import { getAddress } from "ethers/lib/utils";
 import { useState } from "react";
 import { useAccount } from "wagmi";
+
+const mainnetProvider = new JsonRpcProvider(process.env.NEXT_PUBLIC_MAINNET_RPC);
 
 const ClaimGoodyBag = ({ attendanceProps }) => {
   const { groupId, claimed, identity } = attendanceProps;
@@ -13,8 +15,13 @@ const ClaimGoodyBag = ({ attendanceProps }) => {
 
   const submit = async () => {
     setLoading(true);
+    let resolvedAddress = recipient.trim();
     try {
-      getAddress(recipient);
+      if (recipient.endsWith(".eth")) {
+        resolvedAddress = await mainnetProvider.resolveName(recipient);
+      } else {
+        resolvedAddress = getAddress(recipient);
+      }
     } catch {
       console.error("invalid address");
     }
@@ -32,7 +39,12 @@ const ClaimGoodyBag = ({ attendanceProps }) => {
   return (
     <div>
       <p>You've got a reward!</p>
-      <input className="w-[27rem] p-2 rounded-sm mt-2" placeholder="Recipient address..." value={recipient} onChange={(e) => setRecipient(e.target.value)} />
+      <input
+        className="w-[27rem] p-2 rounded-sm mt-2"
+        placeholder="Recipient address or ENS..."
+        value={recipient}
+        onChange={(e) => setRecipient(e.target.value)}
+      />
       <button
         className="flex w-36 mt-4 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
         onClick={submit}
