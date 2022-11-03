@@ -2,15 +2,14 @@ import CreateLensPost from "@/components/CreateLensPost";
 import SelectPlaylist from "@/components/SelectPlaylist";
 import SetDecentProduct from "@/components/SetDecentProduct";
 import { IPlaylist } from "@spinamp/spinamp-sdk";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAccount, useContract, useSigner } from "wagmi";
 import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
 import axios from "axios";
 import { createGroup } from "@/lib/semaphore/semaphore";
-import { LENSHUB_PROXY, makePostGasless, makePostTx, publicationBody } from "@/services/lens/createPost";
+import { LENSHUB_PROXY, makePostGasless, publicationBody } from "@/services/lens/gaslessTxs";
 import { LensHubProxy } from "@/services/lens/abi";
-import Test from "./Test";
 import { useLensLogin } from "@/services/lens/login";
 
 const CreateSpace = ({ defaultProfile }) => {
@@ -81,7 +80,8 @@ const CreateSpace = ({ defaultProfile }) => {
     const lensContentUri = `ipfs://${content.IpfsHash}`;
     console.log("lens: ", lensContentUri);
 
-    const accessToken = lensLogin.authenticate.accessToken
+    // @ts-ignore
+    const accessToken = lensLogin.authenticate.accessToken;
     await makePostGasless(defaultProfile.id, lensContentUri, signer, accessToken);
     const pubCount = await contract.getPubCount(defaultProfile.id);
     const lensPubId = pubCount.toHexString();

@@ -99,6 +99,35 @@ const CREATE_POST_TYPED_DATA = gql`
   }
 `;
 
+const FOLLOW_TYPED_DATA = gql`
+  mutation CreateFollowTypedData($profileId: ProfileId!) {
+    createFollowTypedData(request: { follow: [{ profile: $profileId, followModule: null }] }) {
+      id
+      expiresAt
+      typedData {
+        domain {
+          name
+          chainId
+          version
+          verifyingContract
+        }
+        types {
+          FollowWithSig {
+            name
+            type
+          }
+        }
+        value {
+          nonce
+          deadline
+          profileIds
+          datas
+        }
+      }
+    }
+  }
+`;
+
 const BROADCAST = gql`
   mutation Broadcast($request: BroadcastRequest!) {
     broadcast(request: $request) {
@@ -113,21 +142,21 @@ const BROADCAST = gql`
   }
 `;
 
-export const createPostTypedData = async (_request, accessToken) => {
+export const createTypedData = async (_request, accessToken, document) => {
   const result = await request({
     url: apiUrls.lensAPI,
-    document: CREATE_POST_TYPED_DATA,
+    document,
     variables: _request,
     requestHeaders: {
       "x-access-token": accessToken,
     },
   });
 
-  return result.createPostTypedData;
+  return result.createPostTypedData || result.createFollowTypedData;
 };
 
-export const signCreatePostTypedData = async (_request, signer, accessToken) => {
-  const result = await createPostTypedData(_request, accessToken);
+export const signCreateTypedData = async (_request, signer, accessToken, document) => {
+  const result = await createTypedData(_request, accessToken, document);
   console.log("create post: createPostTypedData", result);
 
   const typedData = result.typedData;
@@ -169,7 +198,29 @@ export const makePostGasless = async (profileId: string, contentURI: string, sig
     },
   };
 
-  const signedResult = await signCreatePostTypedData(createPostRequest, signer, accessToken);
+  const signedResult = await signCreateTypedData(createPostRequest, signer, accessToken, CREATE_POST_TYPED_DATA);
+
+  try {
+    const broadcastResult = await broadcastRequest(
+      {
+        id: [signedResult.result.id],
+        signature: [signedResult.signature],
+      },
+      accessToken
+    );
+
+    return broadcastResult;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const followProfileGasless = async (profileId: string, signer, accessToken: string) => {
+  const createPostRequest = {
+    profileId,
+  };
+
+  const signedResult = await signCreateTypedData(createPostRequest, signer, accessToken, FOLLOW_TYPED_DATA);
 
   try {
     const broadcastResult = await broadcastRequest(
