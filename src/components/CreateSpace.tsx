@@ -140,7 +140,7 @@ const CreateSpace = ({ defaultProfile }) => {
       <button
         className="btn mt-4"
         onClick={submit}
-        // disabled={!goody || !playlist || !lensPost || !productData || uploading}
+        disabled={!goody || !playlist || !lensPost || !productData || uploading}
       >
         {uploading ? "Loading..." : "Create Party"}
       </button>
