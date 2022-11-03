@@ -5,11 +5,11 @@ const CreateLensPost = ({ setPostData, defaultProfile }) => {
 
   const url = () => `https://www.joinclubspace.xyz/live/${defaultProfile.handle}`;
 
-  const fullText = () => `${text} ${url()}`;
+  const fullText = (_text) => `${_text} ${url()}`;
 
   const onChange = (_text) => {
     setText(_text);
-    setPostData(fullText());
+    setPostData(fullText(_text));
   };
 
   return (

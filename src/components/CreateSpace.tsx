@@ -8,9 +8,10 @@ import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
 import axios from "axios";
 import { createGroup } from "@/lib/semaphore/semaphore";
-import { LENSHUB_PROXY, makePost, publicationBody } from "@/services/lens/createPost";
+import { LENSHUB_PROXY, makePostGasless, makePostTx, publicationBody } from "@/services/lens/createPost";
 import { LensHubProxy } from "@/services/lens/abi";
 import Test from "./Test";
+import { useLensLogin } from "@/services/lens/login";
 
 const CreateSpace = ({ defaultProfile }) => {
   const { address } = useAccount();
@@ -21,6 +22,8 @@ const CreateSpace = ({ defaultProfile }) => {
   const [goody, setGoody] = useState<any>();
   const [uploading, setUploading] = useState<boolean>();
   const [shareUrl, setShareUrl] = useState<string>();
+
+  const { data: lensLogin, refetch: login } = useLensLogin();
 
   const selectPlaylist = (playlist) => {
     setPlaylist(playlist);
@@ -78,7 +81,8 @@ const CreateSpace = ({ defaultProfile }) => {
     const lensContentUri = `ipfs://${content.IpfsHash}`;
     console.log("lens: ", lensContentUri);
 
-    await makePost(contract, defaultProfile.id, lensContentUri);
+    const accessToken = lensLogin.authenticate.accessToken
+    await makePostGasless(defaultProfile.id, lensContentUri, signer, accessToken);
     const pubCount = await contract.getPubCount(defaultProfile.id);
     const lensPubId = pubCount.toHexString();
     console.log("pubId:", lensPubId);
@@ -136,7 +140,7 @@ const CreateSpace = ({ defaultProfile }) => {
       <button
         className="btn mt-4"
         onClick={submit}
-        disabled={!goody || !playlist || !lensPost || !productData || uploading}
+        // disabled={!goody || !playlist || !lensPost || !productData || uploading}
       >
         {uploading ? "Loading..." : "Create Party"}
       </button>
