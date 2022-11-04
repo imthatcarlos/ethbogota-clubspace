@@ -1,14 +1,13 @@
 import redisClient from "@/lib/utils/redisClient";
 import { fetchPlaylistById } from "@spinamp/spinamp-sdk";
-import Provider from 'streamr-client-react'
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { FC, Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { useAccount, useQuery } from "wagmi";
 import { SpectrumVisualizer, SpectrumVisualizerTheme } from "react-audio-visualizers";
-import StreamrProvider from 'streamr-client-react'
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import LiveSpace from "@/components/LiveSpace";
+import useENS from "@/hooks/useENS";
 
 const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   const {
@@ -17,8 +16,10 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   } = useRouter();
 
   const { address, isConnected } = useAccount();
-  const { data: profiles } = useGetProfilesOwned({}, address);
+  const { data: profiles, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
+  const { ensName, isLoading: isLoadingENS } = useENS(address);
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
+  const [loadingDefaultProfile, setLoadingDefaultProfile] = useState(true);
   const [isLoadingEntry, setIsLoadingEntry] = useState(true);
   const hasSongEnded = useRef(false);
 
@@ -64,19 +65,14 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   );
 
   useEffect(() => {
-    if (profiles?.length) {
+    if (!isLoadingProfiles) {
       setDefaultProfile(profiles[0]);
+      setLoadingDefaultProfile(false);
     }
-  }, [address, profiles]);
+  }, [address, profiles, isLoadingProfiles]);
 
   // * - load the playlist live audio stream (TBD)
   // * - load the decent featured NFT + tx history
-
-  const streamrClientOptions = {
-    auth: {
-      ethereum: typeof window !== 'undefined' ? window.ethereum : null
-    },
-  };
 
   return (
     <>
@@ -100,17 +96,14 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
         )
       }
       {
-        isConnected && (
-          <>
-            <StreamrProvider {...streamrClientOptions}>
-              <LiveSpace
-                clubSpaceObject={clubSpaceObject}
-                defaultProfile={defaultProfile}
-                setIsLoadingEntry={setIsLoadingEntry}
-                address={address}
-              />
-            </StreamrProvider>
-          </>
+        isConnected && !loadingDefaultProfile && !isLoadingENS && (
+          <LiveSpace
+            clubSpaceObject={clubSpaceObject}
+            defaultProfile={defaultProfile}
+            setIsLoadingEntry={setIsLoadingEntry}
+            address={address}
+            handle={defaultProfile?.handle || ensName || address}
+          />
         )
       }
     </>

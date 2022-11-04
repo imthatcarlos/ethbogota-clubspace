@@ -7,9 +7,9 @@ import { useEffect, useMemo, useState } from "react";
 
 export const { chains, provider } = configureChains(
   [
-    chain.polygon,
+    // chain.polygon,
     chain.polygonMumbai,
-    chain.mainnet
+    // chain.mainnet
   ],
   [
     alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY })
