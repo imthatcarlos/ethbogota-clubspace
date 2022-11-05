@@ -25,7 +25,7 @@ const ClaimGoodyBag = ({ attendanceProps }) => {
     } catch {
       console.error("invalid address");
     }
-    const success = await claimReward(groupId, recipient, identity, address);
+    const success = await claimReward(groupId, resolvedAddress, identity, address);
     if (success) {
       setNewClaim(true);
     }
