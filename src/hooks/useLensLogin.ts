@@ -1,7 +1,7 @@
-import { apiUrls } from "@/constants/apiUrls";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { gql, request } from "graphql-request";
 import { useAccount, useSigner } from "wagmi";
+import { apiUrls } from "@/constants/apiUrls";
 
 const AUTHENTICATION = gql`
   mutation ($request: SignedAuthChallenge!) {
@@ -45,7 +45,7 @@ type AuthenticateType = {
   refreshToken: string;
 };
 
-export const useLensLogin = (options: UseQueryOptions = {}) => {
+export default (options: UseQueryOptions = {}) => {
   const { address } = useAccount();
   const { data: signer } = useSigner();
 

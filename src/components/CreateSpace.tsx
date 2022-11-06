@@ -1,20 +1,21 @@
+import { ConnectWallet } from "@/components/ConnectWallet";
 import CreateLensPost from "@/components/CreateLensPost";
 import SelectPlaylist from "@/components/SelectPlaylist";
 import SetDecentProduct from "@/components/SetDecentProduct";
 import { IPlaylist } from "@spinamp/spinamp-sdk";
 import { useState, useEffect } from "react";
 import { useAccount, useContract, useSigner } from "wagmi";
+import toast from 'react-hot-toast'
 import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
 import axios from "axios";
 import { createGroup } from "@/lib/semaphore/semaphore";
 import { LENSHUB_PROXY, makePostGasless, makePostTx, publicationBody } from "@/services/lens/createPost";
 import { LensHubProxy } from "@/services/lens/abi";
-import Test from "./Test";
-import { useLensLogin } from "@/services/lens/login";
+import useLensLogin from "@/hooks/useLensLogin";
 
 const CreateSpace = ({ defaultProfile }) => {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const { data: signer } = useSigner();
   const [playlist, setPlaylist] = useState<IPlaylist>();
   const [productData, setProductData] = useState<any>();
@@ -73,77 +74,98 @@ const CreateSpace = ({ defaultProfile }) => {
     console.log(playlist, productData, lensPost, goody);
 
     // upload content to ipfs
+    toast('Setting goody bag...');
     const goodyUri = await uploadToIPFS();
     console.log("goody uri:", goodyUri);
 
     // create lens post
     const content: any = await pinJson(publicationBody(lensPost, [], defaultProfile.handle));
-    const lensContentUri = `ipfs://${content.IpfsHash}`;
-    console.log("lens: ", lensContentUri);
 
-    const accessToken = lensLogin.authenticate.accessToken
-    await makePostGasless(defaultProfile.id, lensContentUri, signer, accessToken);
+    toast('Creating Lens post...', { duration: 5000 });
+    await makePostGasless(defaultProfile.id, `ipfs://${content.IpfsHash}`, signer, lensLogin.authenticate.accessToken);
     const pubCount = await contract.getPubCount(defaultProfile.id);
     const lensPubId = pubCount.toHexString();
-    console.log("pubId:", lensPubId);
 
-    // call redis api
-    const spaceData = {
-      creatorAddress: address,
-      creatorLensHandle: defaultProfile.handle,
-      creatorLensProfileId: defaultProfile.id,
-      spinampPlaylistId: playlist.id,
-      decentContractAddress: productData.address,
-      decentContractChainId: 80001,
-      lensPubId,
-    };
-    const { data } = await axios.post(`/api/space/create`, spaceData);
-    const { url, semGroupIdHex } = data;
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        // call redis api
+        const spaceData = {
+          creatorAddress: address,
+          creatorLensHandle: defaultProfile.handle,
+          creatorLensProfileId: defaultProfile.id,
+          spinampPlaylistId: playlist.id,
+          decentContractAddress: productData.address,
+          decentContractChainId: 80001,
+          lensPubId,
+        };
+        const { data: { url, semGroupIdHex } } = await axios.post(`/api/space/create`, spaceData);
 
-    // call sempahore/create-group
-    console.log("creating semaphore group");
-    await createGroup(semGroupIdHex, goodyUri, lensPubId, defaultProfile.id);
+        // call sempahore/create-group
+        await createGroup(semGroupIdHex, goodyUri, lensPubId, defaultProfile.id);
 
-    // PUSH
-    console.log("pushin");
-    await axios.post(`/api/push/send`, { url });
+        // PUSH
+        await axios.post(`/api/push/send`, { url });
 
-    setUploading(false);
-    setShareUrl(url);
+        setUploading(false);
+
+        setShareUrl(url);
+
+        resolve();
+      }),
+      {
+        loading: 'Finalizing your space...',
+        success: 'Success!',
+        error: (error) => {
+          console.log(error);
+          setUploading(false);
+          return 'Error!'
+        },
+      }
+    );
   };
 
   if (shareUrl) {
     return (
       <div>
-        <h2 className="mt-4 mb-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">You did it!</h2>
-        {shareUrl}
+        <h1 className="mt-4 mb-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Your space is live!</h1>
+        <p>{shareUrl}</p>
       </div>
     );
   }
 
   return (
     <div className="w-full shadow-xl border dark:border-gray-700 border-grey-500 p-8 flex flex-col gap-3 rounded-md">
-      {/* <Test defaultProfile={defaultProfile} /> */}
+      {
+        !lensLogin
+          ? (
+              <div className="flex gap-4 justify-center md:min-w-[300px]">
+                {
+                  isConnected
+                    ? <button onClick={() => login()} className="btn justify-center items-center">
+                        Login with lens to create a space
+                      </button>
+                    : <ConnectWallet showBalance={false} />
+                }
+              </div>
+            )
+          : <>
+              <SelectPlaylist selectPlaylist={selectPlaylist} playlist={playlist} />
 
-      <SelectPlaylist selectPlaylist={selectPlaylist} playlist={playlist} />
+              <SetDecentProduct setDecentProduct={setDecentProduct} productData={productData} />
 
-      {!productData ? (
-        <SetDecentProduct setDecentProduct={setDecentProduct} />
-      ) : (
-        <p>NFT FOUND! RENDER AN NFT COMPONENT</p>
-      )}
+              <CreateLensPost setPostData={setPostData} defaultProfile={defaultProfile} />
 
-      <CreateLensPost setPostData={setPostData} defaultProfile={defaultProfile} />
+              <SetGoodyBag setGoody={setGoody} />
 
-      <SetGoodyBag setGoody={setGoody} />
-
-      <button
-        className="btn mt-4"
-        onClick={submit}
-        // disabled={!goody || !playlist || !lensPost || !productData || uploading}
-      >
-        {uploading ? "Loading..." : "Create Party"}
-      </button>
+              <button
+                className="btn mt-4"
+                onClick={submit}
+                disabled={!goody || !playlist || !lensPost || !productData || uploading}
+              >
+                {uploading ? "Submitting..." : "Create space"}
+              </button>
+            </>
+      }
     </div>
   );
 };

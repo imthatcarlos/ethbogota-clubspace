@@ -3,7 +3,7 @@ import { useAccount, useNetwork, useSigner } from "wagmi";
 import { utils } from "ethers";
 import { getContractData } from "@/lib/utils/decent";
 
-const SetDecentProduct = ({ setDecentProduct }) => {
+const SetDecentProduct = ({ setDecentProduct, productData = undefined }) => {
   const { chain } = useNetwork();
   const { data: signer } = useSigner();
 
@@ -25,16 +25,20 @@ const SetDecentProduct = ({ setDecentProduct }) => {
         <div className="w-full">
           <div className="w-full flex flex-col gap-4">
             <label htmlFor="contract_address" className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">
-              Your Decent NFT Address
+              Decent NFT to Spotlight
             </label>
-            <input
-              type="text"
-              id="contract_address"
-              className="input"
-              placeholder="0x"
-              required
-              onChange={onContractAddressChanged}
-            />
+            {
+              !productData
+                ? <input
+                    type="text"
+                    id="contract_address"
+                    className="input"
+                    placeholder="Decent contract address (0x)"
+                    required
+                    onChange={onContractAddressChanged}
+                  />
+                : <p>{productData.name} | {productData.description}</p>
+            }
           </div>
         </div>
       </form>

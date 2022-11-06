@@ -1,7 +1,7 @@
-import { APP_NAME } from "@/lib/consts";
-import { useLensLogin } from "@/services/lens/login";
 import { useAccount } from "wagmi";
 import { useState, useEffect } from "react";
+import { APP_NAME } from "@/lib/consts";
+import useLensLogin from "@/hooks/useLensLogin";
 import { ConnectWallet } from "./ConnectWallet";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import CreateSpace from "@/components/CreateSpace";
@@ -20,7 +20,7 @@ export const Hero = () => {
   const { data, refetch: login } = useLensLogin();
 
   return (
-    <div className="relative overflow-hidden animate-destroy">
+    <div className="relative overflow-hidden">
       <div className="hidden sm:absolute sm:inset-0 sm:block" aria-hidden="true">
         <svg
           className="absolute bottom-0 right-0 mb-48 translate-x-1/2 transform text-gray-700 lg:top-0 lg:mt-28 lg:mb-0 xl:translate-x-0 xl:transform-none"
@@ -85,7 +85,7 @@ export const Hero = () => {
                     <br />
                     Music NFTs. Live Reactions. Good vibes.
                     <br />
-                    Everyone that parties - and can <strong>prove</strong> it - gets swag NFTs
+                    Everyone that parties - and can <strong>prove</strong> it - gets a goody bag NFT
                   </p>
                   {!isConnected && (
                     <div className="pt-4">
@@ -94,7 +94,7 @@ export const Hero = () => {
                   )}
 
                   <div className="max-w-full mt-12 relative h-full aspect-square">
-                    <img src="/lil_buddy.png" alt="lil_buddy" className="aspect-square w-full h-80 animate-crash" />
+                    <img src="/lil_buddy.png" alt="lil_buddy" className="aspect-square w-full h-80" />
                   </div>
                 </div>
               </div>

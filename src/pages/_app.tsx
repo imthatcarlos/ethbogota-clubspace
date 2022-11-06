@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import Web3Provider from "@/components/Web3Provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { toast, Toaster, ToastBar } from "react-hot-toast";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,6 +20,26 @@ const App = ({ Component, pageProps }) => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class">
         <Web3Provider>
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                backgroundColor: "#000",
+                color: "white",
+              }
+            }}
+          >
+            {(t) => (
+              <ToastBar toast={t}>
+                {({ icon, message }) => (
+                  <>
+                    {icon}
+                    {message}
+                  </>
+                )}
+              </ToastBar>
+            )}
+          </Toaster>
           <Component {...pageProps} />
         </Web3Provider>
       </ThemeProvider>

@@ -111,6 +111,19 @@ const LiveSpace: FC<Props> = ({
       subscribe();
 
       setSubscribed(true);
+
+      // WTF
+      // // on unmount
+      // return () => {
+      //   // not sure this is the move... but how else to notify for LEAVE
+      //   // from streamr: Don’t publish in onbeforeunload i.e. you're trying to publish a message on the edge of document’s existance.
+      //   console.log('publishing LEAVE...');
+      //   streamrClient.publish(STREAMR_PUBLIC_ID, {
+      //     type: "LEAVE",
+      //     clubSpaceId: clubSpaceObject.clubSpaceId,
+      //     handle
+      //   });
+      // }
     }
   }, [isMounted, subscribed]);
 
@@ -199,16 +212,16 @@ const LiveSpace: FC<Props> = ({
       console.log(error);
     }
 
-    // if (isEmpty(hasJoined)) {
-    //   // log the impression for this clubspace
-    //   logPrivyImpression({
-    //     address,
-    //     semGroupIdHex: clubSpaceObject.semGroupIdHex,
-    //     impression: "JOIN",
-    //   });
-    //   // join semaphore group
-    //   joinGroup(defaultProfile.handle, identity, clubSpaceObject.semGroupIdHex);
-    // }
+    if (isEmpty(hasJoined)) {
+      // log the impression for this clubspace
+      logPrivyImpression({
+        address,
+        semGroupIdHex: clubSpaceObject.semGroupIdHex,
+        impression: "JOIN",
+      });
+      // join semaphore group
+      joinGroup(defaultProfile.handle, identity, clubSpaceObject.semGroupIdHex);
+    }
 
     setIsLoadingEntry(false);
   };
@@ -237,24 +250,6 @@ const LiveSpace: FC<Props> = ({
       });
     }
   };
-
-  useEffect(() => {
-    if (!isMounted()) return;
-
-    // on unmount
-    return () => {
-      // if (!streamrClient!.destroy.isStarted()) {
-      //   // from streamr: Don’t publish in onbeforeunload i.e. you're trying to publish a message on the edge of document’s existance.
-      //   console.log('publishing LEAVE...');
-      //   streamrClient.publish(STREAMR_PUBLIC_ID, {
-      //     type: "LEAVE",
-      //     clubSpaceId: clubSpaceObject.clubSpaceId,
-      //     handle
-      //   });
-      // }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   if (isLoadingEntry) return null;
 
