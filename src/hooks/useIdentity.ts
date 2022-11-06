@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Identity } from "@semaphore-protocol/identity";
 
-export const useIdentity = () => {
+export default () => {
   const [identity, setIdentity] = useState<any>();
 
   useEffect(() => {
