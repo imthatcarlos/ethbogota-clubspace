@@ -100,6 +100,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
           <LiveSpace
             clubSpaceObject={clubSpaceObject}
             defaultProfile={defaultProfile}
+            isLoadingEntry={isLoadingEntry}
             setIsLoadingEntry={setIsLoadingEntry}
             address={address}
             handle={defaultProfile?.handle || ensName || address}
