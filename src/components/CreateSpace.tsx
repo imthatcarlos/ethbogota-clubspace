@@ -3,14 +3,14 @@ import CreateLensPost from "@/components/CreateLensPost";
 import SelectPlaylist from "@/components/SelectPlaylist";
 import SetDecentProduct from "@/components/SetDecentProduct";
 import { IPlaylist } from "@spinamp/spinamp-sdk";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAccount, useContract, useSigner } from "wagmi";
 import toast from 'react-hot-toast'
 import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
 import axios from "axios";
 import { createGroup } from "@/lib/semaphore/semaphore";
-import { LENSHUB_PROXY, makePostGasless, makePostTx, publicationBody } from "@/services/lens/createPost";
+import { LENSHUB_PROXY, makePostGasless, publicationBody } from "@/services/lens/gaslessTxs";
 import { LensHubProxy } from "@/services/lens/abi";
 import useLensLogin from "@/hooks/useLensLogin";
 

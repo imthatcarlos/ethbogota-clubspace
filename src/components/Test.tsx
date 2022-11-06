@@ -1,7 +1,7 @@
 import { useIdentity } from "@/hooks/identity";
 import { createGroup, joinGroup } from "@/lib/semaphore/semaphore";
 import { LensHubProxy } from "@/services/lens/abi";
-import { LENSHUB_PROXY } from "@/services/lens/createPost";
+import { LENSHUB_PROXY } from "@/services/lens/gaslessTxs";
 import { useAccount, useContract, useSigner } from "wagmi";
 
 const Test = ({ defaultProfile }) => {
