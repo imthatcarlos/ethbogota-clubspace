@@ -8,6 +8,7 @@ import { SpectrumVisualizer, SpectrumVisualizerTheme } from "react-audio-visuali
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import LiveSpace from "@/components/LiveSpace";
 import useENS from "@/hooks/useENS";
+import { SPACE_API_URL } from "@/lib/consts";
 
 const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   const {
@@ -21,48 +22,11 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
   const [loadingDefaultProfile, setLoadingDefaultProfile] = useState(true);
   const [isLoadingEntry, setIsLoadingEntry] = useState(true);
-  const hasSongEnded = useRef(false);
 
   if (!clubSpaceObject) {
     push("/404");
     return;
   }
-
-  const { data: playlists } = useQuery(
-    ["playlist", clubSpaceObject],
-    () => fetchPlaylistById(clubSpaceObject.spinampPlaylistId),
-    {
-      enabled: !!clubSpaceObject,
-    }
-  );
-
-  const { data: durations } = useQuery(["playlist-durations", clubSpaceObject.spinampPlaylistId], () =>
-    Promise.all(
-      playlists.playlistTracks.map(async (track) => {
-        const context = new AudioContext();
-
-        const res = await fetch(track.lossyAudioUrl);
-
-        // get duration from audio from response
-        const audioBuffer = await res.arrayBuffer();
-        const audioBufferSourceNode = context.createBufferSource();
-        audioBufferSourceNode.buffer = await context.decodeAudioData(audioBuffer);
-        const duration = audioBufferSourceNode.buffer.duration;
-
-        return duration;
-      }, 0)
-    )
-  );
-
-  const wholePlaylistDuration = durations?.reduce((prev, curr) => prev + curr, 0);
-
-  let currentTrackIndex = Math.floor((Date.now() - clubSpaceObject.createdAt) / wholePlaylistDuration);
-  // normalize currentTrackIndex to be within playlistTracks length
-  const currentTrack = useMemo(
-    () => playlists?.playlistTracks[currentTrackIndex % playlists.playlistTracks.length],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentTrackIndex, playlists, hasSongEnded]
-  );
 
   useEffect(() => {
     if (!isLoadingProfiles) {
@@ -83,7 +47,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
         !isLoadingEntry && (
           <div className="w-full relative h-[60vh]">
             <SpectrumVisualizer
-              audio={currentTrack?.lossyAudioUrl}
+              audio={`${SPACE_API_URL}/ws/stream/${clubSpaceObject.clubSpaceId}`}
               theme={SpectrumVisualizerTheme.squaredBars}
               colors={["#4f46e5", "#6366f1"]}
               iconsColor="#4f46e5"

@@ -1,10 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getAddress } from "ethers/lib/utils";
-import { v4 as uuidv4 } from "uuid";
 import { BigNumber } from "ethers";
 import {PrivyClient} from '@privy-io/privy-node';
 import redisClient from "@/lib/utils/redisClient";
-import { REDIS_LIVE_SPACE_HANDLES, REDIS_SPACE_EXP, UUID_NAMESPACE_URL } from "@/lib/consts";
+import { REDIS_LIVE_SPACE_HANDLES, REDIS_SPACE_EXP, SITE_URL } from "@/lib/consts";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // write club space object to redis for lookup
@@ -17,26 +16,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       decentContractAddress, // mumbai
       decentContractChainId, // 80001
       lensPubId,
+      handle,
+      clubSpaceId,
     } = req.body;
 
     if (
       !(
         creatorAddress &&
-        creatorLensHandle &&
-        creatorLensProfileId &&
+        handle &&
         spinampPlaylistId &&
         decentContractAddress &&
-        lensPubId
+        clubSpaceId
       )
     ) {
-      return res.status(400).end({ error: "missing a param sonnn" });
+      return res.status(400).json({ error: "missing a param sonnn" });
     }
 
-    const clubSpaceId = uuidv4();
-    const parts = clubSpaceId.split("-");
-    parts.pop();
-    parts.pop();
-    const semGroupIdHex = `0x${parts.join("")}`;
+    const semGroupIdHex = `0x${clubSpaceId}`;
     const createdAt = Date.now();
     const endAt = Math.floor(Date.now() / 1000) + REDIS_SPACE_EXP;
 
@@ -51,6 +47,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       createdAt,
       endAt,
       semGroupIdHex,
+      handle,
     };
     console.log(JSON.stringify(clubSpaceObject, null, 2));
 
@@ -58,7 +55,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       console.log("setting redis");
       await redisClient.set(
-        creatorLensHandle, // USING LENS HANDLE AS THE REDIS KEY!
+        handle,
         JSON.stringify(clubSpaceObject),
         "EX",
         REDIS_SPACE_EXP
@@ -71,19 +68,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     // create privy field for impressions
     const client = new PrivyClient(process.env.PRIVY_API_KEY, process.env.PRIVY_API_SECRET);
 
-    await client.createField({
-      name: BigNumber.from(semGroupIdHex).toString(),
-      description: `club space impressions for semaphone group id: ${semGroupIdHex}`,
-      default_access_group: 'self-admin',
-    });
+    try {
+      await client.createField({
+        name: BigNumber.from(semGroupIdHex).toString(),
+        description: `club space impressions for semaphone group id: ${semGroupIdHex}`,
+        default_access_group: 'self-admin',
+      });
+    } catch (error) {
+      // only happening if field already exits, won't happen unless creating test ones
+      console.log(error);
+    }
 
-    // shareable URL to join
-    const url = `${UUID_NAMESPACE_URL}/live/${creatorLensHandle}`;
-
-    return res.status(200).json({ url, semGroupIdHex });
+    return res
+      .status(200)
+      .json({ url: `${SITE_URL}/live/${handle}`, semGroupIdHex });
   } catch (e) {
     console.log(e);
-    return res.status(500).end();
+    return res.status(500).json({});
   }
 };
 

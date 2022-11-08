@@ -1,20 +1,25 @@
+import { useState } from "react";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import CreateLensPost from "@/components/CreateLensPost";
 import SelectPlaylist from "@/components/SelectPlaylist";
 import SetDecentProduct from "@/components/SetDecentProduct";
 import { IPlaylist } from "@spinamp/spinamp-sdk";
-import { useState } from "react";
 import { useAccount, useContract, useSigner } from "wagmi";
 import toast from 'react-hot-toast'
+import axios from "axios";
+import { JamProvider } from 'jam-core-react';
+import { useJam } from 'jam-core-react';
 import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
-import axios from "axios";
 import { createGroup } from "@/lib/semaphore/semaphore";
 import { LENSHUB_PROXY, makePostGasless, publicationBody } from "@/services/lens/gaslessTxs";
 import { LensHubProxy } from "@/services/lens/abi";
 import useLensLogin from "@/hooks/useLensLogin";
+import { launchSpace } from "@/services/jam/core";
+import useIsMounted from "@/hooks/useIsMounted";
+import { SPACE_API_URL } from "@/lib/consts";
 
-const CreateSpace = ({ defaultProfile }) => {
+const CreateSpace = ({ defaultProfile, ensName }) => {
   const { address, isConnected } = useAccount();
   const { data: signer } = useSigner();
   const [playlist, setPlaylist] = useState<IPlaylist>();
@@ -23,6 +28,9 @@ const CreateSpace = ({ defaultProfile }) => {
   const [goody, setGoody] = useState<any>();
   const [uploading, setUploading] = useState<boolean>();
   const [shareUrl, setShareUrl] = useState<string>();
+  const [state, jamApi] = useJam();
+
+  console.log(state);
 
   const { data: lensLogin, refetch: login } = useLensLogin();
 
@@ -73,12 +81,20 @@ const CreateSpace = ({ defaultProfile }) => {
     setUploading(true);
     console.log(playlist, productData, lensPost, goody);
 
+    // create space in the backend
+    const { res, clubSpaceId } = await launchSpace(handle, jamApi);
+
+    if (!res) {
+      toast.error('Error - cannot make a space right now');
+      return;
+    }
+
     // upload content to ipfs
     toast('Setting goody bag...');
     const goodyUri = await uploadToIPFS();
     console.log("goody uri:", goodyUri);
 
-    // create lens post
+    // create lens post (@TODO: make this part optional)
     const content: any = await pinJson(publicationBody(lensPost, [], defaultProfile.handle));
 
     toast('Creating Lens post...', { duration: 5000 });
@@ -86,17 +102,21 @@ const CreateSpace = ({ defaultProfile }) => {
     const pubCount = await contract.getPubCount(defaultProfile.id);
     const lensPubId = pubCount.toHexString();
 
+    const handle = defaultProfile?.handle || ensName || address;
+
     toast.promise(
       new Promise(async (resolve, reject) => {
         // call redis api
         const spaceData = {
           creatorAddress: address,
           creatorLensHandle: defaultProfile.handle,
+          handle,
           creatorLensProfileId: defaultProfile.id,
           spinampPlaylistId: playlist.id,
           decentContractAddress: productData.address,
           decentContractChainId: 80001,
           lensPubId,
+          clubSpaceId,
         };
         const { data: { url, semGroupIdHex } } = await axios.post(`/api/space/create`, spaceData);
 
@@ -133,40 +153,52 @@ const CreateSpace = ({ defaultProfile }) => {
     );
   }
 
-  return (
-    <div className="w-full shadow-xl border dark:border-gray-700 border-grey-500 p-8 flex flex-col gap-3 rounded-md">
-      {
-        !lensLogin
-          ? (
-              <div className="flex gap-4 justify-center md:min-w-[300px]">
-                {
-                  isConnected
-                    ? <button onClick={() => login()} className="btn justify-center items-center">
-                        Login with lens to create a space
-                      </button>
-                    : <ConnectWallet showBalance={false} />
-                }
-              </div>
-            )
-          : <>
-              <SelectPlaylist selectPlaylist={selectPlaylist} playlist={playlist} />
-
-              <SetDecentProduct setDecentProduct={setDecentProduct} productData={productData} />
-
-              <CreateLensPost setPostData={setPostData} defaultProfile={defaultProfile} />
-
-              <SetGoodyBag setGoody={setGoody} />
-
-              <button
-                className="btn mt-4"
-                onClick={submit}
-                disabled={!goody || !playlist || !lensPost || !productData || uploading}
-              >
-                {uploading ? "Submitting..." : "Create space"}
-              </button>
-            </>
+  const jamOptions = {
+    jamConfig: {
+      domain: SPACE_API_URL,
+      urls: {
+        pantry: SPACE_API_URL
       }
-    </div>
+    },
+    debug: true,
+  };
+
+  return (
+    <JamProvider options={jamOptions}>
+      <div className="w-full shadow-xl border dark:border-gray-700 border-grey-500 p-8 flex flex-col gap-3 rounded-md">
+        {
+          !lensLogin
+            ? (
+                <div className="flex gap-4 justify-center md:min-w-[300px]">
+                  {
+                    isConnected
+                      ? <button onClick={() => login()} className="btn justify-center items-center">
+                          Login with lens to create a space
+                        </button>
+                      : <ConnectWallet showBalance={false} />
+                  }
+                </div>
+              )
+            : <>
+                <SelectPlaylist selectPlaylist={selectPlaylist} playlist={playlist} />
+
+                <SetDecentProduct setDecentProduct={setDecentProduct} productData={productData} />
+
+                <CreateLensPost setPostData={setPostData} defaultProfile={defaultProfile} />
+
+                <SetGoodyBag setGoody={setGoody} />
+
+                <button
+                  className="btn mt-4"
+                  onClick={submit}
+                  disabled={!goody || !playlist || !lensPost || !productData || uploading}
+                >
+                  {uploading ? "Submitting..." : "Create space"}
+                </button>
+              </>
+        }
+      </div>
+    </JamProvider>
   );
 };
 

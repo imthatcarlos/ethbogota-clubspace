@@ -1,15 +1,19 @@
 import { useAccount } from "wagmi";
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic"
+import useENS from "@/hooks/useENS";
 import { APP_NAME } from "@/lib/consts";
 import useLensLogin from "@/hooks/useLensLogin";
 import { ConnectWallet } from "./ConnectWallet";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
-import CreateSpace from "@/components/CreateSpace";
+
+const CreateSpace = dynamic(() => import('@/components/CreateSpace'), { ssr: false });
 
 export const Hero = () => {
   const { isConnected, address } = useAccount();
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
   const { data: profiles } = useGetProfilesOwned({}, address);
+  const { ensName, isLoading: isLoadingENS } = useENS(address);
 
   useEffect(() => {
     if (profiles?.length) {
@@ -102,7 +106,7 @@ export const Hero = () => {
                 <div className="bg-transparent sm:mx-auto sm:w-full sm:max-w-md sm:overflow-hidden sm:rounded-lg">
                   <div className="px-4 sm:px-10">
                     <div className="w-full">
-                      <CreateSpace defaultProfile={defaultProfile} />
+                      <CreateSpace defaultProfile={defaultProfile} ensName={ensName} />
                     </div>
                   </div>
                 </div>
