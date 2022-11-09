@@ -92,7 +92,7 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
     // create lens post (@TODO: make this part optional)
     const content: any = await pinJson(publicationBody(lensPost, [], defaultProfile.handle));
 
-    toast('Creating Lens post...', { duration: 5000 });
+    toast('Creating Lens post...', { duration: 10000 });
     await makePostGasless(defaultProfile.id, `ipfs://${content.IpfsHash}`, signer, lensLogin.authenticate.accessToken);
     const pubCount = await contract.getPubCount(defaultProfile.id);
     const lensPubId = pubCount.toHexString();

@@ -47,6 +47,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
         isLoadingEntry && <>Entering the ClubSpace...</>
       }
       {
+        /** AUDIO API NOT WORKING
         !isLoadingEntry && (
           <div className="w-full relative h-[60vh]">
             <SpectrumVisualizer
@@ -60,7 +61,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
               highFrequency={8000}
             />
           </div>
-        )
+        ) **/
       }
       {
         isConnected && !loadingDefaultProfile && !isLoadingENS && (

@@ -8,6 +8,7 @@ import { getUrlForImageFromIpfs } from "@/utils/ipfs";
 import { LensProfile, reactionsEntries } from "@/components/LensProfile";
 import useIdentity from "@/hooks/useIdentity";
 import useIsMounted from "@/hooks/useIsMounted";
+import useUnload from "@/hooks/useUnload";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -59,9 +60,7 @@ const LiveSpace: FC<Props> = ({
 }) => {
   const { identity } = useIdentity();
   const isMounted = useIsMounted();
-  const [state, { enterRoom, leaveRoom, setProps }] = useJam();
-
-  console.log(state);
+  const [{ identities, myIdentity }, { enterRoom, leaveRoom, setProps, updateInfo }] = useJam();
 
   const [isResending, setIsResending] = useState<boolean>(true)
   const [subscribed, setSubscribed] = useState<boolean>(false)
@@ -72,22 +71,37 @@ const LiveSpace: FC<Props> = ({
   const { data: liveProfilesData } = useGetProfilesByHandles({}, liveProfiles); // TODO: not efficient but oh well
 
   useEffect(() => {
-    const join = async (roomId) => {
-      await setProps('roomId', roomId);
-      console.log(`! entering room: ${roomId}`);
-      await enterRoom(roomId);
-    }
+    const join = async () => {
+      await setProps('roomId', clubSpaceObject.clubSpaceId);
+      await updateInfo({
+        handle,
+        profile: {
+          avatar: defaultProfile?.picture?.original?.url,
+          name: defaultProfile?.name,
+          followerCount: defaultProfile?.stats?.totalFollowers
+        }
+      });
+      console.log(`JOINING: ${clubSpaceObject.clubSpaceId}`);
+      await enterRoom(clubSpaceObject.clubSpaceId);
+
+      // USER IS IN
+      setIsLoadingEntry(false);
+    };
 
     if (isMounted) {
-      join(clubSpaceObject.clubSpaceId);
-
-      // TODO: we should post the fact that we left on component unmount
-      // return () => {
-      //   console.log(`LEAVING`);
-      //   leaveRoom(clubSpaceObject.clubSpaceId)
-      // }
+      join();
     }
   }, [isMounted]);
+
+  useUnload(async () => {
+    console.log(`LEAVING`);
+    await leaveRoom(clubSpaceObject.clubSpaceId);
+  });
+
+  useEffect(() => {
+    // run if prev != new
+    // - get their lens profile based on identity.name.includes
+  }, [identities]);
 
   if (isLoadingEntry) return null;
 
