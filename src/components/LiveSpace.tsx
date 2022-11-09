@@ -1,6 +1,7 @@
 import { FC, Fragment, useEffect, useState, useCallback } from "react";
 import { Menu, Popover, Transition } from "@headlessui/react";
 import { useJam } from 'jam-core-react';
+import { isEmpty } from 'lodash/lang';
 import { classNames } from "@/lib/utils/classNames";
 import { joinGroup } from "@/lib/semaphore/semaphore";
 import { Profile, useGetProfilesByHandles, useGetProfilesOwned } from "@/services/lens/getProfile";
@@ -60,15 +61,9 @@ const LiveSpace: FC<Props> = ({
 }) => {
   const { identity } = useIdentity();
   const isMounted = useIsMounted();
-  const [{ identities, myIdentity }, { enterRoom, leaveRoom, setProps, updateInfo }] = useJam();
-
-  const [isResending, setIsResending] = useState<boolean>(true)
-  const [subscribed, setSubscribed] = useState<boolean>(false)
-  const [liveProfiles, setLiveProfiles] = useState<string[]>();
-  const [logs, setLogs] = useState([]);
+  const [{ identities, myIdentity, reactions }, { enterRoom, leaveRoom, setProps, updateInfo, sendReaction }] = useJam();
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
-
-  const { data: liveProfilesData } = useGetProfilesByHandles({}, liveProfiles); // TODO: not efficient but oh well
+  const [connectedPeers, setConnectedPeers] = useState<string[]>();
 
   useEffect(() => {
     const join = async () => {
@@ -78,7 +73,7 @@ const LiveSpace: FC<Props> = ({
         profile: {
           avatar: defaultProfile?.picture?.original?.url,
           name: defaultProfile?.name,
-          followerCount: defaultProfile?.stats?.totalFollowers
+          totalFollowers: defaultProfile?.stats?.totalFollowers
         }
       });
       console.log(`JOINING: ${clubSpaceObject.clubSpaceId}`);
@@ -88,7 +83,7 @@ const LiveSpace: FC<Props> = ({
       setIsLoadingEntry(false);
     };
 
-    if (isMounted) {
+    if (isMounted && isLoadingEntry) {
       join();
     }
   }, [isMounted]);
@@ -98,24 +93,35 @@ const LiveSpace: FC<Props> = ({
     await leaveRoom(clubSpaceObject.clubSpaceId);
   });
 
+  // @TODO: run if prev != new
   useEffect(() => {
-    // run if prev != new
-    // - get their lens profile based on identity.name.includes
+    console.log(identities);
+    setConnectedPeers(Object.keys(identities));
   }, [identities]);
+
+  // @TODO: run if prev != new
+  useEffect(() => {
+    console.log(reactions);
+  }, [reactions]);
 
   if (isLoadingEntry) return null;
 
   return (
     <>
       <div className="w-full border border-grey-700 shadow-xl flex flex-wrap gap-6 p-8 rounded-sm relative">
-        {liveProfilesData &&
-          liveProfilesData?.map((profile) => {
+        {connectedPeers &&
+          connectedPeers?.map((peerId) => {
             return (
               <LensProfile
-                key={profile.handle}
-                handle={profile.handle}
-                picture={getUrlForImageFromIpfs(profile.picture.original.url)}
-                reaction={currentReaction?.find((r) => r.handle === profile.handle)}
+                key={identities[peerId].handle}
+                handle={identities[peerId].handle}
+                picture={
+                  identities[peerId].profile
+                    ? getUrlForImageFromIpfs(identities[peerId].profile.avatar)
+                    : ""}
+                name={identities[peerId].profile?.name}
+                totalFollowers={identities[peerId].profile?.totalFollowers}
+                reaction={isEmpty(reactions[peerId]) ? null : reactions[peerId][0]}
               />
             );
           })}
@@ -146,7 +152,7 @@ const LiveSpace: FC<Props> = ({
                 <Menu.Items className="absolute z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 p-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none flex gap-4 flex-wrap">
                   {reactionsEntries.map(([key, value]) => (
                     <Menu.Item key={value}>
-                      {({ active }) => <button onClick={() => sendMessage(value)}>{value}</button>}
+                      {({ active }) => <button onClick={async () => await sendReaction(value)}>{value}</button>}
                     </Menu.Item>
                   ))}
                 </Menu.Items>
