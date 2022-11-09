@@ -1,11 +1,6 @@
 import { FC, Fragment, useEffect, useState, useCallback } from "react";
 import { Menu, Popover, Transition } from "@headlessui/react";
-import { mapValues } from "lodash/object";
-import { last } from "lodash/array";
-import { groupBy, sortBy } from "lodash/collection";
-import { isEmpty } from "lodash/lang";
-import { StreamrClient } from 'streamr-client'
-import { STREAMR_PUBLIC_ID } from "@/lib/consts";
+import { useJam } from 'jam-core-react';
 import { classNames } from "@/lib/utils/classNames";
 import { joinGroup } from "@/lib/semaphore/semaphore";
 import { Profile, useGetProfilesByHandles, useGetProfilesOwned } from "@/services/lens/getProfile";
@@ -62,8 +57,11 @@ const LiveSpace: FC<Props> = ({
   setIsLoadingEntry,
   handle,
 }) => {
-  const isMounted = useIsMounted();
   const { identity } = useIdentity();
+  const isMounted = useIsMounted();
+  const [state, { enterRoom, leaveRoom, setProps }] = useJam();
+
+  console.log(state);
 
   const [isResending, setIsResending] = useState<boolean>(true)
   const [subscribed, setSubscribed] = useState<boolean>(false)
@@ -72,6 +70,24 @@ const LiveSpace: FC<Props> = ({
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
 
   const { data: liveProfilesData } = useGetProfilesByHandles({}, liveProfiles); // TODO: not efficient but oh well
+
+  useEffect(() => {
+    const join = async (roomId) => {
+      await setProps('roomId', roomId);
+      console.log(`! entering room: ${roomId}`);
+      await enterRoom(roomId);
+    }
+
+    if (isMounted) {
+      join(clubSpaceObject.clubSpaceId);
+
+      // TODO: we should post the fact that we left on component unmount
+      // return () => {
+      //   console.log(`LEAVING`);
+      //   leaveRoom(clubSpaceObject.clubSpaceId)
+      // }
+    }
+  }, [isMounted]);
 
   if (isLoadingEntry) return null;
 

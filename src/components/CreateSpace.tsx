@@ -7,7 +7,6 @@ import { IPlaylist } from "@spinamp/spinamp-sdk";
 import { useAccount, useContract, useSigner } from "wagmi";
 import toast from 'react-hot-toast'
 import axios from "axios";
-import { JamProvider } from 'jam-core-react';
 import { useJam } from 'jam-core-react';
 import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
@@ -16,8 +15,6 @@ import { LENSHUB_PROXY, makePostGasless, publicationBody } from "@/services/lens
 import { LensHubProxy } from "@/services/lens/abi";
 import useLensLogin from "@/hooks/useLensLogin";
 import { launchSpace } from "@/services/jam/core";
-import useIsMounted from "@/hooks/useIsMounted";
-import { SPACE_API_URL } from "@/lib/consts";
 
 const CreateSpace = ({ defaultProfile, ensName }) => {
   const { address, isConnected } = useAccount();
@@ -29,8 +26,6 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
   const [uploading, setUploading] = useState<boolean>();
   const [shareUrl, setShareUrl] = useState<string>();
   const [state, jamApi] = useJam();
-
-  console.log(state);
 
   const { data: lensLogin, refetch: login } = useLensLogin();
 
@@ -153,52 +148,40 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
     );
   }
 
-  const jamOptions = {
-    jamConfig: {
-      domain: SPACE_API_URL,
-      urls: {
-        pantry: SPACE_API_URL
-      }
-    },
-    debug: true,
-  };
-
   return (
-    <JamProvider options={jamOptions}>
-      <div className="w-full shadow-xl border dark:border-gray-700 border-grey-500 p-8 flex flex-col gap-3 rounded-md">
-        {
-          !lensLogin
-            ? (
-                <div className="flex gap-4 justify-center md:min-w-[300px]">
-                  {
-                    isConnected
-                      ? <button onClick={() => login()} className="btn justify-center items-center">
-                          Login with lens to create a space
-                        </button>
-                      : <ConnectWallet showBalance={false} />
-                  }
-                </div>
-              )
-            : <>
-                <SelectPlaylist selectPlaylist={selectPlaylist} playlist={playlist} />
+    <div className="w-full shadow-xl border dark:border-gray-700 border-grey-500 p-8 flex flex-col gap-3 rounded-md">
+      {
+        !lensLogin
+          ? (
+              <div className="flex gap-4 justify-center md:min-w-[300px]">
+                {
+                  isConnected
+                    ? <button onClick={() => login()} className="btn justify-center items-center">
+                        Login with lens to create a space
+                      </button>
+                    : <ConnectWallet showBalance={false} />
+                }
+              </div>
+            )
+          : <>
+              <SelectPlaylist selectPlaylist={selectPlaylist} playlist={playlist} />
 
-                <SetDecentProduct setDecentProduct={setDecentProduct} productData={productData} />
+              <SetDecentProduct setDecentProduct={setDecentProduct} productData={productData} />
 
-                <CreateLensPost setPostData={setPostData} defaultProfile={defaultProfile} />
+              <CreateLensPost setPostData={setPostData} defaultProfile={defaultProfile} />
 
-                <SetGoodyBag setGoody={setGoody} />
+              <SetGoodyBag setGoody={setGoody} />
 
-                <button
-                  className="btn mt-4"
-                  onClick={submit}
-                  disabled={!goody || !playlist || !lensPost || !productData || uploading}
-                >
-                  {uploading ? "Submitting..." : "Create space"}
-                </button>
-              </>
-        }
-      </div>
-    </JamProvider>
+              <button
+                className="btn mt-4"
+                onClick={submit}
+                disabled={!goody || !playlist || !lensPost || !productData || uploading}
+              >
+                {uploading ? "Submitting..." : "Create space"}
+              </button>
+            </>
+      }
+    </div>
   );
 };
 

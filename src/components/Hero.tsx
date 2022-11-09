@@ -6,7 +6,9 @@ import { APP_NAME } from "@/lib/consts";
 import useLensLogin from "@/hooks/useLensLogin";
 import { ConnectWallet } from "./ConnectWallet";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
+import useIsMounted from "@/hooks/useIsMounted";
 
+const JamProviderWrapper = dynamic(() => import('@/components/JamProviderWrapper'), { ssr: false });
 const CreateSpace = dynamic(() => import('@/components/CreateSpace'), { ssr: false });
 
 export const Hero = () => {
@@ -14,6 +16,7 @@ export const Hero = () => {
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
   const { data: profiles } = useGetProfilesOwned({}, address);
   const { ensName, isLoading: isLoadingENS } = useENS(address);
+  const isMounted = useIsMounted();
 
   useEffect(() => {
     if (profiles?.length) {
@@ -22,6 +25,8 @@ export const Hero = () => {
   }, [address, profiles]);
 
   const { data, refetch: login } = useLensLogin();
+
+  if (!isMounted) return null;
 
   return (
     <div className="relative overflow-hidden">
@@ -106,7 +111,9 @@ export const Hero = () => {
                 <div className="bg-transparent sm:mx-auto sm:w-full sm:max-w-md sm:overflow-hidden sm:rounded-lg">
                   <div className="px-4 sm:px-10">
                     <div className="w-full">
-                      <CreateSpace defaultProfile={defaultProfile} ensName={ensName} />
+                      <JamProviderWrapper>
+                        <CreateSpace defaultProfile={defaultProfile} ensName={ensName} />
+                      </JamProviderWrapper>
                     </div>
                   </div>
                 </div>
