@@ -1,7 +1,7 @@
 import redisClient from "@/lib/utils/redisClient";
 import { fetchPlaylistById } from "@spinamp/spinamp-sdk";
 import { GetServerSideProps } from "next";
-import dynamic from "next/dynamic"
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { FC, Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { useAccount, useQuery } from "wagmi";
@@ -10,8 +10,8 @@ import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import useENS from "@/hooks/useENS";
 import { SPACE_API_URL } from "@/lib/consts";
 
-const JamProviderWrapper = dynamic(() => import('@/components/JamProviderWrapper'), { ssr: false });
-const LiveSpace = dynamic(() => import('@/components/LiveSpace'), { ssr: false });
+const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
+const LiveSpace = dynamic(() => import("@/components/LiveSpace"), { ssr: false });
 
 const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   const {
@@ -43,11 +43,10 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
 
   return (
     <>
-      {
-        isLoadingEntry && <>Entering the ClubSpace...</>
-      }
-      {
-        /** AUDIO API NOT WORKING
+      {isLoadingEntry && (
+        <p className="abs-center animate-move-txt-bg gradient-txt text-4xl">Entering the ClubSpace...</p>
+      )}
+      {/** AUDIO API NOT WORKING
         !isLoadingEntry && (
           <div className="w-full relative h-[60vh]">
             <SpectrumVisualizer
@@ -61,22 +60,19 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
               highFrequency={8000}
             />
           </div>
-        ) **/
-      }
-      {
-        isConnected && !loadingDefaultProfile && !isLoadingENS && (
-          <JamProviderWrapper>
-            <LiveSpace
-              clubSpaceObject={clubSpaceObject}
-              defaultProfile={defaultProfile}
-              isLoadingEntry={isLoadingEntry}
-              setIsLoadingEntry={setIsLoadingEntry}
-              address={address}
-              handle={defaultProfile?.handle || ensName || address}
-            />
-          </JamProviderWrapper>
-        )
-      }
+        ) **/}
+      {isConnected && !loadingDefaultProfile && !isLoadingENS && (
+        <JamProviderWrapper>
+          <LiveSpace
+            clubSpaceObject={clubSpaceObject}
+            defaultProfile={defaultProfile}
+            isLoadingEntry={isLoadingEntry}
+            setIsLoadingEntry={setIsLoadingEntry}
+            address={address}
+            handle={defaultProfile?.handle || ensName || address}
+          />
+        </JamProviderWrapper>
+      )}
     </>
   );
 };
@@ -97,7 +93,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       console.log(`found space with id: ${clubSpaceObject.clubSpaceId}`);
     } else {
       // @TODO: space duration should depend on whether the audio stream is still running
-      console.log('SPACE NOT FOUND! MAY HAVE EXPIRED FROM REDIS');
+      console.log("SPACE NOT FOUND! MAY HAVE EXPIRED FROM REDIS");
     }
 
     return { props: { clubSpaceObject } };

@@ -1,7 +1,30 @@
+:root {
+  --ease-squish-1: cubic-bezier(0.5, -0.1, 0.1, 1.5);
+}
+
 .btn {
   @apply flex w-full cursor-pointer justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
 }
 
 .input {
   @apply block w-full rounded-md dark:bg-gray-800 dark:text-white dark:border-gray-600 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm;
+}
+
+.grid-container {
+  width: clamp(350px, 75%, 800px);
+  grid-template-columns: repeat(auto-fill, 90px);
+  @apply border-[0.1px] dark:border-gray-600 p-4 md:p-8 grid place-content-center mx-auto gap-x-4 gap-y-6 mt-10;
+}
+
+.abs-center {
+  @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+}
+
+.gradient-txt {
+  --bg-size: 400%;
+  --color-one: hsl(15 90% 55%);
+  --color-two: hsl(40 95% 55%);
+  background: linear-gradient(90deg, var(--color-one), var(--color-two), var(--color-one)) 0 0 / var(--bg-size) 100%;
+  color: transparent;
+  background-clip: text;
 }
