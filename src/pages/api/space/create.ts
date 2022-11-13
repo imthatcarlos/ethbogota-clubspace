@@ -4,6 +4,7 @@ import { BigNumber } from "ethers";
 import {PrivyClient} from '@privy-io/privy-node';
 import redisClient from "@/lib/utils/redisClient";
 import { REDIS_LIVE_SPACE_HANDLES, REDIS_SPACE_EXP, SITE_URL } from "@/lib/consts";
+import { startRadio } from "@/services/radio";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // write club space object to redis for lookup
@@ -76,8 +77,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       });
     } catch (error) {
       // only happening if field already exits, won't happen unless creating test ones
-      console.log(error);
+      // console.log(error);
+      console.log('ERROR - privy field exists');
     }
+
+    // post the playlist id for our api to create the audio stream async; will be written to redis
+    await startRadio({ clubSpaceId, spinampPlaylistId });
 
     return res
       .status(200)

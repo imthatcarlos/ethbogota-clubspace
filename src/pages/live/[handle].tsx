@@ -9,6 +9,7 @@ import { SpectrumVisualizer, SpectrumVisualizerTheme } from "react-audio-visuali
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import useENS from "@/hooks/useENS";
 import { SPACE_API_URL } from "@/lib/consts";
+import { getRadio } from "@/services/radio";
 
 const JamProviderWrapper = dynamic(() => import('@/components/JamProviderWrapper'), { ssr: false });
 const LiveSpace = dynamic(() => import('@/components/LiveSpace'), { ssr: false });
@@ -38,8 +39,10 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
     }
   }, [address, profiles, isLoadingProfiles]);
 
-  // * - load the playlist live audio stream (TBD)
-  // * - load the decent featured NFT + tx history
+  // TODO: if clubSpaceObject.stream == null it means the worker hasn't finished
+  // - use a hook to periodically call getRadio()
+  //
+  // TODO: load the decent featured NFT + tx history
 
   return (
     <>
@@ -47,21 +50,15 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
         isLoadingEntry && <>Entering the ClubSpace...</>
       }
       {
-        /** AUDIO API NOT WORKING
-        !isLoadingEntry && (
+        !isLoadingEntry && clubSpaceObject.stream && (
           <div className="w-full relative h-[60vh]">
-            <SpectrumVisualizer
-              audio={`${SPACE_API_URL}/stream/${clubSpaceObject.clubSpaceId}`}
-              theme={SpectrumVisualizerTheme.squaredBars}
-              colors={["#4f46e5", "#6366f1"]}
-              iconsColor="#4f46e5"
-              backgroundColor="#000"
-              showMainActionIcon={false}
-              showLoaderIcon
-              highFrequency={8000}
+            <audio
+              src={clubSpaceObject.stream}
+              preload='none'
+              controls
             />
           </div>
-        ) **/
+        )
       }
       {
         isConnected && !loadingDefaultProfile && !isLoadingENS && (
@@ -90,15 +87,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   try {
     const data = await redisClient.get(handle);
-    if (!data) return { props: {} };
-
-    const clubSpaceObject = JSON.parse(data);
-    if (clubSpaceObject) {
-      console.log(`found space with id: ${clubSpaceObject.clubSpaceId}`);
-    } else {
+    if (!data) {
       // @TODO: space duration should depend on whether the audio stream is still running
       console.log('SPACE NOT FOUND! MAY HAVE EXPIRED FROM REDIS');
+      return { props: {} };
     }
+
+    const clubSpaceObject = JSON.parse(data);
+    console.log(clubSpaceObject)
+    console.log(`found space with id: ${clubSpaceObject.clubSpaceId}`);
+
+    // NOTE: might not be there if the radio worker has not finished
+    clubSpaceObject.stream = await redisClient.get(`stream/${clubSpaceObject.clubSpaceId}`);
 
     return { props: { clubSpaceObject } };
   } catch (error) {

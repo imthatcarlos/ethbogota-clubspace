@@ -78,6 +78,7 @@ const LiveSpace: FC<Props> = ({
       });
       console.log(`JOINING: ${clubSpaceObject.clubSpaceId}`);
       await enterRoom(clubSpaceObject.clubSpaceId);
+      console.log('JOINED');
 
       // USER IS IN
       setIsLoadingEntry(false);
