@@ -5,6 +5,16 @@ module.exports = {
   theme: {
     extend: {
       keyframes: {
+        "fade-in-from-top": {
+          from: {
+            opacity: 0,
+            transform: "translateY(10px)",
+          },
+          to: {
+            opacity: 1,
+            transform: "translateY(0)",
+          },
+        },
         "fade-in-and-out-up": {
           "0%": {
             opacity: 0,
@@ -21,6 +31,11 @@ module.exports = {
           "100%": {
             opacity: 0,
             transform: "translateY(-10px)",
+          },
+        },
+        "move-txt-bg": {
+          to: {
+            backgroundPosition: "var(--bg-size) 0",
           },
         },
         crash: {
@@ -53,7 +68,9 @@ module.exports = {
         },
       },
       animation: {
+        "move-txt-bg": "move-txt-bg 8s linear infinite",
         "fade-in-and-out-up": "fade-in-and-out-up 2s ease-in-out",
+        "fade-in-from-top": "fade-in-from-top 0.5s var(--ease-squish-1) forwards calc(var(--_delay) * 100ms)",
         crash: "crash 6s linear",
         destroy: "destroy 6s",
       },
