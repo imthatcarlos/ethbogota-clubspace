@@ -1,7 +1,7 @@
 import redisClient from "@/lib/utils/redisClient";
 import { fetchPlaylistById } from "@spinamp/spinamp-sdk";
 import { GetServerSideProps } from "next";
-import dynamic from "next/dynamic"
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { FC, Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { useAccount, useQuery } from "wagmi";
@@ -11,8 +11,8 @@ import useENS from "@/hooks/useENS";
 import { SPACE_API_URL } from "@/lib/consts";
 import { getRadio } from "@/services/radio";
 
-const JamProviderWrapper = dynamic(() => import('@/components/JamProviderWrapper'), { ssr: false });
-const LiveSpace = dynamic(() => import('@/components/LiveSpace'), { ssr: false });
+const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
+const LiveSpace = dynamic(() => import("@/components/LiveSpace"), { ssr: false });
 
 const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   const {
@@ -46,11 +46,11 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
 
   return (
     <>
-      {
-        isLoadingEntry && <>Entering the ClubSpace...</>
-      }
-      {
-        !isLoadingEntry && clubSpaceObject.stream && (
+      {isLoadingEntry && (
+        <p className="abs-center animate-move-txt-bg gradient-txt text-4xl">Entering the ClubSpace...</p>
+      )}
+      {/** AUDIO API NOT WORKING
+        !isLoadingEntry && (
           <div className="w-full relative h-[60vh]">
             <audio
               src={clubSpaceObject.stream}
@@ -58,22 +58,19 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
               controls
             />
           </div>
-        )
-      }
-      {
-        isConnected && !loadingDefaultProfile && !isLoadingENS && (
-          <JamProviderWrapper>
-            <LiveSpace
-              clubSpaceObject={clubSpaceObject}
-              defaultProfile={defaultProfile}
-              isLoadingEntry={isLoadingEntry}
-              setIsLoadingEntry={setIsLoadingEntry}
-              address={address}
-              handle={defaultProfile?.handle || ensName || address}
-            />
-          </JamProviderWrapper>
-        )
-      }
+        ) **/}
+      {isConnected && !loadingDefaultProfile && !isLoadingENS && (
+        <JamProviderWrapper>
+          <LiveSpace
+            clubSpaceObject={clubSpaceObject}
+            defaultProfile={defaultProfile}
+            isLoadingEntry={isLoadingEntry}
+            setIsLoadingEntry={setIsLoadingEntry}
+            address={address}
+            handle={defaultProfile?.handle || ensName || address}
+          />
+        </JamProviderWrapper>
+      )}
     </>
   );
 };
