@@ -1,4 +1,4 @@
-import { JamProvider } from 'jam-core-react';
+import { JamProvider } from '@/lib/jam-core-react';
 import { SPACE_API_URL } from "@/lib/consts";
 
 const IS_DEVELOPMENT = false; // DISABLE IN PROD

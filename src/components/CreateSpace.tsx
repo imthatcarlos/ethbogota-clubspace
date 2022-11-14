@@ -7,7 +7,7 @@ import { IPlaylist } from "@spinamp/spinamp-sdk";
 import { useAccount, useContract, useSigner } from "wagmi";
 import toast from 'react-hot-toast'
 import axios from "axios";
-import { useJam } from 'jam-core-react';
+import { useJam } from '@/lib/jam-core-react';
 import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
 import { createGroup } from "@/lib/semaphore/semaphore";

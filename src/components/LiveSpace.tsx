@@ -1,6 +1,6 @@
 import { FC, Fragment, useEffect, useState, useCallback } from "react";
 import { Dialog, Menu, Popover, Transition } from "@headlessui/react";
-import { useJam } from "jam-core-react";
+import { useJam } from "@/lib/jam-core-react";
 import { isEmpty } from "lodash/lang";
 import { classNames } from "@/lib/utils/classNames";
 import { joinGroup } from "@/lib/semaphore/semaphore";
@@ -157,6 +157,7 @@ const LiveSpace: FC<Props> = ({
           })} */}
         {mockIdentities.identities.map(({ id, handle, profile }, index) => (
           <LensProfile
+            id={id}
             key={handle}
             handle={handle}
             picture={profile ? getUrlForImageFromIpfs(profile.avatar) : ""}

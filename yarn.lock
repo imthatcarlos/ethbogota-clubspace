@@ -701,6 +701,17 @@
     "@json-rpc-tools/types" "^1.7.6"
     "@pedrouid/environment" "^1.0.1"
 
+"@madfi/jam-core@0.5.7":
+  version "0.5.7"
+  resolved "https://registry.yarnpkg.com/@madfi/jam-core/-/jam-core-0.5.7.tgz#2d69ed6d7255679dac365c896324becf3deecf2b"
+  integrity sha512-37ySAWo/gLE1rqY5np59yLAAibF/EUoenFwXj3TAQMTAd95ZieYYPtOR0FPceHft1QnRfXBJJCxSR0I2fZ5FAg==
+  dependencies:
+    fast-base64 "^0.1.8"
+    mediasoup-client "^3.6.31"
+    minimal-state "^5.6.0"
+    ua-parser-js "^0.7.24"
+    watsign "^0.1.8"
+
 "@metamask/safe-event-emitter@2.0.0", "@metamask/safe-event-emitter@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@metamask/safe-event-emitter/-/safe-event-emitter-2.0.0.tgz#af577b477c683fad17c619a78208cede06f9605c"
@@ -2792,9 +2803,9 @@ aws4@^1.8.0:
   integrity sha512-xh1Rl34h6Fi1DC2WWKfxUTVqRsNnr6LsKz2+hfwDxQJWmrx8+c7ylaqBMcHfl1U1r2dsifOvKX3LQuLNZ+XSvA==
 
 axe-core@^4.4.3:
-  version "4.5.1"
-  resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.5.1.tgz#04d561c11b6d76d096d34e9d14ba2c294fb20cdc"
-  integrity sha512-1exVbW0X1O/HSr/WMwnaweyqcWOgZgLiVxdLG34pvSQk4NlYQr9OUy0JLwuhFfuVNQzzqgH57eYzkFBCb3bIsQ==
+  version "4.5.2"
+  resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.5.2.tgz#823fdf491ff717ac3c58a52631d4206930c1d9f7"
+  integrity sha512-u2MVsXfew5HBvjsczCv+xlwdNnB1oQR9HlAcsejZttNjKKSkeDNVwB1vMThIUIFI9GoT57Vtk8iQLwqOfAkboA==
 
 axios@^0.21.0, axios@^0.21.1:
   version "0.21.4"
@@ -5897,28 +5908,6 @@ jake@^10.8.5:
     chalk "^4.0.2"
     filelist "^1.0.1"
     minimatch "^3.0.4"
-
-jam-core-react@^0.5.6:
-  version "0.5.6"
-  resolved "https://registry.yarnpkg.com/jam-core-react/-/jam-core-react-0.5.6.tgz#442d8d78351f97fa79acc044a1bc1b9dce291dab"
-  integrity sha512-mlWTs+GRrXjopkib6bnO6+yQ/NmY87ZiuHfEwP5BORQNYzp1gA6LXXGOuIDRrQQkPnvQwVNyQTTpI+OykcQKRQ==
-  dependencies:
-    fast-base64 "^0.1.8"
-    jam-core "0.5.6"
-    minimal-state "^5.6.0"
-    use-minimal-state "^3.5.0"
-    watsign "^0.1.8"
-
-jam-core@0.5.6, "jam-core@npm:@madfi/jam-core@0.5.7":
-  version "0.5.7"
-  resolved "https://registry.yarnpkg.com/@madfi/jam-core/-/jam-core-0.5.7.tgz#2d69ed6d7255679dac365c896324becf3deecf2b"
-  integrity sha512-37ySAWo/gLE1rqY5np59yLAAibF/EUoenFwXj3TAQMTAd95ZieYYPtOR0FPceHft1QnRfXBJJCxSR0I2fZ5FAg==
-  dependencies:
-    fast-base64 "^0.1.8"
-    mediasoup-client "^3.6.31"
-    minimal-state "^5.6.0"
-    ua-parser-js "^0.7.24"
-    watsign "^0.1.8"
 
 jayson@^3.4.4:
   version "3.7.0"
