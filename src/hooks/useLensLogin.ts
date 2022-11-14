@@ -55,6 +55,11 @@ export default (options: UseQueryOptions = {}) => {
       const challenge = await generateChallenge(address);
       const signature = await signer?.signMessage(challenge?.challenge?.text);
       const result = await authenticate(address, signature);
+
+      // @TODO: check this before going thru the above request
+      localStorage.setItem("lens_accessToken", result?.authenticate?.accessToken);
+      localStorage.setItem("lens_refreshToken", result?.authenticate?.refreshToken);
+
       return result;
     },
     {

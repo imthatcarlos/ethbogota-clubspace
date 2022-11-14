@@ -1,7 +1,9 @@
 import { FC, Fragment, useEffect, useState, useCallback } from "react";
 import { Dialog, Menu, Popover, Transition } from "@headlessui/react";
+import { useSigner } from 'wagmi';
 import { useJam } from "@/lib/jam-core-react";
 import { isEmpty } from "lodash/lang";
+import toast from 'react-hot-toast'
 import { classNames } from "@/lib/utils/classNames";
 import { joinGroup } from "@/lib/semaphore/semaphore";
 import { Profile, useGetProfilesByHandles, useGetProfilesOwned } from "@/services/lens/getProfile";
@@ -11,6 +13,7 @@ import useIdentity from "@/hooks/useIdentity";
 import useIsMounted from "@/hooks/useIsMounted";
 import useUnload from "@/hooks/useUnload";
 import { getProfileByHandle } from "@/services/lens/getProfile";
+import doesFollow from "@/services/lens/doesFollow";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -65,11 +68,14 @@ const LiveSpace: FC<Props> = ({
 }) => {
   const { identity } = useIdentity();
   const isMounted = useIsMounted();
+  const { data: signer } = useSigner();
   const [{ identities, myIdentity, reactions }, { enterRoom, leaveRoom, setProps, updateInfo, sendReaction }] =
     useJam();
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
   const [connectedPeers, setConnectedPeers] = useState<string[]>();
   const [drawerProfile, setDrawerProfile] = useState<any>({});
+  const [doesFollowDrawerProfile, setDoesFollowDrawerProfile] = useState<boolean>(false);
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
 
   let [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -91,20 +97,42 @@ const LiveSpace: FC<Props> = ({
   }
 
   // only lens accounts (handle includes .lens or .test)
-  const toggleDrawer = async (clickedHandle: string) => {
-    console.log(clickedHandle);
-    if (clickedHandle.includes('.lens') || clickedHandle.includes('.test')) {
-      const profile = await getProfileByHandle(clickedHandle);
-      console.log(profile);
+  const toggleDrawer = async ({ handle, profile: { id } }) => {
+    if (handle.includes('.lens') || handle.includes('.test')) {
+      const [profile, { doesFollow: doesFollowData }] = await Promise.all([
+        getProfileByHandle(handle),
+        doesFollow([{ followerAddress: address, profileId: id }])
+      ]);
 
       setDrawerProfile(profile);
+      setDoesFollowDrawerProfile(doesFollowData[0].follows);
     }
 
     setIsOpen((currentState) => !currentState);
   };
 
-  const onFollowClick = async () => {
+  const onFollowClick = (profileId) => {
+    toast.promise(
+      new Promise(async (resolve, reject) => {
+        const res = await followProfileGasless(
+          profileId,
+          signer,
+          localStorage.getItem("lens_accessToken")
+        );
 
+        console.log(res);
+
+        resolve();
+      }),
+      {
+        loading: 'Following profile',
+        success: 'Followed!',
+        error: (error) => {
+          console.log(error);
+          return 'Error!'
+        },
+      }
+    );
   };
 
   function closeModal() {
@@ -120,6 +148,7 @@ const LiveSpace: FC<Props> = ({
           avatar: defaultProfile?.picture?.original?.url,
           name: defaultProfile?.name,
           totalFollowers: defaultProfile?.stats?.totalFollowers,
+          id: defaultProfile?.id,
         },
       });
       console.log(`JOINING: ${clubSpaceObject.clubSpaceId}`);
@@ -162,6 +191,7 @@ const LiveSpace: FC<Props> = ({
           connectedPeers?.map((peerId, index) => {
             return (
               <LensProfile
+                id={identities[peerId].profile?.id}
                 key={identities[peerId].handle}
                 handle={identities[peerId].handle}
                 picture={identities[peerId].profile ? getUrlForImageFromIpfs(identities[peerId].profile.avatar) : ""}
@@ -169,7 +199,7 @@ const LiveSpace: FC<Props> = ({
                 totalFollowers={identities[peerId].profile?.totalFollowers}
                 reaction={isEmpty(reactions[peerId]) ? null : reactions[peerId][0]}
                 index={index}
-                onClick={() => { toggleDrawer(identities[peerId].handle); }}
+                onClick={() => { toggleDrawer(identities[peerId]); }}
               />
             );
           })}
@@ -259,9 +289,10 @@ const LiveSpace: FC<Props> = ({
 
                       <button
                         className="!w-auto btn"
-                        onClick={onFollowClick}
+                        onClick={() => { onFollowClick(drawerProfile.profile.id) }}
+                        disabled={doesFollowDrawerProfile}
                       >
-                        Follow
+                        {doesFollowDrawerProfile ? 'Following' : 'Follow'}
                       </button>
                     </div>
                   </Dialog.Title>

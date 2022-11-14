@@ -701,8 +701,10 @@
     "@json-rpc-tools/types" "^1.7.6"
     "@pedrouid/environment" "^1.0.1"
 
-"@madfi/jam-core@file:../jam-master/ui/packages/jam-core":
+"@madfi/jam-core@0.5.7":
   version "0.5.7"
+  resolved "https://registry.yarnpkg.com/@madfi/jam-core/-/jam-core-0.5.7.tgz#2d69ed6d7255679dac365c896324becf3deecf2b"
+  integrity sha512-37ySAWo/gLE1rqY5np59yLAAibF/EUoenFwXj3TAQMTAd95ZieYYPtOR0FPceHft1QnRfXBJJCxSR0I2fZ5FAg==
   dependencies:
     fast-base64 "^0.1.8"
     mediasoup-client "^3.6.31"
