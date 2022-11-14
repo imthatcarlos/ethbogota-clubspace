@@ -15,7 +15,7 @@
 		"@pinata/sdk": "^1.1.26",
 		"@privy-io/privy-node": "^0.0.2",
 		"@pushprotocol/restapi": "^0.1.1",
-		"@madfi/jam-core": "0.5.7",
+		"@madfi/jam-core": "file:./../jam-master/ui/packages/jam-core/",
 		"@rainbow-me/rainbowkit": "^0.7.4",
 		"@semaphore-protocol/group": "2.5.0",
 		"@semaphore-protocol/identity": "2.5.0",

@@ -10,7 +10,7 @@ import { LensProfile, reactionsEntries } from "@/components/LensProfile";
 import useIdentity from "@/hooks/useIdentity";
 import useIsMounted from "@/hooks/useIsMounted";
 import useUnload from "@/hooks/useUnload";
-import * as mockIdentities from "@/constants/mockIdentities.json";
+import { getProfileByHandle } from "@/services/lens/getProfile";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -45,6 +45,9 @@ type Props = {
   handle: boolean;
 };
 
+const DEFAULT_AVATAR = 'https://cdn.stamp.fyi/avatar/eth:0x2954dbfbbdf8dafd86c8dcace63b26796ef2bf52?s=250';
+const DEFAULT_COVER = 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fnftevening.com%2Fwp-content%2Fuploads%2F2022%2F03%2FLIST-APE-ART-1024x576.png&f=1&nofb=1&ipt=83eca6574d793e1023a961cd605caa6fd4f7afbe580fd6c4ce4509f70d4e39b3&ipo=images';
+
 /**
  * This component takes club space data object and handles any live aspects with streamr
  * - connect to the streamr pub/sub client
@@ -66,6 +69,7 @@ const LiveSpace: FC<Props> = ({
     useJam();
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
   const [connectedPeers, setConnectedPeers] = useState<string[]>();
+  const [drawerProfile, setDrawerProfile] = useState<any>({});
 
   let [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -86,9 +90,22 @@ const LiveSpace: FC<Props> = ({
     );
   }
 
-  function toggleDrawer() {
+  // only lens accounts (handle includes .lens or .test)
+  const toggleDrawer = async (clickedHandle: string) => {
+    console.log(clickedHandle);
+    if (clickedHandle.includes('.lens') || clickedHandle.includes('.test')) {
+      const profile = await getProfileByHandle(clickedHandle);
+      console.log(profile);
+
+      setDrawerProfile(profile);
+    }
+
     setIsOpen((currentState) => !currentState);
-  }
+  };
+
+  const onFollowClick = async () => {
+
+  };
 
   function closeModal() {
     setIsOpen(false);
@@ -152,21 +169,10 @@ const LiveSpace: FC<Props> = ({
                 totalFollowers={identities[peerId].profile?.totalFollowers}
                 reaction={isEmpty(reactions[peerId]) ? null : reactions[peerId][0]}
                 index={index}
+                onClick={() => { toggleDrawer(identities[peerId].handle); }}
               />
             );
           })}
-        {/**mockIdentities.identities.map(({ id, handle, profile }, index) => (
-          <LensProfile
-            id={id}
-            key={handle}
-            handle={handle}
-            picture={profile ? getUrlForImageFromIpfs(profile.avatar) : ""}
-            name={profile?.name}
-            totalFollowers={profile?.totalFollowers}
-            index={index}
-            onClick={toggleDrawer}
-          />
-        ))*/}
       </div>
 
       <Popover
@@ -197,7 +203,7 @@ const LiveSpace: FC<Props> = ({
                 <Menu.Items className="absolute z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 p-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none flex gap-4 flex-wrap">
                   {reactionsEntries.map(([key, value]) => (
                     <Menu.Item key={value}>
-                      {({ active }) => <button onClick={async () => await sendReaction(value)}>{value}</button>}
+                      {({ active }) => <button onClick={() => sendReaction(value)}>{value}</button>}
                     </Menu.Item>
                   ))}
                 </Menu.Items>
@@ -235,9 +241,9 @@ const LiveSpace: FC<Props> = ({
                 leaveTo="opacity-0 scale-95 translate-y-[100%]"
               >
                 <Dialog.Panel className="relative w-full max-w-md transform overflow-hidden rounded-tl-[35px] rounded-tr-[35px] bg-white dark:bg-black p-6 text-left align-middle shadow-xl transition-all min-h-[20rem] pt-[155px]">
-                  <div className="absolute top-0 right-0 h-[130px] bg-cover bg-[url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fnftevening.com%2Fwp-content%2Fuploads%2F2022%2F03%2FLIST-APE-ART-1024x576.png&f=1&nofb=1&ipt=83eca6574d793e1023a961cd605caa6fd4f7afbe580fd6c4ce4509f70d4e39b3&ipo=images')] w-full">
+                  <div className={`absolute top-0 right-0 h-[130px] bg-cover bg-[url('${defaultProfile?.coverPicture?.picture?.original?.url || DEFAULT_COVER}')] w-full`}>
                     <img
-                      src="https://cdn.stamp.fyi/avatar/eth:0x2954dbfbbdf8dafd86c8dcace63b26796ef2bf52?s=250"
+                      src={defaultProfile?.picture?.original?.url || DEFAULT_AVATAR}
                       alt=""
                       className="rounded-full w-12 h-12 aspect-square relative border-black-[4px] top-3/4 left-[5%] outline outline-offset-0 outline-4 outline-black"
                     />
@@ -246,23 +252,32 @@ const LiveSpace: FC<Props> = ({
                     <div className="flex justify-between items-center">
                       <div className="flex flex-col">
                         <div className="mb-[-3px] dark:text-white">
-                          <span>First</span> | <span>last</span>
+                          <span>{drawerProfile?.name}</span>
                         </div>
-                        <div className="text-gray-500">@Handle</div>
+                        <div className="text-gray-500">@{drawerProfile?.handle}</div>
                       </div>
 
-                      <button className="!w-auto btn">Follow</button>
+                      <button
+                        className="!w-auto btn"
+                        onClick={onFollowClick}
+                      >
+                        Follow
+                      </button>
                     </div>
                   </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500 dark:text-white mb-6">
-                      Co-founder of Ape Space and supreme ruler of the best NFT universe.
+                      {drawerProfile.bio || 'No bio.'}
                     </p>
 
-                    <button className="flex gap-x-4 items-center">
-                      <Envelope />
-                      <span>Send Direct Message</span>
-                    </button>
+                    {
+                      /**
+                      <button className="flex gap-x-4 items-center">
+                        <Envelope />
+                        <span>Send Direct Message</span>
+                      </button>
+                      */
+                    }
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
