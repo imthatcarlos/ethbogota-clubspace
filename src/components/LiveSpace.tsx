@@ -141,7 +141,7 @@ const LiveSpace: FC<Props> = ({
   return (
     <>
       <div className="grid-container">
-        {/* {connectedPeers &&
+        {connectedPeers &&
           connectedPeers?.map((peerId, index) => {
             return (
               <LensProfile
@@ -154,8 +154,8 @@ const LiveSpace: FC<Props> = ({
                 index={index}
               />
             );
-          })} */}
-        {mockIdentities.identities.map(({ id, handle, profile }, index) => (
+          })}
+        {/**mockIdentities.identities.map(({ id, handle, profile }, index) => (
           <LensProfile
             id={id}
             key={handle}
@@ -166,7 +166,7 @@ const LiveSpace: FC<Props> = ({
             index={index}
             onClick={toggleDrawer}
           />
-        ))}
+        ))*/}
       </div>
 
       <Popover
