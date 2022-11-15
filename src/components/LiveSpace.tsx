@@ -1,21 +1,22 @@
 import { FC, Fragment, useEffect, useState, useCallback } from "react";
 import { Dialog, Menu, Popover, Transition } from "@headlessui/react";
-import { useSigner } from "wagmi";
+import { useSigner, useNetwork } from "wagmi";
 import { useJam } from "@/lib/jam-core-react";
 import { isEmpty } from "lodash/lang";
 import toast from "react-hot-toast";
 import { use } from "use-minimal-state";
 import { classNames } from "@/lib/utils/classNames";
 import { joinGroup } from "@/lib/semaphore/semaphore";
-import { Profile, useGetProfilesByHandles, useGetProfilesOwned } from "@/services/lens/getProfile";
+import { Profile, useGetProfilesOwned, useGetProfileByHandle } from "@/services/lens/getProfile";
 import { getUrlForImageFromIpfs } from "@/utils/ipfs";
 import { LensProfile, reactionsEntries } from "@/components/LensProfile";
 import useIdentity from "@/hooks/useIdentity";
 import useIsMounted from "@/hooks/useIsMounted";
 import useUnload from "@/hooks/useUnload";
 import { getProfileByHandle } from "@/services/lens/getProfile";
-import doesFollow from "@/services/lens/doesFollow";
+import { doesFollow, useDoesFollow } from "@/services/lens/doesFollow";
 import { followProfileGasless } from "@/services/lens/gaslessTxs";
+import { useGetContractData } from "@/services/decent/getDecentNFT";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -70,11 +71,14 @@ const LiveSpace: FC<Props> = ({
   const { identity } = useIdentity();
   const isMounted = useIsMounted();
   const { data: signer } = useSigner();
+  const { chain } = useNetwork();
   const [state, { enterRoom, leaveRoom, setProps, updateInfo, sendReaction }] = useJam();
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
   const [drawerProfile, setDrawerProfile] = useState<any>({});
   const [doesFollowDrawerProfile, setDoesFollowDrawerProfile] = useState<boolean>(false);
-  const [isFollowing, setIsFollowing] = useState<boolean>(false);
+  const { data: doesFollowCreator } = useDoesFollow({}, { followerAddress: address, profileId: clubSpaceObject.creatorLensProfileId });
+  const { data: creatorLensProfile } = useGetProfileByHandle({}, clubSpaceObject.creatorLensHandle, 'creatorLensProfile');
+  const { data: featuredDecentNFT } = useGetContractData({}, { address: clubSpaceObject.decentContractAddress, chainId: chain.id, signer });
 
   let [
     reactions,
@@ -224,6 +228,22 @@ const LiveSpace: FC<Props> = ({
 
   if (isLoadingEntry) return null;
 
+  // @TODO: render the host profile larger than `LensProfile`:
+  // - avatar maybe rounded square
+  // - Name (handle.lens)
+  // - label: ClubSpace Host
+  // - bio
+  // follow button => disabled if `doesFollowCreator` (same logic as drawer follow button)
+  console.log(creatorLensProfile);
+  console.log(doesFollowCreator);
+
+  // @TODO: render the featured decent NFT + buy button
+  // - NFT image / gif
+  // - NFT name, description
+  // - PRICE | supply
+  // - Buy button
+  console.log(featuredDecentNFT);
+
   return (
     <>
       <div className="stage-container responsive-container">
@@ -232,9 +252,6 @@ const LiveSpace: FC<Props> = ({
       <div className="grid-container responsive-container">
         {myPeerId
           ? peers.concat(myPeerId).map((peerId, index) => {
-              console.log(peerId);
-              console.log(reactions);
-              console.log(reactions[peerId]);
               return identities[peerId] ? (
                 <LensProfile
                   allowDrawer={[".lens", ".test"].some((ext) => identities[peerId].handle.includes(ext))}

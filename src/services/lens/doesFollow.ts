@@ -1,7 +1,8 @@
-import { apiUrls } from "@/constants/apiUrls";
 import request, { gql } from "graphql-request";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { apiUrls } from "@/constants/apiUrls";
 
-export const DOES_FOLLOW = gql`
+const DOES_FOLLOW = gql`
   query DoesFollow($request: DoesFollowRequest!) {
     doesFollow(request: $request) {
       followerAddress
@@ -11,7 +12,7 @@ export const DOES_FOLLOW = gql`
   }
 `;
 
-export default async (followInfos) => {
+export const doesFollow = async (followInfos) => {
   try {
     return await request({
       url: apiUrls.lensAPI,
@@ -21,4 +22,20 @@ export default async (followInfos) => {
   } catch (error) {
     console.log(error);
   }
+};
+
+export const useDoesFollow = (options: UseQueryOptions = {}, { followerAddress, profileId }, cacheKey: string = 'useDoesFollow') => {
+  const result = useQuery<Profile | null>(
+    [cacheKey, `${followerAddress},${profileId}`],
+    async () => {
+      const { doesFollow: doesFollowData } = await doesFollow([{ followerAddress, profileId }]);
+      return doesFollowData[0].follows;
+    },
+    {
+      ...(options as any),
+      enabled: !!(followerAddress && profileId),
+    }
+  );
+
+  return result;
 };

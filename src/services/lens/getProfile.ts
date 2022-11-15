@@ -218,11 +218,11 @@ export const getProfileByHandle = async (handle: string): Promise<Profile | null
   }
 };
 
-export const useGetProfileByHandle = (options: UseQueryOptions = {}, handle: string) => {
+export const useGetProfileByHandle = (options: UseQueryOptions = {}, handle: string, cacheKey: string = 'useGetProfileByHandle') => {
   const result = useQuery<Profile | null>(
-    ["profiles", handle],
+    [cacheKey, handle],
     async () => {
-      const result = await getProfileByHandle(handle);
+      const result = handle ? await getProfileByHandle(handle) : null;
 
       return result;
     },
