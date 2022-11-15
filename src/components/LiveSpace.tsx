@@ -1,9 +1,9 @@
 import { FC, Fragment, useEffect, useState, useCallback } from "react";
 import { Dialog, Menu, Popover, Transition } from "@headlessui/react";
-import { useSigner } from 'wagmi';
+import { useSigner } from "wagmi";
 import { useJam } from "@/lib/jam-core-react";
 import { isEmpty } from "lodash/lang";
-import toast from 'react-hot-toast'
+import toast from "react-hot-toast";
 import { classNames } from "@/lib/utils/classNames";
 import { joinGroup } from "@/lib/semaphore/semaphore";
 import { Profile, useGetProfilesByHandles, useGetProfilesOwned } from "@/services/lens/getProfile";
@@ -49,8 +49,7 @@ type Props = {
   handle: boolean;
 };
 
-const DEFAULT_AVATAR = 'https://cdn.stamp.fyi/avatar/eth:0x2954dbfbbdf8dafd86c8dcace63b26796ef2bf52?s=250';
-const DEFAULT_COVER = 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fnftevening.com%2Fwp-content%2Fuploads%2F2022%2F03%2FLIST-APE-ART-1024x576.png&f=1&nofb=1&ipt=83eca6574d793e1023a961cd605caa6fd4f7afbe580fd6c4ce4509f70d4e39b3&ipo=images';
+const DEFAULT_COVER = "../default-cover.jpg";
 
 /**
  * This component takes club space data object and handles any live aspects with streamr
@@ -99,11 +98,16 @@ const LiveSpace: FC<Props> = ({
 
   // only lens accounts (handle includes .lens or .test)
   const toggleDrawer = async ({ handle, profile: { id } }) => {
-    if (handle.includes('.lens') || handle.includes('.test')) {
+    if ([".lens", ".test"].some((ext) => handle.includes(ext))) {
       const [profile, { doesFollow: doesFollowData }] = await Promise.all([
         getProfileByHandle(handle),
-        doesFollow([{ followerAddress: address, profileId: id }])
+        doesFollow([{ followerAddress: address, profileId: id }]),
       ]);
+
+      if (profile.coverPicture) {
+        const convertedUrl = getUrlForImageFromIpfs(profile?.coverPicture?.original?.url);
+        profile.coverPicture.original.url = convertedUrl;
+      }
 
       setDrawerProfile(profile);
       setDoesFollowDrawerProfile(doesFollowData[0].follows);
@@ -112,15 +116,11 @@ const LiveSpace: FC<Props> = ({
     setIsOpen((currentState) => !currentState);
   };
 
-  const onFollowClick = (profileId) => {
+  const onFollowClick = (profileId: string) => {
     toast.promise(
-      new Promise(async (resolve, reject) => {
+      new Promise<void>(async (resolve, reject) => {
         const accessToken = localStorage.getItem("lens_accessToken");
-        const { txHash } = await followProfileGasless(
-          profileId,
-          signer,
-          accessToken
-        );
+        const { txHash } = await followProfileGasless(profileId, signer, accessToken);
 
         if (txHash) {
           setDoesFollowDrawerProfile(true);
@@ -129,11 +129,11 @@ const LiveSpace: FC<Props> = ({
         resolve();
       }),
       {
-        loading: 'Following profile...',
-        success: 'Followed!',
+        loading: "Following profile...",
+        success: "Followed!",
         error: (error) => {
           console.log(error);
-          return 'Error!'
+          return "Error!";
         },
       }
     );
@@ -157,7 +157,7 @@ const LiveSpace: FC<Props> = ({
       });
       console.log(`JOINING: ${clubSpaceObject.clubSpaceId}`);
       await enterRoom(clubSpaceObject.clubSpaceId);
-      console.log('JOINED');
+      console.log("JOINED");
 
       // USER IS IN
       setIsLoadingEntry(false);
@@ -166,7 +166,20 @@ const LiveSpace: FC<Props> = ({
     if (isMounted && isLoadingEntry) {
       join();
     }
-  }, [isMounted]);
+  }, [
+    clubSpaceObject.clubSpaceId,
+    defaultProfile?.id,
+    defaultProfile?.name,
+    defaultProfile?.picture?.original?.url,
+    defaultProfile?.stats?.totalFollowers,
+    enterRoom,
+    handle,
+    isLoadingEntry,
+    isMounted,
+    setIsLoadingEntry,
+    setProps,
+    updateInfo,
+  ]);
 
   useUnload(async () => {
     console.log(`LEAVING`);
@@ -190,11 +203,12 @@ const LiveSpace: FC<Props> = ({
 
   return (
     <>
-      <div className="grid-container">
+      <div className="grid-container responsive-container">
         {connectedPeers &&
           connectedPeers?.map((peerId, index) => {
             return (
               <LensProfile
+                allowDrawer={[".lens", ".test"].some((ext) => identities[peerId].handle.includes(ext))}
                 id={identities[peerId].profile?.id}
                 key={identities[peerId].handle}
                 handle={identities[peerId].handle}
@@ -203,17 +217,18 @@ const LiveSpace: FC<Props> = ({
                 totalFollowers={identities[peerId].profile?.totalFollowers}
                 reaction={isEmpty(reactions[peerId]) ? null : reactions[peerId][0]}
                 index={index}
-                onClick={() => { toggleDrawer(identities[peerId]); }}
+                onClick={() => {
+                  toggleDrawer(identities[peerId]);
+                }}
               />
             );
           })}
       </div>
-
       <Popover
         className={({ open }) =>
           classNames(
-            open ? "fixed inset-0 z-40 overflow-y-auto" : "",
-            "shadow-sm lg:static bottom-0 lg:overflow-y-visible"
+            open ? "inset-0 z-40 overflow-y-auto" : "",
+            "responsive-container mx-auto shadow-sm lg:static bottom-0 lg:overflow-y-visible"
           )
         }
       >
@@ -249,6 +264,8 @@ const LiveSpace: FC<Props> = ({
         )}
       </Popover>
 
+      {/* Start Drawer */}
+
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={closeModal}>
           <Transition.Child
@@ -275,9 +292,14 @@ const LiveSpace: FC<Props> = ({
                 leaveTo="opacity-0 scale-95 translate-y-[100%]"
               >
                 <Dialog.Panel className="relative w-full max-w-md transform overflow-hidden rounded-tl-[35px] rounded-tr-[35px] bg-white dark:bg-black p-6 text-left align-middle shadow-xl transition-all min-h-[20rem] pt-[155px]">
-                  <div className={`absolute top-0 right-0 h-[130px] bg-cover bg-[url('${defaultProfile?.coverPicture?.picture?.original?.url || DEFAULT_COVER}')] w-full`}>
+                  <div className={`absolute top-0 right-0 h-[125px] w-full shimmer`}>
                     <img
-                      src={defaultProfile?.picture?.original?.url || DEFAULT_AVATAR}
+                      className="absolute t-0 left-0 right-0 w-full h-full object-cover"
+                      src={drawerProfile?.coverPicture?.original?.url || "/default-cover.jpg"}
+                      alt=""
+                    />
+                    <img
+                      src={drawerProfile?.picture?.original?.url}
                       alt=""
                       className="rounded-full w-12 h-12 aspect-square relative border-black-[4px] top-3/4 left-[5%] outline outline-offset-0 outline-4 outline-black"
                     />
@@ -293,26 +315,24 @@ const LiveSpace: FC<Props> = ({
 
                       <button
                         className="!w-auto btn"
-                        onClick={() => { onFollowClick(drawerProfile.id) }}
+                        onClick={() => {
+                          onFollowClick(drawerProfile.id);
+                        }}
                         disabled={doesFollowDrawerProfile}
                       >
-                        {doesFollowDrawerProfile ? 'Following' : 'Follow'}
+                        {doesFollowDrawerProfile ? "Following" : "Follow"}
                       </button>
                     </div>
                   </Dialog.Title>
                   <div className="mt-2">
-                    <p className="text-sm text-gray-500 dark:text-white mb-6">
-                      {drawerProfile.bio || 'No bio.'}
-                    </p>
+                    <p className="text-sm text-gray-500 dark:text-white mb-6">{drawerProfile.bio || "No bio."}</p>
 
-                    {
-                      /**
+                    {/**
                       <button className="flex gap-x-4 items-center">
                         <Envelope />
                         <span>Send Direct Message</span>
                       </button>
-                      */
-                    }
+                      */}
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
