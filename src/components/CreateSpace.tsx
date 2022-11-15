@@ -33,9 +33,10 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
     setPlaylist(playlist);
   };
 
+  // @TODO: we should render more info, some kind of preview + link out to decent
   const setDecentProduct = (data) => {
     console.log(data);
-    setProductData(data);
+    setProductData(data.metadata);
   };
 
   const setPostData = (postData) => {

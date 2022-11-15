@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAccount, useNetwork, useSigner } from "wagmi";
 import { utils } from "ethers";
-import { getContractData } from "@/lib/utils/decent";
+import { getContractData } from "@/services/decent/getDecentNFT";
 
 const SetDecentProduct = ({ setDecentProduct, productData = undefined }) => {
   const { chain } = useNetwork();
@@ -15,7 +15,7 @@ const SetDecentProduct = ({ setDecentProduct, productData = undefined }) => {
   };
 
   const _getContractData = async (address) => {
-    const { data } = await getContractData(address, chain.id, signer);
+    const data = await getContractData(address, chain.id, signer);
     setDecentProduct({ address, ...data });
   };
 
