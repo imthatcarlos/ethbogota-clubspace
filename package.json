@@ -48,7 +48,7 @@
     "tailwindcss": "^3.0.24",
     "use-minimal-state": "^3.5.0",
     "uuid": "^9.0.0",
-    "wagmi": "^0.6.8",
+    "wagmi": "^0.8.3",
     "watsign": "^0.1.8"
   },
   "devDependencies": {
