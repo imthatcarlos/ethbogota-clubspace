@@ -17,6 +17,7 @@ import { getProfileByHandle } from "@/services/lens/getProfile";
 import { doesFollow, useDoesFollow } from "@/services/lens/doesFollow";
 import { followProfileGasless } from "@/services/lens/gaslessTxs";
 import { useGetContractData } from "@/services/decent/getDecentNFT";
+import { HostCard } from "./HostCard";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -76,9 +77,19 @@ const LiveSpace: FC<Props> = ({
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
   const [drawerProfile, setDrawerProfile] = useState<any>({});
   const [doesFollowDrawerProfile, setDoesFollowDrawerProfile] = useState<boolean>(false);
-  const { data: doesFollowCreator } = useDoesFollow({}, { followerAddress: address, profileId: clubSpaceObject.creatorLensProfileId });
-  const { data: creatorLensProfile } = useGetProfileByHandle({}, clubSpaceObject.creatorLensHandle, 'creatorLensProfile');
-  const { data: featuredDecentNFT } = useGetContractData({}, { address: clubSpaceObject.decentContractAddress, chainId: chain.id, signer });
+  const { data: doesFollowCreator } = useDoesFollow(
+    {},
+    { followerAddress: address, profileId: clubSpaceObject.creatorLensProfileId }
+  );
+  const { data: creatorLensProfile } = useGetProfileByHandle(
+    {},
+    clubSpaceObject.creatorLensHandle,
+    "creatorLensProfile"
+  );
+  const { data: featuredDecentNFT } = useGetContractData(
+    {},
+    { address: clubSpaceObject.decentContractAddress, chainId: chain.id, signer }
+  );
 
   let [
     reactions,
@@ -145,8 +156,13 @@ const LiveSpace: FC<Props> = ({
       ]);
 
       if (profile.coverPicture) {
-        const convertedUrl = getUrlForImageFromIpfs(profile?.coverPicture?.original?.url);
-        profile.coverPicture.original.url = convertedUrl;
+        const convertedCoverPic = getUrlForImageFromIpfs(profile?.coverPicture?.original?.url);
+        profile.coverPicture.original.url = convertedCoverPic;
+      }
+
+      if (profile.picture) {
+        const convertedProfilePic = getUrlForImageFromIpfs(profile?.picture?.original?.url);
+        profile.picture.original.url = convertedProfilePic;
       }
 
       setDrawerProfile(profile);
@@ -234,21 +250,31 @@ const LiveSpace: FC<Props> = ({
   // - label: ClubSpace Host
   // - bio
   // follow button => disabled if `doesFollowCreator` (same logic as drawer follow button)
-  console.log(creatorLensProfile);
-  console.log(doesFollowCreator);
+  console.log("creatorLensProfile", creatorLensProfile);
+  console.log("doesFollowCreator", doesFollowCreator);
 
   // @TODO: render the featured decent NFT + buy button
   // - NFT image / gif
   // - NFT name, description
   // - PRICE | supply
   // - Buy button
-  console.log(featuredDecentNFT);
+  console.log("featuredDecentNFT", featuredDecentNFT);
 
   return (
     <>
-      <div className="stage-container responsive-container">
-        HOST PROFILE | FEATURED DECENT NFT | CURRENT SONG + VIZ
+      <div className="stage-container">
+        {creatorLensProfile && (
+          <HostCard
+            profile={creatorLensProfile}
+            drawerProfileId={drawerProfile.id}
+            doesFollowDrawerProfile={doesFollowDrawerProfile}
+            onFollowClick={onFollowClick}
+          />
+        )}
+        <div className="border border-gray-500">Col 2</div>
+        <div className="border border-gray-500">Col 3</div>
       </div>
+
       <div className="grid-container responsive-container">
         {myPeerId
           ? peers.concat(myPeerId).map((peerId, index) => {
@@ -372,7 +398,9 @@ const LiveSpace: FC<Props> = ({
                     </div>
                   </Dialog.Title>
                   <div className="mt-2">
-                    <p className="text-sm text-gray-500 dark:text-white mb-6">{drawerProfile.bio || "No bio."}</p>
+                    <p className="text-sm text-gray-500 dark:text-white mb-6">
+                      {drawerProfile.bio || <em>No bio provided.</em>}
+                    </p>
 
                     {/**
                       <button className="flex gap-x-4 items-center">
