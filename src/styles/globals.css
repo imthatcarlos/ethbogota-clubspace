@@ -10,6 +10,11 @@
   @apply block w-full rounded-md dark:bg-gray-800 dark:text-white dark:border-gray-600 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm;
 }
 
+.stage-container {
+  width: clamp(350px, 75%, 800px);
+  @apply border-[0.1px] dark:border-gray-600 p-4 md:p-8 grid place-content-center mx-auto gap-x-4 gap-y-6 mt-10;
+}
+
 .grid-container {
   width: clamp(350px, 75%, 800px);
   grid-template-columns: repeat(auto-fill, 90px);

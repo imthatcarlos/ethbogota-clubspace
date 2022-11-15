@@ -19,7 +19,7 @@ export type ReactionsTypes = keyof typeof reactionsMap;
 type Props = {
   picture: string;
   handle: string;
-  reaction?: { type: string; handle: string; reactionUnicode: string };
+  reaction?: string;
   index: number;
   onClick: () => null;
 };
@@ -38,7 +38,7 @@ export const LensProfile: FC<Props> = ({ picture, handle, reaction, index, onCli
       {reaction && (
         <div className="absolute bottom-0 right-0">
           <div className="opacity-0 flex items-center justify-center w-6 h-6 text-4xl rounded-full animate-fade-in-and-out-up">
-            {reaction.reactionUnicode}
+            {reaction}
           </div>
         </div>
       )}
