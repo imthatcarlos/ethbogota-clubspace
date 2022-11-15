@@ -85,12 +85,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const data = await redisClient.get(handle);
     if (!data) {
       // @TODO: space duration should depend on whether the audio stream is still running
-      console.log('SPACE NOT FOUND! MAY HAVE EXPIRED FROM REDIS');
+      console.log("SPACE NOT FOUND! MAY HAVE EXPIRED FROM REDIS");
       return { props: {} };
     }
 
     const clubSpaceObject = JSON.parse(data);
-    console.log(clubSpaceObject)
+    console.log(clubSpaceObject);
     console.log(`found space with id: ${clubSpaceObject.clubSpaceId}`);
 
     // NOTE: might not be there if the radio worker has not finished
