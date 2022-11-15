@@ -5,6 +5,7 @@ import { useJam } from "@/lib/jam-core-react";
 import { isEmpty } from "lodash/lang";
 import toast from "react-hot-toast";
 import { use } from "use-minimal-state";
+import { AudioPlayer } from "decent-audio-player";
 import { classNames } from "@/lib/utils/classNames";
 import { joinGroup } from "@/lib/semaphore/semaphore";
 import { Profile, useGetProfilesOwned, useGetProfileByHandle } from "@/services/lens/getProfile";
@@ -243,6 +244,11 @@ const LiveSpace: FC<Props> = ({
   // - PRICE | supply
   // - Buy button
   console.log(featuredDecentNFT);
+
+  // @TODO: render some visualizer + the decent audio player
+  // - clubSpaceObject.streamURL
+  // - user can hit play/plause
+  // - current song info: name, artist, album art (link to buy?)
 
   return (
     <>

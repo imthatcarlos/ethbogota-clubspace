@@ -3,7 +3,13 @@ import { fetchPlaylistById } from "@spinamp/spinamp-sdk";
 import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { FC, Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { FC, Fragment, useEffect, useMemo, useRef, useState, useReducer } from "react";
+import {
+  DispatchPlayerContext,
+  PlayerContext,
+  playerInitialState,
+  playerReducer,
+} from "decent-audio-player";
 import { useAccount, useQuery } from "wagmi";
 import { SpectrumVisualizer, SpectrumVisualizerTheme } from "react-audio-visualizers";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
@@ -26,6 +32,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
   const [loadingDefaultProfile, setLoadingDefaultProfile] = useState(true);
   const [isLoadingEntry, setIsLoadingEntry] = useState(true);
+  const [audioPlayerState, audioPlayerDispatch] = useReducer(playerReducer, playerInitialState);
 
   if (!clubSpaceObject) {
     push("/404");
@@ -40,35 +47,27 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   }, [address, profiles, isLoadingProfiles]);
 
   // TODO: if clubSpaceObject.stream == null it means the worker hasn't finished
-  // - use a hook to periodically call getRadio()
-  //
-  // TODO: load the decent featured NFT + tx history
+  // - render some component to come back in a little bit?
 
   return (
     <>
       {isLoadingEntry && (
-        <p className="abs-center animate-move-txt-bg gradient-txt text-4xl">Entering the ClubSpace...</p>
+        <p className="abs-center animate-move-txt-bg gradient-txt text-4xl">Entering ClubSpace...</p>
       )}
-      {/** AUDIO API NOT WORKING
-        !isLoadingEntry && (
-          <div className="w-full relative h-[60vh]">
-            <audio
-              src={clubSpaceObject.stream}
-              preload='none'
-              controls
-            />
-          </div>
-        ) **/}
-      {isConnected && !loadingDefaultProfile && !isLoadingENS && (
+      {isConnected && !loadingDefaultProfile && !isLoadingENS && !isLoadingEntry && (
         <JamProviderWrapper>
-          <LiveSpace
-            clubSpaceObject={clubSpaceObject}
-            defaultProfile={defaultProfile}
-            isLoadingEntry={isLoadingEntry}
-            setIsLoadingEntry={setIsLoadingEntry}
-            address={address}
-            handle={defaultProfile?.handle || ensName || address}
-          />
+          <PlayerContext.Provider value={audioPlayerState}>
+            <DispatchPlayerContext.Provider value={audioPlayerDispatch}>
+              <LiveSpace
+                clubSpaceObject={clubSpaceObject}
+                defaultProfile={defaultProfile}
+                isLoadingEntry={isLoadingEntry}
+                setIsLoadingEntry={setIsLoadingEntry}
+                address={address}
+                handle={defaultProfile?.handle || ensName || address}
+              />
+            </DispatchPlayerContext.Provider>
+          </PlayerContext.Provider>
         </JamProviderWrapper>
       )}
     </>
