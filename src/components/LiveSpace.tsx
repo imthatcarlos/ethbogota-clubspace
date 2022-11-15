@@ -102,7 +102,7 @@ const LiveSpace: FC<Props> = ({
     if (handle.includes('.lens') || handle.includes('.test')) {
       const [profile, { doesFollow: doesFollowData }] = await Promise.all([
         getProfileByHandle(handle),
-        doesFollow([{ followerAddress: address, profileId: '0x5256' }])
+        doesFollow([{ followerAddress: address, profileId: id }])
       ]);
 
       setDrawerProfile(profile);
@@ -117,7 +117,7 @@ const LiveSpace: FC<Props> = ({
       new Promise(async (resolve, reject) => {
         const accessToken = localStorage.getItem("lens_accessToken");
         const { txHash } = await followProfileGasless(
-          '0x5256',
+          profileId,
           signer,
           accessToken
         );
