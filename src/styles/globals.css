@@ -1,6 +1,9 @@
 :root {
   --ease-squish-1: cubic-bezier(0.5, -0.1, 0.1, 1.5);
   --clamped-container-width: clamp(350px, 75%, 800px);
+  --hero-gradient: linear-gradient(327.21deg, rgba(33, 0, 75, 0.24) 3.65%, rgba(60, 0, 136, 0) 40.32%),
+    linear-gradient(245.93deg, rgba(209, 21, 111, 0.16) 0%, rgba(209, 25, 80, 0) 36.63%),
+    linear-gradient(147.6deg, rgba(58, 19, 255, 0) 29.79%, rgba(98, 19, 255, 0.01) 85.72%), #13111c;
 }
 
 @keyframes shimmer {
@@ -10,6 +13,13 @@
   to {
     transform: translateX(100%);
   }
+}
+
+body {
+  background: var(--hero-gradient);
+  background-size: cover;
+  min-height: 100vh;
+  background-attachment: fixed;
 }
 
 .btn {
