@@ -17,6 +17,7 @@ const reactionsKeys = Object.keys(reactionsMap);
 export type ReactionsTypes = keyof typeof reactionsMap;
 
 type Props = {
+  allowDrawer: boolean;
   picture: string;
   handle: string;
   reaction?: string;
@@ -24,14 +25,18 @@ type Props = {
   onClick: () => null;
 };
 
-export const LensProfile: FC<Props> = ({ picture, handle, reaction, index, onClick }) => {
+export const LensProfile: FC<Props> = ({ allowDrawer, picture, handle, reaction, index, onClick }) => {
   let delayStyle = { "--_delay": index } as React.CSSProperties;
 
   return (
     <div
       style={delayStyle}
-      onClick={onClick}
-      className="animate-fade-in-from-top flex items-center justify-center flex-col max-w-[80px] relative opacity-0 mx-auto gap-y-1 cursor-pointer"
+      onClick={allowDrawer ? onClick : undefined}
+      className={`${
+        allowDrawer
+          ? "hover:outline hover:outline-indigo-400 hover:outline-offset-8 hover:outline-[0.1px] cursor-pointer"
+          : ""
+      } animate-fade-in-from-top flex items-center justify-center flex-col max-w-[80px] relative opacity-0 mx-auto gap-y-1`}
     >
       <img src={picture} alt={handle} className="rounded-full w-12 h-12 aspect-square" />
       <p className="text-xs truncate select-none">{handle}</p>

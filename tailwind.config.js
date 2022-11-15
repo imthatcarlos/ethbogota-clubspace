@@ -4,6 +4,9 @@ module.exports = {
   darkMode: "class",
   theme: {
     extend: {
+      boxShadow: {
+        "lens-profile-hover": "shadow-[0 0 0 4px #2980b9, 0 0 0 7px #0d293c]",
+      },
       keyframes: {
         "fade-in-from-top": {
           from: {
