@@ -13,7 +13,6 @@ export const DOES_FOLLOW = gql`
 
 export default async (followInfos) => {
   try {
-    console.log(followInfos);
     return await request({
       url: apiUrls.lensAPI,
       document: DOES_FOLLOW,

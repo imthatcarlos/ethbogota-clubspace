@@ -14,6 +14,7 @@ import useIsMounted from "@/hooks/useIsMounted";
 import useUnload from "@/hooks/useUnload";
 import { getProfileByHandle } from "@/services/lens/getProfile";
 import doesFollow from "@/services/lens/doesFollow";
+import { followProfileGasless } from "@/services/lens/gaslessTxs";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -101,7 +102,7 @@ const LiveSpace: FC<Props> = ({
     if (handle.includes('.lens') || handle.includes('.test')) {
       const [profile, { doesFollow: doesFollowData }] = await Promise.all([
         getProfileByHandle(handle),
-        doesFollow([{ followerAddress: address, profileId: id }])
+        doesFollow([{ followerAddress: address, profileId: '0x5256' }])
       ]);
 
       setDrawerProfile(profile);
@@ -114,18 +115,21 @@ const LiveSpace: FC<Props> = ({
   const onFollowClick = (profileId) => {
     toast.promise(
       new Promise(async (resolve, reject) => {
-        const res = await followProfileGasless(
-          profileId,
+        const accessToken = localStorage.getItem("lens_accessToken");
+        const { txHash } = await followProfileGasless(
+          '0x5256',
           signer,
-          localStorage.getItem("lens_accessToken")
+          accessToken
         );
 
-        console.log(res);
+        if (txHash) {
+          setDoesFollowDrawerProfile(true);
+        }
 
         resolve();
       }),
       {
-        loading: 'Following profile',
+        loading: 'Following profile...',
         success: 'Followed!',
         error: (error) => {
           console.log(error);
@@ -289,7 +293,7 @@ const LiveSpace: FC<Props> = ({
 
                       <button
                         className="!w-auto btn"
-                        onClick={() => { onFollowClick(drawerProfile.profile.id) }}
+                        onClick={() => { onFollowClick(drawerProfile.id) }}
                         disabled={doesFollowDrawerProfile}
                       >
                         {doesFollowDrawerProfile ? 'Following' : 'Follow'}
