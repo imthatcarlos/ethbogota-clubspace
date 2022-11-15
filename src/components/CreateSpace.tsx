@@ -67,8 +67,8 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
   };
 
   const contract = useContract({
-    addressOrName: LENSHUB_PROXY,
-    contractInterface: LensHubProxy,
+    address: LENSHUB_PROXY,
+    abi: LensHubProxy,
     signerOrProvider: signer,
   });
 
