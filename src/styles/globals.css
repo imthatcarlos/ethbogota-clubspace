@@ -24,6 +24,10 @@
   width: var(--clamped-container-width);
 }
 
+.stage-container {
+  @apply border-[0.1px] dark:border-gray-600 p-4 md:p-8 grid place-content-center mx-auto gap-x-4 gap-y-6 mt-10;
+}
+
 .grid-container {
   grid-template-columns: repeat(auto-fill, 90px);
   @apply border-[0.1px] dark:border-gray-600 p-4 md:p-8 grid place-content-center mx-auto gap-x-4 gap-y-6 mt-10;

@@ -4,6 +4,7 @@ import { useSigner } from "wagmi";
 import { useJam } from "@/lib/jam-core-react";
 import { isEmpty } from "lodash/lang";
 import toast from "react-hot-toast";
+import { use } from "use-minimal-state";
 import { classNames } from "@/lib/utils/classNames";
 import { joinGroup } from "@/lib/semaphore/semaphore";
 import { Profile, useGetProfilesByHandles, useGetProfilesOwned } from "@/services/lens/getProfile";
@@ -69,13 +70,48 @@ const LiveSpace: FC<Props> = ({
   const { identity } = useIdentity();
   const isMounted = useIsMounted();
   const { data: signer } = useSigner();
-  const [{ identities, myIdentity, reactions }, { enterRoom, leaveRoom, setProps, updateInfo, sendReaction }] =
-    useJam();
+  const [state, { enterRoom, leaveRoom, setProps, updateInfo, sendReaction }] = useJam();
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
-  const [connectedPeers, setConnectedPeers] = useState<string[]>();
   const [drawerProfile, setDrawerProfile] = useState<any>({});
   const [doesFollowDrawerProfile, setDoesFollowDrawerProfile] = useState<boolean>(false);
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
+
+  let [
+    reactions,
+    handRaised,
+    identities,
+    speaking,
+    iSpeak,
+    iModerate,
+    iMayEnter,
+    myIdentity,
+    inRoom,
+    peers,
+    peerState,
+    myPeerState,
+    hasMicFailed,
+  ] = use(state, [
+    "reactions",
+    "handRaised",
+    "identities",
+    "speaking",
+    "iAmSpeaker",
+    "iAmModerator",
+    "iAmAuthorized",
+    "myIdentity",
+    "inRoom",
+    "peers",
+    "peerState",
+    "myPeerState",
+    "hasMicFailed",
+  ]);
+
+  let myInfo = myIdentity.info;
+  let hasEnteredRoom = inRoom === clubSpaceObject.clubSpaceId;
+  let myPeerId = myInfo.id;
+  let audiencePeers = peers.filter(
+    (id) => isEmpty(identities[id]) || identities[id].handle !== clubSpaceObject.creatorLensHandle
+  );
 
   let [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -186,43 +222,37 @@ const LiveSpace: FC<Props> = ({
     await leaveRoom(clubSpaceObject.clubSpaceId);
   });
 
-  // @TODO: run if prev != new
-  useEffect(() => {
-    console.log("identities", identities);
-    console.log("keys", Object.keys(identities));
-
-    setConnectedPeers(Object.keys(identities));
-  }, [identities]);
-
-  // @TODO: run if prev != new
-  useEffect(() => {
-    console.log(reactions);
-  }, [reactions]);
-
   if (isLoadingEntry) return null;
 
   return (
     <>
+      <div className="stage-container responsive-container">
+        HOST PROFILE | FEATURED DECENT NFT | CURRENT SONG + VIZ
+      </div>
       <div className="grid-container responsive-container">
-        {connectedPeers &&
-          connectedPeers?.map((peerId, index) => {
-            return (
-              <LensProfile
-                allowDrawer={[".lens", ".test"].some((ext) => identities[peerId].handle.includes(ext))}
-                id={identities[peerId].profile?.id}
-                key={identities[peerId].handle}
-                handle={identities[peerId].handle}
-                picture={identities[peerId].profile ? getUrlForImageFromIpfs(identities[peerId].profile.avatar) : ""}
-                name={identities[peerId].profile?.name}
-                totalFollowers={identities[peerId].profile?.totalFollowers}
-                reaction={isEmpty(reactions[peerId]) ? null : reactions[peerId][0]}
-                index={index}
-                onClick={() => {
-                  toggleDrawer(identities[peerId]);
-                }}
-              />
-            );
-          })}
+        {myPeerId
+          ? peers.concat(myPeerId).map((peerId, index) => {
+              console.log(peerId);
+              console.log(reactions);
+              console.log(reactions[peerId]);
+              return identities[peerId] ? (
+                <LensProfile
+                  allowDrawer={[".lens", ".test"].some((ext) => identities[peerId].handle.includes(ext))}
+                  id={identities[peerId].profile?.id}
+                  key={identities[peerId].handle}
+                  handle={identities[peerId].handle}
+                  picture={identities[peerId].profile ? getUrlForImageFromIpfs(identities[peerId].profile.avatar) : ""}
+                  name={identities[peerId].profile?.name}
+                  totalFollowers={identities[peerId].profile?.totalFollowers}
+                  reaction={isEmpty(reactions[peerId]) ? null : reactions[peerId][0][0]}
+                  index={index}
+                  onClick={() => {
+                    toggleDrawer(identities[peerId]);
+                  }}
+                />
+              ) : null;
+            })
+          : null}
       </div>
       <Popover
         className={({ open }) =>
