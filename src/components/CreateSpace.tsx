@@ -118,6 +118,7 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
           spinampPlaylistId: playlist.id,
           decentContractAddress: productData.address,
           decentContractChainId: chain.id,
+          decentContractType: productData.contractType,
           lensPubId,
           clubSpaceId,
         };

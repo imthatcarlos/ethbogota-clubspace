@@ -20,6 +20,7 @@ import { doesFollow, useDoesFollow } from "@/services/lens/doesFollow";
 import { followProfileGasless } from "@/services/lens/gaslessTxs";
 import { useGetContractData } from "@/services/decent/getDecentNFT";
 import { HostCard } from "./HostCard";
+import { FeaturedDecentNFT } from "./FeaturedDecentNFT";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -95,7 +96,12 @@ const LiveSpace: FC<Props> = ({
   );
   const { data: featuredDecentNFT } = useGetContractData(
     {},
-    { address: clubSpaceObject.decentContractAddress, chainId: chain.id, signer }
+    {
+      address: clubSpaceObject.decentContractAddress,
+      chainId: clubSpaceObject.decentContractChainId,
+      contractType: clubSpaceObject.decentContractType,
+      signer,
+    }
   );
 
   let [
@@ -305,7 +311,11 @@ const LiveSpace: FC<Props> = ({
           CURRENT SONG + VIZ
         </div>
         <div className="border border-gray-500">
-          FEATURED DECENT NFT
+          {
+            featuredDecentNFT && (
+              <FeaturedDecentNFT {...featuredDecentNFT} />
+            )
+          }
         </div>
       </div>
 
