@@ -40,7 +40,7 @@ const SetDecentProduct = ({ setDecentProduct, productData = undefined }) => {
                 />
               ) : (
                 <p>
-                  {productData.name} | {productData.description}
+                  {productData.metadata.name} | {productData.metadata.description}
                 </p>
               )}
             </div>

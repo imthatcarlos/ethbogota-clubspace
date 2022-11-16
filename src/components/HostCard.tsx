@@ -1,21 +1,25 @@
+import React from "react";
 import { Profile } from "@/services/lens/getProfile";
 import { getUrlForImageFromIpfs } from "@/utils/ipfs";
-import React from "react";
+import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 
 interface HostProps {
   profile: Profile;
   drawerProfileId: string;
   doesFollowDrawerProfile: boolean;
   onFollowClick: (drawerProfileId: string) => void;
+  isHost: boolean;
 }
 
-export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, onFollowClick }: HostProps) => {
+export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, onFollowClick, isHost }: HostProps) => {
+  const { data: lensRefreshData } = useLensRefresh();
+  const { data: lensLoginData } = useLensLogin();
+
   return (
     <>
-      {/* HOST PROFILE | FEATURED DECENT NFT | CURRENT SONG + VIZ */}
       <div>
         <h2 className="my-4 text-4xl font-bold tracking-tight sm:text-2xl md:text-5xl drop-shadow-sm text-center">
-          Clubspace Host
+          ClubSpace Host
         </h2>
         <div className="flex w-full justify-center">
           <div className="max-w-[20rem] min-w-[17rem]">
@@ -23,12 +27,12 @@ export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, on
               <div className="photo-wrapper p-2 pt-0 relative">
                 <img
                   className="absolute t-0 left-0 right-0 w-full h-full object-cover"
-                  src={getUrlForImageFromIpfs(profile.coverPicture.original.url)}
+                  src={profile.coverPicture?.original?.url || "/default-cover.jpg"}
                   alt=""
                 />
                 <img
                   className="w-16 h-16 rounded-full mx-auto relative top-10 outline outline-offset-0 outline-1 outline-gray-50"
-                  src={getUrlForImageFromIpfs(profile.picture.original.url)}
+                  src={profile.picture?.original?.url || ""}
                   alt={profile.handle}
                 />
               </div>
@@ -61,17 +65,21 @@ export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, on
                   </div>
                 </div>
 
-                <div className="text-center my-3 px-3">
-                  <button
-                    className="!w-full btn"
-                    onClick={() => {
-                      onFollowClick(drawerProfileId);
-                    }}
-                    disabled={doesFollowDrawerProfile}
-                  >
-                    {doesFollowDrawerProfile ? "Following" : "Follow"}
-                  </button>
-                </div>
+                {
+                  !isHost && (lensLoginData || lensRefreshData)
+                    ? <div className="text-center my-3 px-3">
+                        <button
+                          className="!w-full btn"
+                          onClick={() => {
+                            onFollowClick(drawerProfileId, false);
+                          }}
+                          disabled={doesFollowDrawerProfile}
+                        >
+                          {doesFollowDrawerProfile ? "Following" : "Follow"}
+                        </button>
+                      </div>
+                    : null
+                }
               </div>
             </div>
           </div>

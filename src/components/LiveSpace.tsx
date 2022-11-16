@@ -1,10 +1,11 @@
-import { FC, Fragment, useEffect, useState, useCallback } from "react";
+import { FC, Fragment, useEffect, useState, useCallback, useMemo } from "react";
 import { Dialog, Menu, Popover, Transition } from "@headlessui/react";
 import { useSigner, useNetwork } from "wagmi";
 import { useJam } from "@/lib/jam-core-react";
 import { isEmpty } from "lodash/lang";
 import toast from "react-hot-toast";
 import { use } from "use-minimal-state";
+import { AudioPlayer } from "decent-audio-player";
 import { classNames } from "@/lib/utils/classNames";
 import { joinGroup } from "@/lib/semaphore/semaphore";
 import { Profile, useGetProfilesOwned, useGetProfileByHandle } from "@/services/lens/getProfile";
@@ -13,6 +14,7 @@ import { LensProfile, reactionsEntries } from "@/components/LensProfile";
 import useIdentity from "@/hooks/useIdentity";
 import useIsMounted from "@/hooks/useIsMounted";
 import useUnload from "@/hooks/useUnload";
+import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import { getProfileByHandle } from "@/services/lens/getProfile";
 import { doesFollow, useDoesFollow } from "@/services/lens/doesFollow";
 import { followProfileGasless } from "@/services/lens/gaslessTxs";
@@ -52,8 +54,6 @@ type Props = {
   handle: boolean;
 };
 
-const DEFAULT_COVER = "../default-cover.jpg";
-
 /**
  * This component takes club space data object and handles any live aspects with streamr
  * - connect to the streamr pub/sub client
@@ -77,7 +77,14 @@ const LiveSpace: FC<Props> = ({
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
   const [drawerProfile, setDrawerProfile] = useState<any>({});
   const [doesFollowDrawerProfile, setDoesFollowDrawerProfile] = useState<boolean>(false);
-  const { data: doesFollowCreator } = useDoesFollow(
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  // @TODO: should really merge these two hook calls
+  // - first run tries to do the refresh call
+  // - all other runs force the login call
+  const { data: lensRefreshData } = useLensRefresh();
+  const { data: lensLoginData, refetch: loginWithLens } = useLensLogin();
+  const { data: doesFollowCreator, refetch: refetchDoesFollowCreator } = useDoesFollow(
     {},
     { followerAddress: address, profileId: clubSpaceObject.creatorLensProfileId }
   );
@@ -121,14 +128,27 @@ const LiveSpace: FC<Props> = ({
     "hasMicFailed",
   ]);
 
-  let myInfo = myIdentity.info;
-  let hasEnteredRoom = inRoom === clubSpaceObject.clubSpaceId;
-  let myPeerId = myInfo.id;
-  let audiencePeers = peers.filter(
+  const myInfo = myIdentity.info;
+  const myPeerId = useMemo(() => {
+    return myInfo.id;
+  }, [myIdentity]);
+
+  const isHost = useMemo(() => {
+    if (!isEmpty(defaultProfile) && !isEmpty(creatorLensProfile)) {
+      return defaultProfile.id === creatorLensProfile.id;
+    }
+  }, [defaultProfile, creatorLensProfile])
+
+  const audiencePeers = peers.filter(
     (id) => isEmpty(identities[id]) || identities[id].handle !== clubSpaceObject.creatorLensHandle
   );
 
-  let [isOpen, setIsOpen] = useState<boolean>(false);
+  // trigger the entry if everything is loaded
+  useEffect(() => {
+    if (isLoadingEntry && !isEmpty(myIdentity) && !isEmpty(creatorLensProfile) && !isEmpty(featuredDecentNFT)) {
+      setIsLoadingEntry(false);
+    }
+  }, [isLoadingEntry, myIdentity, doesFollowCreator, creatorLensProfile, featuredDecentNFT]);
 
   function Envelope() {
     return (
@@ -172,24 +192,31 @@ const LiveSpace: FC<Props> = ({
     setIsOpen((currentState) => !currentState);
   };
 
-  const onFollowClick = (profileId: string) => {
+  const onFollowClick = (profileId: string, isFollowDrawer = true) => {
     toast.promise(
       new Promise<void>(async (resolve, reject) => {
-        const accessToken = localStorage.getItem("lens_accessToken");
-        const { txHash } = await followProfileGasless(profileId, signer, accessToken);
+        try {
+          const accessToken = localStorage.getItem("lens_accessToken");
+          const { txHash } = await followProfileGasless(profileId, signer, accessToken);
 
-        if (txHash) {
-          setDoesFollowDrawerProfile(true);
+          if (txHash) {
+            isFollowDrawer
+              ? setDoesFollowDrawerProfile(true)
+              : refetchDoesFollowCreator();
+          }
+
+          resolve();
+        } catch (error) {
+          console.log(error);
+          reject(error);
         }
-
-        resolve();
       }),
       {
         loading: "Following profile...",
         success: "Followed!",
         error: (error) => {
-          console.log(error);
-          return "Error!";
+          // return error.message.split('(')[0];
+          return "Error";
         },
       }
     );
@@ -214,9 +241,6 @@ const LiveSpace: FC<Props> = ({
       console.log(`JOINING: ${clubSpaceObject.clubSpaceId}`);
       await enterRoom(clubSpaceObject.clubSpaceId);
       console.log("JOINED");
-
-      // USER IS IN
-      setIsLoadingEntry(false);
     };
 
     if (isMounted && isLoadingEntry) {
@@ -260,6 +284,11 @@ const LiveSpace: FC<Props> = ({
   // - Buy button
   console.log("featuredDecentNFT", featuredDecentNFT);
 
+  // @TODO: render some visualizer + the decent audio player
+  // - clubSpaceObject.streamURL
+  // - user can hit play/plause
+  // - current song info: name, artist, album art (link to buy?)
+
   return (
     <>
       <div className="stage-container">
@@ -269,15 +298,20 @@ const LiveSpace: FC<Props> = ({
             drawerProfileId={drawerProfile.id}
             doesFollowDrawerProfile={doesFollowDrawerProfile}
             onFollowClick={onFollowClick}
+            isHost={isHost}
           />
         )}
-        <div className="border border-gray-500">Col 2</div>
-        <div className="border border-gray-500">Col 3</div>
+        <div className="border border-gray-500">
+          CURRENT SONG + VIZ
+        </div>
+        <div className="border border-gray-500">
+          FEATURED DECENT NFT
+        </div>
       </div>
 
       <div className="grid-container responsive-container">
-        {myPeerId
-          ? peers.concat(myPeerId).map((peerId, index) => {
+        {!!myIdentity
+          ? (!isHost ? [myPeerId].concat(audiencePeers) : audiencePeers).map((peerId, index) => {
               return identities[peerId] ? (
                 <LensProfile
                   allowDrawer={[".lens", ".test"].some((ext) => identities[peerId].handle.includes(ext))}
@@ -305,36 +339,40 @@ const LiveSpace: FC<Props> = ({
           )
         }
       >
-        {({ open }) => (
-          <>
-            <Menu as="div" className="relative flex-shrink-0">
-              <div className="w-36 flex gap-4 mt-4">
-                <Menu.Button className="btn" disabled={!defaultProfile}>
-                  react
-                </Menu.Button>
-              </div>
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
-              >
-                <Menu.Items className="absolute z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 p-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none flex gap-4 flex-wrap">
-                  {reactionsEntries.map(([key, value]) => (
-                    <Menu.Item key={value}>
-                      {({ active }) => <button onClick={() => sendReaction(value)}>{value}</button>}
-                    </Menu.Item>
-                  ))}
-                </Menu.Items>
-              </Transition>
-            </Menu>
+        {({ open }) => {
+          if (isHost) return null;
 
-            <Popover.Panel className="" aria-label="Global"></Popover.Panel>
-          </>
-        )}
+          return (
+            <>
+              <Menu as="div" className="relative flex-shrink-0">
+                <div className="w-36 flex gap-4 mt-4">
+                  <Menu.Button className="btn" disabled={!defaultProfile}>
+                    react
+                  </Menu.Button>
+                </div>
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <Menu.Items className="absolute z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 p-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none flex gap-4 flex-wrap">
+                    {reactionsEntries.map(([key, value]) => (
+                      <Menu.Item key={value}>
+                        {({ active }) => <button onClick={() => sendReaction(value)}>{value}</button>}
+                      </Menu.Item>
+                    ))}
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+
+              <Popover.Panel className="" aria-label="Global"></Popover.Panel>
+            </>
+          );
+        }}
       </Popover>
 
       {/* Start Drawer */}
@@ -386,15 +424,25 @@ const LiveSpace: FC<Props> = ({
                         <div className="text-gray-500">@{drawerProfile?.handle}</div>
                       </div>
 
-                      <button
-                        className="!w-auto btn"
-                        onClick={() => {
-                          onFollowClick(drawerProfile.id);
-                        }}
-                        disabled={doesFollowDrawerProfile}
-                      >
-                        {doesFollowDrawerProfile ? "Following" : "Follow"}
-                      </button>
+                      {
+                        drawerProfile?.id !== defaultProfile?.id
+                          ? (
+                              lensLoginData || lensRefreshData
+                                ? <button
+                                    className="!w-auto btn"
+                                    onClick={() => {
+                                      onFollowClick(drawerProfile.id);
+                                    }}
+                                    disabled={doesFollowDrawerProfile}
+                                  >
+                                    {doesFollowDrawerProfile ? "Following" : "Follow"}
+                                  </button>
+                                : <button onClick={() => loginWithLens({}, true)} className="btn justify-center items-center">
+                                    Login with Lens
+                                  </button>
+                            )
+                          : null
+                      }
                     </div>
                   </Dialog.Title>
                   <div className="mt-2">
