@@ -100,11 +100,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     const clubSpaceObject = JSON.parse(data);
-    console.log(clubSpaceObject);
     console.log(`found space with id: ${clubSpaceObject.clubSpaceId}`);
 
     // NOTE: might not be there if the radio worker has not finished
-    clubSpaceObject.stream = await redisClient.get(`stream/${clubSpaceObject.clubSpaceId}`);
+    clubSpaceObject.streamURL = await redisClient.get(`stream/${clubSpaceObject.clubSpaceId}`);
+
+    console.log(clubSpaceObject);
 
     return { props: { clubSpaceObject } };
   } catch (error) {
