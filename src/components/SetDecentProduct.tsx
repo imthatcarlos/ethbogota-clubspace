@@ -37,7 +37,7 @@ const SetDecentProduct = ({ setDecentProduct, productData = undefined }) => {
                     required
                     onChange={onContractAddressChanged}
                   />
-                : <p>{productData.name} | {productData.description}</p>
+                : <p>{productData.metadata.name} | {productData.metadata.description}</p>
             }
           </div>
         </div>

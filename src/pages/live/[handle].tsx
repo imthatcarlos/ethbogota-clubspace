@@ -13,6 +13,7 @@ import {
 import { useAccount, useQuery } from "wagmi";
 import { SpectrumVisualizer, SpectrumVisualizerTheme } from "react-audio-visualizers";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
+import { ConnectWallet } from "@/components/ConnectWallet";
 import useENS from "@/hooks/useENS";
 import { SPACE_API_URL } from "@/lib/consts";
 import { getRadio } from "@/services/radio";
@@ -52,9 +53,18 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   return (
     <>
       {isLoadingEntry && (
-        <p className="abs-center animate-move-txt-bg gradient-txt text-4xl">Entering ClubSpace...</p>
+        <div className="abs-center">
+          <p className="animate-move-txt-bg gradient-txt text-4xl">Entering ClubSpace...</p>
+          {
+            !isConnected
+              ? <div className="flex gap-4 justify-center md:min-w-[300px] mt-50">
+                  <ConnectWallet showBalance={false} />
+                </div>
+              : null
+          }
+        </div>
       )}
-      {isConnected && !loadingDefaultProfile && !isLoadingENS && !isLoadingEntry && (
+      {isConnected && !loadingDefaultProfile && !isLoadingENS && (
         <JamProviderWrapper>
           <PlayerContext.Provider value={audioPlayerState}>
             <DispatchPlayerContext.Provider value={audioPlayerDispatch}>
