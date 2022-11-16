@@ -4,7 +4,7 @@ import CreateLensPost from "@/components/CreateLensPost";
 import SelectPlaylist from "@/components/SelectPlaylist";
 import SetDecentProduct from "@/components/SetDecentProduct";
 import { IPlaylist } from "@spinamp/spinamp-sdk";
-import { useAccount, useContract, useSigner } from "wagmi";
+import { useAccount, useContract, useSigner, useNetwork } from "wagmi";
 import toast from 'react-hot-toast'
 import axios from "axios";
 import { useJam } from '@/lib/jam-core-react';
@@ -13,10 +13,11 @@ import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
 import { createGroup } from "@/lib/semaphore/semaphore";
 import { LENSHUB_PROXY, makePostGasless, publicationBody } from "@/services/lens/gaslessTxs";
 import { LensHubProxy } from "@/services/lens/abi";
-import useLensLogin from "@/hooks/useLensLogin";
+import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import { launchSpace } from "@/services/jam/core";
 
 const CreateSpace = ({ defaultProfile, ensName }) => {
+  const { chain } = useNetwork();
   const { address, isConnected } = useAccount();
   const { data: signer } = useSigner();
   const [playlist, setPlaylist] = useState<IPlaylist>();
@@ -27,7 +28,8 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
   const [shareUrl, setShareUrl] = useState<string>();
   const [state, jamApi] = useJam();
 
-  const { data: lensLogin, refetch: login } = useLensLogin();
+  const { data: lensRefreshData } = useLensRefresh();
+  const { data: lensLoginData, refetch: login } = useLensLogin();
 
   const selectPlaylist = (playlist) => {
     setPlaylist(playlist);
@@ -35,8 +37,7 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
 
   // @TODO: we should render more info, some kind of preview + link out to decent
   const setDecentProduct = (data) => {
-    console.log(data);
-    setProductData(data.metadata);
+    setProductData(data);
   };
 
   const setPostData = (postData) => {
@@ -94,7 +95,13 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
     const content: any = await pinJson(publicationBody(lensPost, [], defaultProfile.handle));
 
     toast('Creating Lens post...', { duration: 10000 });
-    await makePostGasless(defaultProfile.id, `ipfs://${content.IpfsHash}`, signer, lensLogin.authenticate.accessToken);
+    const accessToken = lensLoginData?.authenticate?.accessToken
+      ? lensLoginData?.authenticate?.accessToken
+      : lensRefreshData.accessToken;
+    if (!accessToken) {
+      throw new Error('Error - lens profile not authenticated. This is likely a bug with login/refresh logic');
+    }
+    await makePostGasless(defaultProfile.id, `ipfs://${content.IpfsHash}`, signer, accessToken);
     const pubCount = await contract.getPubCount(defaultProfile.id);
     const lensPubId = pubCount.toHexString();
 
@@ -110,7 +117,7 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
           creatorLensProfileId: defaultProfile.id,
           spinampPlaylistId: playlist.id,
           decentContractAddress: productData.address,
-          decentContractChainId: 80001,
+          decentContractChainId: chain.id,
           lensPubId,
           clubSpaceId,
         };
@@ -152,7 +159,7 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
   return (
     <div className="w-full shadow-xl border dark:border-gray-700 border-grey-500 p-8 flex flex-col gap-3 rounded-md">
       {
-        !lensLogin
+        !(lensLoginData || lensRefreshData)
           ? (
               <div className="flex gap-4 justify-center md:min-w-[300px]">
                 {

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import dynamic from "next/dynamic"
 import useENS from "@/hooks/useENS";
 import { APP_NAME } from "@/lib/consts";
-import useLensLogin from "@/hooks/useLensLogin";
+import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import { ConnectWallet } from "./ConnectWallet";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import useIsMounted from "@/hooks/useIsMounted";
@@ -24,7 +24,8 @@ export const Hero = () => {
     }
   }, [address, profiles]);
 
-  const { data, refetch: login } = useLensLogin();
+  const { data: lensRefreshData } = useLensRefresh();
+  const { data: lensLoginData, refetch: loginWithLens } = useLensLogin();
 
   if (!isMounted) return null;
 
@@ -73,8 +74,8 @@ export const Hero = () => {
           </div>
           <div className="flex gap-4 justify-center md:min-w-[300px]">
             {isConnected && (
-              <button onClick={() => login()} className="btn justify-center items-center">
-                {!data ? "Login with lens" : defaultProfile?.handle}
+              <button onClick={() => loginWithLens()} className="btn justify-center items-center">
+                {!(lensLoginData || lensRefreshData) ? "Login with lens" : defaultProfile?.handle}
               </button>
             )}
             <ConnectWallet showBalance={false} />
@@ -96,11 +97,6 @@ export const Hero = () => {
                     <br />
                     Everyone that parties - and can <strong>prove</strong> it - gets a goody bag NFT
                   </p>
-                  {!isConnected && (
-                    <div className="pt-4">
-                      <ConnectWallet label="Get started now" />
-                    </div>
-                  )}
 
                   <div className="max-w-full mt-12 relative h-full aspect-square">
                     <img src="/lil_buddy.png" alt="lil_buddy" className="aspect-square w-full h-80" />
@@ -141,7 +137,7 @@ export const Hero = () => {
           <div className="flex gap-4 justify-center md:min-w-[300px]">
             {isConnected && (
               <button onClick={() => login()} className="btn justify-center items-center">
-                {!data ? "Login with lens" : defaultProfile?.handle}
+                {!(lensLoginData || lensRefreshData) ? "Login with lens" : defaultProfile?.handle}
               </button>
             )}
             <ConnectWallet showBalance={false} />
