@@ -14,8 +14,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       creatorLensHandle,
       creatorLensProfileId,
       spinampPlaylistId,
-      decentContractAddress, // mumbai
-      decentContractChainId, // 80001
+      decentContractAddress,
+      decentContractChainId,
+      decentContractType,
       lensPubId,
       handle,
       clubSpaceId,
@@ -44,6 +45,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       lensPubId,
       spinampPlaylistId,
       decentContractAddress,
+      decentContractChainId,
+      decentContractType,
       clubSpaceId,
       createdAt,
       endAt,
