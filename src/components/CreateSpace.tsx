@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import CreateLensPost from "@/components/CreateLensPost";
 import SelectPlaylist from "@/components/SelectPlaylist";
@@ -51,6 +51,11 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
     <CreateLensPost key="c" setPostData={setPostData} defaultProfile={defaultProfile} />,
     <SetGoodyBag key="d" setGoody={setGoody} />,
   ]);
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    next();
+  };
 
   const uploadToIPFS = async () => {
     // pick out files
@@ -180,15 +185,15 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
         </div>
       ) : (
         <>
-          <SelectPlaylist selectPlaylist={selectPlaylist} playlist={playlist} />
+          {/* <SelectPlaylist selectPlaylist={selectPlaylist} playlist={playlist} />
 
           <SetDecentProduct setDecentProduct={setDecentProduct} productData={productData} />
 
           <CreateLensPost setPostData={setPostData} defaultProfile={defaultProfile} />
 
-          <SetGoodyBag setGoody={setGoody} />
+          <SetGoodyBag setGoody={setGoody} /> */}
 
-          <form action="" className="step-form">
+          <form className="step-form" onSubmit={handleSubmit}>
             <div className="absolute top-[0.5rem] right-[0.5rem]">
               {currenStepIndex + 1} / {steps.length}
             </div>
@@ -203,7 +208,7 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
                 Back
               </button>
 
-              <button type="button" className="btn" onClick={next}>
+              <button type="submit" className="btn">
                 {isLastStep ? "Finish" : "Next"}
               </button>
             </div>
