@@ -72,3 +72,12 @@ body {
   color: transparent;
   background-clip: text;
 }
+
+.step-form {
+  position: relative;
+
+  border: 1px solid gray;
+  padding: 2rem;
+  margin: 1rem;
+  border-radius: 0.5rem;
+}

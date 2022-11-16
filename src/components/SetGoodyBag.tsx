@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { MultiStepFormWrapper } from "./MultiStepFormWrapper";
 
 const SetGoodyBag = ({ setGoody }) => {
   const [description, setDescription] = useState("");
@@ -46,36 +47,38 @@ const SetGoodyBag = ({ setGoody }) => {
   };
 
   return (
-    <div className="w-full flex flex-col gap-3">
-      <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Create a Goody Bag</h2>
+    <MultiStepFormWrapper>
       <div className="w-full flex flex-col gap-3">
-        <input
-          type="text"
-          className="input"
-          placeholder="Name..."
-          value={name}
-          onChange={(e) => onChange({ name: e.target.value, description, files })}
-        />
-        <textarea
-          rows={3}
-          className="input"
-          value={description}
-          onChange={(e) => onChange({ description: e.target.value, name, files })}
-          placeholder="Description..."
-        />
-        <div {...getRootProps()} className={style}>
-          <input {...getInputProps()} />
-          {acceptedFiles.length === 0 ? (
-            <>
-              <p>Drag and drop your song and a cover image here</p>
-              <p>(max: 50mb)</p>
-            </>
-          ) : (
-            acceptedFiles.map((f) => <p key={(f as any).path}>{(f as any).path}</p>)
-          )}
+        <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Create a Goody Bag</h2>
+        <div className="w-full flex flex-col gap-3">
+          <input
+            type="text"
+            className="input"
+            placeholder="Name..."
+            value={name}
+            onChange={(e) => onChange({ name: e.target.value, description, files })}
+          />
+          <textarea
+            rows={3}
+            className="input"
+            value={description}
+            onChange={(e) => onChange({ description: e.target.value, name, files })}
+            placeholder="Description..."
+          />
+          <div {...getRootProps()} className={style}>
+            <input {...getInputProps()} />
+            {acceptedFiles.length === 0 ? (
+              <>
+                <p>Drag and drop your song and a cover image here</p>
+                <p>(max: 50mb)</p>
+              </>
+            ) : (
+              acceptedFiles.map((f) => <p key={(f as any).path}>{(f as any).path}</p>)
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </MultiStepFormWrapper>
   );
 };
 

@@ -5,9 +5,9 @@ import SelectPlaylist from "@/components/SelectPlaylist";
 import SetDecentProduct from "@/components/SetDecentProduct";
 import { IPlaylist } from "@spinamp/spinamp-sdk";
 import { useAccount, useContract, useSigner } from "wagmi";
-import toast from 'react-hot-toast'
+import toast from "react-hot-toast";
 import axios from "axios";
-import { useJam } from '@/lib/jam-core-react';
+import { useJam } from "@/lib/jam-core-react";
 import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
 import { createGroup } from "@/lib/semaphore/semaphore";
@@ -15,6 +15,7 @@ import { LENSHUB_PROXY, makePostGasless, publicationBody } from "@/services/lens
 import { LensHubProxy } from "@/services/lens/abi";
 import useLensLogin from "@/hooks/useLensLogin";
 import { launchSpace } from "@/services/jam/core";
+import { useMultiStepForm } from "@/hooks/useMultiStepForm";
 
 const CreateSpace = ({ defaultProfile, ensName }) => {
   const { address, isConnected } = useAccount();
@@ -42,6 +43,13 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
   const setPostData = (postData) => {
     setLensPost(postData);
   };
+
+  const { step, steps, currenStepIndex, back, next, goTo, isFirstStep, isLastStep } = useMultiStepForm([
+    <SelectPlaylist key="a" selectPlaylist={selectPlaylist} playlist={playlist} />,
+    <SetDecentProduct key="b" setDecentProduct={setDecentProduct} productData={productData} />,
+    <CreateLensPost key="c" setPostData={setPostData} defaultProfile={defaultProfile} />,
+    <SetGoodyBag key="d" setGoody={setGoody} />,
+  ]);
 
   const uploadToIPFS = async () => {
     // pick out files
@@ -81,19 +89,19 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
     const { res, clubSpaceId } = await launchSpace(handle, jamApi);
 
     if (!res) {
-      toast.error('Error - cannot make a space right now');
+      toast.error("Error - cannot make a space right now");
       return;
     }
 
     // upload content to ipfs
-    toast('Setting goody bag...');
+    toast("Setting goody bag...");
     const goodyUri = await uploadToIPFS();
     console.log("goody uri:", goodyUri);
 
     // create lens post (@TODO: make this part optional)
     const content: any = await pinJson(publicationBody(lensPost, [], defaultProfile.handle));
 
-    toast('Creating Lens post...', { duration: 10000 });
+    toast("Creating Lens post...", { duration: 10000 });
     await makePostGasless(defaultProfile.id, `ipfs://${content.IpfsHash}`, signer, lensLogin.authenticate.accessToken);
     const pubCount = await contract.getPubCount(defaultProfile.id);
     const lensPubId = pubCount.toHexString();
@@ -114,7 +122,9 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
           lensPubId,
           clubSpaceId,
         };
-        const { data: { url, semGroupIdHex } } = await axios.post(`/api/space/create`, spaceData);
+        const {
+          data: { url, semGroupIdHex },
+        } = await axios.post(`/api/space/create`, spaceData);
 
         // call sempahore/create-group
         await createGroup(semGroupIdHex, goodyUri, lensPubId, defaultProfile.id);
@@ -129,12 +139,12 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
         resolve();
       }),
       {
-        loading: 'Finalizing your space...',
-        success: 'Success!',
+        loading: "Finalizing your space...",
+        success: "Success!",
         error: (error) => {
           console.log(error);
           setUploading(false);
-          return 'Error!'
+          return "Error!";
         },
       }
     );
@@ -151,37 +161,52 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
 
   return (
     <div className="w-full shadow-xl border dark:border-gray-700 border-grey-500 p-8 flex flex-col gap-3 rounded-md">
-      {
-        !lensLogin
-          ? (
-              <div className="flex gap-4 justify-center md:min-w-[300px]">
-                {
-                  isConnected
-                    ? <button onClick={() => login()} className="btn justify-center items-center">
-                        Login with lens to create a space
-                      </button>
-                    : <ConnectWallet showBalance={false} />
-                }
-              </div>
-            )
-          : <>
-              <SelectPlaylist selectPlaylist={selectPlaylist} playlist={playlist} />
+      {!lensLogin ? (
+        <div className="flex gap-4 justify-center md:min-w-[300px]">
+          {isConnected ? (
+            <button onClick={() => login()} className="btn justify-center items-center">
+              Login with lens to create a space
+            </button>
+          ) : (
+            <ConnectWallet showBalance={false} />
+          )}
+        </div>
+      ) : (
+        <>
+          <SelectPlaylist selectPlaylist={selectPlaylist} playlist={playlist} />
+          <SetDecentProduct setDecentProduct={setDecentProduct} productData={productData} />
+          <CreateLensPost setPostData={setPostData} defaultProfile={defaultProfile} />
+          <SetGoodyBag setGoody={setGoody} />
+          <button
+            className="btn mt-4"
+            onClick={submit}
+            disabled={!goody || !playlist || !lensPost || !productData || uploading}
+          >
+            {uploading ? "Submitting..." : "Create space"}
+          </button>
 
-              <SetDecentProduct setDecentProduct={setDecentProduct} productData={productData} />
-
-              <CreateLensPost setPostData={setPostData} defaultProfile={defaultProfile} />
-
-              <SetGoodyBag setGoody={setGoody} />
-
+          <form action="" className="step-form">
+            <div className="absolute top-[0.5rem] right-[0.5rem]">
+              {currenStepIndex + 1} / {steps.length}
+            </div>
+            {step}
+            <div className="mt-4 flex gap-x-2 justify-end">
               <button
-                className="btn mt-4"
-                onClick={submit}
-                disabled={!goody || !playlist || !lensPost || !productData || uploading}
+                disabled={isFirstStep}
+                type="button"
+                className="btn disabled:cursor-not-allowed disabled:opacity-50"
+                onClick={back}
               >
-                {uploading ? "Submitting..." : "Create space"}
+                Back
               </button>
-            </>
-      }
+
+              <button type="button" className="btn" onClick={next}>
+                {isLastStep ? "Finish" : "Next"}
+              </button>
+            </div>
+          </form>
+        </>
+      )}
     </div>
   );
 };
