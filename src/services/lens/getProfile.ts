@@ -253,13 +253,18 @@ export const useGetProfilesOwned = (options: UseQueryOptions = {}, ownedBy: stri
   const result = useQuery<Profile[]>(
     ["profiles", ownedBy],
     async () => {
-      const result = await getProfilesOwned(ownedBy);
+      if (!ownedBy) return {};
 
-      return result;
+      const profiles = await getProfilesOwned(ownedBy);
+
+      return {
+        profiles,
+        defaultProfile: profiles?.length ? profiles[0] : undefined
+      };
     },
     {
       ...(options as any),
-      enabled: !!ownedBy,
+      enabled: true,
     }
   );
 

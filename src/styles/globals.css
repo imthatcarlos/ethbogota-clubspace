@@ -72,3 +72,13 @@ body {
   color: transparent;
   background-clip: text;
 }
+
+.step-form {
+  padding: 2rem;
+  border-radius: 0.5rem;
+  padding-block-end: 3rem;
+}
+
+.btn[disabled]:hover {
+  background: rgb(79 70 229 / var(--tw-bg-opacity));
+}

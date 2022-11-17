@@ -1,35 +1,75 @@
-import { useState } from "react";
+import { FormEvent, Fragment, useEffect, useState } from "react";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import CreateLensPost from "@/components/CreateLensPost";
 import SelectPlaylist from "@/components/SelectPlaylist";
 import SetDecentProduct from "@/components/SetDecentProduct";
 import { IPlaylist } from "@spinamp/spinamp-sdk";
 import { useAccount, useContract, useSigner, useNetwork } from "wagmi";
-import toast from 'react-hot-toast'
+import toast from "react-hot-toast";
 import axios from "axios";
-import { useJam } from '@/lib/jam-core-react';
+import { useJam } from "@/lib/jam-core-react";
 import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
 import { createGroup } from "@/lib/semaphore/semaphore";
 import { LENSHUB_PROXY, makePostGasless, publicationBody } from "@/services/lens/gaslessTxs";
 import { LensHubProxy } from "@/services/lens/abi";
-import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import { launchSpace } from "@/services/jam/core";
+import { useMultiStepForm } from "@/hooks/useMultiStepForm";
+import { Dialog, Transition } from "@headlessui/react";
+import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
+import { useGetProfilesOwned } from "@/services/lens/getProfile";
+import useENS from "@/hooks/useENS";
 
-const CreateSpace = ({ defaultProfile, ensName }) => {
+type MultiFormData = {
+  decentContractAddress: string;
+  lensPost: string;
+  goodyName: string;
+  goodyDesc: string;
+  goodyFiles: File[];
+};
+
+const INITIAL_DATA: MultiFormData = {
+  decentContractAddress: "",
+  lensPost: "",
+  goodyName: "",
+  goodyDesc: "",
+  goodyFiles: [],
+};
+
+const CreateSpace = () => {
   const { chain } = useNetwork();
   const { address, isConnected } = useAccount();
   const { data: signer } = useSigner();
+
   const [playlist, setPlaylist] = useState<IPlaylist>();
   const [productData, setProductData] = useState<any>();
   const [lensPost, setLensPost] = useState<any>();
   const [goody, setGoody] = useState<any>();
   const [uploading, setUploading] = useState<boolean>();
   const [shareUrl, setShareUrl] = useState<string>();
-  const [state, jamApi] = useJam();
 
+  const [state, jamApi] = useJam();
   const { data: lensRefreshData } = useLensRefresh();
   const { data: lensLoginData, refetch: login } = useLensLogin();
+  const { ensName, isLoading: isLoadingENS } = useENS(address);
+  const { data: profilesResponse } = useGetProfilesOwned({}, address);
+  const defaultProfile = profilesResponse ? profilesResponse.defaultProfile : null;
+
+  const [formMultiFormData, setMultiFormData] = useState(INITIAL_DATA);
+
+  let [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (isConnected) openModal();
+  }, [isConnected]);
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  function openModal() {
+    setIsOpen(true);
+  }
 
   const selectPlaylist = (playlist) => {
     setPlaylist(playlist);
@@ -42,6 +82,38 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
 
   const setPostData = (postData) => {
     setLensPost(postData);
+  };
+
+  const updateFields = (fields: Partial<MultiFormData>) => {
+    setMultiFormData((prev) => {
+      return { ...prev, ...fields };
+    });
+  };
+
+  const { step, steps, currenStepIndex, back, next, goTo, isFirstStep, isLastStep } = useMultiStepForm([
+    <SelectPlaylist key="a" selectPlaylist={selectPlaylist} playlist={playlist} />,
+    <SetDecentProduct
+      key="b"
+      setDecentProduct={setDecentProduct}
+      productData={productData}
+      {...formMultiFormData}
+      updateFields={updateFields}
+    />,
+    <CreateLensPost
+      key="c"
+      setPostData={setPostData}
+      defaultProfile={defaultProfile}
+      {...formMultiFormData}
+      updateFields={updateFields}
+    />,
+    <SetGoodyBag key="d" setGoody={setGoody} {...formMultiFormData} updateFields={updateFields} />,
+  ]);
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!isLastStep) return next();
+
+    submit();
   };
 
   const uploadToIPFS = async () => {
@@ -82,24 +154,24 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
     const { res, clubSpaceId } = await launchSpace(handle, jamApi);
 
     if (!res) {
-      toast.error('Error - cannot make a space right now');
+      toast.error("Error - cannot make a space right now");
       return;
     }
 
     // upload content to ipfs
-    toast('Setting goody bag...');
+    toast("Setting goody bag...");
     const goodyUri = await uploadToIPFS();
     console.log("goody uri:", goodyUri);
 
     // create lens post (@TODO: make this part optional)
     const content: any = await pinJson(publicationBody(lensPost, [], defaultProfile.handle));
 
-    toast('Creating Lens post...', { duration: 10000 });
+    toast("Creating Lens post...", { duration: 10000 });
     const accessToken = lensLoginData?.authenticate?.accessToken
       ? lensLoginData?.authenticate?.accessToken
       : lensRefreshData.accessToken;
     if (!accessToken) {
-      throw new Error('Error - lens profile not authenticated. This is likely a bug with login/refresh logic');
+      throw new Error("Error - lens profile not authenticated. This is likely a bug with login/refresh logic");
     }
     await makePostGasless(defaultProfile.id, `ipfs://${content.IpfsHash}`, signer, accessToken);
     const pubCount = await contract.getPubCount(defaultProfile.id);
@@ -122,7 +194,9 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
           lensPubId,
           clubSpaceId,
         };
-        const { data: { url, semGroupIdHex } } = await axios.post(`/api/space/create`, spaceData);
+        const {
+          data: { url, semGroupIdHex },
+        } = await axios.post(`/api/space/create`, spaceData);
 
         // call sempahore/create-group
         await createGroup(semGroupIdHex, goodyUri, lensPubId, defaultProfile.id);
@@ -137,12 +211,12 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
         resolve();
       }),
       {
-        loading: 'Finalizing your space...',
-        success: 'Success!',
+        loading: "Finalizing your space...",
+        success: "Success!",
         error: (error) => {
           console.log(error);
           setUploading(false);
-          return 'Error!'
+          return "Error!";
         },
       }
     );
@@ -158,38 +232,91 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
   }
 
   return (
-    <div className="w-full shadow-xl border dark:border-gray-700 border-grey-500 p-8 flex flex-col gap-3 rounded-md">
-      {
-        !(lensLoginData || lensRefreshData)
-          ? (
-              <div className="flex gap-4 justify-center md:min-w-[300px]">
-                {
-                  isConnected
-                    ? <button onClick={() => login()} className="btn justify-center items-center">
-                        Login with lens to create a space
-                      </button>
-                    : <ConnectWallet showBalance={false} />
-                }
-              </div>
-            )
-          : <>
-              <SelectPlaylist selectPlaylist={selectPlaylist} playlist={playlist} />
-
-              <SetDecentProduct setDecentProduct={setDecentProduct} productData={productData} />
-
-              <CreateLensPost setPostData={setPostData} defaultProfile={defaultProfile} />
-
-              <SetGoodyBag setGoody={setGoody} />
-
-              <button
-                className="btn mt-4"
-                onClick={submit}
-                disabled={!goody || !playlist || !lensPost || !productData || uploading}
+    <div className="w-full p-8 flex flex-col gap-3">
+      {!(lensLoginData || lensRefreshData) ? (
+        <div className="flex gap-4 justify-center md:min-w-[300px]">
+          {isConnected ? (
+            <button onClick={() => login()} className="btn justify-center items-center">
+              Login with lens to create a space
+            </button>
+          ) : (
+            <ConnectWallet showBalance={false} />
+          )}
+        </div>
+      ) : (
+        <>
+          <Transition appear show={isOpen} as={Fragment}>
+            <Dialog as="div" className="relative z-10" onClose={closeModal}>
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0"
+                enterTo="opacity-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
               >
-                {uploading ? "Submitting..." : "Create space"}
-              </button>
-            </>
-      }
+                <div className="fixed inset-0 bg-black bg-opacity-25" />
+              </Transition.Child>
+
+              <div className="fixed inset-0 overflow-y-auto">
+                <div className="flex min-h-full items-center justify-center p-4 text-center">
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0 scale-95"
+                    enterTo="opacity-100 scale-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100 scale-100"
+                    leaveTo="opacity-0 scale-95"
+                  >
+                    <Dialog.Panel className="w-full max-w-xl min-h-[300px] transform overflow-hidden rounded-2xl bg-white dark:bg-black p-6 text-left align-middle shadow-xl transition-all">
+                      <Dialog.Title
+                        as="h3"
+                        className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 border-b-[1px] border-b-gray-600 pb-3"
+                      >
+                        <div className="flex justify-between items-center">
+                          <span className="dark:text-gray-300">Paperwork</span>
+                          <span className="dark:text-gray-500 text-sm">
+                            {currenStepIndex + 1} / {steps.length}
+                          </span>
+                        </div>
+                      </Dialog.Title>
+
+                      <form className="step-form" onSubmit={handleSubmit}>
+                        {step}
+                        <div className="mt-4 flex gap-x-2 justify-end absolute bottom-4 left-1/2 transform -translate-x-1/2 right-0">
+                          <button
+                            disabled={isFirstStep}
+                            type="button"
+                            className="btn disabled:cursor-not-allowed disabled:opacity-50"
+                            onClick={back}
+                          >
+                            Back
+                          </button>
+
+                          <button
+                            type="submit"
+                            className="btn disabled:cursor-not-allowed disabled:opacity-50"
+                            disabled={isLastStep && goody?.files?.length !== 2}
+                          >
+                            {isLastStep ? "Create Space" : "Next"}
+                          </button>
+                        </div>
+                        {isLastStep && goody?.files?.length > 0 && isLastStep && goody?.files?.length !== 2 ? (
+                          <div className="text-red-400 text-center">
+                            ⚠️ To continue, you need one audio file (.wav or .mp3) and one image.
+                          </div>
+                        ) : null}
+                      </form>
+                    </Dialog.Panel>
+                  </Transition.Child>
+                </div>
+              </div>
+            </Dialog>
+          </Transition>
+        </>
+      )}
     </div>
   );
 };

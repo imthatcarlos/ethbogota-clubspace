@@ -6,6 +6,7 @@ import Web3Provider from "@/components/Web3Provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { toast, Toaster, ToastBar } from "react-hot-toast";
+import { Header } from '@/components/Header';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,6 +41,7 @@ const App = ({ Component, pageProps }) => {
               </ToastBar>
             )}
           </Toaster>
+          <Header />
           <Component {...pageProps} />
         </Web3Provider>
       </ThemeProvider>
