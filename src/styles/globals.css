@@ -74,10 +74,11 @@ body {
 }
 
 .step-form {
-  position: relative;
-
-  border: 1px solid gray;
   padding: 2rem;
-  margin: 1rem;
   border-radius: 0.5rem;
+  padding-block-end: 3rem;
+}
+
+.btn[disabled]:hover {
+  background: rgb(79 70 229 / var(--tw-bg-opacity));
 }

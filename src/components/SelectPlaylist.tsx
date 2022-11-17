@@ -25,7 +25,7 @@ const SelectPlaylist: FC<Props> = ({ selectPlaylist, playlist }) => {
           <Listbox value={playlist} onChange={selectPlaylist}>
             {({ open }) => (
               <>
-                <Listbox.Label className="text-md font-bold tracking-tight sm:text-lg md:text-xl">
+                <Listbox.Label className="inline-block mb-3 text-md font-bold tracking-tight sm:text-lg md:text-xl">
                   Select Your Spinamp Playlist
                 </Listbox.Label>
                 <div className="relative mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md">

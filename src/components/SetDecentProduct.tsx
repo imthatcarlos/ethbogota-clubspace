@@ -8,13 +8,14 @@ import { classNames } from "@/lib/utils/classNames";
 import { getContractData, CONTRACT_TYPES_FOR_FEATURED } from "@/services/decent/getDecentNFT";
 import { MultiStepFormWrapper } from "./MultiStepFormWrapper";
 
-const SetDecentProduct = ({ setDecentProduct, productData = undefined }) => {
+const SetDecentProduct = ({ setDecentProduct, productData = undefined, decentContractAddress, updateFields }) => {
   const { chain } = useNetwork();
   const { data: signer } = useSigner();
   const [contractType, setContractType] = useState(CONTRACT_TYPES_FOR_FEATURED[0]);
 
   const onContractAddressChanged = (event) => {
     const val = event.target.value;
+    updateFields({ decentContractAddress: val });
     if (utils.isAddress(val)) {
       _getContractData(val);
     }
@@ -35,7 +36,7 @@ const SetDecentProduct = ({ setDecentProduct, productData = undefined }) => {
       <div className="w-full">
         <div className="w-full">
           <div className="w-full flex flex-col gap-4">
-            <label htmlFor="contract_address" className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">
+            <label htmlFor="contract_address" className="text-md font-bold tracking-tight sm:text-lg md:text-xl">
               Featured Decent NFT
             </label>
             {!productData ? (
@@ -102,6 +103,7 @@ const SetDecentProduct = ({ setDecentProduct, productData = undefined }) => {
                   )}
                 </Listbox>
                 <input
+                  value={decentContractAddress}
                   type="text"
                   id="contract_address"
                   className="input"

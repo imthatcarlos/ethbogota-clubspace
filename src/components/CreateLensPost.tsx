@@ -1,15 +1,13 @@
 import { useState } from "react";
 import { MultiStepFormWrapper } from "./MultiStepFormWrapper";
 
-const CreateLensPost = ({ setPostData, defaultProfile }) => {
-  const [text, setText] = useState("");
-
+const CreateLensPost = ({ setPostData, defaultProfile, lensPost, updateFields }) => {
   const url = () => `https://www.joinclubspace.xyz/live/${defaultProfile.handle}`;
 
-  const fullText = (_text) => `${_text} ${url()}`;
+  const fullText = (_text: string) => `${_text} ${url()}`;
 
-  const onChange = (_text) => {
-    setText(_text);
+  const onChange = (_text: string) => {
+    updateFields({ lensPost: _text });
     setPostData(fullText(_text));
   };
 
@@ -23,9 +21,10 @@ const CreateLensPost = ({ setPostData, defaultProfile }) => {
           id="lens-post"
           rows={3}
           className="input"
-          value={text}
+          value={lensPost}
           placeholder="Join my Club Space!"
           onChange={(e) => onChange(e.target.value)}
+          required
         />
       </div>
     </MultiStepFormWrapper>

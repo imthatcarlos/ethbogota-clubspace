@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, Fragment, useEffect, useState } from "react";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import CreateLensPost from "@/components/CreateLensPost";
 import SelectPlaylist from "@/components/SelectPlaylist";
@@ -16,6 +16,23 @@ import { LensHubProxy } from "@/services/lens/abi";
 import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import { launchSpace } from "@/services/jam/core";
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
+import { Dialog, Transition } from "@headlessui/react";
+
+type MultiFormData = {
+  decentContractAddress: string;
+  lensPost: string;
+  goodyName: string;
+  goodyDesc: string;
+  goodyFiles: File[];
+};
+
+const INITIAL_DATA: MultiFormData = {
+  decentContractAddress: "",
+  lensPost: "",
+  goodyName: "",
+  goodyDesc: "",
+  goodyFiles: [],
+};
 
 const CreateSpace = ({ defaultProfile, ensName }) => {
   const { chain } = useNetwork();
@@ -32,6 +49,22 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
   const { data: lensRefreshData } = useLensRefresh();
   const { data: lensLoginData, refetch: login } = useLensLogin();
 
+  const [formMultiFormData, setMultiFormData] = useState(INITIAL_DATA);
+
+  let [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (isConnected) openModal();
+  }, [isConnected]);
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  function openModal() {
+    setIsOpen(true);
+  }
+
   const selectPlaylist = (playlist) => {
     setPlaylist(playlist);
   };
@@ -45,16 +78,36 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
     setLensPost(postData);
   };
 
+  const updateFields = (fields: Partial<MultiFormData>) => {
+    setMultiFormData((prev) => {
+      return { ...prev, ...fields };
+    });
+  };
+
   const { step, steps, currenStepIndex, back, next, goTo, isFirstStep, isLastStep } = useMultiStepForm([
     <SelectPlaylist key="a" selectPlaylist={selectPlaylist} playlist={playlist} />,
-    <SetDecentProduct key="b" setDecentProduct={setDecentProduct} productData={productData} />,
-    <CreateLensPost key="c" setPostData={setPostData} defaultProfile={defaultProfile} />,
-    <SetGoodyBag key="d" setGoody={setGoody} />,
+    <SetDecentProduct
+      key="b"
+      setDecentProduct={setDecentProduct}
+      productData={productData}
+      {...formMultiFormData}
+      updateFields={updateFields}
+    />,
+    <CreateLensPost
+      key="c"
+      setPostData={setPostData}
+      defaultProfile={defaultProfile}
+      {...formMultiFormData}
+      updateFields={updateFields}
+    />,
+    <SetGoodyBag key="d" setGoody={setGoody} {...formMultiFormData} updateFields={updateFields} />,
   ]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    next();
+    if (!isLastStep) return next();
+
+    submit();
   };
 
   const uploadToIPFS = async () => {
@@ -173,7 +226,7 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
   }
 
   return (
-    <div className="w-full shadow-xl border dark:border-gray-700 border-grey-500 p-8 flex flex-col gap-3 rounded-md">
+    <div className="w-full p-8 flex flex-col gap-3">
       {!(lensLoginData || lensRefreshData) ? (
         <div className="flex gap-4 justify-center md:min-w-[300px]">
           {isConnected ? (
@@ -186,34 +239,76 @@ const CreateSpace = ({ defaultProfile, ensName }) => {
         </div>
       ) : (
         <>
-          {/* <SelectPlaylist selectPlaylist={selectPlaylist} playlist={playlist} />
-
-          <SetDecentProduct setDecentProduct={setDecentProduct} productData={productData} />
-
-          <CreateLensPost setPostData={setPostData} defaultProfile={defaultProfile} />
-
-          <SetGoodyBag setGoody={setGoody} /> */}
-
-          <form className="step-form" onSubmit={handleSubmit}>
-            <div className="absolute top-[0.5rem] right-[0.5rem]">
-              {currenStepIndex + 1} / {steps.length}
-            </div>
-            {step}
-            <div className="mt-4 flex gap-x-2 justify-end">
-              <button
-                disabled={isFirstStep}
-                type="button"
-                className="btn disabled:cursor-not-allowed disabled:opacity-50"
-                onClick={back}
+          <Transition appear show={isOpen} as={Fragment}>
+            <Dialog as="div" className="relative z-10" onClose={closeModal}>
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0"
+                enterTo="opacity-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
               >
-                Back
-              </button>
+                <div className="fixed inset-0 bg-black bg-opacity-25" />
+              </Transition.Child>
 
-              <button type="submit" className="btn">
-                {isLastStep ? "Finish" : "Next"}
-              </button>
-            </div>
-          </form>
+              <div className="fixed inset-0 overflow-y-auto">
+                <div className="flex min-h-full items-center justify-center p-4 text-center">
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0 scale-95"
+                    enterTo="opacity-100 scale-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100 scale-100"
+                    leaveTo="opacity-0 scale-95"
+                  >
+                    <Dialog.Panel className="w-full max-w-xl min-h-[300px] transform overflow-hidden rounded-2xl bg-white dark:bg-black p-6 text-left align-middle shadow-xl transition-all">
+                      <Dialog.Title
+                        as="h3"
+                        className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 border-b-[1px] border-b-gray-600 pb-3"
+                      >
+                        <div className="flex justify-between items-center">
+                          <span className="dark:text-gray-300">Paperwork</span>
+                          <span className="dark:text-gray-500 text-sm">
+                            {currenStepIndex + 1} / {steps.length}
+                          </span>
+                        </div>
+                      </Dialog.Title>
+
+                      <form className="step-form" onSubmit={handleSubmit}>
+                        {step}
+                        <div className="mt-4 flex gap-x-2 justify-end absolute bottom-4 left-1/2 transform -translate-x-1/2 right-0">
+                          <button
+                            disabled={isFirstStep}
+                            type="button"
+                            className="btn disabled:cursor-not-allowed disabled:opacity-50"
+                            onClick={back}
+                          >
+                            Back
+                          </button>
+
+                          <button
+                            type="submit"
+                            className="btn disabled:cursor-not-allowed disabled:opacity-50"
+                            disabled={isLastStep && goody?.files?.length !== 2}
+                          >
+                            {isLastStep ? "Create Space" : "Next"}
+                          </button>
+                        </div>
+                        {isLastStep && goody?.files?.length > 0 && isLastStep && goody?.files?.length !== 2 ? (
+                          <div className="text-red-400 text-center">
+                            ⚠️ To continue, you need one audio file (.wav or .mp3) and one image.
+                          </div>
+                        ) : null}
+                      </form>
+                    </Dialog.Panel>
+                  </Transition.Child>
+                </div>
+              </div>
+            </Dialog>
+          </Transition>
         </>
       )}
     </div>
