@@ -145,7 +145,7 @@ const LiveSpace: FC<Props> = ({
     if (!isEmpty(defaultProfile) && !isEmpty(creatorLensProfile)) {
       return defaultProfile.id === creatorLensProfile.id;
     }
-  }, [defaultProfile, creatorLensProfile])
+  }, [defaultProfile, creatorLensProfile]);
 
   const audiencePeers = peers.filter(
     (id) => isEmpty(identities[id]) || identities[id].handle !== clubSpaceObject.creatorLensHandle
@@ -208,9 +208,7 @@ const LiveSpace: FC<Props> = ({
           const { txHash } = await followProfileGasless(profileId, signer, accessToken);
 
           if (txHash) {
-            isFollowDrawer
-              ? setDoesFollowDrawerProfile(true)
-              : refetchDoesFollowCreator();
+            isFollowDrawer ? setDoesFollowDrawerProfile(true) : refetchDoesFollowCreator();
           }
 
           resolve();
@@ -294,21 +292,12 @@ const LiveSpace: FC<Props> = ({
           />
         )}
         <div className="border border-gray-500">
-          {
-            playlistTracks && clubSpaceObject.streamURL && (
-              <LiveAudioPlayer
-                playlistTracks={playlistTracks}
-                streamURL={clubSpaceObject.streamURL}
-              />
-            )
-          }
+          {playlistTracks && clubSpaceObject.streamURL && (
+            <LiveAudioPlayer playlistTracks={playlistTracks} streamURL={clubSpaceObject.streamURL} />
+          )}
         </div>
         <div className="border border-gray-500">
-          {
-            featuredDecentNFT && (
-              <FeaturedDecentNFT {...featuredDecentNFT} />
-            )
-          }
+          {featuredDecentNFT && <FeaturedDecentNFT {...featuredDecentNFT} />}
         </div>
       </div>
 
@@ -427,25 +416,23 @@ const LiveSpace: FC<Props> = ({
                         <div className="text-gray-500">@{drawerProfile?.handle}</div>
                       </div>
 
-                      {
-                        drawerProfile?.id !== defaultProfile?.id
-                          ? (
-                              lensLoginData || lensRefreshData
-                                ? <button
-                                    className="!w-auto btn"
-                                    onClick={() => {
-                                      onFollowClick(drawerProfile.id);
-                                    }}
-                                    disabled={doesFollowDrawerProfile}
-                                  >
-                                    {doesFollowDrawerProfile ? "Following" : "Follow"}
-                                  </button>
-                                : <button onClick={() => loginWithLens({}, true)} className="btn justify-center items-center">
-                                    Login with Lens
-                                  </button>
-                            )
-                          : null
-                      }
+                      {drawerProfile?.id !== defaultProfile?.id ? (
+                        lensLoginData || lensRefreshData ? (
+                          <button
+                            className="!w-auto btn"
+                            onClick={() => {
+                              onFollowClick(drawerProfile.id);
+                            }}
+                            disabled={doesFollowDrawerProfile}
+                          >
+                            {doesFollowDrawerProfile ? "Following" : "Follow"}
+                          </button>
+                        ) : (
+                          <button onClick={() => loginWithLens({}, true)} className="btn justify-center items-center">
+                            Login with Lens
+                          </button>
+                        )
+                      ) : null}
                     </div>
                   </Dialog.Title>
                   <div className="mt-2">

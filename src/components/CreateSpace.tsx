@@ -13,23 +13,29 @@ import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
 import { createGroup } from "@/lib/semaphore/semaphore";
 import { LENSHUB_PROXY, makePostGasless, publicationBody } from "@/services/lens/gaslessTxs";
 import { LensHubProxy } from "@/services/lens/abi";
-import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import { launchSpace } from "@/services/jam/core";
+import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
+import { useGetProfilesOwned } from "@/services/lens/getProfile";
+import useENS from "@/hooks/useENS";
 
-const CreateSpace = ({ defaultProfile, ensName }) => {
+const CreateSpace = () => {
   const { chain } = useNetwork();
   const { address, isConnected } = useAccount();
   const { data: signer } = useSigner();
+
   const [playlist, setPlaylist] = useState<IPlaylist>();
   const [productData, setProductData] = useState<any>();
   const [lensPost, setLensPost] = useState<any>();
   const [goody, setGoody] = useState<any>();
   const [uploading, setUploading] = useState<boolean>();
   const [shareUrl, setShareUrl] = useState<string>();
-  const [state, jamApi] = useJam();
 
+  const [state, jamApi] = useJam();
   const { data: lensRefreshData } = useLensRefresh();
   const { data: lensLoginData, refetch: login } = useLensLogin();
+  const { ensName, isLoading: isLoadingENS } = useENS(address);
+  const { data: profilesResponse } = useGetProfilesOwned({}, address);
+  const defaultProfile = profilesResponse ? profilesResponse.defaultProfile : null;
 
   const selectPlaylist = (playlist) => {
     setPlaylist(playlist);

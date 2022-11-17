@@ -1,31 +1,11 @@
-import { useAccount } from "wagmi";
-import { useState, useEffect } from "react";
 import dynamic from "next/dynamic"
-import useENS from "@/hooks/useENS";
-import { APP_NAME } from "@/lib/consts";
-import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
-import { ConnectWallet } from "./ConnectWallet";
-import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import useIsMounted from "@/hooks/useIsMounted";
 
 const JamProviderWrapper = dynamic(() => import('@/components/JamProviderWrapper'), { ssr: false });
 const CreateSpace = dynamic(() => import('@/components/CreateSpace'), { ssr: false });
 
 export const Hero = () => {
-  const { isConnected, address } = useAccount();
-  const [defaultProfile, setDefaultProfile] = useState<Profile>();
-  const { data: profiles } = useGetProfilesOwned({}, address);
-  const { ensName, isLoading: isLoadingENS } = useENS(address);
   const isMounted = useIsMounted();
-
-  useEffect(() => {
-    if (profiles?.length) {
-      setDefaultProfile(profiles[0]);
-    }
-  }, [address, profiles]);
-
-  const { data: lensRefreshData } = useLensRefresh();
-  const { data: lensLoginData, refetch: loginWithLens } = useLensLogin();
 
   if (!isMounted) return null;
 
@@ -55,33 +35,6 @@ export const Hero = () => {
         </svg>
       </div>
       <div className="relative pt-6 pb-16">
-        <nav
-          className="relative mx-auto hidden md:flex max-w-7xl items-center justify-between px-4 sm:px-6"
-          aria-label="Global"
-        >
-          <div className="flex flex-1 items-center">
-            <div className="flex w-full items-center justify-between md:w-auto">
-              <a href="#">
-                <span className="sr-only">{APP_NAME}</span>
-                {/* <Image
-                  className="h-8 w-auto sm:h-10"
-                  src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                  alt={APP_NAME}
-                /> */}
-              </a>
-            </div>
-            <div className="hidden space-x-10 md:ml-10 md:flex"></div>
-          </div>
-          <div className="flex gap-4 justify-center md:min-w-[300px]">
-            {isConnected && (
-              <button onClick={() => loginWithLens()} className="btn justify-center items-center">
-                {!(lensLoginData || lensRefreshData) ? "Login with lens" : defaultProfile?.handle}
-              </button>
-            )}
-            <ConnectWallet showBalance={false} />
-          </div>
-        </nav>
-
         <main className="mt-16 sm:mt-24 pb-16 md:pb-0">
           <div className="max-w-7xl lg:mx-auto">
             <div className="lg:mt-16 lg:grid lg:grid-cols-12 lg:gap-8">
@@ -108,7 +61,7 @@ export const Hero = () => {
                   <div className="px-4 sm:px-10">
                     <div className="w-full">
                       <JamProviderWrapper>
-                        <CreateSpace defaultProfile={defaultProfile} ensName={ensName} />
+                        <CreateSpace />
                       </JamProviderWrapper>
                     </div>
                   </div>
@@ -117,32 +70,6 @@ export const Hero = () => {
             </div>
           </div>
         </main>
-        <nav
-          className="mx-auto md:hidden flex fixed bottom-0 bg-white dark:bg-black/20 backdrop-blur backdrop-filter max-w-7xl items-center py-6 justify-between px-4 sm:px-6"
-          aria-label="Global"
-        >
-          <div className="flex flex-1 items-center">
-            <div className="flex w-full items-center justify-between md:w-auto">
-              <a href="#">
-                <span className="sr-only">{APP_NAME}</span>
-                {/* <Image
-                  className="h-8 w-auto sm:h-10"
-                  src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                  alt={APP_NAME}
-                /> */}
-              </a>
-            </div>
-            <div className="hidden space-x-10 md:ml-10 md:flex"></div>
-          </div>
-          <div className="flex gap-4 justify-center md:min-w-[300px]">
-            {isConnected && (
-              <button onClick={() => login()} className="btn justify-center items-center">
-                {!(lensLoginData || lensRefreshData) ? "Login with lens" : defaultProfile?.handle}
-              </button>
-            )}
-            <ConnectWallet showBalance={false} />
-          </div>
-        </nav>
       </div>
     </div>
   );
