@@ -5,7 +5,6 @@ import { useJam } from "@/lib/jam-core-react";
 import { isEmpty } from "lodash/lang";
 import toast from "react-hot-toast";
 import { use } from "use-minimal-state";
-import { AudioPlayer } from "decent-audio-player";
 import { classNames } from "@/lib/utils/classNames";
 import { joinGroup } from "@/lib/semaphore/semaphore";
 import { Profile, useGetProfilesOwned, useGetProfileByHandle } from "@/services/lens/getProfile";
@@ -14,6 +13,7 @@ import { LensProfile, reactionsEntries } from "@/components/LensProfile";
 import useIdentity from "@/hooks/useIdentity";
 import useIsMounted from "@/hooks/useIsMounted";
 import useUnload from "@/hooks/useUnload";
+import { useGetTracksFromPlaylist } from "@/services/spinamp/getPlaylists";
 import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import { getProfileByHandle } from "@/services/lens/getProfile";
 import { doesFollow, useDoesFollow } from "@/services/lens/doesFollow";
@@ -21,6 +21,7 @@ import { followProfileGasless } from "@/services/lens/gaslessTxs";
 import { useGetContractData } from "@/services/decent/getDecentNFT";
 import { HostCard } from "./HostCard";
 import { FeaturedDecentNFT } from "./FeaturedDecentNFT";
+import { LiveAudioPlayer } from "./LiveAudioPlayer";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -103,6 +104,7 @@ const LiveSpace: FC<Props> = ({
       signer,
     }
   );
+  const { data: playlistTracks } = useGetTracksFromPlaylist({}, clubSpaceObject.spinampPlaylistId);
 
   let [
     reactions,
@@ -274,22 +276,6 @@ const LiveSpace: FC<Props> = ({
 
   if (isLoadingEntry) return null;
 
-  // @TODO: render the host profile larger than `LensProfile`:
-  // - avatar maybe rounded square
-  // - Name (handle.lens)
-  // - label: ClubSpace Host
-  // - bio
-  // follow button => disabled if `doesFollowCreator` (same logic as drawer follow button)
-  console.log("creatorLensProfile", creatorLensProfile);
-  console.log("doesFollowCreator", doesFollowCreator);
-
-  // @TODO: render the featured decent NFT + buy button
-  // - NFT image / gif
-  // - NFT name, description
-  // - PRICE | supply
-  // - Buy button
-  console.log("featuredDecentNFT", featuredDecentNFT);
-
   // @TODO: render some visualizer + the decent audio player
   // - clubSpaceObject.streamURL
   // - user can hit play/plause
@@ -308,7 +294,14 @@ const LiveSpace: FC<Props> = ({
           />
         )}
         <div className="border border-gray-500">
-          CURRENT SONG + VIZ
+          {
+            playlistTracks && clubSpaceObject.streamURL && (
+              <LiveAudioPlayer
+                playlistTracks={playlistTracks}
+                streamURL={clubSpaceObject.streamURL}
+              />
+            )
+          }
         </div>
         <div className="border border-gray-500">
           {
