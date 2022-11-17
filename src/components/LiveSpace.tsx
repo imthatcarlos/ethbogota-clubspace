@@ -22,7 +22,6 @@ import { useGetContractData } from "@/services/decent/getDecentNFT";
 import { HostCard } from "./HostCard";
 import { FeaturedDecentNFT } from "./FeaturedDecentNFT";
 import { LiveAudioPlayer } from "./LiveAudioPlayer";
-import { Header } from "./Header";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -282,7 +281,6 @@ const LiveSpace: FC<Props> = ({
 
   return (
     <>
-      <Header />
       <div className="stage-container">
         {creatorLensProfile && (
           <HostCard
