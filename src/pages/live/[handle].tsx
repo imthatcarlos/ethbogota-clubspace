@@ -40,15 +40,18 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
     return;
   }
 
+  // @TODO: if clubSpaceObject.stream == null it means the worker hasn't finished
+  // - render some component to come back in a little bit?
+  if (!clubSpaceObject.streamURL) {
+
+  }
+
   useEffect(() => {
     if (!isLoadingProfiles) {
       setDefaultProfile(profiles[0]);
       setLoadingDefaultProfile(false);
     }
   }, [address, profiles, isLoadingProfiles]);
-
-  // TODO: if clubSpaceObject.stream == null it means the worker hasn't finished
-  // - render some component to come back in a little bit?
 
   return (
     <>
