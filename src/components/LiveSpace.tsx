@@ -5,6 +5,7 @@ import { useJam } from "@/lib/jam-core-react";
 import { isEmpty } from "lodash/lang";
 import toast from "react-hot-toast";
 import { use } from "use-minimal-state";
+import { AudioPlayer } from "decent-audio-player";
 import { classNames } from "@/lib/utils/classNames";
 import { joinGroup } from "@/lib/semaphore/semaphore";
 import { Profile, useGetProfilesOwned, useGetProfileByHandle } from "@/services/lens/getProfile";
@@ -21,7 +22,7 @@ import { followProfileGasless } from "@/services/lens/gaslessTxs";
 import { useGetContractData } from "@/services/decent/getDecentNFT";
 import { HostCard } from "./HostCard";
 import { FeaturedDecentNFT } from "./FeaturedDecentNFT";
-import { LiveAudioPlayer } from "./LiveAudioPlayer";
+// import { LiveAudioPlayer } from "./LiveAudioPlayer";
 import { ExternalLink, Pause, Play } from "./Vectors";
 
 type ClubSpaceObject = {
@@ -82,7 +83,6 @@ const LiveSpace: FC<Props> = ({
   const [doesFollowDrawerProfile, setDoesFollowDrawerProfile] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHostOpen, setIsHostOpen] = useState<boolean>(false);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   // @TODO: should really merge these two hook calls
   // - first run tries to do the refresh call
@@ -161,12 +161,15 @@ const LiveSpace: FC<Props> = ({
     }
   }, [isLoadingEntry, myIdentity, doesFollowCreator, creatorLensProfile, featuredDecentNFT]);
 
-  function PlayerCard({ song = "Margie's 2099 NFT", artist = "Sinbad Tunes" }) {
+  function PlayerCard({ song = "Enemies", artist = "Chaos", playlistTracks, streamURL }) {
     return (
       <div className="flex gap-x-4">
-        <button type="button" className="btn bg-indigo-600 !rounded-full !p-0 basis-0" onClick={togglePlayState}>
-          {isPlaying ? <Pause /> : <Play />}
-        </button>
+        <AudioPlayer
+          size={56}
+          audioSrc={streamURL}
+          callbackAfterPlay={() => { console.log('callbackAfterPlay') }}
+          active
+        />
         <div className="song-details flex flex-col gap-y-2 justify-center">
           <span className="text-xl">
             <a href="#" title="Visit song source" className="flex gap-x-[10px] items-center group">
@@ -205,10 +208,6 @@ const LiveSpace: FC<Props> = ({
     }
 
     setIsOpen((currentState) => !currentState);
-  };
-
-  const togglePlayState = () => {
-    setIsPlaying((currPlayState) => !currPlayState);
   };
 
   const onFollowClick = (profileId: string, isFollowDrawer = true) => {
@@ -299,7 +298,9 @@ const LiveSpace: FC<Props> = ({
       <div className="min-h-[530px] relative">
         <div className="flex min-h-[530px] justify-evenly items-center">
           <div className="player">
-            <PlayerCard />
+            {playlistTracks && clubSpaceObject.streamURL && (
+              <PlayerCard playlistTracks={playlistTracks} streamURL={clubSpaceObject.streamURL} />
+            )}
           </div>
           <div className="decent-nft flex flex-col gap-y-3">
             {featuredDecentNFT && <FeaturedDecentNFT {...featuredDecentNFT} />}
@@ -319,14 +320,6 @@ const LiveSpace: FC<Props> = ({
           </div>
         </div>
         <div className="bg-live-page-player bg-cover bg-no-repeat blur-[70px] inset-0 absolute z-[-1]"></div>
-      </div>
-
-      <div className="stage-container">
-        <div className="border border-gray-500">
-          {playlistTracks && clubSpaceObject.streamURL && (
-            <LiveAudioPlayer playlistTracks={playlistTracks} streamURL={clubSpaceObject.streamURL} />
-          )}
-        </div>
       </div>
 
       <div className="grid-container responsive-container">
