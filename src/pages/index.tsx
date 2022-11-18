@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import ThemeSwitcher from "@/components/ThemeSwitcher";
+// import ThemeSwitcher from "@/components/ThemeSwitcher";
 import { Hero } from "@/components/Hero";
 
 const Home: FC = () => {
@@ -14,7 +14,6 @@ const Home: FC = () => {
   return (
     <>
       <Hero />
-      <ThemeSwitcher className="sticky bottom-28 left-[88%] md:bottom-12 md:left-5" />
     </>
   );
 };

@@ -1,3 +1,5 @@
+@import url("./fonts.css");
+
 :root {
   --ease-squish-1: cubic-bezier(0.5, -0.1, 0.1, 1.5);
   --clamped-container-width: clamp(350px, 75%, 800px);

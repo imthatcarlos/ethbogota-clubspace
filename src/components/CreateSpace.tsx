@@ -1,4 +1,4 @@
-import { FormEvent, Fragment, useEffect, useState } from "react";
+import { FormEvent, Fragment, useState } from "react";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import CreateLensPost from "@/components/CreateLensPost";
 import SelectPlaylist from "@/components/SelectPlaylist";
@@ -36,7 +36,7 @@ const INITIAL_DATA: MultiFormData = {
   goodyFiles: [],
 };
 
-const CreateSpace = () => {
+const CreateSpace = ({ isOpen, setIsOpen }) => {
   const { chain } = useNetwork();
   const { address, isConnected } = useAccount();
   const { data: signer } = useSigner();
@@ -56,12 +56,6 @@ const CreateSpace = () => {
   const defaultProfile = profilesResponse ? profilesResponse.defaultProfile : null;
 
   const [formMultiFormData, setMultiFormData] = useState(INITIAL_DATA);
-
-  let [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    if (isConnected) openModal();
-  }, [isConnected]);
 
   function closeModal() {
     setIsOpen(false);
@@ -151,7 +145,7 @@ const CreateSpace = () => {
     console.log(playlist, productData, lensPost, goody);
 
     // create space in the backend
-    const { res, clubSpaceId } = await launchSpace(handle, jamApi);
+    const { res, clubSpaceId, uuid } = await launchSpace(handle, jamApi);
 
     if (!res) {
       toast.error("Error - cannot make a space right now");
@@ -193,10 +187,9 @@ const CreateSpace = () => {
           decentContractType: productData.contractType,
           lensPubId,
           clubSpaceId,
+          uuid,
         };
-        const {
-          data: { url, semGroupIdHex },
-        } = await axios.post(`/api/space/create`, spaceData);
+        const { data: { url, semGroupIdHex } } = await axios.post(`/api/space/create`, spaceData);
 
         // call sempahore/create-group
         await createGroup(semGroupIdHex, goodyUri, lensPubId, defaultProfile.id);
@@ -276,7 +269,7 @@ const CreateSpace = () => {
                         className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 border-b-[1px] border-b-gray-600 pb-3"
                       >
                         <div className="flex justify-between items-center">
-                          <span className="dark:text-gray-300">Paperwork</span>
+                          <span className="dark:text-gray-300">Create a Space</span>
                           <span className="dark:text-gray-500 text-sm">
                             {currenStepIndex + 1} / {steps.length}
                           </span>
