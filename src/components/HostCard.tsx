@@ -24,16 +24,12 @@ export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, on
   return (
     <>
       <div>
-        <h2 className="my-4 text-4xl font-bold tracking-tight sm:text-2xl md:text-5xl drop-shadow-sm text-center">
-          ClubSpace Host
-        </h2>
         <div className="flex w-full justify-center">
           <div className="max-w-[20rem] min-w-[17rem]">
             <div className="bg-slate-800 shadow-xl rounded-lg">
               <div className="photo-wrapper p-2 pt-0 relative">
                 <img className="absolute t-0 left-0 right-0 w-full h-full object-cover" src={coverPic} alt="" />
                 <img
-                  data-src={profile.picture?.original?.url}
                   className="w-16 h-16 rounded-full mx-auto relative top-10 outline outline-offset-0 outline-1 outline-gray-50"
                   src={profilePic}
                   alt={profile.handle}

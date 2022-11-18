@@ -17,7 +17,7 @@ export const Header = () => {
   const { data: lensLoginData, refetch: loginWithLens } = useLensLogin();
 
   return (
-    <header className="flex items-center justify-between py-5 px-8 bg-black relative z-10 border-b-[0.1px] border-b-slate-700">
+    <header className="flex items-center justify-between py-6 px-8 bg-black relative z-10 border-b-[0.1px] border-b-slate-700">
       <div className="logo">
         <Link href="/">
           <a className="flex gap-x-2 items-center">
@@ -27,7 +27,16 @@ export const Header = () => {
         </Link>
       </div>
       <div className="sponsor abs-center">
-        <div className="dark:border dark:border-gray-500 py-2 px-3 text-black dark:text-white">SPONSOR LOGO</div>
+        <a href="https://www.11captainsclub.io" target="_blank" rel="noreferrer" className="realtive group">
+          <img
+            src="https://images.squarespace-cdn.com/content/v1/634560daa851a4455c79fb20/58b4cc9d-7973-4235-a915-c382875f68f7/E11EVEN+White+LOGO.png?format=1500w"
+            alt=""
+            style={{ maxWidth: "150px", height: "auto" }}
+          />
+          <span className="abs-center opacity-0 scale-50 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-[22px] group-hover:scale-100 text-sm text-gray-200 whitespace-nowrap">
+            [ SPONSOR ]
+          </span>
+        </a>
       </div>
       <div className="connect">
         <div className="flex gap-4 justify-center md:min-w-[150px]">
