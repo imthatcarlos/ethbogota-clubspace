@@ -28,7 +28,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   } = useRouter();
 
   const { address, isConnected } = useAccount();
-  const { data: profiles, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
+  const { data: profilesResponse, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
   const { ensName, isLoading: isLoadingENS } = useENS(address);
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
   const [loadingDefaultProfile, setLoadingDefaultProfile] = useState(true);
@@ -40,18 +40,12 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
     return;
   }
 
-  // @TODO: if clubSpaceObject.stream == null it means the worker hasn't finished
-  // - render some component to come back in a little bit?
-  if (!clubSpaceObject.streamURL) {
-
-  }
-
   useEffect(() => {
     if (!isLoadingProfiles) {
-      setDefaultProfile(profiles[0]);
+      setDefaultProfile(profilesResponse ? profilesResponse.defaultProfile : null);
       setLoadingDefaultProfile(false);
     }
-  }, [address, profiles, isLoadingProfiles]);
+  }, [address, isLoadingProfiles]);
 
   return (
     <>

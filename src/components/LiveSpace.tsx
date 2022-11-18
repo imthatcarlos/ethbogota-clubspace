@@ -151,7 +151,7 @@ const LiveSpace: FC<Props> = ({
   }, [defaultProfile, creatorLensProfile]);
 
   const audiencePeers = peers.filter(
-    (id) => isEmpty(identities[id]) || identities[id].handle !== clubSpaceObject.creatorLensHandle
+    (id) => isEmpty(identities[id]) || identities[id].handle !== clubSpaceObject.handle
   );
 
   // trigger the entry if everything is loaded

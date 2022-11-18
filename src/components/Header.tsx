@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter } from 'next/router';
 import Link from "next/link";
 import { useAccount } from "wagmi";
 import { ConnectWallet } from "./ConnectWallet";
@@ -7,7 +8,7 @@ import useIsMounted from "@/hooks/useIsMounted";
 import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import useENS from "@/hooks/useENS";
 
-export const Header = ({ isLandingPage = true }) => {
+export const Header = () => {
   const { isConnected, address } = useAccount();
   const { data: profilesResponse } = useGetProfilesOwned({}, address);
   const { ensName, isLoading: isLoadingENS } = useENS(address);
@@ -15,6 +16,9 @@ export const Header = ({ isLandingPage = true }) => {
 
   const { data: lensRefreshData } = useLensRefresh();
   const { data: lensLoginData, refetch: loginWithLens } = useLensLogin();
+
+  const router = useRouter();
+  const isLandingPage = router.pathname === '/';
 
   return (
     <header className="flex items-center justify-between py-6 px-8 bg-black relative z-10 border-b-[0.1px] border-b-slate-700">
