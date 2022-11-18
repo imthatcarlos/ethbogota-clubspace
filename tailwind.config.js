@@ -4,7 +4,13 @@ module.exports = {
   darkMode: "class",
   theme: {
     extend: {
-      boxShadow: {
+      colors: {
+        "almost-black": "rgba(0, 0, 0, .8) !important",
+      },
+      backgroundImage: {
+        "live-page-player": "url('/lil_buddy_low_res.png')",
+      },
+      xShadow: {
         "lens-profile-hover": "shadow-[0 0 0 4px #2980b9, 0 0 0 7px #0d293c]",
       },
       keyframes: {
