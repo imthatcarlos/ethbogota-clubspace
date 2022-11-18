@@ -145,7 +145,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     console.log(playlist, productData, lensPost, goody);
 
     // create space in the backend
-    const { res, clubSpaceId } = await launchSpace(handle, jamApi);
+    const { res, clubSpaceId, uuid } = await launchSpace(handle, jamApi);
 
     if (!res) {
       toast.error("Error - cannot make a space right now");
@@ -187,10 +187,9 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
           decentContractType: productData.contractType,
           lensPubId,
           clubSpaceId,
+          uuid,
         };
-        const {
-          data: { url, semGroupIdHex },
-        } = await axios.post(`/api/space/create`, spaceData);
+        const { data: { url, semGroupIdHex } } = await axios.post(`/api/space/create`, spaceData);
 
         // call sempahore/create-group
         await createGroup(semGroupIdHex, goodyUri, lensPubId, defaultProfile.id);
