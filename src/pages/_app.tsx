@@ -3,6 +3,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import "@/styles/globals.css";
 import "@/styles/fonts.css";
 import { ThemeProvider } from "next-themes";
+import { NextSeo } from "next-seo";
 import Web3Provider from "@/components/Web3Provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -42,6 +43,21 @@ const App = ({ Component, pageProps }) => {
               </ToastBar>
             )}
           </Toaster>
+          <NextSeo
+              title="ClubSpace"
+              description="Promote your music NFTs with a live listening party"
+              openGraph={{
+                site_name: "ClubSpace",
+                title: "ClubSpace",
+                description:
+                  "Promote your music NFTs with a live listening party",
+                images: [
+                  {
+                    url: "https://gateway.pinata.cloud/ipfs/QmYhrVV3iyN48iFqQYm2Ut4jA1jn46YSgG6kVL7RE7ftSR",
+                  },
+                ],
+              }}
+            />
           <Header />
           <Component {...pageProps} />
         </Web3Provider>

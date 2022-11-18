@@ -270,7 +270,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
                         className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 border-b-[1px] border-b-gray-600 pb-3"
                       >
                         <div className="flex justify-between items-center">
-                          <span className="dark:text-gray-300">Create a space</span>
+                          <span className="dark:text-gray-300">Create a Space</span>
                           <span className="dark:text-gray-500 text-sm">
                             {currenStepIndex + 1} / {steps.length}
                           </span>
