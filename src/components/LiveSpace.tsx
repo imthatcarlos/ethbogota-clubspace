@@ -386,9 +386,6 @@ const LiveSpace: FC<Props> = ({
             <LiveAudioPlayer playlistTracks={playlistTracks} streamURL={clubSpaceObject.streamURL} />
           )}
         </div>
-        <div className="border border-gray-500">
-          {featuredDecentNFT && <FeaturedDecentNFT {...featuredDecentNFT} />}
-        </div>
       </div>
 
       <div className="grid-container responsive-container">

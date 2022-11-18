@@ -15,6 +15,12 @@ export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, on
   const { data: lensRefreshData } = useLensRefresh();
   const { data: lensLoginData } = useLensLogin();
 
+  const coverPic = profile.coverPicture?.original?.url
+    ? getUrlForImageFromIpfs(profile.coverPicture?.original?.url)
+    : "/default-cover.jpg";
+
+  const profilePic = profile.picture?.original?.url ? getUrlForImageFromIpfs(profile.picture?.original?.url) : "";
+
   return (
     <>
       <div>
@@ -25,14 +31,11 @@ export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, on
           <div className="max-w-[20rem] min-w-[17rem]">
             <div className="bg-slate-800 shadow-xl rounded-lg">
               <div className="photo-wrapper p-2 pt-0 relative">
+                <img className="absolute t-0 left-0 right-0 w-full h-full object-cover" src={coverPic} alt="" />
                 <img
-                  className="absolute t-0 left-0 right-0 w-full h-full object-cover"
-                  src={profile.coverPicture?.original?.url || "/default-cover.jpg"}
-                  alt=""
-                />
-                <img
+                  data-src={profile.picture?.original?.url}
                   className="w-16 h-16 rounded-full mx-auto relative top-10 outline outline-offset-0 outline-1 outline-gray-50"
-                  src={profile.picture?.original?.url || ""}
+                  src={profilePic}
                   alt={profile.handle}
                 />
               </div>
@@ -65,21 +68,19 @@ export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, on
                   </div>
                 </div>
 
-                {
-                  !isHost && (lensLoginData || lensRefreshData)
-                    ? <div className="text-center my-3 px-3">
-                        <button
-                          className="!w-full btn"
-                          onClick={() => {
-                            onFollowClick(drawerProfileId, false);
-                          }}
-                          disabled={doesFollowDrawerProfile}
-                        >
-                          {doesFollowDrawerProfile ? "Following" : "Follow"}
-                        </button>
-                      </div>
-                    : null
-                }
+                {!isHost && (lensLoginData || lensRefreshData) ? (
+                  <div className="text-center my-3 px-3">
+                    <button
+                      className="!w-full btn"
+                      onClick={() => {
+                        onFollowClick(drawerProfileId, false);
+                      }}
+                      disabled={doesFollowDrawerProfile}
+                    >
+                      {doesFollowDrawerProfile ? "Following" : "Follow"}
+                    </button>
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>
