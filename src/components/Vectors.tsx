@@ -58,7 +58,7 @@ export function ExternalLink() {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className="w-5 h-5 relative -top-[1px] transition-all duration-300 group-hover:scale-110 group-hover:text-indigo-600"
+      className="w-5 h-5 relative -top-[1px] transition-all duration-300 group-hover:scale-125"
     >
       <path
         strokeLinecap="round"

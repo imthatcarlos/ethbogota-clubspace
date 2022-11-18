@@ -169,7 +169,7 @@ const LiveSpace: FC<Props> = ({
         </button>
         <div className="song-details flex flex-col gap-y-2 justify-center">
           <span className="text-xl">
-            <a href="#" className="flex gap-x-[10px] items-center group">
+            <a href="#" title="Visit song source" className="flex gap-x-[10px] items-center group">
               {song}
               <div>
                 <ExternalLink />
