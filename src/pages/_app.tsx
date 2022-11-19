@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { toast, Toaster, ToastBar } from "react-hot-toast";
 import { Header } from '@/components/Header';
+import { SITE_URL } from "@/lib/consts";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,20 +45,28 @@ const App = ({ Component, pageProps }) => {
             )}
           </Toaster>
           <NextSeo
-              title="ClubSpace"
-              description="Promote your music NFTs with a live listening party"
-              openGraph={{
-                site_name: "ClubSpace",
-                title: "ClubSpace",
-                description:
-                  "Promote your music NFTs with a live listening party",
-                images: [
-                  {
-                    url: "https://gateway.pinata.cloud/ipfs/QmYhrVV3iyN48iFqQYm2Ut4jA1jn46YSgG6kVL7RE7ftSR",
-                  },
-                ],
-              }}
-            />
+            type="site"
+            title="ClubSpace"
+            description="Promote your music NFTs with a live listening party"
+            url={SITE_URL}
+            openGraph={{
+              siteName: "ClubSpace",
+              title: "ClubSpace",
+              description: "Promote your music NFTs with a live listening party",
+              images: [
+                {
+                  url: "https://link.storjshare.io/raw/jwg3vujynjlvbn5gdgm5yjoob7mq/misc%2Fclubspace.png",
+                  width: 1200,
+                  height: 630,
+                  type: "image/png",
+                  alt: 'clubspace.png'
+                },
+              ],
+            }}
+            twitter={{
+              handle: '@madfiprotocol',
+            }}
+          />
           <Header />
           <Component {...pageProps} />
         </Web3Provider>

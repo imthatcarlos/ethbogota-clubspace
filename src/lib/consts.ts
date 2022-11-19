@@ -8,7 +8,7 @@ export const REDIS_LIVE_SPACE_HANDLES = "LIVE_SPACE_HANDLES";
 export const REDIS_SPACE_EXP = 86400;
 
 export const LOCALSTORAGE_DEFAULT_PROFILE_ID = "DEFAULT_PROFILE_ID";
-export const SITE_URL = "https://www.joinclubspace.xyz";
+export const SITE_URL = process.env.SITE_URL || "https://www.joinclubspace.xyz";
 export const VERIFIER_ADDRESS = "0x5D7BdA4378aAAcB1760c74daF0d4a44e07e25f2A";
 export const REWARD_NFT_ADDRESS = "0xA8116560Fb01A9d2889A43A3767b369a3256D1F7";
 
