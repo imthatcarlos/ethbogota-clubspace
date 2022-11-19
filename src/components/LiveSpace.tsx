@@ -314,7 +314,7 @@ const LiveSpace: FC<Props> = ({
                   src={getUrlForImageFromIpfs(creatorLensProfile.picture?.original?.url)}
                   alt=""
                 />
-                <span>View Clubspace Host</span>
+                <span>@{creatorLensProfile.handle}</span>
               </button>
             </div>
           </div>
