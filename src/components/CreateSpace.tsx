@@ -221,11 +221,6 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
   if (shareUrl) {
     return (
-      // <div>
-      //   <h1 className="mt-4 mb-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Your space is live!</h1>
-      //   <p>{shareUrl}http://localhost:3000</p>
-      // </div>
-
       <Transition appear show={isShareOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={closeShareModal}>
           <Transition.Child
