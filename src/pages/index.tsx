@@ -11,11 +11,7 @@ const Home: FC = () => {
 
   if (!mounted) return null;
 
-  return (
-    <>
-      <Hero />
-    </>
-  );
+  return <Hero />;
 };
 
 export default Home;
