@@ -3,7 +3,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import "@/styles/globals.css";
 import "@/styles/fonts.css";
 import { ThemeProvider } from "next-themes";
-import { NextSeo } from "next-seo";
+import { DefaultSeo } from "next-seo";
 import Web3Provider from "@/components/Web3Provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -44,7 +44,8 @@ const App = ({ Component, pageProps }) => {
               </ToastBar>
             )}
           </Toaster>
-          <NextSeo
+          <Header />
+          <DefaultSeo
             type="site"
             title="ClubSpace"
             description="Promote your music NFTs with a live listening party"
@@ -67,7 +68,6 @@ const App = ({ Component, pageProps }) => {
               handle: '@madfiprotocol',
             }}
           />
-          <Header />
           <Component {...pageProps} />
         </Web3Provider>
       </ThemeProvider>
