@@ -74,9 +74,9 @@ export const FeaturedDecentNFT = ({
         <div className="flex w-full justify-center relative">
           <div className="max-w-[20rem] min-w-[17rem]">
             <div className="bg-slate-800 shadow-xl rounded-lg">
-              <div className="photo-wrapper p-2 pt-0">
+              <div className="photo-wrapper p-2 pt-0 overflow-hidden">
                 <img
-                  className="absolute t-0 left-0 right-0 w-full h-full object-cover opacity-50"
+                  className="absolute t-0 left-0 right-0 w-full h-full object-cover opacity-50 rounded-md"
                   src={getUrlForImageFromIpfs(metadata.image)}
                   alt=""
                 />
