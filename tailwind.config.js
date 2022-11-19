@@ -4,8 +4,12 @@ module.exports = {
   darkMode: "class",
   theme: {
     extend: {
+      screens: {
+        xs: "520px",
+      },
       colors: {
         "almost-black": "rgba(0, 0, 0, .8) !important",
+        "club-red": "var(--club-red)",
       },
       backgroundImage: {
         "live-page-player": "url('/lil_buddy_low_res.png')",

@@ -47,6 +47,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
   const [goody, setGoody] = useState<any>();
   const [uploading, setUploading] = useState<boolean>();
   const [shareUrl, setShareUrl] = useState<string>();
+  const [isShareOpen, setIsShareOpen] = useState<boolean>(false);
 
   const [state, jamApi] = useJam();
   const { data: lensRefreshData } = useLensRefresh();
@@ -57,12 +58,12 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
   const [formMultiFormData, setMultiFormData] = useState(INITIAL_DATA);
 
-  function closeModal() {
-    setIsOpen(false);
+  function closeShareModal() {
+    setIsShareOpen(false);
   }
 
-  function openModal() {
-    setIsOpen(true);
+  function closeModal() {
+    setIsOpen(false);
   }
 
   const selectPlaylist = (playlist) => {
@@ -189,7 +190,9 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
           clubSpaceId,
           uuid,
         };
-        const { data: { url, semGroupIdHex } } = await axios.post(`/api/space/create`, spaceData);
+        const {
+          data: { url, semGroupIdHex },
+        } = await axios.post(`/api/space/create`, spaceData);
 
         // call sempahore/create-group
         await createGroup(semGroupIdHex, goodyUri, lensPubId, defaultProfile.id);
@@ -200,6 +203,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
         setUploading(false);
 
         setShareUrl(url);
+        setIsShareOpen(true);
 
         resolve();
       }),
@@ -217,24 +221,64 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
   if (shareUrl) {
     return (
-      <div>
-        <h1 className="mt-4 mb-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Your space is live!</h1>
-        <p>{shareUrl}</p>
-      </div>
+      // <div>
+      //   <h1 className="mt-4 mb-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Your space is live!</h1>
+      //   <p>{shareUrl}http://localhost:3000</p>
+      // </div>
+
+      <Transition appear show={isShareOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={closeShareModal}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-xl min-h-[300px] transform overflow-hidden rounded-2xl bg-white dark:bg-black p-6 text-left align-middle shadow-xl transition-all flex flex-col">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 border-b-[1px] border-b-gray-600 pb-3"
+                  >
+                    Your space is live!
+                  </Dialog.Title>
+                  <div className="flex-1 flex items-center justify-center">
+                    <p>
+                      <a href={shareUrl} target="_blank" rel="noreferrer" className="dark:text-club-red">
+                        {shareUrl}
+                      </a>
+                    </p>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
     );
   }
 
   return (
     <div className="w-full p-8 flex flex-col gap-3">
       {!(lensLoginData || lensRefreshData) ? (
-        <div className="flex gap-4 justify-center md:min-w-[300px]">
-          {isConnected ? (
-            <button onClick={() => login()} className="btn justify-center items-center">
-              Login with lens to create a space
-            </button>
-          ) : (
-            <ConnectWallet showBalance={false} />
-          )}
+        <div className="flex gap-4 justify-center md:min-w-[400px] z-10">
+          {!isConnected ? <ConnectWallet showBalance={false} /> : null}
         </div>
       ) : (
         <>
