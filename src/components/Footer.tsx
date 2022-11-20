@@ -11,7 +11,7 @@ export default () => {
           </div>
           <div className="flex flex-col items-center md:items-start gap-8">
             <div className="text-normal font-extrabold uppercase text-5xl font-ownersx">
-              <p className="uppercase text-1xl tracking-wide w-full font-ownersx text-center text-[15px] landing-page-subtext-shadow">
+              <p className="uppercase text-1xl tracking-wide w-full font-ownersx text-center text-[15px] landing-page-subtext-shadow whitespace-nowrap">
                 Built by{" "}
                 <a
                   target="_blank"
@@ -27,5 +27,5 @@ export default () => {
         </div>
       </div>
     </footer>
-  )
+  );
 };

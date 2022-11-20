@@ -21,7 +21,7 @@ export const Hero = () => {
   if (!isMounted) return null;
 
   return (
-    <div className="relative overflow-hidden min-h-screen">
+    <div className="relative overflow-hidden flex-1">
       <div className="hidden sm:absolute sm:inset-0 sm:block" aria-hidden="true">
         <svg
           className="absolute bottom-0 right-0 mb-48 translate-x-1/2 transform text-gray-700 lg:top-0 lg:mt-28 lg:mb-0 xl:translate-x-0 xl:transform-none"
@@ -48,7 +48,7 @@ export const Hero = () => {
       <section className="w-full">
         <div className="w-full text-secondary mt-12 sm:mt-32 flex flex-col gap-8 mix-blend-lighten px-16 items-center justify-center">
           <ClubspaceSoftGlow />
-          <ClubspaceNeon className="min-w-fit" />
+          <ClubspaceNeon className="min-w-fit svg-logo" />
           <h2 className="uppercase text-6xl tracking-wide w-full font-ownersx text-center text-[37px] landing-page-subtext-shadow">
             <span className="block">PROMOTE YOUR MUSIC NFTs</span>
             <span className="block">

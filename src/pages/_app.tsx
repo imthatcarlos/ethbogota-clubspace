@@ -8,8 +8,8 @@ import Web3Provider from "@/components/Web3Provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { toast, Toaster, ToastBar } from "react-hot-toast";
-import { Header } from '@/components/Header';
-import Footer from '@/components/Footer';
+import { Header } from "@/components/Header";
+import Footer from "@/components/Footer";
 import { SITE_URL } from "@/lib/consts";
 
 const queryClient = new QueryClient({
@@ -31,7 +31,7 @@ const App = ({ Component, pageProps }) => {
               style: {
                 backgroundColor: "#000",
                 color: "white",
-              }
+              },
             }}
           >
             {(t) => (
@@ -45,7 +45,6 @@ const App = ({ Component, pageProps }) => {
               </ToastBar>
             )}
           </Toaster>
-          <Header />
           <DefaultSeo
             type="site"
             title="ClubSpace"
@@ -61,16 +60,19 @@ const App = ({ Component, pageProps }) => {
                   width: 1200,
                   height: 630,
                   type: "image/png",
-                  alt: 'clubspace.png'
+                  alt: "clubspace.png",
                 },
               ],
             }}
             twitter={{
-              handle: '@madfiprotocol',
+              handle: "@madfiprotocol",
             }}
           />
-          <Component {...pageProps} />
-          <Footer />
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <Component {...pageProps} />
+            <Footer />
+          </div>
         </Web3Provider>
       </ThemeProvider>
       <ReactQueryDevtools />

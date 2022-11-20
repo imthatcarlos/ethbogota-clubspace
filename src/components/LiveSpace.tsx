@@ -23,7 +23,8 @@ import { useGetContractData } from "@/services/decent/getDecentNFT";
 import { HostCard } from "./HostCard";
 import { FeaturedDecentNFT } from "./FeaturedDecentNFT";
 // import { LiveAudioPlayer } from "./LiveAudioPlayer";
-import { ExternalLink, Pause, Play } from "./Vectors";
+import { ExternalLink, Pause, Play } from "@/components/Vectors";
+import * as mockIdentities from "@/constants/mockIdentities.json";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -167,7 +168,9 @@ const LiveSpace: FC<Props> = ({
         <AudioPlayer
           size={56}
           audioSrc={streamURL}
-          callbackAfterPlay={() => { console.log('callbackAfterPlay') }}
+          callbackAfterPlay={() => {
+            console.log("callbackAfterPlay");
+          }}
           active
         />
         <div className="song-details flex flex-col gap-y-2 justify-center">
@@ -179,7 +182,7 @@ const LiveSpace: FC<Props> = ({
               </div>
             </a>
           </span>
-          <span className="text-lg text-gray-600">{artist}</span>
+          <span className="text-lg text-gray-400">{artist}</span>
         </div>
       </div>
     );
@@ -295,9 +298,46 @@ const LiveSpace: FC<Props> = ({
 
   return (
     <>
-      <div className="min-h-[530px] relative">
-        <div className="flex min-h-[530px] justify-evenly items-center">
-          <div className="player">
+      <div className="relative grow flex flex-col justify-center">
+        <div className="grid-live items-center justify-center px-10 lg:px-14 gap-x-3">
+          <div className="grid-container w-full audience max-h-[35rem] overflow-auto !content-baseline">
+            {!!myIdentity
+              ? (!isHost ? [myPeerId].concat(audiencePeers) : audiencePeers).map((peerId, index) => {
+                  return identities[peerId] ? (
+                    <LensProfile
+                      allowDrawer={[".lens", ".test"].some((ext) => identities[peerId].handle.includes(ext))}
+                      id={identities[peerId].profile?.id}
+                      key={identities[peerId].handle}
+                      handle={identities[peerId].handle}
+                      picture={
+                        identities[peerId].profile ? getUrlForImageFromIpfs(identities[peerId].profile.avatar) : ""
+                      }
+                      name={identities[peerId].profile?.name}
+                      totalFollowers={identities[peerId].profile?.totalFollowers}
+                      reaction={isEmpty(reactions[peerId]) ? null : reactions[peerId][0][0]}
+                      index={index}
+                      onClick={() => {
+                        toggleDrawer(identities[peerId]);
+                      }}
+                    />
+                  ) : null;
+                })
+              : null}
+
+            {/* {mockIdentities.identities.map(({ id, handle, profile }, index) => (
+              <LensProfile
+                key={handle}
+                handle={handle}
+                picture={profile ? getUrlForImageFromIpfs(profile.avatar) : ""}
+                name={profile?.name}
+                totalFollowers={profile?.totalFollowers}
+                index={index}
+                onClick={toggleDrawer}
+              />
+            ))} */}
+          </div>
+
+          <div className="player mx-auto">
             {playlistTracks && clubSpaceObject.streamURL && (
               <PlayerCard playlistTracks={playlistTracks} streamURL={clubSpaceObject.streamURL} />
             )}
@@ -319,30 +359,7 @@ const LiveSpace: FC<Props> = ({
             </div>
           </div>
         </div>
-        <div className="bg-live-page-player bg-cover bg-no-repeat blur-[70px] inset-0 absolute z-[-1]"></div>
-      </div>
-
-      <div className="grid-container responsive-container">
-        {!!myIdentity
-          ? (!isHost ? [myPeerId].concat(audiencePeers) : audiencePeers).map((peerId, index) => {
-              return identities[peerId] ? (
-                <LensProfile
-                  allowDrawer={[".lens", ".test"].some((ext) => identities[peerId].handle.includes(ext))}
-                  id={identities[peerId].profile?.id}
-                  key={identities[peerId].handle}
-                  handle={identities[peerId].handle}
-                  picture={identities[peerId].profile ? getUrlForImageFromIpfs(identities[peerId].profile.avatar) : ""}
-                  name={identities[peerId].profile?.name}
-                  totalFollowers={identities[peerId].profile?.totalFollowers}
-                  reaction={isEmpty(reactions[peerId]) ? null : reactions[peerId][0][0]}
-                  index={index}
-                  onClick={() => {
-                    toggleDrawer(identities[peerId]);
-                  }}
-                />
-              ) : null;
-            })
-          : null}
+        <div className="bg-live-page-player bg-cover bg-no-repeat blur-[70px] inset-0 absolute z-[-1] lg:max-h-[50vh] max-h-[25vh] "></div>
       </div>
 
       <Popover

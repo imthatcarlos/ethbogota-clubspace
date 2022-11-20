@@ -58,6 +58,54 @@ body {
   @apply bg-indigo-300;
 }
 
+.grid-live {
+  display: grid;
+  grid-template-areas: "audience player decent";
+  grid-template-columns: minmax(0, 30rem) 1fr auto;
+}
+
+@media screen and (max-width: 1200px) {
+  .grid-live {
+    padding-block: 4rem;
+    grid-template-areas:
+      "player decent"
+      "audience audience";
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .grid-live {
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      "player"
+      "decent"
+      "audience" !important;
+    row-gap: 2rem;
+  }
+}
+
+.grid-live:has(.audience:empty) {
+  grid-template-areas: "player decent";
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid-live .audience:empty {
+  display: none;
+}
+
+.grid-live .audience {
+  grid-area: audience;
+}
+
+.grid-live .player {
+  grid-area: player;
+}
+
+.grid-live .decent-nft {
+  grid-area: decent;
+}
+
 .shimmer::after {
   content: "";
   animation: shimmer 2s infinite;
@@ -112,4 +160,10 @@ body {
   --inset-bottom: 0;
   --inset-left: 0;
   clip-path: inset(var(--inset-top) var(--inset-right) var(--inset-bottom) var(--inset-left));
+}
+
+@media screen and (max-width: 700px) {
+  .svg-logo {
+    filter: none !important;
+  }
 }
