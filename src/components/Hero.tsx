@@ -48,7 +48,7 @@ export const Hero = () => {
       <section className="w-full">
         <div className="w-full text-secondary mt-12 sm:mt-32 flex flex-col gap-8 mix-blend-lighten px-16 items-center justify-center">
           <ClubspaceSoftGlow />
-          <ClubspaceNeon className="min-w-fit" />
+          <ClubspaceNeon className="min-w-fit svg-logo" />
           <h2 className="uppercase text-6xl tracking-wide w-full font-ownersx text-center text-[37px] landing-page-subtext-shadow">
             <span className="block">PROMOTE YOUR MUSIC NFTs</span>
             <span className="block">

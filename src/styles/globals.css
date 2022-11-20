@@ -76,11 +76,11 @@ body {
 
 @media screen and (max-width: 600px) {
   .grid-live {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
     grid-template-areas:
       "player"
       "decent"
-      "audience";
+      "audience" !important;
     row-gap: 2rem;
   }
 }
@@ -160,4 +160,10 @@ body {
   --inset-bottom: 0;
   --inset-left: 0;
   clip-path: inset(var(--inset-top) var(--inset-right) var(--inset-bottom) var(--inset-left));
+}
+
+@media screen and (max-width: 700px) {
+  .svg-logo {
+    filter: none !important;
+  }
 }
