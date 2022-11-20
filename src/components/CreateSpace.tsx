@@ -1,5 +1,4 @@
 import { FormEvent, Fragment, useState } from "react";
-import { ConnectWallet } from "@/components/ConnectWallet";
 import CreateLensPost from "@/components/CreateLensPost";
 import SelectPlaylist from "@/components/SelectPlaylist";
 import SetDecentProduct from "@/components/SetDecentProduct";
@@ -271,84 +270,76 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
   return (
     <div className="w-full p-8 flex flex-col gap-3">
-      {!(lensLoginData || lensRefreshData) ? (
-        <div className="flex gap-4 justify-center md:min-w-[400px] z-10">
-          {!isConnected ? <ConnectWallet showBalance={false} /> : null}
-        </div>
-      ) : (
-        <>
-          <Transition appear show={isOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-10" onClose={closeModal}>
+      <Transition appear show={isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={closeModal}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
-                enterFrom="opacity-0"
-                enterTo="opacity-100"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
                 leave="ease-in duration-200"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
               >
-                <div className="fixed inset-0 bg-black bg-opacity-25" />
-              </Transition.Child>
-
-              <div className="fixed inset-0 overflow-y-auto">
-                <div className="flex min-h-full items-center justify-center p-4 text-center">
-                  <Transition.Child
-                    as={Fragment}
-                    enter="ease-out duration-300"
-                    enterFrom="opacity-0 scale-95"
-                    enterTo="opacity-100 scale-100"
-                    leave="ease-in duration-200"
-                    leaveFrom="opacity-100 scale-100"
-                    leaveTo="opacity-0 scale-95"
+                <Dialog.Panel className="w-full max-w-xl min-h-[300px] transform overflow-hidden rounded-2xl bg-white dark:bg-black p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 border-b-[1px] border-b-gray-600 pb-3"
                   >
-                    <Dialog.Panel className="w-full max-w-xl min-h-[300px] transform overflow-hidden rounded-2xl bg-white dark:bg-black p-6 text-left align-middle shadow-xl transition-all">
-                      <Dialog.Title
-                        as="h3"
-                        className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 border-b-[1px] border-b-gray-600 pb-3"
+                    <div className="flex justify-between items-center">
+                      <span className="dark:text-gray-300">Create a Space</span>
+                      <span className="dark:text-gray-500 text-sm">
+                        {currenStepIndex + 1} / {steps.length}
+                      </span>
+                    </div>
+                  </Dialog.Title>
+
+                  <form className="step-form" onSubmit={handleSubmit}>
+                    {step}
+                    <div className="mt-4 flex gap-x-2 justify-end absolute bottom-4 left-1/2 transform -translate-x-1/2 right-0">
+                      <button
+                        disabled={isFirstStep}
+                        type="button"
+                        className="btn disabled:cursor-not-allowed disabled:opacity-50"
+                        onClick={back}
                       >
-                        <div className="flex justify-between items-center">
-                          <span className="dark:text-gray-300">Create a Space</span>
-                          <span className="dark:text-gray-500 text-sm">
-                            {currenStepIndex + 1} / {steps.length}
-                          </span>
-                        </div>
-                      </Dialog.Title>
+                        Back
+                      </button>
 
-                      <form className="step-form" onSubmit={handleSubmit}>
-                        {step}
-                        <div className="mt-4 flex gap-x-2 justify-end absolute bottom-4 left-1/2 transform -translate-x-1/2 right-0">
-                          <button
-                            disabled={isFirstStep}
-                            type="button"
-                            className="btn disabled:cursor-not-allowed disabled:opacity-50"
-                            onClick={back}
-                          >
-                            Back
-                          </button>
-
-                          <button
-                            type="submit"
-                            className="btn disabled:cursor-not-allowed disabled:opacity-50"
-                            disabled={isLastStep && goody?.files?.length !== 2}
-                          >
-                            {isLastStep ? "Create Space" : "Next"}
-                          </button>
-                        </div>
-                        {isLastStep && goody?.files?.length > 0 && isLastStep && goody?.files?.length !== 2 ? (
-                          <div className="text-red-400 text-center">
-                            ⚠️ To continue, you need one audio file (.wav or .mp3) and one image.
-                          </div>
-                        ) : null}
-                      </form>
-                    </Dialog.Panel>
-                  </Transition.Child>
-                </div>
-              </div>
-            </Dialog>
-          </Transition>
-        </>
-      )}
+                      <button
+                        type="submit"
+                        className="btn disabled:cursor-not-allowed disabled:opacity-50"
+                        disabled={isLastStep && goody?.files?.length !== 2}
+                      >
+                        {isLastStep ? "Create Space" : "Next"}
+                      </button>
+                    </div>
+                    {isLastStep && goody?.files?.length > 0 && isLastStep && goody?.files?.length !== 2 ? (
+                      <div className="text-red-400 text-center">
+                        ⚠️ To continue, you need one audio file (.wav or .mp3) and one image.
+                      </div>
+                    ) : null}
+                  </form>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
     </div>
   );
 };

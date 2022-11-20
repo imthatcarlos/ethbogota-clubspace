@@ -48,7 +48,7 @@ export const Header = () => {
               onClick={() => loginWithLens()}
               className="btn justify-center items-center"
             >
-              {!(lensLoginData || lensRefreshData) ? "Login with lens" : profilesResponse?.defaultProfile.handle}
+              {!(lensLoginData || lensRefreshData) ? "Login with Lens" : profilesResponse?.defaultProfile.handle}
             </button>
           )}
           <ConnectWallet showBalance={false} />
