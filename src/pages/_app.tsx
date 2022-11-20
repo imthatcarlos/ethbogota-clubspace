@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { toast, Toaster, ToastBar } from "react-hot-toast";
 import { Header } from '@/components/Header';
+import Footer from '@/components/Footer';
 import { SITE_URL } from "@/lib/consts";
 
 const queryClient = new QueryClient({
@@ -69,6 +70,7 @@ const App = ({ Component, pageProps }) => {
             }}
           />
           <Component {...pageProps} />
+          <Footer />
         </Web3Provider>
       </ThemeProvider>
       <ReactQueryDevtools />

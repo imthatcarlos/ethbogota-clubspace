@@ -50,15 +50,17 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   return (
     <>
       {isLoadingEntry && (
-        <div className="abs-center">
-          <p className="animate-move-txt-bg gradient-txt text-4xl">Entering ClubSpace...</p>
-          {
-            !isConnected
-              ? <div className="flex gap-4 justify-center md:min-w-[300px] mt-50">
-                  <ConnectWallet showBalance={false} />
-                </div>
-              : null
-          }
+        <div className="min-h-[530px]">
+          <div className="abs-center">
+            <p className="animate-move-txt-bg gradient-txt text-4xl">Entering ClubSpace...</p>
+            {
+              !isConnected
+                ? <div className="flex gap-4 justify-center md:min-w-[300px] mt-50">
+                    <ConnectWallet showBalance={false} />
+                  </div>
+                : null
+            }
+          </div>
         </div>
       )}
       {isConnected && !loadingDefaultProfile && !isLoadingENS && (

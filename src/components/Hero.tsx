@@ -21,7 +21,7 @@ export const Hero = () => {
   if (!isMounted) return null;
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden min-h-screen">
       <div className="hidden sm:absolute sm:inset-0 sm:block" aria-hidden="true">
         <svg
           className="absolute bottom-0 right-0 mb-48 translate-x-1/2 transform text-gray-700 lg:top-0 lg:mt-28 lg:mb-0 xl:translate-x-0 xl:transform-none"
