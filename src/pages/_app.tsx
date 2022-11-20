@@ -49,9 +49,9 @@ const App = ({ Component, pageProps }) => {
             type="site"
             title="ClubSpace"
             description="Promote your music NFTs with a live listening party"
-            url={SITE_URL}
             openGraph={{
               siteName: "ClubSpace",
+              url: SITE_URL,
               title: "ClubSpace",
               description: "Promote your music NFTs with a live listening party",
               images: [
