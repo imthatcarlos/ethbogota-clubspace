@@ -85,6 +85,15 @@ body {
   }
 }
 
+.grid-live:has(.audience:empty) {
+  grid-template-areas: "player decent";
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid-live .audience:empty {
+  display: none;
+}
+
 .grid-live .audience {
   grid-area: audience;
 }

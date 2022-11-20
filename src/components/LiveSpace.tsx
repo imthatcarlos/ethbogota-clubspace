@@ -301,7 +301,7 @@ const LiveSpace: FC<Props> = ({
       <div className="relative grow flex flex-col justify-center">
         <div className="grid-live items-center justify-center px-10 lg:px-14 gap-x-3">
           <div className="grid-container w-full audience max-h-[35rem] overflow-auto !content-baseline">
-            {/* {!!myIdentity
+            {!!myIdentity
               ? (!isHost ? [myPeerId].concat(audiencePeers) : audiencePeers).map((peerId, index) => {
                   return identities[peerId] ? (
                     <LensProfile
@@ -322,9 +322,9 @@ const LiveSpace: FC<Props> = ({
                     />
                   ) : null;
                 })
-              : null} */}
+              : null}
 
-            {mockIdentities.identities.map(({ id, handle, profile }, index) => (
+            {/* {mockIdentities.identities.map(({ id, handle, profile }, index) => (
               <LensProfile
                 key={handle}
                 handle={handle}
@@ -334,7 +334,7 @@ const LiveSpace: FC<Props> = ({
                 index={index}
                 onClick={toggleDrawer}
               />
-            ))}
+            ))} */}
           </div>
 
           <div className="player mx-auto">
