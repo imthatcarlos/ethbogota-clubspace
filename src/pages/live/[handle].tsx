@@ -4,12 +4,7 @@ import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { FC, Fragment, useEffect, useMemo, useRef, useState, useReducer } from "react";
-import {
-  DispatchPlayerContext,
-  PlayerContext,
-  playerInitialState,
-  playerReducer,
-} from "decent-audio-player";
+import { DispatchPlayerContext, PlayerContext, playerInitialState, playerReducer } from "decent-audio-player";
 import { useAccount, useQuery } from "wagmi";
 import { SpectrumVisualizer, SpectrumVisualizerTheme } from "react-audio-visualizers";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
@@ -50,15 +45,15 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   return (
     <>
       {isLoadingEntry && (
-        <div className="abs-center">
-          <p className="animate-move-txt-bg gradient-txt text-4xl">Entering ClubSpace...</p>
-          {
-            !isConnected
-              ? <div className="flex gap-4 justify-center md:min-w-[300px] mt-50">
-                  <ConnectWallet showBalance={false} />
-                </div>
-              : null
-          }
+        <div className="flex-1">
+          <div className="abs-center">
+            <p className="animate-move-txt-bg gradient-txt text-4xl">Entering ClubSpace...</p>
+            {!isConnected ? (
+              <div className="flex gap-4 justify-center md:min-w-[300px] mt-50">
+                <ConnectWallet showBalance={false} />
+              </div>
+            ) : null}
+          </div>
         </div>
       )}
       {isConnected && !loadingDefaultProfile && !isLoadingENS && (

@@ -347,7 +347,7 @@ const LiveSpace: FC<Props> = ({
             <div>
               <button
                 onClick={() => setIsHostOpen(true)}
-                className="btn !w-auto mx-auto bg-almost-black flex gap-x-2 relative justify-between items-center"
+                className="btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center"
               >
                 <img
                   className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"

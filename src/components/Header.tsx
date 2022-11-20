@@ -6,6 +6,7 @@ import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import useIsMounted from "@/hooks/useIsMounted";
 import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import useENS from "@/hooks/useENS";
+import ClubspaceNeonHeader from "@/assets/svg/clubspace-neon-header.svg";
 
 export const Header = () => {
   const { isConnected, address } = useAccount();
@@ -21,8 +22,7 @@ export const Header = () => {
       <div className="logo">
         <Link href="/">
           <a className="flex gap-x-2 items-center flex-col xs:flex-row">
-            <img src="/clubspace-logo.png" alt="Clubspace logo" className="max-w-[75px]" />
-            <span className="text-black dark:text-white">CLUBSPACE</span>
+            <ClubspaceNeonHeader height={65} />
           </a>
         </Link>
       </div>
@@ -35,7 +35,7 @@ export const Header = () => {
               style={{ maxWidth: "150px", height: "auto" }}
             />
             <span className="abs-center opacity-0 scale-50 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-[22px] group-hover:scale-100 text-sm text-gray-200 whitespace-nowrap">
-              [ SPONSOR ]
+              [ SPONSORED BY ]
             </span>
           </a>
         </div>
@@ -43,7 +43,11 @@ export const Header = () => {
       <div className="connect absolute right-0 xs:relative">
         <div className="flex gap-4 justify-center md:min-w-[150px] scale-[0.8] xs:scale-100">
           {isConnected && (
-            <button onClick={() => loginWithLens()} className="btn justify-center items-center">
+            <button
+              disabled={lensLoginData || lensRefreshData}
+              onClick={() => loginWithLens()}
+              className="btn justify-center items-center"
+            >
               {!(lensLoginData || lensRefreshData) ? "Login with lens" : profilesResponse?.defaultProfile.handle}
             </button>
           )}
