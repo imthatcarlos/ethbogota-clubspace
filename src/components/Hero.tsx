@@ -4,6 +4,7 @@ import { useAccount } from "wagmi";
 import ClubspaceNeon from "@/assets/svg/clubspace-neon.svg";
 import ClubspaceSoftGlow from "@/assets/svg/soft-glow-filter.svg";
 import useIsMounted from "@/hooks/useIsMounted";
+import useHasBadge from "@/hooks/useHasBadge";
 import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import { ConnectWallet } from "@/components/ConnectWallet";
@@ -18,6 +19,7 @@ export const Hero = () => {
   const { data: lensLoginData, refetch: loginWithLens } = useLensLogin();
   const { data: lensRefreshData } = useLensRefresh();
   const { data: profilesResponse } = useGetProfilesOwned({}, address);
+  const { data: hasBadge, isLoading: isLoadingBadge } = useHasBadge();
 
   if (!isMounted) return null;
 
@@ -67,12 +69,23 @@ export const Hero = () => {
                         Login with Lens
                       </button>
                     ) : (
-                      <button
-                        onClick={() => setModalOpen(true)}
-                        className="btn-create-space relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold duration-300 transition-all hover:-translate-y-[2px] hover:text-white"
-                      >
-                        <span className="z-10">Create a space</span>
-                      </button>
+                      <>
+                        {
+                          !isLoadingBadge && hasBadge
+                            ? <button
+                                onClick={() => setModalOpen(true)}
+                                className="btn-create-space relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold duration-300 transition-all hover:-translate-y-[2px] hover:text-white"
+                              >
+                                <span className="z-10">Create a space</span>
+                              </button>
+                            : <button
+                                disabled
+                                className="relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold"
+                              >
+                                <span className="z-10">Closed Beta</span>
+                              </button>
+                        }
+                      </>
                     )}
                   </>
                 )
