@@ -275,7 +275,7 @@ const LiveSpace: FC<Props> = ({
     <>
       <div className="relative grow flex flex-col justify-center">
         <div className="grid-live items-center justify-center px-10 lg:px-14 gap-x-3">
-          <div className="grid-container w-full audience max-h-[35rem] overflow-auto !content-baseline">
+          <div className="grid-container w-full audience max-h-[30rem] overflow-auto !content-baseline">
             {!!myIdentity
               ? (!isHost ? [myPeerId].concat(audiencePeers) : audiencePeers).map((peerId, index) => {
                   return identities[peerId] ? (
@@ -340,51 +340,108 @@ const LiveSpace: FC<Props> = ({
           </div>
         </div>
         <div className="bg-live-page-player bg-cover bg-no-repeat blur-[70px] inset-0 absolute z-[-1] lg:max-h-[50vh] max-h-[25vh] "></div>
+
+        {/* Button group (reactions, share, comment) */}
+
+        {isHost ? null : (
+          <div className="flex gap-x-5 left-1/2 transform -translate-x-1/2 relative w-[150px] items-baseline">
+            <Popover
+              className={({ open }) =>
+                classNames(
+                  open ? "inset-0 z-40 overflow-y-auto" : "",
+                  "mx-auto shadow-sm lg:static bottom-0 lg:overflow-y-visible"
+                )
+              }
+            >
+              {({ open }) => {
+                return (
+                  <>
+                    <Menu as="div" className="relative flex-shrink-0 mb-32">
+                      <div className="flex mt-10 items-center mx-auto">
+                        <Menu.Button
+                          disabled={!defaultProfile}
+                          className="text-club-red !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="w-6 h-6"
+                          >
+                            <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                          </svg>
+
+                          <span className="sr-only">Response icon heart-shape</span>
+                        </Menu.Button>
+                      </div>
+
+                      <Transition
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
+                      >
+                        <Menu.Items className="absolute z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 p-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none flex gap-4 flex-wrap left-1/2 transform -translate-x-1/2">
+                          {reactionsEntries.map(([key, value]) => (
+                            <Menu.Item key={value}>
+                              {({ active }) => <button onClick={() => sendReaction(value)}>{value}</button>}
+                            </Menu.Item>
+                          ))}
+                        </Menu.Items>
+                      </Transition>
+                    </Menu>
+
+                    <Popover.Panel className="" aria-label="Global"></Popover.Panel>
+                  </>
+                );
+              }}
+            </Popover>
+
+            <button className="text-black dark:text-white !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
+                />
+              </svg>
+
+              <span className="sr-only">Share icon</span>
+            </button>
+
+            <button
+              className={
+                "text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-full text-sm py-2 px-6 text-center inline-flex items-center mr-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800 !m-0 max-h-[40px]"
+              }
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 011.037-.443 48.282 48.282 0 005.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"
+                />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
-
-      <Popover
-        className={({ open }) =>
-          classNames(
-            open ? "inset-0 z-40 overflow-y-auto" : "",
-            "responsive-container mx-auto shadow-sm lg:static bottom-0 lg:overflow-y-visible"
-          )
-        }
-      >
-        {({ open }) => {
-          if (isHost) return null;
-
-          return (
-            <>
-              <Menu as="div" className="relative flex-shrink-0">
-                <div className="w-36 flex gap-4 mt-4">
-                  <Menu.Button className="btn" disabled={!defaultProfile}>
-                    react
-                  </Menu.Button>
-                </div>
-                <Transition
-                  as={Fragment}
-                  enter="transition ease-out duration-100"
-                  enterFrom="transform opacity-0 scale-95"
-                  enterTo="transform opacity-100 scale-100"
-                  leave="transition ease-in duration-75"
-                  leaveFrom="transform opacity-100 scale-100"
-                  leaveTo="transform opacity-0 scale-95"
-                >
-                  <Menu.Items className="absolute z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 p-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none flex gap-4 flex-wrap">
-                    {reactionsEntries.map(([key, value]) => (
-                      <Menu.Item key={value}>
-                        {({ active }) => <button onClick={() => sendReaction(value)}>{value}</button>}
-                      </Menu.Item>
-                    ))}
-                  </Menu.Items>
-                </Transition>
-              </Menu>
-
-              <Popover.Panel className="" aria-label="Global"></Popover.Panel>
-            </>
-          );
-        }}
-      </Popover>
 
       {/* Start Drawer */}
 
