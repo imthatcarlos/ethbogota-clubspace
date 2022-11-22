@@ -5,7 +5,6 @@ import { useJam } from "@/lib/jam-core-react";
 import { isEmpty } from "lodash/lang";
 import toast from "react-hot-toast";
 import { use } from "use-minimal-state";
-import { AudioPlayer } from "decent-audio-player";
 import { classNames } from "@/lib/utils/classNames";
 import { joinGroup } from "@/lib/semaphore/semaphore";
 import { Profile, useGetProfilesOwned, useGetProfileByHandle } from "@/services/lens/getProfile";
@@ -22,8 +21,8 @@ import { followProfileGasless } from "@/services/lens/gaslessTxs";
 import { useGetContractData } from "@/services/decent/getDecentNFT";
 import { HostCard } from "./HostCard";
 import { FeaturedDecentNFT } from "./FeaturedDecentNFT";
-// import { LiveAudioPlayer } from "./LiveAudioPlayer";
-import { ExternalLink, Pause, Play } from "@/components/Vectors";
+import { LiveAudioPlayer } from "./LiveAudioPlayer";
+
 import * as mockIdentities from "@/constants/mockIdentities.json";
 
 type ClubSpaceObject = {
@@ -37,6 +36,8 @@ type ClubSpaceObject = {
   lensPubId: string;
   semGroupIdHex: string;
   spinampPlaylistId: string;
+  streamURL?: string;
+  currentTrackId?: string;
 };
 
 type LensProfileObject = {
@@ -161,32 +162,6 @@ const LiveSpace: FC<Props> = ({
       setIsLoadingEntry(false);
     }
   }, [isLoadingEntry, myIdentity, doesFollowCreator, creatorLensProfile, featuredDecentNFT]);
-
-  function PlayerCard({ song = "Enemies", artist = "Chaos", playlistTracks, streamURL }) {
-    return (
-      <div className="flex gap-x-4">
-        <AudioPlayer
-          size={56}
-          audioSrc={streamURL}
-          callbackAfterPlay={() => {
-            console.log("callbackAfterPlay");
-          }}
-          active
-        />
-        <div className="song-details flex flex-col gap-y-2 justify-center">
-          <span className="text-xl">
-            <a href="#" title="Visit song source" className="flex gap-x-[10px] items-center group">
-              {song}
-              <div>
-                <ExternalLink />
-              </div>
-            </a>
-          </span>
-          <span className="text-lg text-gray-400">{artist}</span>
-        </div>
-      </div>
-    );
-  }
 
   // only lens accounts (handle includes .lens or .test)
   const toggleDrawer = async ({ handle, profile: { id } }) => {
@@ -339,7 +314,12 @@ const LiveSpace: FC<Props> = ({
 
           <div className="player mx-auto">
             {playlistTracks && clubSpaceObject.streamURL && (
-              <PlayerCard playlistTracks={playlistTracks} streamURL={clubSpaceObject.streamURL} />
+              <LiveAudioPlayer
+                playlistTracks={playlistTracks}
+                streamURL={clubSpaceObject.streamURL}
+                playerUUID={clubSpaceObject.playerUUID}
+                currentTrackId={clubSpaceObject.currentTrackId}
+              />
             )}
           </div>
           <div className="decent-nft flex flex-col gap-y-3">

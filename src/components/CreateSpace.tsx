@@ -312,7 +312,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
                     {step}
                     <div className="mt-4 flex gap-x-2 justify-end absolute bottom-4 left-1/2 transform -translate-x-1/2 right-0">
                       <button
-                        disabled={isFirstStep}
+                        disabled={isFirstStep || uploading}
                         type="button"
                         className="btn disabled:cursor-not-allowed disabled:opacity-50"
                         onClick={back}
@@ -323,9 +323,9 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
                       <button
                         type="submit"
                         className="btn disabled:cursor-not-allowed disabled:opacity-50"
-                        disabled={isLastStep && goody?.files?.length !== 2}
+                        disabled={(isLastStep && goody?.files?.length !== 2) || uploading}
                       >
-                        {isLastStep ? "Create Space" : "Next"}
+                        {isLastStep ? `${uploading ? 'Creating...' : 'Create Space'}` : "Next"}
                       </button>
                     </div>
                     {isLastStep && goody?.files?.length > 0 && isLastStep && goody?.files?.length !== 2 ? (

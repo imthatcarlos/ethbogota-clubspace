@@ -11,7 +11,7 @@ import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import useENS from "@/hooks/useENS";
 import { SPACE_API_URL } from "@/lib/consts";
-import { getRadio } from "@/services/radio";
+import { getCurrentTrack } from "@/services/radio";
 
 const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
 const LiveSpace = dynamic(() => import("@/components/LiveSpace"), { ssr: false });
@@ -95,9 +95,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     console.log(`found space with id: ${clubSpaceObject.clubSpaceId}`);
 
     // NOTE: might not be there if the radio worker has not finished
-    clubSpaceObject.streamURL = await redisClient.get(`stream/${clubSpaceObject.clubSpaceId}`);
+    const streamData = await redisClient.get(`stream/${clubSpaceObject.clubSpaceId}`);
+    if (streamData) {
+      const { streamURL, playerUUID } = JSON.parse(streamData);
+      clubSpaceObject.streamURL = streamURL;
+      clubSpaceObject.currentTrackId = await getCurrentTrack(playerUUID);
+    }
 
-    console.log(clubSpaceObject);
+    // console.log(clubSpaceObject);
 
     return { props: { clubSpaceObject } };
   } catch (error) {
