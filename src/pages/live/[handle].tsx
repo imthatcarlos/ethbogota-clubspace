@@ -46,7 +46,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   return (
     <>
       {isLoadingEntry && (
-        <div className="flex-1">
+        <div className="flex-1 min-h-screen">
           <div className="abs-center">
             <p className="animate-move-txt-bg gradient-txt text-4xl">Entering ClubSpace...</p>
             {!isConnected ? (

@@ -1,3 +1,4 @@
+export const IS_PRODUCTION = false; // @TODO
 export const APP_NAME = "Clubspace";
 
 export const REDIS_SPACE_PREFIX = "space";
@@ -8,6 +9,8 @@ export const REDIS_SPACE_EXP = 7200;
 
 export const LOCALSTORAGE_DEFAULT_PROFILE_ID = "DEFAULT_PROFILE_ID";
 export const SITE_URL = process.env.SITE_URL || "https://www.joinclubspace.xyz";
+export const LENSTER_URL = IS_PRODUCTION ? 'https://lenster.xyz' : 'https://testnet.lenster.xyz';
+
 export const VERIFIER_ADDRESS = "0x5D7BdA4378aAAcB1760c74daF0d4a44e07e25f2A";
 export const REWARD_NFT_ADDRESS = "0xA8116560Fb01A9d2889A43A3767b369a3256D1F7";
 

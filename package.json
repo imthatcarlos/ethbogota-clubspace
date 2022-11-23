@@ -12,6 +12,7 @@
     "@decent.xyz/sdk": "^0.1.2",
     "@headlessui/react": "^1.7.3",
     "@heroicons/react": "^1.0.6",
+    "@infinity-keys/react-lens-share-button": "^0.0.5",
     "@madfi/jam-core": "^0.5.9",
     "@pinata/sdk": "^1.1.26",
     "@privy-io/privy-node": "^0.0.2",

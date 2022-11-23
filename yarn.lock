@@ -698,6 +698,13 @@
     fastfile "0.0.19"
     ffjavascript "^0.2.48"
 
+"@infinity-keys/react-lens-share-button@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@infinity-keys/react-lens-share-button/-/react-lens-share-button-0.0.5.tgz#ad1071982bdf379c60b6f689d017848850254479"
+  integrity sha512-iO9dmlbjIZOPsDhrsAvNNQUofC4jbMIaP7Ja8HuKaDoMKNhgxfr25vTa+Iy6Y6hG8XmVQ9GyZ0H5l0T9imB0DQ==
+  dependencies:
+    clsx "^1.2.1"
+
 "@internationalized/date@^3.0.1":
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@internationalized/date/-/date-3.0.1.tgz#66332e9ca8f59b7be010ca65d946bca430ba4b66"

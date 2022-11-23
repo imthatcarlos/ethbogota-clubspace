@@ -79,7 +79,12 @@ export const LiveAudioPlayer = ({ streamURL, playlistTracks, currentTrackId }: P
       </button>
       <div className="song-details flex flex-col gap-y-2 justify-center">
         <span className="text-xl">
-          <a href={currentTrack?.websiteUrl} title="Visit song source" className="flex gap-x-[10px] items-center group">
+          <a
+            href={currentTrack?.websiteUrl}
+            title="Visit song source"
+            className="flex gap-x-[10px] items-center group"
+            target="_blank"
+          >
             {currentTrack?.title || ""}
             <div>
               <ExternalLink />

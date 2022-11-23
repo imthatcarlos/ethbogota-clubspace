@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { use } from "use-minimal-state";
 import { classNames } from "@/lib/utils/classNames";
 import { joinGroup } from "@/lib/semaphore/semaphore";
+import { buildLensShareUrl } from "@infinity-keys/react-lens-share-button";
 import { Profile, useGetProfilesOwned, useGetProfileByHandle } from "@/services/lens/getProfile";
 import { getUrlForImageFromIpfs } from "@/utils/ipfs";
 import { LensProfile, reactionsEntries } from "@/components/LensProfile";
@@ -22,6 +23,7 @@ import { useGetContractData } from "@/services/decent/getDecentNFT";
 import { HostCard } from "./HostCard";
 import { FeaturedDecentNFT } from "./FeaturedDecentNFT";
 import { LiveAudioPlayer } from "./LiveAudioPlayer";
+import { SITE_URL, LENSTER_URL } from "@/lib/consts";
 
 import * as mockIdentities from "@/constants/mockIdentities.json";
 
@@ -110,6 +112,17 @@ const LiveSpace: FC<Props> = ({
     }
   );
   const { data: playlistTracks } = useGetTracksFromPlaylist({}, clubSpaceObject.spinampPlaylistId);
+
+  const shareURL = useMemo(() => (
+    buildLensShareUrl({
+      postBody: 'Join this space!',
+      url: `${SITE_URL}/live/${clubSpaceObject.handle}`,
+    })
+  ), [clubSpaceObject]);
+
+  const lensterPostURL = useMemo(() => (
+    `${LENSTER_URL}/posts/${clubSpaceObject.creatorLensProfileId}-${clubSpaceObject.lensPubId}`
+  ), [clubSpaceObject]);
 
   let [
     reactions,
@@ -273,7 +286,7 @@ const LiveSpace: FC<Props> = ({
 
   return (
     <>
-      <div className="relative grow flex flex-col justify-center">
+      <div className="relative grow flex flex-col justify-center min-h-screen">
         <div className="grid-live items-center justify-center px-10 lg:px-14 gap-x-3">
           <div className="grid-container w-full audience max-h-[30rem] overflow-auto !content-baseline">
             {!!myIdentity
@@ -400,7 +413,10 @@ const LiveSpace: FC<Props> = ({
               }}
             </Popover>
 
-            <button className="text-black dark:text-white !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative">
+            <button
+              className="text-black dark:text-white !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative"
+              onClick={() => window.open(shareURL, '_blank')}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -423,6 +439,7 @@ const LiveSpace: FC<Props> = ({
               className={
                 "text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-full text-sm py-2 px-6 text-center inline-flex items-center mr-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800 !m-0 max-h-[40px]"
               }
+              onClick={() => window.open(lensterPostURL, '_blank')}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
