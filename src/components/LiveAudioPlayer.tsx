@@ -1,10 +1,11 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { AudioPlayer } from "decent-audio-player";
 import { ITrack } from "@spinamp/spinamp-sdk";
+import IcecastMetadataPlayer from "icecast-metadata-player";
 import { groupBy } from "lodash/collection";
 import { isEmpty } from "lodash/lang";
 import { getUrlForImageFromIpfs } from "@/utils/ipfs";
-import { ExternalLink } from "@/components/Vectors";
+import { ExternalLink, Play, Pause } from "@/components/Vectors";
 import useIsMounted from "@/hooks/useIsMounted";
 
 interface Props {
@@ -16,10 +17,20 @@ interface Props {
 // @TODO: will we have feedback from the audio player api of the current track?
 export const LiveAudioPlayer = ({ streamURL, playlistTracks, currentTrackId }: Props) => {
   const isMounted = useIsMounted();
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentTrack, setCurrentTrack] = useState<ITrack | undefined>();
   const [streamEnded, setStreamEnded] = useState<boolean>(false);
 
-  const eventSource = useRef(new EventSource(`${streamURL}/metadata`));
+  const onMetadata = (metadata) => {
+    if (!metadata) {
+      setStreamEnded(true);
+    } else {
+      setCurrentTrack(groupedPlaylistTracks[metadata.StreamTitle][0]);
+    }
+  };
+
+  const player = useRef(new IcecastMetadataPlayer(streamURL, { onMetadata }));
+
   const groupedPlaylistTracks = useMemo(() => groupBy(playlistTracks, 'id'), [playlistTracks]);
 
   useEffect(() => {
@@ -30,36 +41,42 @@ export const LiveAudioPlayer = ({ streamURL, playlistTracks, currentTrackId }: P
         setStreamEnded(true);
         return;
       }
-
-      try {
-        eventSource.current.onmessage = (event) => {
-          const { metadata } = JSON.parse(event.data);
-          console.log(`metadata: ${metadata}`)
-
-          if (!metadata) {
-            setStreamEnded(true);
-          } else {
-            setCurrentTrack(groupedPlaylistTracks[metadata][0]);
-          }
-        }
-      } catch (error) {
-        console.log(error);
-      }
     }
   }, [isMounted]);
+
+  const togglePlaying = async () => {
+    if (isPlaying) {
+      await player.current.stop();
+    } else {
+      await player.current.play();
+    }
+
+    setIsPlaying(!isPlaying);
+  }
 
   // @TOOD: handle render when `streamEnded`
 
   return (
     <div className="flex gap-x-4">
-      <AudioPlayer
-        size={56}
-        audioSrc={streamURL}
-        callbackAfterPlay={() => {
-          console.log("callbackAfterPlay");
-        }}
-        active
-      />
+      {
+        /**
+        <AudioPlayer
+          size={56}
+          audioSrc={streamURL}
+          callbackAfterPlay={() => {
+            console.log("callbackAfterPlay");
+          }}
+          active
+        />
+        */
+      }
+      <button onClick={togglePlaying}>
+        {
+          !isPlaying
+            ? <Play />
+            : <Pause />
+        }
+      </button>
       <div className="song-details flex flex-col gap-y-2 justify-center">
         <span className="text-xl">
           <a href={currentTrack?.websiteUrl} title="Visit song source" className="flex gap-x-[10px] items-center group">

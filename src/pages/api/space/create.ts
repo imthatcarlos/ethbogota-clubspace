@@ -3,7 +3,7 @@ import { getAddress } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import {PrivyClient} from '@privy-io/privy-node';
 import redisClient from "@/lib/utils/redisClient";
-import { REDIS_LIVE_SPACE_HANDLES, REDIS_SPACE_EXP, SITE_URL } from "@/lib/consts";
+import { REDIS_SPACE_PREFIX, REDIS_SPACE_EXP, SITE_URL } from "@/lib/consts";
 import { startRadio } from "@/services/radio";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -59,7 +59,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       console.log("setting redis");
       await redisClient.set(
-        handle,
+        `${REDIS_SPACE_PREFIX}/${handle}`,
         JSON.stringify(clubSpaceObject),
         "EX",
         REDIS_SPACE_EXP

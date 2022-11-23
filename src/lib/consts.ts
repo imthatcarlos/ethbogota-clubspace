@@ -1,11 +1,10 @@
 export const APP_NAME = "Clubspace";
 
-// => array of lens handles with live spaces
-export const REDIS_LIVE_SPACE_HANDLES = "LIVE_SPACE_HANDLES";
+export const REDIS_SPACE_PREFIX = "space";
+export const REDIS_STREAM_PREFIX = "stream";
 
-// 1hr exp for spaces; once the key is gone, the space has ended
-// NOTE: the key will remain in `REDIS_LIVE_SPACE_HANDLES` array, so we'll cross-ref and clean up
-export const REDIS_SPACE_EXP = 86400;
+// [seconds] 2hr exp for spaces; once the key is gone, the space has ended
+export const REDIS_SPACE_EXP = 7200;
 
 export const LOCALSTORAGE_DEFAULT_PROFILE_ID = "DEFAULT_PROFILE_ID";
 export const SITE_URL = process.env.SITE_URL || "https://www.joinclubspace.xyz";

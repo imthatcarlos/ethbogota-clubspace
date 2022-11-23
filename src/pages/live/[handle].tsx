@@ -10,7 +10,7 @@ import { SpectrumVisualizer, SpectrumVisualizerTheme } from "react-audio-visuali
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import useENS from "@/hooks/useENS";
-import { SPACE_API_URL } from "@/lib/consts";
+import { SPACE_API_URL, REDIS_SPACE_PREFIX, REDIS_STREAM_PREFIX } from "@/lib/consts";
 import { getCurrentTrack } from "@/services/radio";
 
 const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
@@ -37,6 +37,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
 
   useEffect(() => {
     if (!isLoadingProfiles) {
+      console.log(profilesResponse)
       setDefaultProfile(profilesResponse ? profilesResponse.defaultProfile : null);
       setLoadingDefaultProfile(false);
     }
@@ -84,7 +85,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   } = context;
 
   try {
-    const data = await redisClient.get(handle);
+    const data = await redisClient.get(`${REDIS_SPACE_PREFIX}/${handle}`);
     if (!data) {
       // @TODO: space duration should depend on whether the audio stream is still running
       console.log("SPACE NOT FOUND! MAY HAVE EXPIRED FROM REDIS");
@@ -95,7 +96,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     console.log(`found space with id: ${clubSpaceObject.clubSpaceId}`);
 
     // NOTE: might not be there if the radio worker has not finished
-    const streamData = await redisClient.get(`stream/${clubSpaceObject.clubSpaceId}`);
+    const streamData = await redisClient.get(`${REDIS_STREAM_PREFIX}/${clubSpaceObject.clubSpaceId}`);
     if (streamData) {
       const { streamURL, playerUUID } = JSON.parse(streamData);
       clubSpaceObject.streamURL = streamURL;

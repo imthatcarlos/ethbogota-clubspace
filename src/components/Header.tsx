@@ -26,7 +26,7 @@ export const Header = () => {
           </a>
         </Link>
       </div>
-      {!isLandingPage && (
+      {/**!isLandingPage && (
         <div className="sponsor abs-center">
           <a href="https://www.11captainsclub.io" target="_blank" rel="noreferrer" className="realtive group">
             <img
@@ -39,7 +39,7 @@ export const Header = () => {
             </span>
           </a>
         </div>
-      )}
+      )*/}
       <div className="connect absolute right-0 xs:relative">
         <div className="flex gap-4 justify-center md:min-w-[150px] scale-[0.8] xs:scale-100">
           {isConnected && (

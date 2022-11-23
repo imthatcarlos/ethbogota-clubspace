@@ -2677,6 +2677,21 @@
   dependencies:
     "@walletconnect/window-getters" "^1.0.0"
 
+"@wasm-audio-decoders/common@5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@wasm-audio-decoders/common/-/common-5.1.0.tgz#a2cc77a7bc81d929881ff97726521444d7383a8f"
+  integrity sha512-7j9kmz/Dv426C9cbfKwz3MPL1V9eh/AXKSYORi3VfaXz4qvyStb03DUtoGt1fCfk3dKkUrLx0rZTxe21B9RuNg==
+  dependencies:
+    web-worker "^1.1.0"
+
+"@wasm-audio-decoders/flac@0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@wasm-audio-decoders/flac/-/flac-0.0.2.tgz#f630ce3bf9a9b5dd9cee752c8f2650969dc1bec4"
+  integrity sha512-gWkH/PxMI2ntigAuia31EnNg9IqdAnt3sBO+/4ItbwOHLcPo9VFSzC5k6FsgHExoT+Ebii2wM9s3ErXXLoxctA==
+  dependencies:
+    "@wasm-audio-decoders/common" "5.1.0"
+    codec-parser "2.2.0"
+
 "@web-std/blob@^3.0.1", "@web-std/blob@^3.0.3":
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/@web-std/blob/-/blob-3.0.4.tgz#dd67a685547331915428d69e723c7da2015c3fc5"
@@ -3702,6 +3717,11 @@ cluster-key-slot@^1.1.0:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/cluster-key-slot/-/cluster-key-slot-1.1.2.tgz#88ddaa46906e303b5de30d3153b7d9fe0a0c19ac"
   integrity sha512-RMr0FhtfXemyinomL4hrWcYJxmX6deFdCxpJzhDttxgO1+bcCnkk+9drydLVDmAMG7NE6aN/fl4F7ucU/90gAA==
+
+codec-parser@2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/codec-parser/-/codec-parser-2.2.0.tgz#9f466c2b43102307e945741275a0a54097692607"
+  integrity sha512-dD1VU8I7rmBhyWNYcwqlHIhVJ9ct3fiYRTJX8siuOxc9MMhpn0W3zuI1BUH0wtZWByb6Afe4tvM20Hcev5xqfQ==
 
 color-convert@^1.9.0:
   version "1.9.3"
@@ -5596,6 +5616,24 @@ http2-wrapper@^2.1.10:
     quick-lru "^5.1.1"
     resolve-alpn "^1.2.0"
 
+icecast-metadata-js@1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/icecast-metadata-js/-/icecast-metadata-js-1.1.2.tgz#6a9c20f90baf23057979223766b34e300ae085bd"
+  integrity sha512-GkqavZAryuCSQ9otdcRk51rxre20RM+M9iI2lYNvI73VxQIOO4gHPUB65lpfliKUf4T2Iwd+EMFbX3iIx/Vm6w==
+
+icecast-metadata-player@^1.13.1:
+  version "1.13.1"
+  resolved "https://registry.yarnpkg.com/icecast-metadata-player/-/icecast-metadata-player-1.13.1.tgz#cf8709b69051f318ec4d6a58df0d2cc91b732bac"
+  integrity sha512-fJIZvvtVn8DnMiv3ixye0vqP0jw7eCr/4rRgzUtYY/ylWVYMW5Me3E3mI5ACwojxCEHERBJxMlm5V/rBwRvkQg==
+  dependencies:
+    "@wasm-audio-decoders/flac" "0.0.2"
+    codec-parser "2.2.0"
+    icecast-metadata-js "1.1.2"
+    mpg123-decoder "0.3.17"
+    mse-audio-wrapper "1.4.7"
+    opus-decoder "0.5.3"
+    synaudio "0.3.0"
+
 iconv-lite@0.4.24:
   version "0.4.24"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
@@ -6813,6 +6851,13 @@ move-file@^2.1.0:
   dependencies:
     path-exists "^4.0.0"
 
+mpg123-decoder@0.3.17:
+  version "0.3.17"
+  resolved "https://registry.yarnpkg.com/mpg123-decoder/-/mpg123-decoder-0.3.17.tgz#2a3c8ef2a1f7dbc91cc000d419bc93c8cfb3d713"
+  integrity sha512-pE25axuccxqLMpwSvp4DNz0/bBpnjc6iINUtlibhAS7+ghJByP0ruiQcE557AoDdwKY0VuUD4FnyxQTvG/a+/g==
+  dependencies:
+    "@wasm-audio-decoders/common" "5.1.0"
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -6827,6 +6872,13 @@ ms@2.1.3, ms@^2.1.1:
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
+
+mse-audio-wrapper@1.4.7:
+  version "1.4.7"
+  resolved "https://registry.yarnpkg.com/mse-audio-wrapper/-/mse-audio-wrapper-1.4.7.tgz#a941698509f04e5bd28fd2257024b56ab2f7d6a6"
+  integrity sha512-wRO8wWUMQAQsiRtR1MDE6mVnbnI8cpxLf7/drpPm5YuImAvYG4GSyNQlatYuLgERUEqRj9f6Rj5GfwhzFXW80A==
+  dependencies:
+    codec-parser "2.2.0"
 
 multiaddr-to-uri@^8.0.0:
   version "8.0.0"
@@ -7219,6 +7271,13 @@ optionator@^0.9.1:
     prelude-ls "^1.2.1"
     type-check "^0.4.0"
     word-wrap "^1.2.3"
+
+opus-decoder@0.5.3:
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/opus-decoder/-/opus-decoder-0.5.3.tgz#2751dcf8a2c4de49968fc3e58f41fa00d4373997"
+  integrity sha512-DTngvlesmVRjWcSMOumhdvNLioCvXvmsLALaIF24F4YI8SDwsMDpTM/1fZSOL1IFpFeF01SHxLg2Gwhw+17veg==
+  dependencies:
+    "@wasm-audio-decoders/common" "5.1.0"
 
 outdent@^0.8.0:
   version "0.8.0"
@@ -8277,6 +8336,11 @@ simple-get@^2.7.0:
     once "^1.3.1"
     simple-concat "^1.0.0"
 
+simple-yenc@^0.2.1:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/simple-yenc/-/simple-yenc-0.2.3.tgz#412b759686594a63508b8c49a8f6f4478d2aa9d4"
+  integrity sha512-LGufdReGRgj0dXpqpF7j/MQ8SKu4pXAzpkHxQSDI0/GMOlmGY6oivl2hhsyMfAaOGYC6iqcxiDtBy+1MmM4JSA==
+
 slash@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/slash/-/slash-3.0.0.tgz#6539be870c165adbd5240220dbe361f1bc4d4634"
@@ -8589,6 +8653,14 @@ swarm-js@^0.1.40:
     setimmediate "^1.0.5"
     tar "^4.0.2"
     xhr-request "^1.0.1"
+
+synaudio@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/synaudio/-/synaudio-0.3.0.tgz#3715a23550ecafa7a98d9c287e4c72942933ca69"
+  integrity sha512-FkRnsPVlqOkrjeCY+8oRATb2RQMfL3pUMncp6mnUZlAcO0DC18sFipVljeFMtfOVwPUJEDheDUGZJGeOLcjG8Q==
+  dependencies:
+    simple-yenc "^0.2.1"
+    web-worker "^1.2.0"
 
 tailwindcss@^3.0.24:
   version "3.2.4"
@@ -9070,7 +9142,7 @@ web-streams-polyfill@^3.1.1:
   resolved "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-3.2.1.tgz#71c2718c52b45fd49dbeee88634b3a60ceab42a6"
   integrity sha512-e0MO3wdXWKrLbL0DgGnUV7WHVuw9OUvL4hjgnPkIeEvESk74gAITi5G606JtZPp39cd8HA9VQzCIvA49LpPN5Q==
 
-web-worker@^1.2.0:
+web-worker@^1.1.0, web-worker@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/web-worker/-/web-worker-1.2.0.tgz#5d85a04a7fbc1e7db58f66595d7a3ac7c9c180da"
   integrity sha512-PgF341avzqyx60neE9DD+XS26MMNMoUQRz9NOZwW32nPQrF6p77f1htcnjBSEV8BGMKZ16choqUG4hyI0Hx7mA==
