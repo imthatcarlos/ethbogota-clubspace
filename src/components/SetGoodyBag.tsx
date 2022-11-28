@@ -64,7 +64,7 @@ const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles 
   return (
     <MultiStepFormWrapper>
       <div className="w-full flex flex-col gap-3">
-        <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Create a Goody Bag</h2>
+        <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Create a Party Favor</h2>
         <div className="w-full flex flex-col gap-3">
           <input
             type="text"
