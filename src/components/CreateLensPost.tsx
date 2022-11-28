@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { MultiStepFormWrapper } from "./MultiStepFormWrapper";
 
 const CreateLensPost = ({ setPostData, defaultProfile, lensPost, updateFields }) => {
@@ -15,7 +14,7 @@ const CreateLensPost = ({ setPostData, defaultProfile, lensPost, updateFields })
     <MultiStepFormWrapper>
       <div className="w-full flex flex-col gap-3">
         <label htmlFor="lens-post" className="text-md font-bold tracking-tight sm:text-lg md:text-xl">
-          Create a Lens Post
+          Create a Lens Post (Optional)
         </label>
         <textarea
           id="lens-post"
@@ -24,7 +23,6 @@ const CreateLensPost = ({ setPostData, defaultProfile, lensPost, updateFields })
           value={lensPost}
           placeholder="Join my Club Space!"
           onChange={(e) => onChange(e.target.value)}
-          required
         />
       </div>
     </MultiStepFormWrapper>

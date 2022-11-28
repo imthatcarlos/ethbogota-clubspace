@@ -52,7 +52,9 @@ export const Header = () => {
               {!(lensLoginData || lensRefreshData) ? "Login with Lens" : profilesResponse?.defaultProfile.handle}
             </button>
           )}
-          <ConnectWallet showBalance={false} />
+          <div className="min-w-[145px]">
+            <ConnectWallet showBalance={false} />
+          </div>
         </div>
       </div>
     </header>

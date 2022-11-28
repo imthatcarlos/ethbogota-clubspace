@@ -100,7 +100,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       {...formMultiFormData}
       updateFields={updateFields}
     />,
-    <SetGoodyBag key="d" setGoody={setGoody} {...formMultiFormData} updateFields={updateFields} />,
+    // <SetGoodyBag key="d" setGoody={setGoody} {...formMultiFormData} updateFields={updateFields} />,
   ]);
 
   const handleSubmit = (e: FormEvent) => {
@@ -172,34 +172,37 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       return;
     }
 
-    // upload content to ipfs
-    toast("Setting goody bag...");
-    const goodyUri = await uploadToIPFS();
-    console.log("goody uri:", goodyUri);
+    // upload goody bag content to ipfs [TEMP DISABLED]
+    // toast("Setting goody bag...");
+    // const goodyUri = await uploadToIPFS();
+    // console.log("goody uri:", goodyUri);
 
     // create lens post (@TODO: make this part optional)
     // const content: any = await pinJson(publicationBody(lensPost, [], defaultProfile.handle));
-    const response = await fetch(
-      '/api/ipfs/post',
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          json: publicationBody(lensPost, [], defaultProfile.handle)
-        })
-      },
-    );
-    const content = { IpfsHash: (await response.json()).ipfsHash };
+    let lensPubId = "0x"
+    if (lensPost) {
+      const response = await fetch(
+        '/api/ipfs/post',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            json: publicationBody(lensPost, [], defaultProfile.handle)
+          })
+        },
+      );
+      const content = { IpfsHash: (await response.json()).ipfsHash };
 
-    toast("Creating Lens post...", { duration: 10000 });
-    const accessToken = lensLoginData?.authenticate?.accessToken
-      ? lensLoginData?.authenticate?.accessToken
-      : lensRefreshData.accessToken;
-    if (!accessToken) {
-      throw new Error("Error - lens profile not authenticated. This is likely a bug with login/refresh logic");
+      toast("Creating Lens post...", { duration: 10000 });
+      const accessToken = lensLoginData?.authenticate?.accessToken
+        ? lensLoginData?.authenticate?.accessToken
+        : lensRefreshData.accessToken;
+      if (!accessToken) {
+        throw new Error("Error - lens profile not authenticated. This is likely a bug with login/refresh logic");
+      }
+      await makePostGasless(defaultProfile.id, `ipfs://${content.IpfsHash}`, signer, accessToken);
+      const pubCount = await contract.getPubCount(defaultProfile.id);
+      lensPubId = pubCount.toHexString();
     }
-    await makePostGasless(defaultProfile.id, `ipfs://${content.IpfsHash}`, signer, accessToken);
-    const pubCount = await contract.getPubCount(defaultProfile.id);
-    const lensPubId = pubCount.toHexString();
 
     const handle = defaultProfile?.handle || ensName || address;
 
@@ -223,8 +226,8 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
           data: { url, semGroupIdHex },
         } = await axios.post(`/api/space/create`, spaceData);
 
-        // call sempahore/create-group
-        await createGroup(semGroupIdHex, goodyUri, lensPubId, defaultProfile.id);
+        // call sempahore/create-group [TEMP DISABLED]
+        // await createGroup(semGroupIdHex, goodyUri, lensPubId, defaultProfile.id);
 
         // PUSH
         await axios.post(`/api/push/send`, { url });
@@ -353,7 +356,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
                       <button
                         type="submit"
                         className="btn disabled:cursor-not-allowed disabled:opacity-50"
-                        disabled={(isLastStep && goody?.files?.length !== 2) || uploading}
+                        disabled={uploading}
                       >
                         {isLastStep ? `${uploading ? 'Creating...' : 'Create Space'}` : "Next"}
                       </button>
