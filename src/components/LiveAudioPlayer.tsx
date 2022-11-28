@@ -14,7 +14,6 @@ interface Props {
   currentTrackId?: string;
 };
 
-// @TODO: will we have feedback from the audio player api of the current track?
 export const LiveAudioPlayer = ({ streamURL, playlistTracks, currentTrackId }: Props) => {
   const isMounted = useIsMounted();
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
