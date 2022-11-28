@@ -1,14 +1,16 @@
+export const IS_PRODUCTION = false; // @TODO
 export const APP_NAME = "Clubspace";
 
-// => array of lens handles with live spaces
-export const REDIS_LIVE_SPACE_HANDLES = "LIVE_SPACE_HANDLES";
+export const REDIS_SPACE_PREFIX = "space";
+export const REDIS_STREAM_PREFIX = "stream";
 
-// 1hr exp for spaces; once the key is gone, the space has ended
-// NOTE: the key will remain in `REDIS_LIVE_SPACE_HANDLES` array, so we'll cross-ref and clean up
-export const REDIS_SPACE_EXP = 3600;
+// [seconds] 2hr exp for spaces; once the key is gone, the space has ended
+export const REDIS_SPACE_EXP = 7200;
 
 export const LOCALSTORAGE_DEFAULT_PROFILE_ID = "DEFAULT_PROFILE_ID";
-export const UUID_NAMESPACE_URL = "https://www.joinclubspace.xyz";
+export const SITE_URL = process.env.SITE_URL || "https://www.joinclubspace.xyz";
+export const LENSTER_URL = IS_PRODUCTION ? 'https://lenster.xyz' : 'https://testnet.lenster.xyz';
+
 export const VERIFIER_ADDRESS = "0x5D7BdA4378aAAcB1760c74daF0d4a44e07e25f2A";
 export const REWARD_NFT_ADDRESS = "0xA8116560Fb01A9d2889A43A3767b369a3256D1F7";
 
@@ -24,3 +26,5 @@ export const totalTime = calculateSum(songTimes);
 export const STREAMR_PUBLIC_ID = process.env.NEXT_PUBLIC_STREAMR_STREAM_ID_PUBLIC ?? "";
 
 export const ZK_DEPLOYMENT_BLOCK = 28522249;
+
+export const SPACE_API_URL = process.env.NEXT_PUBLIC_SPACE_API_URL;

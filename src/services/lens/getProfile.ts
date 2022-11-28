@@ -218,11 +218,11 @@ export const getProfileByHandle = async (handle: string): Promise<Profile | null
   }
 };
 
-export const useGetProfileByHandle = (options: UseQueryOptions = {}, handle: string) => {
+export const useGetProfileByHandle = (options: UseQueryOptions = {}, handle: string, cacheKey: string = 'useGetProfileByHandle') => {
   const result = useQuery<Profile | null>(
-    ["profiles", handle],
+    [cacheKey, handle],
     async () => {
-      const result = await getProfileByHandle(handle);
+      const result = handle ? await getProfileByHandle(handle) : null;
 
       return result;
     },
@@ -253,13 +253,18 @@ export const useGetProfilesOwned = (options: UseQueryOptions = {}, ownedBy: stri
   const result = useQuery<Profile[]>(
     ["profiles", ownedBy],
     async () => {
-      const result = await getProfilesOwned(ownedBy);
+      if (!ownedBy) return {};
 
-      return result;
+      const profiles = await getProfilesOwned(ownedBy);
+
+      return {
+        profiles,
+        defaultProfile: profiles?.length ? profiles[0] : undefined
+      };
     },
     {
       ...(options as any),
-      enabled: !!ownedBy,
+      enabled: true,
     }
   );
 

@@ -1,26 +1,37 @@
-import { useAccount } from "wagmi";
 import { useState, useEffect } from "react";
-import { APP_NAME } from "@/lib/consts";
-import useLensLogin from "@/hooks/useLensLogin";
-import { ConnectWallet } from "./ConnectWallet";
-import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
-import CreateSpace from "@/components/CreateSpace";
+import dynamic from "next/dynamic";
+import { useAccount } from "wagmi";
+import toast from "react-hot-toast";
+import ClubspaceNeon from "@/assets/svg/clubspace-neon.svg";
+import ClubspaceSoftGlow from "@/assets/svg/soft-glow-filter.svg";
+import useIsMounted from "@/hooks/useIsMounted";
+import useHasBadge from "@/hooks/useHasBadge";
+import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
+import { useGetProfilesOwned } from "@/services/lens/getProfile";
+import { ConnectWallet } from "@/components/ConnectWallet";
+
+const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
+const CreateSpace = dynamic(() => import("@/components/CreateSpace"), { ssr: false });
 
 export const Hero = () => {
+  const isMounted = useIsMounted();
+  let [modalOpen, setModalOpen] = useState(false);
   const { isConnected, address } = useAccount();
-  const [defaultProfile, setDefaultProfile] = useState<Profile>();
-  const { data: profiles } = useGetProfilesOwned({}, address);
+  const { data: lensLoginData, refetch: loginWithLens } = useLensLogin();
+  const { data: lensRefreshData } = useLensRefresh();
+  const { data: profilesResponse } = useGetProfilesOwned({}, address);
+  const { data: hasBadge, isLoading: isLoadingBadge } = useHasBadge();
 
   useEffect(() => {
-    if (profiles?.length) {
-      setDefaultProfile(profiles[0]);
+    if (!isLoadingBadge && !hasBadge) {
+      toast.error('ClubSpace is currently in closed beta', { duration: 10000, icon: '🚧' });
     }
-  }, [address, profiles]);
+  }, [isLoadingBadge, hasBadge]);
 
-  const { data, refetch: login } = useLensLogin();
+  if (!isMounted) return null;
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden flex-1 min-h-screen">
       <div className="hidden sm:absolute sm:inset-0 sm:block" aria-hidden="true">
         <svg
           className="absolute bottom-0 right-0 mb-48 translate-x-1/2 transform text-gray-700 lg:top-0 lg:mt-28 lg:mb-0 xl:translate-x-0 xl:transform-none"
@@ -44,99 +55,59 @@ export const Hero = () => {
           <rect width={364} height={384} fill="url(#eab71dd9-9d7a-47bd-8044-256344ee00d0)" />
         </svg>
       </div>
-      <div className="relative pt-6 pb-16">
-        <nav
-          className="relative mx-auto hidden md:flex max-w-7xl items-center justify-between px-4 sm:px-6"
-          aria-label="Global"
-        >
-          <div className="flex flex-1 items-center">
-            <div className="flex w-full items-center justify-between md:w-auto">
-              <a href="#">
-                <span className="sr-only">{APP_NAME}</span>
-                {/* <Image
-                  className="h-8 w-auto sm:h-10"
-                  src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                  alt={APP_NAME}
-                /> */}
-              </a>
-            </div>
-            <div className="hidden space-x-10 md:ml-10 md:flex"></div>
-          </div>
-          <div className="flex gap-4 justify-center md:min-w-[300px]">
-            {isConnected && (
-              <button onClick={() => login()} className="btn justify-center items-center">
-                {!data ? "Login with lens" : defaultProfile?.handle}
-              </button>
-            )}
-            <ConnectWallet showBalance={false} />
-          </div>
-        </nav>
+      <section className="w-full">
+        <div className="w-full text-secondary mt-12 sm:mt-32 flex flex-col gap-8 mix-blend-lighten px-16 items-center justify-center">
+          <ClubspaceSoftGlow />
+          <ClubspaceNeon className="min-w-fit svg-logo" />
+          <h2 className="uppercase text-6xl tracking-wide w-full font-ownersx text-center text-[37px] landing-page-subtext-shadow">
+            <span className="block">PROMOTE YOUR MUSIC NFTs</span>
+            <span className="block">
+              WITH A <span className="text-primary italic mix-blend-lighten text-club-red font-extrabold">LIVE</span>{" "}
+              LISTENING PARTY
+            </span>
+          </h2>
 
-        <main className="mt-16 sm:mt-24 pb-16 md:pb-0">
-          <div className="max-w-7xl lg:mx-auto">
-            <div className="lg:mt-16 lg:grid lg:grid-cols-12 lg:gap-8">
-              <div className="px-4 sm:px-6 sm:text-center md:mx-auto md:max-w-2xl lg:col-span-6 lg:flex lg:text-left">
-                <div>
-                  <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl md:text-8xl drop-shadow-sm">
-                    Clubspace
-                  </h1>
-                  <p className="mt-3 text-base sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
-                    Host an online live listening party for all your Lens frens 🔥
-                    <br />
-                    Music NFTs. Live Reactions. Good vibes.
-                    <br />
-                    Everyone that parties - and can <strong>prove</strong> it - gets a goody bag NFT
-                  </p>
-                  {!isConnected && (
-                    <div className="pt-4">
-                      <ConnectWallet label="Get started now" />
-                    </div>
-                  )}
-
-                  <div className="max-w-full mt-12 relative h-full aspect-square">
-                    <img src="/lil_buddy.png" alt="lil_buddy" className="aspect-square w-full h-80" />
-                  </div>
-                </div>
-              </div>
-              <div className="mt-24 md:mt-0 lg:col-span-6 lg:mt-0">
-                <div className="bg-transparent sm:mx-auto sm:w-full sm:max-w-md sm:overflow-hidden sm:rounded-lg">
-                  <div className="px-4 sm:px-10">
-                    <div className="w-full">
-                      <CreateSpace defaultProfile={defaultProfile} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
-        <nav
-          className="mx-auto md:hidden flex fixed bottom-0 bg-white dark:bg-black/20 backdrop-blur backdrop-filter max-w-7xl items-center py-6 justify-between px-4 sm:px-6"
-          aria-label="Global"
-        >
-          <div className="flex flex-1 items-center">
-            <div className="flex w-full items-center justify-between md:w-auto">
-              <a href="#">
-                <span className="sr-only">{APP_NAME}</span>
-                {/* <Image
-                  className="h-8 w-auto sm:h-10"
-                  src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                  alt={APP_NAME}
-                /> */}
-              </a>
-            </div>
-            <div className="hidden space-x-10 md:ml-10 md:flex"></div>
-          </div>
-          <div className="flex gap-4 justify-center md:min-w-[300px]">
-            {isConnected && (
-              <button onClick={() => login()} className="btn justify-center items-center">
-                {!data ? "Login with lens" : defaultProfile?.handle}
-              </button>
-            )}
-            <ConnectWallet showBalance={false} />
-          </div>
-        </nav>
-      </div>
+          {
+            isConnected
+              ? (
+                  <>
+                    {!(lensLoginData || lensRefreshData) ? (
+                      <button onClick={() => loginWithLens()} className="btn max-w-[200px] btn justify-center items-center">
+                        Login with Lens
+                      </button>
+                    ) : (
+                      <>
+                        {
+                          !isLoadingBadge && hasBadge
+                            ? <button
+                                onClick={() => setModalOpen(true)}
+                                className="btn-create-space relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold duration-300 transition-all hover:-translate-y-[2px] hover:text-white"
+                              >
+                                <span className="z-10">Create a space</span>
+                              </button>
+                            : <>
+                                <button
+                                  disabled
+                                  className="relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold"
+                                >
+                                  <span className="z-10">Closed Beta</span>
+                                </button>
+                                <span className="z-10"><a href="https://playground.sismo.io/madfi-lens-followers-s01" target="_blank" rel="noreferrer">Get a badge</a></span>
+                              </>
+                        }
+                      </>
+                    )}
+                  </>
+                )
+              : <ConnectWallet showBalance={false} />
+          }
+        </div>
+        <div className="w-full">
+          <JamProviderWrapper>
+            <CreateSpace isOpen={modalOpen} setIsOpen={setModalOpen} />
+          </JamProviderWrapper>
+        </div>
+      </section>
     </div>
   );
 };

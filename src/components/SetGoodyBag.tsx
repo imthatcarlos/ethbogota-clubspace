@@ -1,11 +1,10 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
+import { MultiStepFormWrapper } from "./MultiStepFormWrapper";
 
-const SetGoodyBag = ({ setGoody }) => {
-  const [description, setDescription] = useState("");
-  const [name, setName] = useState("");
-  const [files, setFiles] = useState([]);
+const allowableImageTypes = [".png", ".gif", ".jpeg", ".jpg"];
 
+const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles }) => {
   const onDrop = useCallback(
     (acceptedFiles) => {
       const _files = acceptedFiles.map((file: any) =>
@@ -13,16 +12,17 @@ const SetGoodyBag = ({ setGoody }) => {
           preview: URL.createObjectURL(file),
         })
       );
-      setFiles(_files);
-      onChange({ name, description, files: _files });
+
+      updateFields({ goodyFiles, _files });
+      onChange({ name: goodyName, description: goodyDesc, files: _files });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [description, name]
+    [goodyDesc, goodyFiles, goodyName, updateFields]
   );
 
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject, acceptedFiles } = useDropzone({
     onDrop,
-    accept: { "audio/*": [".wav", ".mp3"], "image/*": [".png", ".gif", ".jpeg", ".jpg"] },
+    accept: { "audio/*": [".wav", ".mp3"], "image/*": allowableImageTypes },
     maxFiles: 2,
     maxSize: 50000000,
   });
@@ -30,52 +30,73 @@ const SetGoodyBag = ({ setGoody }) => {
   // TODO: styles
   const style = useMemo(() => {
     return isDragAccept
-      ? "p-8 border-dotted border-2 max-w-md border-green-600"
+      ? "p-8 border-dotted border-2 border-green-600"
       : isDragReject
-      ? "p-8 border-dotted border-2 max-w-md border-red-600"
+      ? "p-8 border-dotted border-2 border-red-600"
       : isDragActive
-      ? "p-8 border-dotted border-2 max-w-md border-indigo-600"
-      : "p-8 border-dotted border-2 max-w-md";
+      ? "p-8 border-dotted border-2 border-indigo-600"
+      : "p-8 border-dotted border-2";
   }, [isDragActive, isDragReject, isDragAccept]);
 
   const onChange = ({ name, description, files }) => {
-    setName(name);
-    setDescription(description);
-
+    updateFields({ goodyName: name, goodyDesc: description, goodyFiles: files });
     setGoody({ name, description, files });
   };
 
-  return (
-    <div className="w-full flex flex-col gap-3">
-      <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Create a Goody Bag</h2>
-      <div className="w-full flex flex-col gap-3">
-        <input
-          type="text"
-          className="input"
-          placeholder="Name..."
-          value={name}
-          onChange={(e) => onChange({ name: e.target.value, description, files })}
-        />
-        <textarea
-          rows={3}
-          className="input"
-          value={description}
-          onChange={(e) => onChange({ description: e.target.value, name, files })}
-          placeholder="Description..."
-        />
-        <div {...getRootProps()} className={style}>
-          <input {...getInputProps()} />
-          {acceptedFiles.length === 0 ? (
-            <>
-              <p>Drag and drop your song and a cover image here</p>
-              <p>(max: 50mb)</p>
-            </>
-          ) : (
-            acceptedFiles.map((f) => <p key={(f as any).path}>{(f as any).path}</p>)
-          )}
+  const thumbs = goodyFiles
+    .filter(({ path }) => allowableImageTypes.some((type) => path.includes(type)))
+    .map((file) => (
+      <div className="inline-flex p-2" key={file.name}>
+        <div className="flex min-w-0 overflow-hidden">
+          <img
+            alt=""
+            src={file.preview}
+            className="block w-auto h-full"
+            // Revoke data uri after image is loaded
+            onLoad={() => {
+              URL.revokeObjectURL(file.preview);
+            }}
+          />
         </div>
       </div>
-    </div>
+    ));
+
+  return (
+    <MultiStepFormWrapper>
+      <div className="w-full flex flex-col gap-3">
+        <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Create a Party Favor</h2>
+        <div className="w-full flex flex-col gap-3">
+          <input
+            type="text"
+            className="input"
+            placeholder="Name..."
+            value={goodyName}
+            onChange={(e) => onChange({ name: e.target.value, description: goodyDesc, files: goodyFiles })}
+            required
+          />
+          <textarea
+            rows={3}
+            className="input"
+            value={goodyDesc}
+            onChange={(e) => onChange({ description: e.target.value, name: goodyName, files: goodyFiles })}
+            placeholder="Description..."
+            required
+          />
+          <div {...getRootProps()} className={style}>
+            <input {...getInputProps()} />
+            {acceptedFiles.length === 0 ? (
+              <>
+                <p>Drag and drop your song and a cover image here</p>
+                <p>(max: 50mb)</p>
+              </>
+            ) : (
+              acceptedFiles.map((f) => <p key={(f as any).path}>{(f as any).path}</p>)
+            )}
+          </div>
+          <aside className="flex flex-wrap mt-1">{thumbs}</aside>
+        </div>
+      </div>
+    </MultiStepFormWrapper>
   );
 };
 
