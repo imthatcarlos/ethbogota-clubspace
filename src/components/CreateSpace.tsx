@@ -119,17 +119,37 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
     // upload to ipfs
     console.log("uploading files");
-    const _music = await pinFileToIPFS(music);
-    const _image = await pinFileToIPFS(cover);
+    // const _music = await pinFileToIPFS(music);
+    // const _image = await pinFileToIPFS(cover);
+    const [musicResponse, coverResponse] = await Promise.all([
+      fetch('/api/ipfs/post', { method: 'POST', body: music }),
+      fetch('/api/ipfs/post', { method: 'POST', body: cover })
+    ]);
+    const _music = { IpfsHash: (await musicResponse.json()).ipfsHash };
+    const _image = { IpfsHash: (await coverResponse.json()).ipfsHash };
 
     console.log("uploading metadata");
-    const metadata: any = await pinJson({
-      name: goody.name,
-      description: goody.description,
-      image: `ipfs://${_image.IpfsHash}`,
-      animation_url: `ipfs://${_music.IpfsHash}`,
-      external_url: "https://joinclubspace.xyz",
-    });
+    // const metadata: any = await pinJson({
+    //   name: goody.name,
+    //   description: goody.description,
+    //   image: `ipfs://${_image.IpfsHash}`,
+    //   animation_url: `ipfs://${_music.IpfsHash}`,
+    //   external_url: "https://joinclubspace.xyz",
+    // });
+    const metadataResponse = await fetch(
+      '/api/ipfs/post',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          name: goody.name,
+          description: goody.description,
+          image: `ipfs://${_image.IpfsHash}`,
+          animation_url: `ipfs://${_music.IpfsHash}`,
+          external_url: "https://joinclubspace.xyz",
+        })
+      }
+    );
+    const metadata = { IpfsHash: (await metadataResponse.json()).ipfsHash };
 
     return `ipfs://${metadata.IpfsHash}`;
   };
@@ -158,7 +178,17 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     console.log("goody uri:", goodyUri);
 
     // create lens post (@TODO: make this part optional)
-    const content: any = await pinJson(publicationBody(lensPost, [], defaultProfile.handle));
+    // const content: any = await pinJson(publicationBody(lensPost, [], defaultProfile.handle));
+    const response = await fetch(
+      '/api/ipfs/post',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          json: publicationBody(lensPost, [], defaultProfile.handle)
+        })
+      },
+    );
+    const content = { IpfsHash: (await response.json()).ipfsHash };
 
     toast("Creating Lens post...", { duration: 10000 });
     const accessToken = lensLoginData?.authenticate?.accessToken
