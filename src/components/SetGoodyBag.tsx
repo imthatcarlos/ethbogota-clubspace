@@ -22,8 +22,9 @@ const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles 
 
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject, acceptedFiles } = useDropzone({
     onDrop,
-    accept: { "audio/*": [".wav", ".mp3"], "image/*": allowableImageTypes },
-    maxFiles: 2,
+    // accept: { "audio/*": [".wav", ".mp3"], "image/*": allowableImageTypes },
+    accept: { "image/*": allowableImageTypes },
+    maxFiles: 1,
     maxSize: 50000000,
   });
 
@@ -38,9 +39,9 @@ const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles 
       : "p-8 border-dotted border-2";
   }, [isDragActive, isDragReject, isDragAccept]);
 
-  const onChange = ({ name, description, files }) => {
-    updateFields({ goodyName: name, goodyDesc: description, goodyFiles: files });
-    setGoody({ name, description, files });
+  const onChange = ({ name, files }) => {
+    updateFields({ goodyName: name, goodyFiles: files });
+    setGoody({ name, files });
   };
 
   const thumbs = goodyFiles
@@ -64,29 +65,21 @@ const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles 
   return (
     <MultiStepFormWrapper>
       <div className="w-full flex flex-col gap-3">
-        <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Create a Party Favor</h2>
+        <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Create a Party Favor NFT</h2>
         <div className="w-full flex flex-col gap-3">
           <input
             type="text"
             className="input"
-            placeholder="Name..."
+            placeholder="Give your NFT a title"
             value={goodyName}
-            onChange={(e) => onChange({ name: e.target.value, description: goodyDesc, files: goodyFiles })}
-            required
-          />
-          <textarea
-            rows={3}
-            className="input"
-            value={goodyDesc}
-            onChange={(e) => onChange({ description: e.target.value, name: goodyName, files: goodyFiles })}
-            placeholder="Description..."
+            onChange={(e) => onChange({ name: e.target.value, files: goodyFiles })}
             required
           />
           <div {...getRootProps()} className={style}>
             <input {...getInputProps()} />
             {acceptedFiles.length === 0 ? (
               <>
-                <p>Drag and drop your song and a cover image here</p>
+                <p>Drop the image for your NFT</p>
                 <p>(max: 50mb)</p>
               </>
             ) : (

@@ -121,8 +121,8 @@ const LiveSpace: FC<Props> = ({
   ), [clubSpaceObject]);
 
   const lensterPostURL = useMemo(() => (
-    clubSpaceObject.lensPubId === "0x" 
-    ? undefined 
+    clubSpaceObject.lensPubId === "0" 
+    ? undefined
     : `${LENSTER_URL}/posts/${clubSpaceObject.creatorLensProfileId}-${clubSpaceObject.lensPubId}`
   ), [clubSpaceObject]);
 
