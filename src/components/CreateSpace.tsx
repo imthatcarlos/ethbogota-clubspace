@@ -227,7 +227,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
         } = await axios.post(`/api/space/create`, spaceData);
 
         // call sempahore/create-group [TEMP DISABLED]
-        // await createGroup(semGroupIdHex, goodyUri, lensPubId, defaultProfile.id);
+        // await createGroup(semGroupIdHex, dcntCollection, lensPubId, defaultProfile.id);
 
         // PUSH
         await axios.post(`/api/push/send`, { url });

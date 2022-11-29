@@ -10,13 +10,13 @@ import axios from "axios";
 const provider = new providers.JsonRpcProvider(process.env.NEXT_PUBLIC_MUMBAI_URL);
 export const contract = new Contract(VERIFIER_ADDRESS, contractAbi, provider);
 
-export const createGroup = async (groupId, uri, lensPubId, lensProfileId) => {
+export const createGroup = async (groupId, dcntCollection, lensPubId, lensProfileId) => {
   console.log(`Creating group...`);
 
   const { status } = await fetch(`/api/semaphore/create-group`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ groupId, uri, lensPubId, lensProfileId }),
+    body: JSON.stringify({ groupId, dcntCollection, lensPubId, lensProfileId }),
   });
 
   if (status === 200) {

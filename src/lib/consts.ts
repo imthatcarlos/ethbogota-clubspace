@@ -11,8 +11,7 @@ export const LOCALSTORAGE_DEFAULT_PROFILE_ID = "DEFAULT_PROFILE_ID";
 export const SITE_URL = process.env.SITE_URL || "https://www.joinclubspace.xyz";
 export const LENSTER_URL = IS_PRODUCTION ? 'https://lenster.xyz' : 'https://testnet.lenster.xyz';
 
-export const VERIFIER_ADDRESS = "0x5D7BdA4378aAAcB1760c74daF0d4a44e07e25f2A";
-export const REWARD_NFT_ADDRESS = "0xA8116560Fb01A9d2889A43A3767b369a3256D1F7";
+export const VERIFIER_ADDRESS = "0x3CCb6b215Dd6ad75a4DDf6121D06230dC6554840";
 
 const calculateSum = (arr) => {
   return arr.reduce((total, current) => {

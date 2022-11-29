@@ -5,11 +5,6 @@
         "internalType": "address",
         "name": "semaphoreAddress",
         "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "goodyBagAddress",
-        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -42,6 +37,12 @@
         "internalType": "uint256",
         "name": "groupId",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "collection",
+        "type": "address"
       },
       {
         "indexed": false,
@@ -149,9 +150,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "string",
-        "name": "_uri",
-        "type": "string"
+        "internalType": "address",
+        "name": "dcntCollection",
+        "type": "address"
       },
       {
         "internalType": "uint256",
@@ -170,19 +171,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "goodyBag",
-    "outputs": [
-      {
-        "internalType": "contract IGoodyBag",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -190,12 +178,12 @@
         "type": "uint256"
       }
     ],
-    "name": "groupIds",
+    "name": "groupIdCollections",
     "outputs": [
       {
-        "internalType": "bool",
+        "internalType": "address",
         "name": "",
-        "type": "bool"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -268,25 +256,6 @@
     "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "users",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   }
 ]
