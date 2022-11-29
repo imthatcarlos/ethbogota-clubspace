@@ -4,14 +4,18 @@ import { GetServerSideProps } from "next";
 
 const ClaimsPage = ({ clubSpaceObject }) => {
   return (
-    <div className="mt-12 ml-12">
+    <div className="mt-12 ml-12 full-height-page">
       <h2 className="text-md font-bold tracking-tight sm:text-lg md:text-xl">Your Claims</h2>
-      {clubSpaceObject.map((object) => (
-        <div key={object.groupId} className="mt-4">
-          <p>Club Space {object.groupId}</p>
-          <ClaimGoodyBag attendanceProps={object} />
-        </div>
-      ))}
+      {clubSpaceObject.length === 0 ? (
+        <div className="mt-4">No claims for this address</div>
+      ) : (
+        clubSpaceObject.map((object) => (
+          <div key={object.groupId} className="mt-4">
+            <p>Club Space {object.groupId}</p>
+            <ClaimGoodyBag attendanceProps={object} />
+          </div>
+        ))
+      )}
     </div>
   );
 };

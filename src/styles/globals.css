@@ -172,3 +172,7 @@ button[disabled]:hover {
     filter: none !important;
   }
 }
+
+.full-height-page {
+  min-height: calc(100vh - 341px);
+}
