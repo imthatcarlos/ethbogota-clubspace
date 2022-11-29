@@ -1,0 +1,12 @@
+import Link from "next/link";
+
+const DirectToClaims = ({ address }) => (
+  <div className="">
+    This stream has ended. Head to the claims page to pick up your party favor if you attended!
+    <Link href={`/claim/${address}`}>
+      <button className="mt-8 !w-full btn max-w-xs">Party Favors 🥳</button>
+    </Link>
+  </div>
+);
+
+export default DirectToClaims;
