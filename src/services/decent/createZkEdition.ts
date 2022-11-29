@@ -28,7 +28,7 @@ export default async ({
   chainId,
   signer,
   name,
-  symbol = `CLB-${handle.slice(0, 3)}`,
+  symbol = `CLUB-${handle)}`,
   uri,
 }: CreateProps) => {
   const sdk = new DecentSDK(chainIdToChain[chainId], signer);

@@ -119,8 +119,9 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
     // upload to ipfs
     console.log("uploading files");
-    const coverResponse = await fetch('/api/ipfs/post', { method: 'POST', body: cover });
-    const _image = { IpfsHash: (await coverResponse.json()).ipfsHash };
+    // const coverResponse = await fetch('/api/ipfs/post', { method: 'POST', body: cover });
+    // const _image = { IpfsHash: (await coverResponse.json()).ipfsHash };
+    const _image = await pinFileToIPFS(cover);
 
     console.log("uploading metadata");
     const metadataResponse = await fetch(
