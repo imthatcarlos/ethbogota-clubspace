@@ -173,12 +173,12 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     }
 
     // upload goody bag content to ipfs [TEMP DISABLED]
+    // TODO: use decent sdk for collection instead
     // toast("Setting goody bag...");
     // const goodyUri = await uploadToIPFS();
     // console.log("goody uri:", goodyUri);
 
-    // create lens post (@TODO: make this part optional)
-    // const content: any = await pinJson(publicationBody(lensPost, [], defaultProfile.handle));
+    // create lens post
     let lensPubId = "0x"
     if (lensPost) {
       const response = await fetch(
@@ -227,6 +227,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
         } = await axios.post(`/api/space/create`, spaceData);
 
         // call sempahore/create-group [TEMP DISABLED]
+        // TODO: get `dcntCollection` as address of goody bag collection contract
         // await createGroup(semGroupIdHex, dcntCollection, lensPubId, defaultProfile.id);
 
         // PUSH
