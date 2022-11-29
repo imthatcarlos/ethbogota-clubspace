@@ -37,7 +37,7 @@ const ClaimGoodyBag = ({ attendanceProps }) => {
   }
 
   return (
-    <div>
+    <div className="mb-4">
       <p>You've got a reward!</p>
       <input
         className="w-[27rem] p-2 rounded-sm mt-2"
