@@ -12,7 +12,7 @@ export const SITE_URL = process.env.SITE_URL || "https://www.joinclubspace.xyz";
 export const LENSTER_URL = IS_PRODUCTION ? 'https://lenster.xyz' : 'https://testnet.lenster.xyz';
 
 export const VERIFIER_ADDRESS = IS_PRODUCTION
-  ? ""
+  ? "0x41c976200df8f14aF5422597A5A346e95b0A3E77"
   : "0x3CCb6b215Dd6ad75a4DDf6121D06230dC6554840";
 
 const calculateSum = (arr) => {
