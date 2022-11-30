@@ -176,3 +176,9 @@ button[disabled]:hover {
 .full-height-page {
   min-height: calc(100vh - 341px);
 }
+
+@media screen and (max-width: 519px) {
+  .beta-tag {
+    margin-left: 16px;
+  }
+}

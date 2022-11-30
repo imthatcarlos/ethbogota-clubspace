@@ -19,10 +19,10 @@ export const Header = () => {
 
   return (
     <header className="flex items-center justify-between py-6 px-4 xs:px-8 bg-black relative z-10 border-b-[0.1px] border-b-slate-700">
-      <div className="logo">
+      <div className="logo -ml-16 sm:ml-0">
         <div className="flex gap-x-2 items-center flex-col xs:flex-row">
           <ClubspaceNeonHeader height={65} />
-          <div className="-ml-12 -mb-3 border-[0.1px] border-slate-500 p-1 pl-1.5 pr-1.5 rounded-md bg-[color:var(--club-red-dark)]">
+          <div className="beta-tag -ml-12 -mb-3 border-[0.1px] border-slate-500 p-1 pl-1.5 pr-1.5 rounded-md bg-[color:var(--club-red-dark)] mr-4">
             <span>BETA</span>
           </div>
         </div>
