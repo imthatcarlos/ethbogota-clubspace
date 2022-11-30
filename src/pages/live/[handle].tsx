@@ -12,6 +12,7 @@ import { ConnectWallet } from "@/components/ConnectWallet";
 import useENS from "@/hooks/useENS";
 import { SPACE_API_URL, REDIS_SPACE_PREFIX, REDIS_STREAM_PREFIX } from "@/lib/consts";
 import { getCurrentTrack } from "@/services/radio";
+import useHasBadge from "@/hooks/useHasBadge";
 
 const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
 const LiveSpace = dynamic(() => import("@/components/LiveSpace"), { ssr: false });
@@ -30,6 +31,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   const [loadingDefaultProfile, setLoadingDefaultProfile] = useState(true);
   const [isLoadingEntry, setIsLoadingEntry] = useState(true);
   const [audioPlayerState, audioPlayerDispatch] = useReducer(playerReducer, playerInitialState);
+  const { data: hasBadge, isLoading: isLoadingBadge } = useHasBadge();
 
   if (!clubSpaceObject) {
     push("/404");
@@ -71,6 +73,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
                 setIsLoadingEntry={setIsLoadingEntry}
                 address={address}
                 handle={defaultProfile?.handle || ensName || address}
+                hasBadge={hasBadge}
               />
             </DispatchPlayerContext.Provider>
           </PlayerContext.Provider>

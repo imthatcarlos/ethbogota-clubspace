@@ -60,6 +60,7 @@ type Props = {
   isLoadingEntry: boolean;
   setIsLoadingEntry: any;
   handle: boolean;
+  hasBadge: boolean;
 };
 
 /**
@@ -76,6 +77,7 @@ const LiveSpace: FC<Props> = ({
   isLoadingEntry,
   setIsLoadingEntry,
   handle,
+  hasBadge
 }) => {
   const isMounted = useIsMounted();
   const { data: signer } = useSigner();
@@ -242,6 +244,7 @@ const LiveSpace: FC<Props> = ({
       await setProps("roomId", clubSpaceObject.clubSpaceId);
       await updateInfo({
         handle,
+        hasBadge,
         profile: {
           avatar: defaultProfile?.picture?.original?.url,
           name: defaultProfile?.name,
@@ -318,6 +321,7 @@ const LiveSpace: FC<Props> = ({
                       totalFollowers={identities[peerId].profile?.totalFollowers}
                       reaction={isEmpty(reactions[peerId]) ? null : reactions[peerId][0][0]}
                       index={index}
+                      hasBadge={identities[peerId].hasBadge}
                       onClick={() => {
                         toggleDrawer(identities[peerId]);
                       }}
