@@ -20,6 +20,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       lensPubId,
       handle,
       clubSpaceId,
+      partyFavorContractAddress,
     } = req.body;
 
     if (
@@ -52,6 +53,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       endAt,
       semGroupIdHex,
       handle,
+      partyFavorContractAddress,
     };
     console.log(JSON.stringify(clubSpaceObject, null, 2));
 

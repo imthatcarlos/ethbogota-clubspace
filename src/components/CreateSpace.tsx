@@ -18,6 +18,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import useENS from "@/hooks/useENS";
+import createZkEdition from "@/services/decent/createZkEdition";
 
 type MultiFormData = {
   decentContractAddress: string;
@@ -100,7 +101,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       {...formMultiFormData}
       updateFields={updateFields}
     />,
-    // <SetGoodyBag key="d" setGoody={setGoody} {...formMultiFormData} updateFields={updateFields} />,
+    <SetGoodyBag key="d" setGoody={setGoody} {...formMultiFormData} updateFields={updateFields} />,
   ]);
 
   const handleSubmit = (e: FormEvent) => {
@@ -110,41 +111,28 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     submit();
   };
 
-  const uploadToIPFS = async () => {
+  const uploadToIPFS = async (handle) => {
     // pick out files
-    const music = goody.files.find((f) => f.path.endsWith(".wav") || f.path.endsWith(".mp3"));
     const cover = goody.files.find(
       (f) => f.path.endsWith(".png") || f.path.endsWith(".gif") || f.path.endsWith(".jpeg") || f.path.endsWith(".jpg")
     );
 
     // upload to ipfs
     console.log("uploading files");
-    // const _music = await pinFileToIPFS(music);
-    // const _image = await pinFileToIPFS(cover);
-    const [musicResponse, coverResponse] = await Promise.all([
-      fetch('/api/ipfs/post', { method: 'POST', body: music }),
-      fetch('/api/ipfs/post', { method: 'POST', body: cover })
-    ]);
-    const _music = { IpfsHash: (await musicResponse.json()).ipfsHash };
-    const _image = { IpfsHash: (await coverResponse.json()).ipfsHash };
+    // const coverResponse = await fetch('/api/ipfs/post', { method: 'POST', body: cover });
+    // const _image = { IpfsHash: (await coverResponse.json()).ipfsHash };
+    const _image = await pinFileToIPFS(cover);
 
     console.log("uploading metadata");
-    // const metadata: any = await pinJson({
-    //   name: goody.name,
-    //   description: goody.description,
-    //   image: `ipfs://${_image.IpfsHash}`,
-    //   animation_url: `ipfs://${_music.IpfsHash}`,
-    //   external_url: "https://joinclubspace.xyz",
-    // });
     const metadataResponse = await fetch(
       '/api/ipfs/post',
       {
         method: 'POST',
         body: JSON.stringify({
           name: goody.name,
-          description: goody.description,
+          description: `ClubSpace hosted by ${handle}`,
           image: `ipfs://${_image.IpfsHash}`,
-          animation_url: `ipfs://${_music.IpfsHash}`,
+          // animation_url: `ipfs://${_music.IpfsHash}`,
           external_url: "https://joinclubspace.xyz",
         })
       }
@@ -162,8 +150,12 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
   const submit = async () => {
     setUploading(true);
-    console.log(playlist, productData, lensPost, goody);
 
+    const handle = defaultProfile?.handle || ensName || address;
+
+    console.log(handle, playlist, productData, lensPost, goody);
+
+    // @TODO: delay this request so the audio doesn't start playing automatically?
     // create space in the backend
     const { res, clubSpaceId, uuid } = await launchSpace(handle, jamApi);
 
@@ -172,14 +164,21 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       return;
     }
 
-    // upload goody bag content to ipfs [TEMP DISABLED]
-    // toast("Setting goody bag...");
-    // const goodyUri = await uploadToIPFS();
-    // console.log("goody uri:", goodyUri);
+    let toastId = toast.loading("Creating your Party Favor...");
+    const goodyUri = await uploadToIPFS(handle);
+    console.log("goody uri:", goodyUri);
+    const collectionAddress = await createZkEdition({
+      handle,
+      chainId: chain.id,
+      signer,
+      name: goody.name,
+      uri: goodyUri
+    });
+    console.log("collectionAddress:", collectionAddress);
+    toast.dismiss(toastId);
 
-    // create lens post (@TODO: make this part optional)
-    // const content: any = await pinJson(publicationBody(lensPost, [], defaultProfile.handle));
-    let lensPubId = "0x"
+    // create lens post
+    let lensPubId = "0";
     if (lensPost) {
       const response = await fetch(
         '/api/ipfs/post',
@@ -192,7 +191,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       );
       const content = { IpfsHash: (await response.json()).ipfsHash };
 
-      toast("Creating Lens post...", { duration: 10000 });
+      toastId = toast.loading("Creating Lens post...", { duration: 10000 });
       const accessToken = lensLoginData?.authenticate?.accessToken
         ? lensLoginData?.authenticate?.accessToken
         : lensRefreshData.accessToken;
@@ -202,9 +201,8 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       await makePostGasless(defaultProfile.id, `ipfs://${content.IpfsHash}`, signer, accessToken);
       const pubCount = await contract.getPubCount(defaultProfile.id);
       lensPubId = pubCount.toHexString();
+      toast.dismiss(toastId);
     }
-
-    const handle = defaultProfile?.handle || ensName || address;
 
     toast.promise(
       new Promise(async (resolve, reject) => {
@@ -221,16 +219,17 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
           lensPubId,
           clubSpaceId,
           uuid,
+          partyFavorContractAddress: collectionAddress,
         };
         const {
           data: { url, semGroupIdHex },
         } = await axios.post(`/api/space/create`, spaceData);
 
-        // call sempahore/create-group [TEMP DISABLED]
-        // await createGroup(semGroupIdHex, goodyUri, lensPubId, defaultProfile.id);
+        // call sempahore/create-group
+        await createGroup(semGroupIdHex, collectionAddress, lensPubId, defaultProfile.id);
 
         // PUSH
-        await axios.post(`/api/push/send`, { url });
+        // await axios.post(`/api/push/send`, { url });
 
         setUploading(false);
 
@@ -361,9 +360,9 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
                         {isLastStep ? `${uploading ? 'Creating...' : 'Create Space'}` : "Next"}
                       </button>
                     </div>
-                    {isLastStep && goody?.files?.length > 0 && isLastStep && goody?.files?.length !== 2 ? (
+                    {isLastStep && goody?.files?.length > 0 && isLastStep && goody?.files?.length !== 1 ? (
                       <div className="text-red-400 text-center">
-                        ⚠️ To continue, you need one audio file (.wav or .mp3) and one image.
+                        ⚠️ To continue, you need to set an image
                       </div>
                     ) : null}
                   </form>

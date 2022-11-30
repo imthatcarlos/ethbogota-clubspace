@@ -8,10 +8,10 @@ const signer = new Wallet(process.env.ADMIN_KEY, provider);
 const contract = new Contract(VERIFIER_ADDRESS, contractAbi, signer);
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-	const { groupId, uri, lensPubId, lensProfileId } = req.body
+	const { groupId, dcntCollection, lensPubId, lensProfileId } = req.body
 
     try {
-        const transaction = await contract.createGroup(groupId, uri, lensPubId, lensProfileId)
+        const transaction = await contract.createGroup(groupId, dcntCollection, lensPubId, lensProfileId)
 
         await transaction.wait()
 

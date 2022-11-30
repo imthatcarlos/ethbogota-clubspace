@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@decent.xyz/sdk": "^0.1.2",
+    "@decent.xyz/sdk": "^0.2.5",
     "@headlessui/react": "^1.7.3",
     "@heroicons/react": "^1.0.6",
     "@infinity-keys/react-lens-share-button": "^0.0.5",

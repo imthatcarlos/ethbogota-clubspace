@@ -2,14 +2,11 @@ import { DecentSDK, chain, crescendo, edition } from "@decent.xyz/sdk";
 import { Signer } from 'ethers';
 import axios from 'axios';
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-
-const chainIdToChain = {
-  80001: chain.polygonMumbai,
-  137: chain.polygon
-};
-
-const NFT_STORAGE_URL = 'https://nftstorage.link/ipfs';
-const DECENT_HQ = 'https://hq.decent.xyz';
+import {
+  chainIdToChain,
+  NFT_STORAGE_URL,
+  DECENT_HQ,
+} from './utils';
 
 export const CONTRACT_TYPE_CRESCENDO = 'crescendo';
 export const CONTRACT_TYPE_EDITION = 'edition';
