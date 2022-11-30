@@ -164,7 +164,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       return;
     }
 
-    toast("Creating your Party Favor...");
+    let toastId = toast.loading("Creating your Party Favor...");
     const goodyUri = await uploadToIPFS(handle);
     console.log("goody uri:", goodyUri);
     const collectionAddress = await createZkEdition({
@@ -175,6 +175,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       uri: goodyUri
     });
     console.log("collectionAddress:", collectionAddress);
+    toast.dismiss(toastId);
 
     // create lens post
     let lensPubId = "0";
@@ -190,7 +191,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       );
       const content = { IpfsHash: (await response.json()).ipfsHash };
 
-      toast("Creating Lens post...", { duration: 10000 });
+      toastId = toast.loading("Creating Lens post...", { duration: 10000 });
       const accessToken = lensLoginData?.authenticate?.accessToken
         ? lensLoginData?.authenticate?.accessToken
         : lensRefreshData.accessToken;
@@ -200,6 +201,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       await makePostGasless(defaultProfile.id, `ipfs://${content.IpfsHash}`, signer, accessToken);
       const pubCount = await contract.getPubCount(defaultProfile.id);
       lensPubId = pubCount.toHexString();
+      toast.dismiss(toastId);
     }
 
     toast.promise(
@@ -217,6 +219,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
           lensPubId,
           clubSpaceId,
           uuid,
+          partyFavorContractAddress: collectionAddress,
         };
         const {
           data: { url, semGroupIdHex },

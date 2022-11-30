@@ -143,10 +143,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@decent.xyz/sdk@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@decent.xyz/sdk/-/sdk-0.1.2.tgz#642500628380abd5cdd973d6881b4b0f9eadaf14"
-  integrity sha512-v33R7UorEUfNeRaz5fsEWbH//dMMZyfg2cX/TSnXQJgdmORvVjwSieUA73144jn10lv5aKzEVrrlay00paXIAQ==
+"@decent.xyz/sdk@^0.2.5":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@decent.xyz/sdk/-/sdk-0.2.5.tgz#11dfdf4ecc68b77dba77d9253380d1dad8a4720a"
+  integrity sha512-AYp4kV0CLZefvg8vfUEQSzwTLWJRVcL2iWUqNEFl/QIARBaJLVl/8XJtywPtwSZmgmVvbC3EtsAokJE6ASbW8A==
 
 "@emotion/babel-plugin@^11.10.5":
   version "11.10.5"
