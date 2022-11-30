@@ -7,15 +7,17 @@ import { isEmpty } from "lodash/lang";
 import { getUrlForImageFromIpfs } from "@/utils/ipfs";
 import { ExternalLink, Play, Pause } from "@/components/Vectors";
 import useIsMounted from "@/hooks/useIsMounted";
+import Link from "next/link";
+import DirectToClaims from "./DirectToClaims";
 
 interface Props {
   streamURL: string;
   playlistTracks: ITrack[];
   currentTrackId?: string;
+  address: string
 };
 
-// @TODO: will we have feedback from the audio player api of the current track?
-export const LiveAudioPlayer = ({ streamURL, playlistTracks, currentTrackId }: Props) => {
+export const LiveAudioPlayer = ({ streamURL, playlistTracks, currentTrackId, address }: Props) => {
   const isMounted = useIsMounted();
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentTrack, setCurrentTrack] = useState<ITrack | undefined>();
@@ -54,7 +56,7 @@ export const LiveAudioPlayer = ({ streamURL, playlistTracks, currentTrackId }: P
     setIsPlaying(!isPlaying);
   }
 
-  // @TOOD: handle render when `streamEnded`
+  if (streamEnded) return <DirectToClaims address={address} />
 
   return (
     <div className="flex gap-x-4">

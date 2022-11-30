@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { FC, Fragment, useEffect, useMemo, useRef, useState, useReducer } from "react";
 import { DispatchPlayerContext, PlayerContext, playerInitialState, playerReducer } from "decent-audio-player";
-import { useAccount, useQuery } from "wagmi";
+import { useAccount, useNetwork, useQuery } from "wagmi";
 import { SpectrumVisualizer, SpectrumVisualizerTheme } from "react-audio-visualizers";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import { ConnectWallet } from "@/components/ConnectWallet";
@@ -22,6 +22,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
     query: { handle },
   } = useRouter();
 
+  const { chain, chains } = useNetwork()
   const { address, isConnected } = useAccount();
   const { data: profilesResponse, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
   const { ensName, isLoading: isLoadingENS } = useENS(address);
@@ -34,6 +35,8 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
     push("/404");
     return;
   }
+
+  const correctNetwork = () => chains.length > 0 && chain.id === chains[0].id;
 
   useEffect(() => {
     if (!isLoadingProfiles) {
@@ -49,15 +52,15 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
         <div className="flex-1 min-h-screen">
           <div className="abs-center">
             <p className="animate-move-txt-bg gradient-txt text-4xl">Entering ClubSpace...</p>
-            {!isConnected ? (
-              <div className="flex gap-4 justify-center md:min-w-[300px] mt-50">
+            {!isConnected || !correctNetwork() ? (
+              <div className="flex gap-4 justify-center md:min-w-[300px] mt-50 pt-8">
                 <ConnectWallet showBalance={false} />
               </div>
             ) : null}
           </div>
         </div>
       )}
-      {isConnected && !loadingDefaultProfile && !isLoadingENS && (
+      {isConnected && !loadingDefaultProfile && defaultProfile && !isLoadingENS && correctNetwork() && (
         <JamProviderWrapper>
           <PlayerContext.Provider value={audioPlayerState}>
             <DispatchPlayerContext.Provider value={audioPlayerDispatch}>

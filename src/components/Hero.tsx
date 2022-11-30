@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { useAccount } from "wagmi";
+import toast from "react-hot-toast";
 import ClubspaceNeon from "@/assets/svg/clubspace-neon.svg";
 import ClubspaceSoftGlow from "@/assets/svg/soft-glow-filter.svg";
 import useIsMounted from "@/hooks/useIsMounted";
@@ -20,6 +21,12 @@ export const Hero = () => {
   const { data: lensRefreshData } = useLensRefresh();
   const { data: profilesResponse } = useGetProfilesOwned({}, address);
   const { data: hasBadge, isLoading: isLoadingBadge } = useHasBadge();
+
+  useEffect(() => {
+    if (!isLoadingBadge && !hasBadge) {
+      toast.error('ClubSpace is currently in closed beta', { duration: 10000, icon: '🚧' });
+    }
+  }, [isLoadingBadge, hasBadge]);
 
   if (!isMounted) return null;
 
@@ -78,12 +85,15 @@ export const Hero = () => {
                               >
                                 <span className="z-10">Create a space</span>
                               </button>
-                            : <button
-                                disabled
-                                className="relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold"
-                              >
-                                <span className="z-10">Closed Beta</span>
-                              </button>
+                            : <>
+                                <button
+                                  disabled
+                                  className="relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold"
+                                >
+                                  <span className="z-10">Closed Beta</span>
+                                </button>
+                                <span className="z-10"><a href="https://playground.sismo.io/madfi-lens-followers-s01" target="_blank" rel="noreferrer">Get a badge</a></span>
+                              </>
                         }
                       </>
                     )}

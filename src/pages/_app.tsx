@@ -46,7 +46,6 @@ const App = ({ Component, pageProps }) => {
             )}
           </Toaster>
           <DefaultSeo
-            type="site"
             title="ClubSpace"
             description="Promote your music NFTs with a live listening party"
             openGraph={{

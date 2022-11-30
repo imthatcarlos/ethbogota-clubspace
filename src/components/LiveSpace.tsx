@@ -6,12 +6,10 @@ import { isEmpty } from "lodash/lang";
 import toast from "react-hot-toast";
 import { use } from "use-minimal-state";
 import { classNames } from "@/lib/utils/classNames";
-import { joinGroup } from "@/lib/semaphore/semaphore";
 import { buildLensShareUrl } from "@infinity-keys/react-lens-share-button";
 import { Profile, useGetProfilesOwned, useGetProfileByHandle } from "@/services/lens/getProfile";
 import { getUrlForImageFromIpfs } from "@/utils/ipfs";
 import { LensProfile, reactionsEntries } from "@/components/LensProfile";
-import useIdentity from "@/hooks/useIdentity";
 import useIsMounted from "@/hooks/useIsMounted";
 import useUnload from "@/hooks/useUnload";
 import { useGetTracksFromPlaylist } from "@/services/spinamp/getPlaylists";
@@ -26,6 +24,8 @@ import { LiveAudioPlayer } from "./LiveAudioPlayer";
 import { SITE_URL, LENSTER_URL } from "@/lib/consts";
 
 import * as mockIdentities from "@/constants/mockIdentities.json";
+import DirectToClaims from "./DirectToClaims";
+import { NextSeo } from "next-seo";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -77,10 +77,8 @@ const LiveSpace: FC<Props> = ({
   setIsLoadingEntry,
   handle,
 }) => {
-  const { identity } = useIdentity();
   const isMounted = useIsMounted();
   const { data: signer } = useSigner();
-  const { chain } = useNetwork();
   const [state, { enterRoom, leaveRoom, setProps, updateInfo, sendReaction }] = useJam();
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
   const [drawerProfile, setDrawerProfile] = useState<any>({});
@@ -256,7 +254,7 @@ const LiveSpace: FC<Props> = ({
       console.log("JOINED");
     };
 
-    if (isMounted && isLoadingEntry) {
+    if (isMounted && isLoadingEntry && defaultProfile.handle && clubSpaceObject.streamURL) {
       join();
     }
   }, [
@@ -288,6 +286,20 @@ const LiveSpace: FC<Props> = ({
 
   return (
     <>
+      <NextSeo
+        title={`ClubSpace | ${clubSpaceObject.creatorLensHandle}`}
+        description={`Join ${clubSpaceObject.creatorLensHandle}'s live listening party on ClubSpace now!`}
+        openGraph={{
+          url: `${SITE_URL}/live/${clubSpaceObject.creatorLensHandle}`,
+          title: `ClubSpace | ${clubSpaceObject.creatorLensHandle}`,
+          description: `Join ${clubSpaceObject.creatorLensHandle}'s live listening party on ClubSpace now!`,
+          images: [{
+            url: creatorLensProfile.picture.original.url,
+            width: 800,
+            height: 600,
+            alt: `${clubSpaceObject.creatorLensHandle} on Lens`,
+          }]
+        }} />
       <div className="relative grow flex flex-col justify-center min-h-screen">
         <div className="grid-live items-center justify-center px-10 lg:px-14 gap-x-3">
           <div className="grid-container w-full audience max-h-[30rem] overflow-auto !content-baseline">
@@ -300,7 +312,7 @@ const LiveSpace: FC<Props> = ({
                       key={identities[peerId].handle}
                       handle={identities[peerId].handle}
                       picture={
-                        identities[peerId].profile ? getUrlForImageFromIpfs(identities[peerId].profile.avatar) : ""
+                        identities[peerId].profile.avatar ? getUrlForImageFromIpfs(identities[peerId].profile.avatar) : "/anon.png"
                       }
                       name={identities[peerId].profile?.name}
                       totalFollowers={identities[peerId].profile?.totalFollowers}
@@ -328,14 +340,15 @@ const LiveSpace: FC<Props> = ({
           </div>
 
           <div className="player mx-auto">
-            {playlistTracks && clubSpaceObject.streamURL && (
+            {playlistTracks && clubSpaceObject.streamURL ? (
               <LiveAudioPlayer
                 playlistTracks={playlistTracks}
                 streamURL={clubSpaceObject.streamURL}
                 playerUUID={clubSpaceObject.playerUUID}
                 currentTrackId={clubSpaceObject.currentTrackId}
+                address={address}
               />
-            )}
+            ) : <DirectToClaims address={address} />}
           </div>
           <div className="decent-nft flex flex-col gap-y-3">
             {featuredDecentNFT && <FeaturedDecentNFT {...featuredDecentNFT} />}
