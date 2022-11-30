@@ -37,10 +37,10 @@ const Web3Provider = ({ children }) => {
   }, []);
 
   const theme = useMemo(
-    () =>
-      resolvedTheme === "dark"
-        ? darkTheme({ accentColor: "#FE202B", borderRadius: "small" })
-        : lightTheme({ accentColor: "#4f46e5", borderRadius: "small" }),
+    () => darkTheme({ accentColor: "#FE202B", borderRadius: "small" }),
+      // resolvedTheme === "dark"
+        // ? darkTheme({ accentColor: "#FE202B", borderRadius: "small" })
+        // : lightTheme({ accentColor: "#4f46e5", borderRadius: "small" }),
     [resolvedTheme]
   );
   if (!mounted) return null;
