@@ -26,6 +26,8 @@ import { SITE_URL, LENSTER_URL } from "@/lib/consts";
 import * as mockIdentities from "@/constants/mockIdentities.json";
 import DirectToClaims from "./DirectToClaims";
 import { NextSeo } from "next-seo";
+import { joinGroup } from "@/lib/semaphore/semaphore";
+import useIdentity from "@/hooks/useIdentity";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -171,10 +173,14 @@ const LiveSpace: FC<Props> = ({
     (id) => isEmpty(identities[id]) || identities[id].handle !== clubSpaceObject.handle
   );
 
+  const { identity } = useIdentity();
+
   // trigger the entry if everything is loaded
   useEffect(() => {
     if (isLoadingEntry && !isEmpty(myIdentity) && !isEmpty(creatorLensProfile) && !isEmpty(featuredDecentNFT)) {
       setIsLoadingEntry(false);
+      // log impression, join group
+      joinGroup(defaultProfile.handle, identity, clubSpaceObject.semGroupIdHex, address);
     }
   }, [isLoadingEntry, myIdentity, doesFollowCreator, creatorLensProfile, featuredDecentNFT]);
 
