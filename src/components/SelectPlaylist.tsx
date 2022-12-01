@@ -107,7 +107,6 @@ const SelectPlaylist: FC<Props> = ({ selectPlaylist, playlist }) => {
               id="playlist_link"
               className="input"
               placeholder="https://"
-              required
               onChange={(onPlaylistLinkChanged)}
             />
           </>
