@@ -33,3 +33,8 @@ export const SPACE_API_URL = process.env.NEXT_PUBLIC_SPACE_API_URL;
 export const JSON_RPC_URL_POKT = IS_PRODUCTION
   ? process.env.NEXT_PUBLIC_POKT_RPC_POLYGON
   : process.env.NEXT_PUBLIC_POKT_RPC_MUMBAI;
+
+
+export const IM_WITH_THE_DJ = [
+  '0x7F0408bc8Dfe90C09072D8ccF3a1C544737BcDB6'
+];

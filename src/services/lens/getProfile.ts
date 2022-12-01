@@ -259,7 +259,7 @@ export const useGetProfilesOwned = (options: UseQueryOptions = {}, ownedBy: stri
 
       return {
         profiles,
-        defaultProfile: profiles?.length ? profiles[0] : undefined
+        defaultProfile: profiles?.length ? profiles[0] : {}
       };
     },
     {

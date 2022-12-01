@@ -9,6 +9,7 @@ import useHasBadge from "@/hooks/useHasBadge";
 import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import { ConnectWallet } from "@/components/ConnectWallet";
+import { IM_WITH_THE_DJ } from "@/lib/consts";
 
 const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
 const CreateSpace = dynamic(() => import("@/components/CreateSpace"), { ssr: false });
@@ -78,7 +79,7 @@ export const Hero = () => {
                     ) : (
                       <>
                         {
-                          !isLoadingBadge && hasBadge
+                          !isLoadingBadge && (hasBadge || IM_WITH_THE_DJ.includes(address))
                             ? <button
                                 onClick={() => setModalOpen(true)}
                                 className="btn-create-space relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold duration-300 transition-all hover:-translate-y-[2px] hover:text-white"
@@ -92,7 +93,7 @@ export const Hero = () => {
                                 >
                                   <span className="z-10">Closed Beta</span>
                                 </button>
-                                <span className="z-10"><a href="https://playground.sismo.io/madfi-lens-followers-s01" target="_blank" rel="noreferrer">Get a badge</a></span>
+                                <span className="z-10"><a href="https://playground.sismo.io/madfi-lens-followers-s01" target="_blank" rel="noreferrer">Get access with our badge</a></span>
                               </>
                         }
                       </>

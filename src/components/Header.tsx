@@ -49,7 +49,7 @@ export const Header = () => {
               onClick={() => loginWithLens()}
               className="btn justify-center items-center"
             >
-              {!(lensLoginData || lensRefreshData) ? "Login with Lens" : profilesResponse?.defaultProfile.handle}
+              {!(lensLoginData || lensRefreshData) ? "Login with Lens" : (profilesResponse?.defaultProfile.handle || 'No Lens')}
             </button>
           )}
           <div className="min-w-[145px]">
