@@ -12,13 +12,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { groupId, recipient, signal, merkleRoot, nullifierHash, solidityProof, connectedAddress } = req.body;
   try {
     console.log("sending claim tx");
+    const { maxFeePerGas, maxPriorityFeePerGas } = await provider.getFeeData();
     const transaction = await contract.claim(
       groupId,
       recipient,
       signal,
       merkleRoot,
       nullifierHash,
-      solidityProof
+      solidityProof,
+      { maxFeePerGas, maxPriorityFeePerGas, gasLimit: 2100000 }
     );
     console.log(transaction.hash);
     await transaction.wait();

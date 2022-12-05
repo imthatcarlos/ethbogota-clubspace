@@ -35,7 +35,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       await appendToField(address, "clubspace-attendance", newEntry);
       console.log('wrote to privy');
 
-      const { maxFeePerGas, maxPriorityFeePerGas } = await contract.provider.getFeeData();
+      const { maxFeePerGas, maxPriorityFeePerGas } = await provider.getFeeData();
       const transaction = await contract.joinGroup(
         identityCommitment,
         utils.formatBytes32String(username),

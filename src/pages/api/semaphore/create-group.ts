@@ -11,7 +11,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	const { groupId, dcntCollection, lensPubId, lensProfileId } = req.body
 
     try {
-        const transaction = await contract.createGroup(groupId, dcntCollection, lensPubId, lensProfileId)
+				const { maxFeePerGas, maxPriorityFeePerGas } = await provider.getFeeData();
+        const transaction = await contract.createGroup(
+					groupId,
+					dcntCollection,
+					lensPubId,
+					lensProfileId,
+					{ maxFeePerGas, maxPriorityFeePerGas, gasLimit: 2100000 }
+				)
 
         await transaction.wait()
 
