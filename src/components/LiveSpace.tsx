@@ -123,7 +123,7 @@ const LiveSpace: FC<Props> = ({
   ), [clubSpaceObject]);
 
   const lensterPostURL = useMemo(() => (
-    clubSpaceObject.lensPubId === "0" 
+    clubSpaceObject.lensPubId === "0"
     ? undefined
     : `${LENSTER_URL}/posts/${clubSpaceObject.creatorLensProfileId}-${clubSpaceObject.lensPubId}`
   ), [clubSpaceObject]);
@@ -263,7 +263,7 @@ const LiveSpace: FC<Props> = ({
       console.log("JOINED");
     };
 
-    if (isMounted && isLoadingEntry && defaultProfile.handle && clubSpaceObject.streamURL) {
+    if (isMounted && isLoadingEntry && handle && clubSpaceObject.streamURL) {
       join();
     }
   }, [
