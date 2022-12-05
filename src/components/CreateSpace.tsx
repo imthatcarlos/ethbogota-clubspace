@@ -68,11 +68,13 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
   const selectPlaylist = (playlist) => {
     setPlaylist(playlist);
+    next();
   };
 
   // @TODO: we should render more info, some kind of preview + link out to decent
   const setDecentProduct = (data) => {
     setProductData(data);
+    next();
   };
 
   const setPostData = (postData) => {

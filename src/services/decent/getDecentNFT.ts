@@ -1,4 +1,4 @@
-import { DecentSDK, chain, crescendo, edition } from "@decent.xyz/sdk";
+import { DecentSDK, chain, crescendo, edition, metadataRenderer } from "@decent.xyz/sdk";
 import { Signer } from 'ethers';
 import axios from 'axios';
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
@@ -43,19 +43,20 @@ export const getContractDataEdition = async (address: string, chainId: number, s
   const sdk = new DecentSDK(chainIdToChain[chainId], signer);
   try {
     const contract = await edition.getContract(sdk, address);
-    const [uri, price, totalSupply, availableSupply, saleIsActive] = await Promise.all([
-      contract.tokenURI(1),
+    const renderer = await metadataRenderer.getContract(sdk);
+    const [metadataBase64, price, totalSupply, availableSupply, saleIsActive] = await Promise.all([
+      renderer.tokenURITarget(0, address),
       contract.tokenPrice(),
       contract.totalSupply(),
       contract.MAX_TOKENS(),
       contract.saleIsActive()
     ]);
 
-    const { data } = await axios.get(`${NFT_STORAGE_URL}/${uri.split('ipfs://')[1]}`);
+    const metadata = atob(metadataBase64.substring(29)).replace(/\n/g, ' ');
 
     return {
       contract,
-      metadata: data,
+      metadata: JSON.parse(metadata),
       price,
       totalSupply,
       availableSupply,
