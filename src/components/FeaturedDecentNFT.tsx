@@ -3,6 +3,7 @@ import { Contract, BigNumber, utils } from "ethers";
 import toast from "react-hot-toast";
 import { getUrlForImageFromIpfs } from "@/utils/ipfs";
 import { CONTRACT_TYPE_CRESCENDO, CONTRACT_TYPE_EDITION } from "@/services/decent/getDecentNFT";
+import { IS_PRODUCTION } from "@/lib/consts";
 
 interface Props {
   contract: Contract;
@@ -31,9 +32,6 @@ export const FeaturedDecentNFT = ({
 
   const onBuyClick = async () => {
     setIsBuying(true);
-
-    console.log(contractType);
-    console.log(contract);
 
     toast.promise(
       new Promise(async (resolve, reject) => {
@@ -99,17 +97,17 @@ export const FeaturedDecentNFT = ({
                     <span>
                       <strong>
                         {totalSupply.toNumber()}
-                        {availableSupply ? ` / ${utils.formatEther(availableSupply)}` : ""}
+                        {availableSupply ? ` / ${availableSupply}` : ""}
                       </strong>
                     </span>
-                    <span className="dark:text-gray-400">{!availableSupply ? "Minted" : "Supply"}</span>
+                    <span className="dark:text-gray-400">Minted</span>
                   </div>
 
                   <div className="flex gap-x-2">
                     <span>
                       <strong>{utils.formatEther(price)}</strong>
                     </span>
-                    <span className="dark:text-gray-400">ether</span>
+                    <span className="dark:text-gray-400">{IS_PRODUCTION ? 'MATIC' : 'MATIC (MUMBAI)'}</span>
                   </div>
                 </div>
 

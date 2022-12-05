@@ -52,11 +52,13 @@ export const getContractDataEdition = async (address: string, chainId: number, s
       contract.saleIsActive()
     ]);
 
-    const metadata = atob(metadataBase64.substring(29)).replace(/\n/g, ' ');
+    let metadata = atob(metadataBase64.substring(29)).replace(/\n/g, ' ');
+    metadata = JSON.parse(metadata);
+    metadata.name = metadata?.properties?.name;
 
     return {
       contract,
-      metadata: JSON.parse(metadata),
+      metadata,
       price,
       totalSupply,
       availableSupply,

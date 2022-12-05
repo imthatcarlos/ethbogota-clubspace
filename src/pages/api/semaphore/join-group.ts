@@ -33,6 +33,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     };
     await appendToField(address, "clubspace-attendance", newEntry);
 
+    // @TODO: NATE - thought we were sponsoring this? lol
     const transaction = await contract.joinGroup(
       identityCommitment,
       utils.formatBytes32String(username),
