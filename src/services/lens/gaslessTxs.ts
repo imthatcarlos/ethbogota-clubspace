@@ -3,12 +3,10 @@ import { defaultAbiCoder } from "ethers/lib/utils";
 import request, { gql } from "graphql-request";
 import { apiUrls } from "@/constants/apiUrls";
 import omitDeep from "omit-deep";
+import { FREE_COLLECT_MODULE } from "@/lib/consts";
 
 export const LENS_HUB_NFT_NAME = "Lens Protocol Profiles";
-export const LENSHUB_PROXY = "0x60Ae865ee4C725cd04353b5AAb364553f56ceF82"; // mumbai
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-export const FREE_COLLECT_MUMBAI = "0x0BE6bD7092ee83D44a6eC1D949626FeE48caB30c";
-export const FREE_COLLECT_POLYGON = "0x23b9467334bEb345aAa6fd1545538F3d54436e96";
 
 const trimify = (value: string): string => value?.replace(/\n\s*\n/g, "\n\n").trim();
 
@@ -45,7 +43,7 @@ export const makePostTx = async (contract, profileId, contentUri) => {
     const tx = await contract.post({
       profileId,
       contentURI: contentUri,
-      collectModule: FREE_COLLECT_MUMBAI,
+      collectModule: FREE_COLLECT_MODULE,
       collectModuleInitData: defaultAbiCoder.encode(["bool"], [true]),
       referenceModule: ZERO_ADDRESS,
       referenceModuleInitData: [],
