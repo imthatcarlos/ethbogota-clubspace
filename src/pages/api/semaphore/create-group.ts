@@ -1,9 +1,9 @@
-import { VERIFIER_ADDRESS } from "@/lib/consts";
+import { VERIFIER_ADDRESS, JSON_RPC_URL_ALCHEMY } from "@/lib/consts";
 import { Contract, providers, Wallet } from "ethers";
 import { NextApiRequest, NextApiResponse } from "next";
 import contractAbi from "../../../lib/semaphore/abi.json";
 
-const provider = new providers.JsonRpcProvider(process.env.NEXT_PUBLIC_MUMBAI_URL);
+const provider = new providers.JsonRpcProvider(JSON_RPC_URL_ALCHEMY);
 const signer = new Wallet(process.env.ADMIN_KEY, provider);
 const contract = new Contract(VERIFIER_ADDRESS, contractAbi, signer);
 

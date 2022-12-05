@@ -4,10 +4,10 @@ import contractAbi from "./abi.json";
 import { Identity } from "@semaphore-protocol/identity";
 import { Group } from "@semaphore-protocol/group";
 import { generateProof, packToSolidityProof } from "@semaphore-protocol/proof";
-import { VERIFIER_ADDRESS, ZK_DEPLOYMENT_BLOCK } from "../consts";
+import { VERIFIER_ADDRESS, ZK_DEPLOYMENT_BLOCK, JSON_RPC_URL_ALCHEMY } from "../consts";
 import axios from "axios";
 
-const provider = new providers.JsonRpcProvider(process.env.NEXT_PUBLIC_MUMBAI_URL);
+const provider = new providers.JsonRpcProvider(JSON_RPC_URL_ALCHEMY);
 export const contract = new Contract(VERIFIER_ADDRESS, contractAbi, provider);
 
 export const createGroup = async (groupId, dcntCollection, lensPubId, lensProfileId) => {
