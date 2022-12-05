@@ -13,7 +13,7 @@ export default (address) => {
       setLoading(true);
       if (ethers.utils.isAddress(address)) {
         try {
-          const provider = new ethers.providers.getDefaultProvider();
+          const provider = new providers.JsonRpcProvider(process.env.NEXT_PUBLIC_ALCHEMY_RPC_MAINNET);
           const ensName = await provider.lookupAddress(address);
           setENSName(ensName);
         } finally {
