@@ -56,8 +56,22 @@ export const FeaturedDecentNFT = ({
         success: "Success!",
         error: (error) => {
           console.log(error);
+
           setIsBuying(false);
-          return "Error!";
+
+          try {
+            const realError = typeof error === 'object'
+              ? error.toString().split('(')[0]
+              : '';
+
+            if (realError.startsWith('Error: user rejected')) {
+              return realError;
+            } else if (error.data?.message.startsWith('err: insufficient')) {
+              return "Insufficient funds";
+            }
+          } catch {}
+
+          return 'Error!';
         },
       }
     );
