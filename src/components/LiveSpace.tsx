@@ -176,9 +176,7 @@ const LiveSpace: FC<Props> = ({
     }
   }, [defaultProfile, creatorLensProfile]);
 
-  const audiencePeers = peers.filter(
-    (id) => isEmpty(identities[id]) || identities[id].handle !== clubSpaceObject.handle
-  );
+  const audiencePeers = peers.filter((id) => !isEmpty(identities[id]));
 
   const { identity } = useIdentity();
 
@@ -186,9 +184,8 @@ const LiveSpace: FC<Props> = ({
   useEffect(() => {
     if (isLoadingEntry && !isEmpty(myIdentity) && !isEmpty(creatorLensProfile) && !isEmpty(featuredDecentNFT)) {
       setIsLoadingEntry(false);
-      // @FIXME: transaction underpriced
       // log impression, join group
-      // joinGroup(defaultProfile.handle, identity, clubSpaceObject.semGroupIdHex, address);
+      joinGroup(defaultProfile.handle, identity, clubSpaceObject.semGroupIdHex, address);
     }
   }, [isLoadingEntry, myIdentity, doesFollowCreator, creatorLensProfile, featuredDecentNFT]);
 
@@ -316,7 +313,7 @@ const LiveSpace: FC<Props> = ({
         <div className="grid-live items-center justify-center px-10 lg:px-14 gap-x-3">
           <div className="grid-container w-full audience max-h-[30rem] overflow-auto !content-baseline">
             {!!myIdentity
-              ? (!isHost ? [myPeerId].concat(audiencePeers) : audiencePeers).map((peerId, index) => {
+              ? ([myPeerId].concat(audiencePeers)).map((peerId, index) => {
                   return identities[peerId] ? (
                     <LensProfile
                       allowDrawer={[".lens", ".test"].some((ext) => identities[peerId].handle.includes(ext))}
@@ -390,7 +387,9 @@ const LiveSpace: FC<Props> = ({
 
         {/* Button group (reactions, share, comment) */}
 
-        {isHost ? null : (
+        {/* isHost ? */}
+
+        {false ? null : (
           <div className="flex gap-x-5 left-1/2 transform -translate-x-1/2 relative w-[150px] items-baseline">
             <Popover
               className={({ open }) =>

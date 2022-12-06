@@ -104,15 +104,14 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       {...formMultiFormData}
       updateFields={updateFields}
     />,
-    // @FIXME: transaction underpriced
-    // <SetGoodyBag
-    //   key="d"
-    //   setGoody={setGoody}
-    //   {...formMultiFormData}
-    //   updateFields={updateFields}
-    //   goodyContract={goodyContract}
-    //   setGoodyContract={setGoodyContract}
-    // />
+    <SetGoodyBag
+      key="d"
+      setGoody={setGoody}
+      {...formMultiFormData}
+      updateFields={updateFields}
+      goodyContract={goodyContract}
+      setGoodyContract={setGoodyContract}
+    />
   ]);
 
   const handleSubmit = (e: FormEvent) => {
@@ -176,23 +175,22 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     }
 
     let collectionAddress;
-    // @FIXME: transaction underpriced
-    // if (goodyContract) {
-    //   collectionAddress = goodyContract.address;
-    // } else {
-    //   let toastId = toast.loading("Creating your Party Favor...");
-    //   const goodyUri = await uploadToIPFS(handle);
-    //   console.log("goody uri:", goodyUri);
-    //   collectionAddress = await createZkEdition({
-    //     handle,
-    //     chainId: chain.id,
-    //     signer,
-    //     name: goody.name,
-    //     uri: goodyUri
-    //   });
-    //   console.log("collectionAddress:", collectionAddress);
-    //   toast.dismiss(toastId);
-    // }
+    if (goodyContract) {
+      collectionAddress = goodyContract.address;
+    } else {
+      let toastId = toast.loading("Creating your Party Favor...");
+      const goodyUri = await uploadToIPFS(handle);
+      console.log("goody uri:", goodyUri);
+      collectionAddress = await createZkEdition({
+        handle,
+        chainId: chain.id,
+        signer,
+        name: goody.name,
+        uri: goodyUri
+      });
+      console.log("collectionAddress:", collectionAddress);
+      toast.dismiss(toastId);
+    }
 
     // create lens post
     let lensPubId = "0";
@@ -242,9 +240,8 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
           data: { url, semGroupIdHex },
         } = await axios.post(`/api/space/create`, spaceData);
 
-        // @FIXME: transaction underpriced
         // call sempahore/create-group
-        // await createGroup(semGroupIdHex, collectionAddress, lensPubId, defaultProfile.id);
+        await createGroup(semGroupIdHex, collectionAddress, lensPubId, defaultProfile.id);
 
         // PUSH
         // await axios.post(`/api/push/send`, { url });
@@ -378,11 +375,11 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
                         {isLastStep ? `${uploading ? 'Creating...' : 'Create Space'}` : "Next"}
                       </button>
                     </div>
-                    {/** // @FIXME: transaction underpriced isLastStep && goody?.files?.length > 0 && isLastStep && (goody?.files?.length !== 1 && !goodyContract) ? (
+                    {isLastStep && goody?.files?.length > 0 && isLastStep && (goody?.files?.length !== 1 && !goodyContract) ? (
                       <div className="text-red-400 text-center">
                         ⚠️ To continue, you need to set an image
                       </div>
-                    ) : null*/}
+                    ) : null}
                   </form>
                 </Dialog.Panel>
               </Transition.Child>

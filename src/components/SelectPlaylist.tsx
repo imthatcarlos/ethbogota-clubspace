@@ -59,23 +59,24 @@ const SelectPlaylist: FC<Props> = ({ selectPlaylist, playlist }) => {
                       leaveTo="opacity-0"
                     >
                       <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md dark:bg-gray-800 bg-white py-1 text-base shadow-sm ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                        {playlists.map((playlist) => (
+                        {playlists.map((p) => (
                           <Listbox.Option
-                            key={playlist.id}
+                            key={p.id}
                             className={({ active }) =>
                               classNames(
                                 active ? "bg-indigo-600 text-white" : "",
                                 "relative cursor-default select-none py-2 pl-3 pr-9"
                               )
                             }
-                            value={playlist}
+                            value={p}
+                            disabled={!p.trackIds.length}
                           >
                             {({ selected, active }) => (
                               <>
                                 <span
                                   className={classNames(selected ? "font-semibold" : "font-normal", "block truncate")}
                                 >
-                                  {playlist.title}
+                                  {`${p.title} [${p.trackIds.length} tracks]`}
                                 </span>
 
                                 {selected ? (

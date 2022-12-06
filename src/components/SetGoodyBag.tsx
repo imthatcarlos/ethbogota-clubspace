@@ -1,12 +1,15 @@
-import { useCallback, useMemo } from "react";
+import { FC, Fragment, useCallback, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
 import { useAccount, useSigner, useNetwork } from "wagmi";
+import { Listbox, Transition } from "@headlessui/react";
+import { CheckIcon, ChevronDownIcon } from "@heroicons/react/outline";
 import { MultiStepFormWrapper } from "./MultiStepFormWrapper";
+import { classNames } from "@/lib/utils/classNames";
 import useGetDeployedZkEditions from "@/hooks/useGetDeployedZkEditions";
 
 const allowableImageTypes = [".png", ".gif", ".jpeg", ".jpg"];
 
-const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles, goodyContract }) => {
+const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles, goodyContract, setGoodyContract }) => {
   const { chain } = useNetwork();
   const { address, isConnected } = useAccount();
   const { data: signer } = useSigner();
@@ -75,7 +78,6 @@ const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles,
         <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Select your Party Favor NFT or Create One</h2>
         {deployedZkEditions && (
           <>
-            <br/>
             <Listbox value={goodyContract} onChange={setGoodyContract}>
               {({ open }) => (
                 <>
