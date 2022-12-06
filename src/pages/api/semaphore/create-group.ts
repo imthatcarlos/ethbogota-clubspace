@@ -17,7 +17,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 					dcntCollection,
 					lensPubId,
 					lensProfileId,
-					{ maxFeePerGas, maxPriorityFeePerGas, gasLimit: 2100000 }
+					{ maxFeePerGas, maxPriorityFeePerGas }
 				)
 
         await transaction.wait()

@@ -90,7 +90,7 @@ const LiveSpace: FC<Props> = ({
   const [doesFollowDrawerProfile, setDoesFollowDrawerProfile] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHostOpen, setIsHostOpen] = useState<boolean>(false);
-  const { ens: { ensAvatar }, isLoading: isLoadingENS } = useENS(address);
+  const { data: ensData, isLoading: isLoadingENS } = useENS(address);
 
   // @TODO: should really merge these two hook calls
   // - first run tries to do the refresh call
@@ -115,7 +115,12 @@ const LiveSpace: FC<Props> = ({
       signer,
     }
   );
-  const { data: playlistTracks } = useGetTracksFromPlaylist({}, clubSpaceObject.spinampPlaylistId);
+  const {
+    data: playlistTracks,
+    isLoading: isLoadingPlaylistTracks
+  } = useGetTracksFromPlaylist({}, clubSpaceObject.spinampPlaylistId);
+
+  console.log(playlistTracks, clubSpaceObject)
 
   const shareURL = useMemo(() => (
     buildLensShareUrl({
@@ -181,8 +186,9 @@ const LiveSpace: FC<Props> = ({
   useEffect(() => {
     if (isLoadingEntry && !isEmpty(myIdentity) && !isEmpty(creatorLensProfile) && !isEmpty(featuredDecentNFT)) {
       setIsLoadingEntry(false);
+      // @FIXME: transaction underpriced
       // log impression, join group
-      joinGroup(defaultProfile.handle, identity, clubSpaceObject.semGroupIdHex, address);
+      // joinGroup(defaultProfile.handle, identity, clubSpaceObject.semGroupIdHex, address);
     }
   }, [isLoadingEntry, myIdentity, doesFollowCreator, creatorLensProfile, featuredDecentNFT]);
 
@@ -254,7 +260,7 @@ const LiveSpace: FC<Props> = ({
         handle,
         hasBadge,
         profile: {
-          avatar: defaultProfile?.picture?.original?.url || ensAvatar,
+          avatar: defaultProfile?.picture?.original?.url || ensData?.avatar,
           name: defaultProfile?.name,
           totalFollowers: defaultProfile?.stats?.totalFollowers,
           id: defaultProfile?.id,
@@ -289,11 +295,6 @@ const LiveSpace: FC<Props> = ({
   });
 
   if (isLoadingEntry) return null;
-
-  // @TODO: render some visualizer + the decent audio player
-  // - clubSpaceObject.streamURL
-  // - user can hit play/plause
-  // - current song info: name, artist, album art (link to buy?)
 
   return (
     <>
@@ -352,15 +353,21 @@ const LiveSpace: FC<Props> = ({
           </div>
 
           <div className="player mx-auto">
-            {playlistTracks && clubSpaceObject.streamURL ? (
-              <LiveAudioPlayer
-                playlistTracks={playlistTracks}
-                streamURL={clubSpaceObject.streamURL}
-                playerUUID={clubSpaceObject.playerUUID}
-                currentTrackId={clubSpaceObject.currentTrackId}
-                address={address}
-              />
-            ) : <DirectToClaims address={address} />}
+            {
+              !isLoadingPlaylistTracks && (
+                <>
+                  {playlistTracks?.length && clubSpaceObject.streamURL ? (
+                    <LiveAudioPlayer
+                      playlistTracks={playlistTracks}
+                      streamURL={clubSpaceObject.streamURL}
+                      playerUUID={clubSpaceObject.playerUUID}
+                      currentTrackId={clubSpaceObject.currentTrackId}
+                      address={address}
+                    />
+                  ) : <DirectToClaims address={address} />}
+                </>
+              )
+            }
           </div>
           <div className="decent-nft flex flex-col gap-y-3">
             {featuredDecentNFT && <FeaturedDecentNFT {...featuredDecentNFT} />}

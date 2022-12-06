@@ -7,3 +7,4 @@ export const chainIdToChain = {
 
 export const NFT_STORAGE_URL = 'https://nftstorage.link/ipfs';
 export const DECENT_HQ = 'https://hq.decent.xyz';
+export const DECENT_HQ_API = "https://hq.decent.xyz/api";

@@ -46,6 +46,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
   const [productData, setProductData] = useState<any>();
   const [lensPost, setLensPost] = useState<any>();
   const [goody, setGoody] = useState<any>();
+  const [goodyContract, setGoodyContract] = useState<any>();
   const [uploading, setUploading] = useState<boolean>();
   const [shareUrl, setShareUrl] = useState<string>();
   const [isShareOpen, setIsShareOpen] = useState<boolean>(false);
@@ -53,7 +54,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
   const [state, jamApi] = useJam();
   const { data: lensRefreshData } = useLensRefresh();
   const { data: lensLoginData, refetch: login } = useLensLogin();
-  const { ens: { ensName }, isLoading: isLoadingENS } = useENS(address);
+  const { data: ensData, isLoading: isLoadingENS } = useENS(address);
   const { data: profilesResponse } = useGetProfilesOwned({}, address);
   const defaultProfile = profilesResponse ? profilesResponse.defaultProfile : null;
 
@@ -75,7 +76,6 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
   // @TODO: we should render more info, some kind of preview + link out to decent
   const setDecentProduct = (data) => {
     setProductData(data);
-    next();
   };
 
   const setPostData = (postData) => {
@@ -104,7 +104,15 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       {...formMultiFormData}
       updateFields={updateFields}
     />,
-    <SetGoodyBag key="d" setGoody={setGoody} {...formMultiFormData} updateFields={updateFields} />,
+    // @FIXME: transaction underpriced
+    // <SetGoodyBag
+    //   key="d"
+    //   setGoody={setGoody}
+    //   {...formMultiFormData}
+    //   updateFields={updateFields}
+    //   goodyContract={goodyContract}
+    //   setGoodyContract={setGoodyContract}
+    // />
   ]);
 
   const handleSubmit = (e: FormEvent) => {
@@ -154,9 +162,9 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
   const submit = async () => {
     setUploading(true);
 
-    const handle = defaultProfile?.handle || ensName || address;
+    const handle = defaultProfile?.handle || ensData?.handle || address;
 
-    console.log(handle, playlist, productData, lensPost, goody);
+    console.log(handle, playlist, productData, lensPost, goody, goodyContract);
 
     // @TODO: delay this request so the audio doesn't start playing automatically?
     // create space in the backend
@@ -167,18 +175,24 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       return;
     }
 
-    let toastId = toast.loading("Creating your Party Favor...");
-    const goodyUri = await uploadToIPFS(handle);
-    console.log("goody uri:", goodyUri);
-    const collectionAddress = await createZkEdition({
-      handle,
-      chainId: chain.id,
-      signer,
-      name: goody.name,
-      uri: goodyUri
-    });
-    console.log("collectionAddress:", collectionAddress);
-    toast.dismiss(toastId);
+    let collectionAddress;
+    // @FIXME: transaction underpriced
+    // if (goodyContract) {
+    //   collectionAddress = goodyContract.address;
+    // } else {
+    //   let toastId = toast.loading("Creating your Party Favor...");
+    //   const goodyUri = await uploadToIPFS(handle);
+    //   console.log("goody uri:", goodyUri);
+    //   collectionAddress = await createZkEdition({
+    //     handle,
+    //     chainId: chain.id,
+    //     signer,
+    //     name: goody.name,
+    //     uri: goodyUri
+    //   });
+    //   console.log("collectionAddress:", collectionAddress);
+    //   toast.dismiss(toastId);
+    // }
 
     // create lens post
     let lensPubId = "0";
@@ -228,8 +242,9 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
           data: { url, semGroupIdHex },
         } = await axios.post(`/api/space/create`, spaceData);
 
+        // @FIXME: transaction underpriced
         // call sempahore/create-group
-        await createGroup(semGroupIdHex, collectionAddress, lensPubId, defaultProfile.id);
+        // await createGroup(semGroupIdHex, collectionAddress, lensPubId, defaultProfile.id);
 
         // PUSH
         // await axios.post(`/api/push/send`, { url });
@@ -363,11 +378,11 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
                         {isLastStep ? `${uploading ? 'Creating...' : 'Create Space'}` : "Next"}
                       </button>
                     </div>
-                    {isLastStep && goody?.files?.length > 0 && isLastStep && goody?.files?.length !== 1 ? (
+                    {/** // @FIXME: transaction underpriced isLastStep && goody?.files?.length > 0 && isLastStep && (goody?.files?.length !== 1 && !goodyContract) ? (
                       <div className="text-red-400 text-center">
                         ⚠️ To continue, you need to set an image
                       </div>
-                    ) : null}
+                    ) : null*/}
                   </form>
                 </Dialog.Panel>
               </Transition.Child>

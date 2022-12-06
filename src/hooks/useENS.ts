@@ -1,39 +1,25 @@
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { utils, providers } from "ethers";
 
-export default (address) => {
-  if (address && address.length) {
-    address = utils.getAddress(address);
-  }
-  const [ensName, setENSName] = useState(null);
-  const [ensAvatar, setEnsAvatar] = useState(null);
-  const [loading, setLoading] = useState(false);
+export default (address: string, options: UseQueryOptions = {}) => {
+  const result = useQuery<boolean>(
+    ["ens", address],
+    async () => {
+      const provider = new providers.JsonRpcProvider(process.env.NEXT_PUBLIC_ALCHEMY_RPC_MAINNET);
 
-  useEffect(() => {
-    const resolveENS = async () => {
-      setLoading(true);
-      if (utils.isAddress(address)) {
-        try {
-          const provider = new providers.JsonRpcProvider(process.env.NEXT_PUBLIC_ALCHEMY_RPC_MAINNET);
+      const [handle, avatar] = await Promise.all([
+        provider.lookupAddress(address),
+        provider.getAvatar(address)
+      ]);
 
-          const [name, avatar] = await Promise.all([
-            provider.lookupAddress(address),
-            provider.getAvatar(address)
-          ]);
+      return { handle, avatar };
+    },
+    {
+      ...(options as any),
+      enabled: !!address,
+    }
+  );
 
-          console.log(avatar)
-
-          setENSName(ensName);
-          setEnsAvatar(avatar);
-        } catch (error) {
-          console.log(error);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-    resolveENS();
-  }, [address]);
-
-  return { ens: { ensName, ensAvatar }, loading };
+  return result;
 };

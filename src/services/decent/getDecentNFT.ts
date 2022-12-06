@@ -1,4 +1,4 @@
-import { DecentSDK, chain, crescendo, edition, metadataRenderer } from "@decent.xyz/sdk";
+import { DecentSDK, chain, crescendo, edition, zkEdition, metadataRenderer } from "@decent.xyz/sdk";
 import { Signer } from 'ethers';
 import axios from 'axios';
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
@@ -10,6 +10,7 @@ import {
 
 export const CONTRACT_TYPE_CRESCENDO = 'crescendo';
 export const CONTRACT_TYPE_EDITION = 'edition';
+export const CONTRACT_TYPE_ZK_EDITION = 'zkEdition';
 export const CONTRACT_TYPES_FOR_FEATURED = [CONTRACT_TYPE_EDITION, CONTRACT_TYPE_CRESCENDO];
 
 export const getContractDataCrescendo = async (address: string, chainId: number, signer: Signer) => {
@@ -63,7 +64,34 @@ export const getContractDataEdition = async (address: string, chainId: number, s
       totalSupply,
       availableSupply,
       saleIsActive,
-      decentURL: `${DECENT_HQ}/${chainId}/Edition/${address}` // @TODO: need to test
+      decentURL: `${DECENT_HQ}/${chainId}/Editions/${address}`
+    };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getContractDataZkEdition = async (address: string, chainId: number, signer: Signer) => {
+  const sdk = new DecentSDK(chainIdToChain[chainId], signer);
+  try {
+    const contract = await zkEdition.getContract(sdk, address);
+    const renderer = await metadataRenderer.getContract(sdk);
+    const [metadataBase64, totalSupply, availableSupply] = await Promise.all([
+      renderer.tokenURITarget(0, address),
+      contract.totalSupply(),
+      contract.MAX_TOKENS()
+    ]);
+
+    let metadata = atob(metadataBase64.substring(29)).replace(/\n/g, ' ');
+    metadata = JSON.parse(metadata);
+    metadata.name = metadata?.properties?.name;
+
+    return {
+      contract,
+      metadata,
+      totalSupply,
+      availableSupply,
+      // decentURL: `${DECENT_HQ}/${chainId}/ZkEditions/${address}`
     };
   } catch (error) {
     console.log(error);
@@ -71,9 +99,15 @@ export const getContractDataEdition = async (address: string, chainId: number, s
 };
 
 export const getContractData = async (address: string, chainId: number, signer: Signer, contractType: string) => {
-  return contractType === CONTRACT_TYPE_CRESCENDO
-    ? await getContractDataCrescendo(address, chainId, signer)
-    : await getContractDataEdition(address, chainId, signer);
+  if (contractType === CONTRACT_TYPE_CRESCENDO) {
+    return await getContractDataCrescendo(address, chainId, signer);
+  } else if (contractType === CONTRACT_TYPE_EDITION) {
+    return await getContractDataEdition(address, chainId, signer);
+  } else if (contractType === CONTRACT_TYPE_ZK_EDITION) {
+    return await getContractDataZkEdition(address, chainId, signer);
+  }
+
+  throw new Error(`getDecentNFT: invalid contract type: ${contractType}`);
 };
 
 export const useGetContractData = (options: UseQueryOptions = {}, { address, chainId, signer, contractType }) => {

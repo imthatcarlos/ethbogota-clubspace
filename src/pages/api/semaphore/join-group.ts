@@ -40,7 +40,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         identityCommitment,
         utils.formatBytes32String(username),
         BigNumber.from(groupId),
-        { maxFeePerGas, maxPriorityFeePerGas, gasLimit: 2100000 }
+        { maxFeePerGas, maxPriorityFeePerGas }
       );
 
       await transaction.wait();

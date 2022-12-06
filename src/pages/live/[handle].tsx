@@ -26,7 +26,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   const { chain, chains } = useNetwork()
   const { address, isConnected } = useAccount();
   const { data: profilesResponse, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
-  const { ens: { ensName, ensAvatar }, isLoading: isLoadingENS } = useENS(address);
+  const { data: ensData, isLoading: isLoadingENS } = useENS(address);
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
   const [loadingDefaultProfile, setLoadingDefaultProfile] = useState(true);
   const [isLoadingEntry, setIsLoadingEntry] = useState(true);
@@ -71,7 +71,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
                 isLoadingEntry={isLoadingEntry}
                 setIsLoadingEntry={setIsLoadingEntry}
                 address={address}
-                handle={defaultProfile?.handle || ensName || address}
+                handle={defaultProfile?.handle || ensData?.handle || address}
                 hasBadge={hasBadge}
               />
             </DispatchPlayerContext.Provider>

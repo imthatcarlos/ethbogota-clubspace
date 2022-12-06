@@ -36,15 +36,13 @@ const SelectPlaylist: FC<Props> = ({ selectPlaylist, playlist }) => {
   return (
     <MultiStepFormWrapper>
       <div className="w-full">
-        {/* <h2 className="text-md font-bold tracking-tight sm:text-lg md:text-xl">Select a Playlist</h2> */}
+        <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Select Your Spinamp Playlist or Paste the URL</h2>
+        <br/>
         {playlists && (
           <>
             <Listbox value={playlist} onChange={selectPlaylist}>
               {({ open }) => (
                 <>
-                  <Listbox.Label className="inline-block mb-3 text-md font-bold tracking-tight sm:text-lg md:text-xl">
-                    Select Your Spinamp Playlist or Paste the URL
-                  </Listbox.Label>
                   <div className="relative mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md">
                     <Listbox.Button className="relative input py-2 pl-3 pr-10 text-left ">
                       <span className="block truncate">{playlist ? playlist.title : "Select playlist"}</span>
@@ -101,16 +99,16 @@ const SelectPlaylist: FC<Props> = ({ selectPlaylist, playlist }) => {
               )}
             </Listbox>
             <br/>
-            <input
-              value={playlistLink}
-              type="text"
-              id="playlist_link"
-              className="input"
-              placeholder="https://"
-              onChange={(onPlaylistLinkChanged)}
-            />
           </>
         )}
+        <input
+          value={playlistLink}
+          type="text"
+          id="playlist_link"
+          className="input"
+          placeholder="https://"
+          onChange={(onPlaylistLinkChanged)}
+        />
       </div>
     </MultiStepFormWrapper>
   );
