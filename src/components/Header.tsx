@@ -5,7 +5,6 @@ import { ConnectWallet } from "./ConnectWallet";
 import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import useIsMounted from "@/hooks/useIsMounted";
 import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
-import useENS from "@/hooks/useENS";
 import ClubspaceNeonHeader from "@/assets/svg/clubspace-neon-header.svg";
 
 export const Header = () => {

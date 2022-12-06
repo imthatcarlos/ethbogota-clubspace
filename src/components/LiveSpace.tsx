@@ -28,6 +28,7 @@ import DirectToClaims from "./DirectToClaims";
 import { NextSeo } from "next-seo";
 import { joinGroup } from "@/lib/semaphore/semaphore";
 import useIdentity from "@/hooks/useIdentity";
+import useENS from "@/hooks/useENS";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -89,6 +90,7 @@ const LiveSpace: FC<Props> = ({
   const [doesFollowDrawerProfile, setDoesFollowDrawerProfile] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHostOpen, setIsHostOpen] = useState<boolean>(false);
+  const { ens: { ensAvatar }, isLoading: isLoadingENS } = useENS(address);
 
   // @TODO: should really merge these two hook calls
   // - first run tries to do the refresh call
@@ -252,7 +254,7 @@ const LiveSpace: FC<Props> = ({
         handle,
         hasBadge,
         profile: {
-          avatar: defaultProfile?.picture?.original?.url,
+          avatar: defaultProfile?.picture?.original?.url || ensAvatar,
           name: defaultProfile?.name,
           totalFollowers: defaultProfile?.stats?.totalFollowers,
           id: defaultProfile?.id,

@@ -26,7 +26,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   const { chain, chains } = useNetwork()
   const { address, isConnected } = useAccount();
   const { data: profilesResponse, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
-  const { ensName, isLoading: isLoadingENS } = useENS(address);
+  const { ens: { ensName, ensAvatar }, isLoading: isLoadingENS } = useENS(address);
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
   const [loadingDefaultProfile, setLoadingDefaultProfile] = useState(true);
   const [isLoadingEntry, setIsLoadingEntry] = useState(true);
@@ -42,7 +42,6 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
 
   useEffect(() => {
     if (!isLoadingProfiles) {
-      console.log(profilesResponse)
       setDefaultProfile(profilesResponse ? profilesResponse.defaultProfile : null);
       setLoadingDefaultProfile(false);
     }

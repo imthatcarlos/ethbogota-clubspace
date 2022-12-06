@@ -53,7 +53,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
   const [state, jamApi] = useJam();
   const { data: lensRefreshData } = useLensRefresh();
   const { data: lensLoginData, refetch: login } = useLensLogin();
-  const { ensName, isLoading: isLoadingENS } = useENS(address);
+  const { ens: { ensName }, isLoading: isLoadingENS } = useENS(address);
   const { data: profilesResponse } = useGetProfilesOwned({}, address);
   const defaultProfile = profilesResponse ? profilesResponse.defaultProfile : null;
 
