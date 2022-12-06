@@ -174,11 +174,12 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       return;
     }
 
+    let toastId;
     let collectionAddress;
     if (goodyContract) {
       collectionAddress = goodyContract.address;
     } else {
-      let toastId = toast.loading("Creating your Party Favor...");
+      toastId = toast.loading("Creating your Party Favor...");
       const goodyUri = await uploadToIPFS(handle);
       console.log("goody uri:", goodyUri);
       collectionAddress = await createZkEdition({
