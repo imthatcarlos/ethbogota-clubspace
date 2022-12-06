@@ -120,8 +120,6 @@ const LiveSpace: FC<Props> = ({
     isLoading: isLoadingPlaylistTracks
   } = useGetTracksFromPlaylist({}, clubSpaceObject.spinampPlaylistId);
 
-  console.log(playlistTracks, clubSpaceObject)
-
   const shareURL = useMemo(() => (
     buildLensShareUrl({
       postBody: 'Join this space!',
