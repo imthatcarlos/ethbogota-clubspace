@@ -8,6 +8,7 @@ import Web3Provider from "@/components/Web3Provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { toast, Toaster, ToastBar } from "react-hot-toast";
+import { Analytics } from '@vercel/analytics/react';
 import { Header } from "@/components/Header";
 import Footer from "@/components/Footer";
 import { SITE_URL } from "@/lib/consts";
@@ -70,6 +71,7 @@ const App = ({ Component, pageProps }) => {
           <div className="flex flex-col min-h-screen">
             <Header />
             <Component {...pageProps} />
+            <Analytics />
             <Footer />
           </div>
         </Web3Provider>
