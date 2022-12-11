@@ -25,7 +25,6 @@ import { SITE_URL, LENSTER_URL } from "@/lib/consts";
 
 import * as mockIdentities from "@/constants/mockIdentities.json";
 import DirectToClaims from "./DirectToClaims";
-import { NextSeo } from "next-seo";
 import { joinGroup } from "@/lib/semaphore/semaphore";
 import useIdentity from "@/hooks/useIdentity";
 import useENS from "@/hooks/useENS";
@@ -233,8 +232,17 @@ const LiveSpace: FC<Props> = ({
         loading: "Following profile...",
         success: "Followed!",
         error: (error) => {
-          // return error.message.split('(')[0];
-          return "Error";
+          try {
+            const realError = typeof error === 'object'
+              ? error.toString().split('(')[0]
+              : '';
+
+            if (realError.startsWith('Error: user rejected')) {
+              return realError;
+            }
+          } catch {}
+
+          return 'Error!';
         },
       }
     );
@@ -293,20 +301,6 @@ const LiveSpace: FC<Props> = ({
 
   return (
     <>
-      <NextSeo
-        title={`ClubSpace | ${clubSpaceObject.creatorLensHandle}`}
-        description={`Join ${clubSpaceObject.creatorLensHandle}'s live listening party on ClubSpace now!`}
-        openGraph={{
-          url: `${SITE_URL}/live/${clubSpaceObject.creatorLensHandle}`,
-          title: `ClubSpace | ${clubSpaceObject.creatorLensHandle}`,
-          description: `Join ${clubSpaceObject.creatorLensHandle}'s live listening party on ClubSpace now!`,
-          images: [{
-            url: creatorLensProfile.picture.original.url,
-            width: 800,
-            height: 600,
-            alt: `${clubSpaceObject.creatorLensHandle} on Lens`,
-          }]
-        }} />
       <div className="relative grow flex flex-col justify-center min-h-screen">
         <div className="grid-live items-center justify-center px-10 lg:px-14 gap-x-3">
           <div className="grid-container w-full audience max-h-[30rem] overflow-auto !content-baseline">
@@ -610,7 +604,7 @@ const LiveSpace: FC<Props> = ({
                   {creatorLensProfile && (
                     <HostCard
                       profile={creatorLensProfile}
-                      drawerProfileId={drawerProfile.id}
+                      drawerProfileId={creatorLensProfile.id}
                       doesFollowDrawerProfile={doesFollowDrawerProfile}
                       onFollowClick={onFollowClick}
                       isHost={isHost}

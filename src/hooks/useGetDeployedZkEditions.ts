@@ -1,7 +1,7 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { getContractDataZkEdition } from "@/services/decent/getDecentNFT";
 
-const DEFAULT_PARTY_FAVOR = '0x87225352B1656A2d2A4D81850755Ad281D0f6658';
+const DEFAULT_PARTY_FAVOR = '0xb2d816eca2b50d48bd632f74ef7cdbc2123f6c79';
 
 export default (
   address: string,
@@ -16,7 +16,7 @@ export default (
       const contracts = (await res.json())
         .filter(({ key, chainid }) => key === 'ZkEdition' && chainid === chainId);
 
-      // contracts.push(DEFAULT_PARTY_FAVOR);
+      contracts.push(DEFAULT_PARTY_FAVOR);
       console.log('zkeditions: ', contracts);
 
       if (!contracts.length) return [];

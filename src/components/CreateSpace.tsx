@@ -6,6 +6,7 @@ import { IPlaylist } from "@spinamp/spinamp-sdk";
 import { useAccount, useContract, useSigner, useNetwork } from "wagmi";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { BigNumber } from "ethers";
 import { useJam } from "@/lib/jam-core-react";
 import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
@@ -214,9 +215,11 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       if (!accessToken) {
         throw new Error("Error - lens profile not authenticated. This is likely a bug with login/refresh logic");
       }
-      await makePostGasless(defaultProfile.id, `ipfs://${content.IpfsHash}`, signer, accessToken);
       const pubCount = await contract.getPubCount(defaultProfile.id);
-      lensPubId = pubCount.toHexString();
+      lensPubId = pubCount.add(BigNumber.from('1')).toHexString();
+
+      await makePostGasless(defaultProfile.id, `ipfs://${content.IpfsHash}`, signer, accessToken);
+
       toast.dismiss(toastId);
     }
 

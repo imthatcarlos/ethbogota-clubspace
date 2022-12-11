@@ -1,4 +1,4 @@
-export const IS_PRODUCTION = process.env.NEXT_PUBLIC_IS_PRODUCTION === 'true' || false;
+export const IS_PRODUCTION = process.env.NEXT_PUBLIC_IS_PRODUCTION === 'true';
 export const APP_NAME = "Clubspace";
 
 export const REDIS_SPACE_PREFIX = "space";
