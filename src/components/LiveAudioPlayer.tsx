@@ -31,7 +31,12 @@ export const LiveAudioPlayer = ({ streamURL, playlistTracks, currentTrackId, add
     }
   };
 
-  const player = useRef(new IcecastMetadataPlayer(streamURL, { onMetadata }));
+  const onError = (message, error) => {
+    console.log(`LiveAudioPlayer:: onError: ${message}`);
+    if (player.current.state !== 'playing') player.current.play();
+  }
+
+  const player = useRef(new IcecastMetadataPlayer(streamURL, { playbackMethod: 'html5', onMetadata, onError }));
 
   const groupedPlaylistTracks = useMemo(() => groupBy(playlistTracks, 'id'), [playlistTracks]);
 
