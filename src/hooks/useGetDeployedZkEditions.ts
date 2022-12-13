@@ -1,7 +1,6 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { getContractDataZkEdition } from "@/services/decent/getDecentNFT";
-
-const DEFAULT_PARTY_FAVOR = '0xb2d816eca2b50d48bd632f74ef7cdbc2123f6c79';
+import { DEFAULT_PARTY_FAVOR } from "@/services/decent/utils";
 
 export default (
   address: string,
