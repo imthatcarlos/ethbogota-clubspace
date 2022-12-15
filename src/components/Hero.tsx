@@ -9,7 +9,7 @@ import useHasBadge from "@/hooks/useHasBadge";
 import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import { ConnectWallet } from "@/components/ConnectWallet";
-import { IM_WITH_THE_DJ } from "@/lib/consts";
+import { IM_WITH_THE_DJ, GOOGLE_FORM_WAITLIST_URL } from "@/lib/consts";
 
 const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
 const CreateSpace = dynamic(() => import("@/components/CreateSpace"), { ssr: false });
@@ -93,7 +93,7 @@ export const Hero = () => {
                                 >
                                   <span className="z-10">Closed Beta</span>
                                 </button>
-                                <span className="z-10"><a href="https://playground.sismo.io/madfi-lens-followers-s01" target="_blank" rel="noreferrer">Get access with our badge</a></span>
+                                <span className="z-10">Get access with our <a href="https://playground.sismo.io/madfi-lens-followers-s01" target="_blank" rel="noreferrer" className="text-club-red font-extrabold">Sismo Badge</a> or get on the <a href={GOOGLE_FORM_WAITLIST_URL} target="_blank" rel="noreferrer" className="text-club-red font-extrabold">Creator Waitlist</a></span>
                               </>
                         }
                       </>
