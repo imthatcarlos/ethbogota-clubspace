@@ -13,19 +13,18 @@ export default (
     async () => {
       const res = await fetch(`/api/decent/getDeployedContracts?address=${address}`);
       const contracts = (await res.json())
-        .filter(({ key, chainid }) => key === 'ZkEdition' && chainid === chainId);
+        .filter(({ key, chainid }) => key === 'ZKEdition' && chainid === chainId);
 
-      contracts.push(DEFAULT_PARTY_FAVOR);
-      console.log('zkeditions: ', contracts);
+      contracts.push({ deployment: DEFAULT_PARTY_FAVOR });
 
       if (!contracts.length) return [];
 
-      return await Promise.all(contracts.map(async (zkEdition) => {
-        const data = await getContractDataZkEdition(zkEdition, chainId, signer);
+      return await Promise.all(contracts.map(async ({ deployment }) => {
+        const data = await getContractDataZkEdition(deployment, chainId, signer);
 
         return {
           ...data,
-          address: zkEdition
+          address: deployment
         };
       }));
     },
