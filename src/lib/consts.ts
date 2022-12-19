@@ -69,7 +69,9 @@ export const CHAIN_NAME_MAP = {
   10: 'Optimism',
 };
 
-export const ALLOWED_CHAIN_IDS = Object.keys(JSON_RPC_URL_ALCHEMY_MAP).map((id) => parseInt(id));
+export const ALLOWED_CHAIN_IDS = IS_PRODUCTION
+  ? [137, 1, 10]
+  : [80001, 5]
 
 export const IM_WITH_THE_DJ = [
   '0x7F0408bc8Dfe90C09072D8ccF3a1C544737BcDB6',

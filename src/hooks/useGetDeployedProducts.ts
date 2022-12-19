@@ -13,7 +13,8 @@ export default (
     ["decent-deployed-products", address],
     async () => {
       const res = await fetch(`/api/decent/getDeployedContracts?address=${address}`);
-      const contracts = (await res.json())
+      const data = (await res.json());
+      const contracts = data
         .filter(({ chainid, key }) => ALLOWED_CHAIN_IDS.includes(chainid) && key !== CONTRACT_TYPE_ZK_EDITION);
 
       if (!contracts.length) return [];

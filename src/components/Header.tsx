@@ -42,7 +42,7 @@ export const Header = () => {
           </a>
         </div>
       )*/}
-      <div className="connect absolute right-0 xs:relative">
+      <div className="connect absolute right-5 xs:relative">
         <div className="flex gap-4 justify-center md:min-w-[220px] scale-[0.8] xs:scale-100">
           {isConnected && (
             <button
