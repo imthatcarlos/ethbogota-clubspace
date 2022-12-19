@@ -7,8 +7,6 @@ import {
 } from './utils';
 import { VERIFIER_ADDRESS } from '@/lib/consts';
 
-export const CONTRACT_TYPE_ZK_EDITION = 'zkEdition';
-
 const DEFAULT_MAX_TOKENS = 10000; // 10k
 const DEFAULT_TOKEN_PRICE = '0';
 const DEFAULT_MAX_TOKEN_PURCHASE = 1;

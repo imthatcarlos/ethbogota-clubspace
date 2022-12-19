@@ -37,7 +37,7 @@ export const getCurrentTrack = async (playerUUID) => {
 
     return data.length ? data[0].track.song : null;
   } catch (error) {
-    console.log(error);
+    console.log(error.statusCode || error);
 
     return null;
   }
