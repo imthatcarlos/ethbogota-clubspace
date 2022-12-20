@@ -151,7 +151,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     abi: LensHubProxy,
     chainId: ALLOWED_CHAIN_IDS[0],
     functionName: 'getPubCount',
-    args: [defaultProfile.id]
+    args: [defaultProfile?.id]
   });
 
   const submit = async () => {
