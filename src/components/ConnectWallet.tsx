@@ -3,5 +3,5 @@ import { ConnectButtonProps } from "@rainbow-me/rainbowkit/dist/components/Conne
 import { FC } from "react";
 
 export const ConnectWallet: FC<ConnectButtonProps> = ({ ...rest }) => {
-  return <ConnectButton accountStatus="address" chainStatus="name" {...rest}/>;
+  return <ConnectButton accountStatus="address" chainStatus="icon" {...rest} />;
 };

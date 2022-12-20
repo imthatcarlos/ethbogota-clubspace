@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { Contract, BigNumber, utils } from "ethers";
+import { useNetwork, useSigner, useSwitchNetwork, useAccount } from "wagmi";
 import toast from "react-hot-toast";
 import { getUrlForImageFromIpfs } from "@/utils/ipfs";
-import { CONTRACT_TYPE_CRESCENDO, CONTRACT_TYPE_EDITION } from "@/services/decent/getDecentNFT";
-import { IS_PRODUCTION } from "@/lib/consts";
+import { CONTRACT_TYPE_CRESCENDO, CONTRACT_TYPE_EDITION } from "@/services/decent/utils";
+import { CURRENCY_MAP, CHAIN_NAME_MAP } from "@/lib/consts";
 
 interface Props {
   contract: Contract;
-  contractType: string; // crescendo | edition
+  contractType: string;
   address: string;
   metadata: any; // metadata JSON
   price: BigNumber;
@@ -15,6 +16,7 @@ interface Props {
   availableSupply?: BigNumber;
   saleIsActive: boolean;
   decentURL: string;
+  chainId: number; // chain the decent contract is deployed on
 }
 
 export const FeaturedDecentNFT = ({
@@ -27,19 +29,41 @@ export const FeaturedDecentNFT = ({
   availableSupply = undefined,
   saleIsActive,
   decentURL,
+  chainId,
 }: Props) => {
   const [isBuying, setIsBuying] = useState<boolean>(false);
+  const { chain } = useNetwork();
+  const { data: signer } = useSigner();
+  const { connector: activeConnector } = useAccount();
+  const { switchNetworkAsync } = useSwitchNetwork({ onSuccess: (data) => onBuyClick(true) });
 
-  const onBuyClick = async () => {
+  const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+  const onBuyClick = async (switched = false) => {
     setIsBuying(true);
+
+    if (!switched && chainId !== chain.id) {
+      toast('Switching chains...');
+      try {
+        await switchNetworkAsync(chainId);
+      } catch (error) {
+        setIsBuying(false);
+      }
+      return;
+    } else if (switched) {
+      await wait(1000);
+    }
 
     toast.promise(
       new Promise(async (resolve, reject) => {
         try {
+          const _signer = switched
+            ? await activeConnector.getSigner()
+            : signer;
           const tx =
-            (await contractType) == CONTRACT_TYPE_CRESCENDO
-              ? await contract.buy(0, { value: price })
-              : await contract.mint(1, { value: price });
+            contractType == CONTRACT_TYPE_CRESCENDO
+              ? await contract.connect(_signer).buy(0, { value: price })
+              : await contract.connect(_signer).mint(1, { value: price });
 
           console.log(`tx: ${tx.hash}`);
           await tx.wait();
@@ -97,7 +121,7 @@ export const FeaturedDecentNFT = ({
                 <h3 className="text-center text-xl text-gray-900 dark:text-gray-300 font-medium leading-8 -mb-2">
                   {metadata.name}
                 </h3>
-                <div className="text-center text-gray-400 text-md font-semibold mb-1">
+                <div className="text-center text-gray-400 text-sm font-semibold mb-1 mt-1">
                   <p>
                     <a target="_blank" rel="noreferrer" href={decentURL}>
                       See on Decent.xyz
@@ -121,14 +145,14 @@ export const FeaturedDecentNFT = ({
                     <span>
                       <strong>{utils.formatEther(price)}</strong>
                     </span>
-                    <span className="dark:text-gray-400">{IS_PRODUCTION ? 'MATIC' : 'MATIC (MUMBAI)'}</span>
+                    <span className="dark:text-gray-400">{CURRENCY_MAP[chainId]}</span>
                   </div>
                 </div>
 
                 {saleIsActive ? (
                   <div className="text-center my-3 px-3">
-                    <button className="!w-full btn" onClick={onBuyClick} disabled={isBuying}>
-                      Mint
+                    <button className="!w-full btn" onClick={() => onBuyClick()} disabled={isBuying}>
+                      {price.isZero() ? 'Free Mint': 'Mint'} {chainId != chain.id ? `(on ${CHAIN_NAME_MAP[chainId]})` : ''}
                     </button>
                   </div>
                 ) : null}

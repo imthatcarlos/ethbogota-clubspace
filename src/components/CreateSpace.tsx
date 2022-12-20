@@ -1,9 +1,9 @@
 import { FormEvent, Fragment, useState } from "react";
 import CreateLensPost from "@/components/CreateLensPost";
 import SelectPlaylist from "@/components/SelectPlaylist";
-import SetDecentProduct from "@/components/SetDecentProduct";
+import SetFeaturedProduct from "@/components/SetFeaturedProduct";
 import { IPlaylist } from "@spinamp/spinamp-sdk";
-import { useAccount, useContract, useSigner, useNetwork } from "wagmi";
+import { useAccount, useContractRead, useSigner, useNetwork } from "wagmi";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { BigNumber } from "ethers";
@@ -12,7 +12,7 @@ import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
 import { createGroup } from "@/lib/semaphore/semaphore";
 import { makePostGasless, publicationBody } from "@/services/lens/gaslessTxs";
-import { LENSHUB_PROXY } from "@/lib/consts";
+import { LENSHUB_PROXY, ALLOWED_CHAIN_IDS } from "@/lib/consts";
 import { LensHubProxy } from "@/services/lens/abi";
 import { launchSpace } from "@/services/jam/core";
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
@@ -23,7 +23,6 @@ import useENS from "@/hooks/useENS";
 import createZkEdition from "@/services/decent/createZkEdition";
 
 type MultiFormData = {
-  decentContractAddress: string;
   lensPost: string;
   goodyName: string;
   goodyDesc: string;
@@ -31,7 +30,6 @@ type MultiFormData = {
 };
 
 const INITIAL_DATA: MultiFormData = {
-  decentContractAddress: "",
   lensPost: "",
   goodyName: "",
   goodyDesc: "",
@@ -44,7 +42,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
   const { data: signer } = useSigner();
 
   const [playlist, setPlaylist] = useState<IPlaylist>();
-  const [productData, setProductData] = useState<any>();
+  const [decentProduct, setDecentProduct] = useState<any>();
   const [lensPost, setLensPost] = useState<any>();
   const [goody, setGoody] = useState<any>();
   const [goodyContract, setGoodyContract] = useState<any>();
@@ -74,11 +72,6 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     next();
   };
 
-  // @TODO: we should render more info, some kind of preview + link out to decent
-  const setDecentProduct = (data) => {
-    setProductData(data);
-  };
-
   const setPostData = (postData) => {
     setLensPost(postData);
   };
@@ -91,10 +84,10 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
   const { step, steps, currenStepIndex, back, next, goTo, isFirstStep, isLastStep } = useMultiStepForm([
     <SelectPlaylist key="a" selectPlaylist={selectPlaylist} playlist={playlist} />,
-    <SetDecentProduct
+    <SetFeaturedProduct
       key="b"
       setDecentProduct={setDecentProduct}
-      productData={productData}
+      decentProduct={decentProduct}
       {...formMultiFormData}
       updateFields={updateFields}
     />,
@@ -153,10 +146,12 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     return `ipfs://${metadata.IpfsHash}`;
   };
 
-  const contract = useContract({
+  const { data: lensPubCount } = useContractRead({
     address: LENSHUB_PROXY,
     abi: LensHubProxy,
-    signerOrProvider: signer,
+    chainId: ALLOWED_CHAIN_IDS[0],
+    functionName: 'getPubCount',
+    args: [defaultProfile.id]
   });
 
   const submit = async () => {
@@ -164,7 +159,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
     const handle = defaultProfile?.handle || ensData?.handle || address;
 
-    console.log(handle, playlist, productData, lensPost, goody, goodyContract);
+    console.log(handle, playlist, decentProduct, lensPost, goody, goodyContract);
 
     // @TODO: delay this request so the audio doesn't start playing automatically?
     // create space in the backend
@@ -215,8 +210,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       if (!accessToken) {
         throw new Error("Error - lens profile not authenticated. This is likely a bug with login/refresh logic");
       }
-      const pubCount = await contract.getPubCount(defaultProfile.id);
-      lensPubId = pubCount.add(BigNumber.from('1')).toHexString();
+      lensPubId = lensPubCount.add(BigNumber.from('1')).toHexString();
 
       await makePostGasless(defaultProfile.id, `ipfs://${content.IpfsHash}`, signer, accessToken);
 
@@ -232,9 +226,9 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
           handle,
           creatorLensProfileId: defaultProfile.id,
           spinampPlaylistId: playlist.id,
-          decentContractAddress: productData.address,
-          decentContractChainId: chain.id,
-          decentContractType: productData.contractType,
+          decentContractAddress: decentProduct.address,
+          decentContractChainId: decentProduct.chainId,
+          decentContractType: decentProduct.contractType,
           lensPubId,
           clubSpaceId,
           uuid,
@@ -258,7 +252,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
         resolve();
       }),
       {
-        loading: "Finalizing your space...",
+        loading: "Creating your space...",
         success: "Success!",
         error: (error) => {
           console.log(error);

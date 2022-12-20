@@ -49,18 +49,18 @@ export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, on
                 <div className="flex justify-center mb-8 text-sm gap-x-4">
                   <div className="flex gap-x-2">
                     <span>
+                      <strong>{profile.stats.totalFollowing}</strong>
+                    </span>
+                    <span className="dark:text-gray-400">following</span>
+                  </div>
+
+                  <div className="flex gap-x-2">
+                    <span>
                       <strong>{profile.stats.totalFollowers}</strong>
                     </span>
                     <span className="dark:text-gray-400">
                       {profile.stats.totalFollowers === 1 ? "follower" : "followers"}
                     </span>
-                  </div>
-
-                  <div className="flex gap-x-2">
-                    <span>
-                      <strong>{profile.stats.totalFollowing}</strong>
-                    </span>
-                    <span className="dark:text-gray-400">following</span>
                   </div>
                 </div>
 

@@ -1,19 +1,16 @@
 import { useTheme } from "next-themes";
 import { createClient, WagmiConfig } from "wagmi";
-// import { alchemyProvider } from "wagmi/providers/alchemy";
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { getDefaultWallets, RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
 import { chain, configureChains } from "wagmi";
 import { useEffect, useMemo, useState } from "react";
-import { IS_PRODUCTION, JSON_RPC_URL_POKT } from "@/lib/consts";
+import { IS_PRODUCTION, JSON_RPC_URL_ALCHEMY_MAP } from "@/lib/consts";
 
 export const { chains, provider } = configureChains(
+  IS_PRODUCTION ? [chain.polygon, chain.mainnet, chain.optimism] : [chain.polygonMumbai, chain.goerli],
+  // IS_PRODUCTION ? [chain.polygon] : [chain.polygonMumbai],
   [
-    IS_PRODUCTION ? chain.polygon : chain.polygonMumbai
-  ],
-  [
-    // alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY })
-    jsonRpcProvider({ rpc: (chain) => ({ http: JSON_RPC_URL_POKT }) }),
+    jsonRpcProvider({ rpc: (chain) => ({ http: JSON_RPC_URL_ALCHEMY_MAP[chain.id] }) }),
   ]
 );
 

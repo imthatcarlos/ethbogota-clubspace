@@ -1,6 +1,6 @@
 import { FC, Fragment, useEffect, useState, useCallback, useMemo } from "react";
 import { Dialog, Menu, Popover, Transition } from "@headlessui/react";
-import { useSigner, useNetwork } from "wagmi";
+import { useSigner, useNetwork, useSwitchNetwork, useAccount } from "wagmi";
 import { useJam } from "@/lib/jam-core-react";
 import { isEmpty } from "lodash/lang";
 import toast from "react-hot-toast";
@@ -21,7 +21,7 @@ import { useGetContractData } from "@/services/decent/getDecentNFT";
 import { HostCard } from "./HostCard";
 import { FeaturedDecentNFT } from "./FeaturedDecentNFT";
 import { LiveAudioPlayer } from "./LiveAudioPlayer";
-import { SITE_URL, LENSTER_URL } from "@/lib/consts";
+import { SITE_URL, LENSTER_URL, ALLOWED_CHAIN_IDS } from "@/lib/consts";
 
 import * as mockIdentities from "@/constants/mockIdentities.json";
 import DirectToClaims from "./DirectToClaims";
@@ -83,6 +83,8 @@ const LiveSpace: FC<Props> = ({
 }) => {
   const isMounted = useIsMounted();
   const { data: signer } = useSigner();
+  const { connector: activeConnector } = useAccount();
+  const { chain } = useNetwork();
   const [state, { enterRoom, leaveRoom, setProps, updateInfo, sendReaction }] = useJam();
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
   const [drawerProfile, setDrawerProfile] = useState<any>({});
@@ -90,6 +92,7 @@ const LiveSpace: FC<Props> = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHostOpen, setIsHostOpen] = useState<boolean>(false);
   const { data: ensData, isLoading: isLoadingENS } = useENS(address);
+  const { switchNetworkAsync } = useSwitchNetwork({ onSuccess: (data) => onFollowClick(true, undefined, true) });
 
   // @TODO: should really merge these two hook calls
   // - first run tries to do the refresh call
@@ -211,12 +214,24 @@ const LiveSpace: FC<Props> = ({
     setIsOpen((currentState) => !currentState);
   };
 
-  const onFollowClick = (profileId: string, isFollowDrawer = true) => {
+  const onFollowClick = async (profileId: string, isFollowDrawer = true, switched = false) => {
+    if (!switched && ALLOWED_CHAIN_IDS[0] !== chain.id) {
+      toast('Switching chains...');
+      try {
+        await switchNetworkAsync(ALLOWED_CHAIN_IDS[0]);
+      } catch {
+      }
+      return;
+    } else if (switched) {
+      await wait(1000);
+    }
+
     toast.promise(
       new Promise<void>(async (resolve, reject) => {
         try {
           const accessToken = localStorage.getItem("lens_accessToken");
-          const { txHash } = await followProfileGasless(profileId, signer, accessToken);
+          const _signer = switched ? await activeConnector.getSigner() : signer;
+          const { txHash } = await followProfileGasless(profileId, _signer, accessToken);
 
           if (txHash) {
             isFollowDrawer ? setDoesFollowDrawerProfile(true) : refetchDoesFollowCreator();

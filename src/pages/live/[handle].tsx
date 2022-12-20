@@ -39,7 +39,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
     return;
   }
 
-  const correctNetwork = () => chains.length > 0 && chain.id === chains[0].id;
+  // const correctNetwork = () => chains.length > 0 && chain.id === chains[0].id;
 
   useEffect(() => {
     if (!isLoadingProfiles) {
@@ -70,7 +70,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
         <div className="flex-1 min-h-screen">
           <div className="abs-center">
             <p className="animate-move-txt-bg gradient-txt text-4xl">Entering ClubSpace...</p>
-            {!isConnected || !correctNetwork() ? (
+            {!isConnected ? (
               <div className="flex gap-4 justify-center md:min-w-[300px] mt-50 pt-8">
                 <ConnectWallet showBalance={false} />
               </div>
@@ -78,7 +78,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
           </div>
         </div>
       )}
-      {isConnected && !loadingDefaultProfile && defaultProfile && !isLoadingENS && correctNetwork() && (
+      {isConnected && !loadingDefaultProfile && defaultProfile && !isLoadingENS && (
         <JamProviderWrapper>
           <PlayerContext.Provider value={audioPlayerState}>
             <DispatchPlayerContext.Provider value={audioPlayerDispatch}>
@@ -105,6 +105,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const {
     query: { handle },
   } = context;
+
+  if (!handle) return { props: {} };
 
   try {
     const data = await redisClient.get(`${REDIS_SPACE_PREFIX}/${handle}`);

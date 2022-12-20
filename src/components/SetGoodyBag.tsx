@@ -73,7 +73,6 @@ const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles,
       </div>
     ));
 
-  // @TODO: remove once we have api from decent
   const getGoodyBagName = ({ address, metadata }) => (
     address.toLowerCase() === DEFAULT_PARTY_FAVOR.toLowerCase() ? `[DEFAULT] ${metadata.name}` : metadata.name
   )
