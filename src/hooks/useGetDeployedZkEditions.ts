@@ -23,7 +23,6 @@ export default (
       // a default party favor for hosts to use
       if (IS_PRODUCTION) {
         contracts.push({ deployment: DEFAULT_PARTY_FAVOR, chainid: 137 });
-        console.log('zkeditions: ', contracts);
       }
 
       if (!contracts.length) return [];

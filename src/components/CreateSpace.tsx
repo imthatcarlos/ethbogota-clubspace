@@ -3,7 +3,7 @@ import CreateLensPost from "@/components/CreateLensPost";
 import SelectPlaylist from "@/components/SelectPlaylist";
 import SetFeaturedProduct from "@/components/SetFeaturedProduct";
 import { IPlaylist } from "@spinamp/spinamp-sdk";
-import { useAccount, useContract, useSigner, useNetwork } from "wagmi";
+import { useAccount, useContractRead, useSigner, useNetwork } from "wagmi";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { BigNumber } from "ethers";
@@ -12,7 +12,7 @@ import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
 import { createGroup } from "@/lib/semaphore/semaphore";
 import { makePostGasless, publicationBody } from "@/services/lens/gaslessTxs";
-import { LENSHUB_PROXY } from "@/lib/consts";
+import { LENSHUB_PROXY, ALLOWED_CHAIN_IDS } from "@/lib/consts";
 import { LensHubProxy } from "@/services/lens/abi";
 import { launchSpace } from "@/services/jam/core";
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
@@ -146,10 +146,12 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     return `ipfs://${metadata.IpfsHash}`;
   };
 
-  const contract = useContract({
+  const { data: lensPubCount } = useContractRead({
     address: LENSHUB_PROXY,
     abi: LensHubProxy,
-    signerOrProvider: signer,
+    chainId: ALLOWED_CHAIN_IDS[0],
+    functionName: 'getPubCount',
+    args: [defaultProfile.id]
   });
 
   const submit = async () => {
@@ -208,8 +210,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       if (!accessToken) {
         throw new Error("Error - lens profile not authenticated. This is likely a bug with login/refresh logic");
       }
-      const pubCount = await contract.getPubCount(defaultProfile.id);
-      lensPubId = pubCount.add(BigNumber.from('1')).toHexString();
+      lensPubId = lensPubCount.add(BigNumber.from('1')).toHexString();
 
       await makePostGasless(defaultProfile.id, `ipfs://${content.IpfsHash}`, signer, accessToken);
 
