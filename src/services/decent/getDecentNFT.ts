@@ -2,6 +2,7 @@ import { DecentSDK, chain, crescendo, edition, zkEdition, metadataRenderer } fro
 import { Signer, providers } from 'ethers';
 import axios from 'axios';
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { last } from 'lodash/array';
 import {
   chainIdToChain,
   NFT_STORAGE_URL,
@@ -9,6 +10,7 @@ import {
   CONTRACT_TYPE_CRESCENDO,
   CONTRACT_TYPE_EDITION,
   CONTRACT_TYPE_ZK_EDITION,
+  VIDEO_EXTENSIONS,
 } from './utils';
 import { JSON_RPC_URL_ALCHEMY_MAP } from "@/lib/consts";
 
@@ -27,6 +29,7 @@ export const getContractDataCrescendo = async (address: string, chainId: number,
     ]);
 
     const { data } = await axios.get(`${NFT_STORAGE_URL}/${uri.split('ipfs://')[1]}`);
+    data.isVideo = data.image ? VIDEO_EXTENSIONS.includes(last(data.image.split('.'))) : false;
 
     return {
       contract,
@@ -56,15 +59,11 @@ export const getContractDataEdition = async (address: string, chainId: number, s
     ]);
 
     const { data } = await axios.get(`${NFT_STORAGE_URL}/${uri.split('ipfs://')[1]}`);
-    const metadata = data;
-
-    // let metadata = atob(metadataBase64.substring(29)).replace(/\n/g, ' ');
-    // metadata = JSON.parse(metadata);
-    // metadata.name = metadata?.properties?.name;
+    data.isVideo = data.image ? VIDEO_EXTENSIONS.includes(last(data.image.split('.'))) : false;
 
     return {
       contract,
-      metadata,
+      metadata: data,
       price,
       totalSupply,
       availableSupply,
