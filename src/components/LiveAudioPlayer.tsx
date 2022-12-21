@@ -24,7 +24,7 @@ export const LiveAudioPlayer = ({ streamURL, playlistTracks, currentTrackId, add
   const [streamEnded, setStreamEnded] = useState<boolean>(false);
 
   const onMetadata = (metadata) => {
-    if (!metadata) {
+    if (!metadata || !metadata.StreamTitle) {
       setStreamEnded(true);
     } else {
       setCurrentTrack(groupedPlaylistTracks[metadata.StreamTitle][0]);
