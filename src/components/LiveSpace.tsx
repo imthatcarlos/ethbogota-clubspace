@@ -623,6 +623,7 @@ const LiveSpace: FC<Props> = ({
                       doesFollowDrawerProfile={doesFollowDrawerProfile}
                       onFollowClick={onFollowClick}
                       isHost={isHost}
+                      loginWithLens={loginWithLens}
                     />
                   )}
                 </Dialog.Panel>

@@ -9,9 +9,10 @@ interface HostProps {
   doesFollowDrawerProfile: boolean;
   onFollowClick: (drawerProfileId: string) => void;
   isHost: boolean;
+  loginWithLens: (options: any, something: boolean) => void;
 }
 
-export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, onFollowClick, isHost }: HostProps) => {
+export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, onFollowClick, isHost, loginWithLens }: HostProps) => {
   const { data: lensRefreshData } = useLensRefresh();
   const { data: lensLoginData } = useLensLogin();
 
@@ -64,17 +65,23 @@ export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, on
                   </div>
                 </div>
 
-                {!isHost && (lensLoginData || lensRefreshData) ? (
+                {!isHost ? (
                   <div className="text-center my-3 px-3">
-                    <button
-                      className="!w-full btn"
-                      onClick={() => {
-                        onFollowClick(drawerProfileId, false);
-                      }}
-                      disabled={doesFollowDrawerProfile}
-                    >
-                      {doesFollowDrawerProfile ? "Following" : "Follow"}
-                    </button>
+                    {
+                      lensLoginData || lensRefreshData
+                        ? <button
+                            className="btn"
+                            onClick={() => {
+                              onFollowClick(drawerProfile.id);
+                            }}
+                            disabled={doesFollowDrawerProfile}
+                          >
+                            {doesFollowDrawerProfile ? "Following" : "Follow"}
+                          </button>
+                        : <button onClick={() => loginWithLens({}, true)} className="btn justify-center items-center">
+                            Login with Lens
+                          </button>
+                    }
                   </div>
                 ) : null}
               </div>
