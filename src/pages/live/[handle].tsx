@@ -78,7 +78,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
           </div>
         </div>
       )}
-      {isConnected && !loadingDefaultProfile && defaultProfile && !isLoadingENS && (
+      {isConnected && !loadingDefaultProfile && !isLoadingENS && (
         <JamProviderWrapper>
           <PlayerContext.Provider value={audioPlayerState}>
             <DispatchPlayerContext.Provider value={audioPlayerDispatch}>

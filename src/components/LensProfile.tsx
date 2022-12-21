@@ -39,7 +39,7 @@ export const LensProfile: FC<Props> = ({ allowDrawer, picture, handle, reaction,
       onClick={allowDrawer ? onClick : undefined}
       className={`${
         allowDrawer
-          ? "hover:outline hover:outline-indigo-400 hover:outline-offset-8 hover:outline-[0.1px] cursor-pointer"
+          ? "hover:outline hover:outline-indigo-400 hover:outline-offset-8 hover:outline-[0.1px] cursor-pointer rounded-sm"
           : ""
       } animate-fade-in-from-top flex items-center justify-center flex-col max-w-[80px] relative opacity-0 mx-auto gap-y-1`}
     >
