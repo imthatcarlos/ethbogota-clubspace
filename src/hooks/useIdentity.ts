@@ -7,7 +7,7 @@ export default () => {
   useEffect(() => {
     const identityString = localStorage.getItem("identity");
 
-    if (identityString) {
+    if (identityString && identityString !== '{}') {
       const identity = new Identity(identityString);
 
       setIdentity(identity);
