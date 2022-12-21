@@ -179,7 +179,6 @@ const LiveSpace: FC<Props> = ({
   const audiencePeers = peers.filter((id) => !isEmpty(identities[id]));
 
   const { identity } = useIdentity();
-  console.log(`identity`, identity);
 
   // trigger the entry if everything is loaded
   useEffect(() => {
@@ -312,8 +311,6 @@ const LiveSpace: FC<Props> = ({
     console.log(`LEAVING`);
     await leaveRoom(clubSpaceObject.clubSpaceId);
   });
-
-  console.log(`isLoadingEntry: ${isLoadingEntry}`);
 
   if (isLoadingEntry) return null;
 
