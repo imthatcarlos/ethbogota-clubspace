@@ -8,28 +8,25 @@ const signer = new Wallet(process.env.ADMIN_KEY, provider);
 const contract = new Contract(VERIFIER_ADDRESS, contractAbi, signer);
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-	const { groupId, dcntCollection, lensPubId, lensProfileId } = req.body
+  const { groupId, dcntCollection, lensPubId, lensProfileId } = req.body;
 
-    try {
-				const { maxFeePerGas, maxPriorityFeePerGas, gasPrice } = await provider.getFeeData();
-				console.log('creating group...');
-        const transaction = await contract.createGroup(
-					groupId,
-					dcntCollection,
-					lensPubId,
-					lensProfileId,
-					{ gasLimit: 2100000, gasPrice }
-				)
-				console.log(`tx: ${transaction.hash}`);
+  try {
+    const { maxFeePerGas, maxPriorityFeePerGas, gasPrice } = await provider.getFeeData();
+    console.log("creating group...");
+    const transaction = await contract.createGroup(groupId, dcntCollection, lensPubId, lensProfileId, {
+      gasLimit: 2100000,
+      gasPrice,
+    });
+    console.log(`tx: ${transaction.hash}`);
 
-        await transaction.wait()
+    await transaction.wait();
 
-        res.status(200).end()
-    } catch (error: any) {
-        console.error(error)
+    res.status(200).end();
+  } catch (error: any) {
+    console.error(error);
 
-        res.status(500).end()
-    }
-}
+    res.status(500).end();
+  }
+};
 
-export default handler
+export default handler;

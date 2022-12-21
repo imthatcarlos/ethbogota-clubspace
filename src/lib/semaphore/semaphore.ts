@@ -66,8 +66,23 @@ export const claimReward = async (groupId, recipient, identity, connectedAddress
   });
   const solidityProof = packToSolidityProof(proof);
 
+  // make them pay their own gas since no privacy
+  if (recipient === connectedAddress) {
+    console.log("sending claim tx");
+    const { maxFeePerGas, maxPriorityFeePerGas } = await provider.getFeeData();
+    await contract.claim(
+      groupId,
+      recipient,
+      signal,
+      publicSignals.merkleRoot,
+      publicSignals.nullifierHash,
+      solidityProof,
+      { maxFeePerGas, maxPriorityFeePerGas, gasLimit: 2100000 }
+    );
+  }
+
   try {
-    console.log("sending tx");
+    console.log("posting");
     const { status } = await fetch(`/api/semaphore/claim-reward`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
