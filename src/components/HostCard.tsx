@@ -72,7 +72,7 @@ export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, on
                         ? <button
                             className="btn"
                             onClick={() => {
-                              onFollowClick(drawerProfile.id);
+                              onFollowClick(profile.id);
                             }}
                             disabled={doesFollowDrawerProfile}
                           >
