@@ -16,8 +16,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   console.log(identity, username, groupId);
 
-  const identityObject = new Identity(identity);
+  const REDIS_KEY_JOINED_SPACE = `joined-${groupId}-${address}`;
 
+  const hasJoined = await redisClient.get(REDIS_KEY_JOINED_SPACE);
+  if (hasJoined) {
+    console.log('skipping semaphore/privy - already joined the space');
+    return res.status(200).end();
+  }
+
+  const identityObject = new Identity(identity);
   const identityCommitment = identityObject.generateCommitment().toString();
 
   try {
@@ -25,28 +32,27 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const newLength = await redisClient.lpush(`rolecall-${groupId}`, [identityCommitment.toString()]);
     console.log(`wrote to redis for id commitment for semGroupIdHex: ${groupId} (length: ${newLength})`);
 
-    // only doing this once...
-    if (newLength === 1) {
-      const newEntry = {
-        groupId,
-        identity,
-        claimed: false,
-      };
-      await appendToField(address, "clubspace-attendance", newEntry);
-      console.log('wrote to privy');
+    const newEntry = {
+      groupId,
+      identity,
+      claimed: false,
+    };
+    await appendToField(address, "clubspace-attendance", newEntry);
+    console.log('wrote to privy');
 
-      const { maxFeePerGas, maxPriorityFeePerGas, gasPrice } = await provider.getFeeData();
-      console.log('joining group...');
-      const transaction = await contract.joinGroup(
-        identityCommitment,
-        utils.formatBytes32String(username),
-        BigNumber.from(groupId),
-        { gasLimit: 2100000, gasPrice }
-      );
+    const { maxFeePerGas, maxPriorityFeePerGas, gasPrice } = await provider.getFeeData();
+    console.log('joining group...');
+    const transaction = await contract.joinGroup(
+      identityCommitment,
+      utils.formatBytes32String(username),
+      BigNumber.from(groupId),
+      { gasLimit: 2100000, gasPrice }
+    );
 
-      await transaction.wait();
-      console.log(`joined semaphore group: ${transaction.hash}`);
-    }
+    await transaction.wait();
+    console.log(`joined semaphore group: ${transaction.hash}`);
+
+    await redisClient.set(REDIS_KEY_JOINED_SPACE, '1');
   } catch (error) {
     console.log(error.stack);
   }

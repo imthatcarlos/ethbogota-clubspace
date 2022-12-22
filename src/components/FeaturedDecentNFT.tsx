@@ -112,19 +112,19 @@ export const FeaturedDecentNFT = ({
             <div className="bg-slate-800 shadow-xl rounded-lg relative">
               <div className="photo-wrapper p-2 pt-0 overflow-hidden">
                 {
-                  metadata.animation_url || metadata.isVideo
-                    ? <video
+                  !metadata.isVideo
+                    ? <img
+                        className="absolute t-0 left-0 right-0 w-full h-full object-cover opacity-50 rounded-md"
+                        src={getUrlForImageFromIpfs(metadata.image)}
+                        alt=""
+                      />
+                    : <video
                         className="absolute t-0 left-0 right-0 w-full h-full object-cover opacity-50 rounded-md"
                         src={getUrlForImageFromIpfs(metadata.animation_url || metadata.image)}
                         alt=""
                         autoPlay
                         muted
                         loop
-                      />
-                    : <img
-                        className="absolute t-0 left-0 right-0 w-full h-full object-cover opacity-50 rounded-md"
-                        src={getUrlForImageFromIpfs(metadata.image)}
-                        alt=""
                       />
                 }
               </div>
