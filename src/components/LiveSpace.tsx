@@ -590,7 +590,7 @@ const LiveSpace: FC<Props> = ({
                     <img
                       src={drawerProfile?.picture?.original?.url}
                       alt=""
-                      className={`rounded-full w-12 h-12 aspect-square relative border-black-[4px] top-3/4 left-[5%] outline outline-offset-0 outline-2 ${hasBadge ? 'outline-red-600' : 'outline-black'}`}
+                      className={`rounded-full w-12 h-12 aspect-square relative border-black-[4px] top-3/4 left-[5%] outline outline-offset-0 outline-2 ${drawerProfile?.hasBadge ? 'outline-red-600' : 'outline-black'}`}
                     />
                   </div>
                   <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
