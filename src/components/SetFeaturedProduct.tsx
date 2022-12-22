@@ -13,7 +13,7 @@ const SetFeaturedProduct = ({ setDecentProduct, decentProduct = undefined, updat
   const { data: signer } = useSigner();
   const { data: deployedProducts, isLoading } = useGetDeployedProducts(address, chain.id, signer);
 
-  const getProductName = ({ chain, metadata, contractType }) => (`[${chain}] ${metadata.name}`);
+  const getProductName = ({ chain, metadata, contractType }) => (`[${chain}] ${metadata?.name}`);
 
   // only allowing editions + crescendo contracts deployed on certain chains
   const getIsProductEnabled = ({ chainId, contractType }) => (
