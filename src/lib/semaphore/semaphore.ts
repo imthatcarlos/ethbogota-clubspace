@@ -28,34 +28,39 @@ export const createGroup = async (groupId, dcntCollection, lensPubId, lensProfil
 
 export const joinGroup = async (lensUsername, identity, groupId, address) => {
   console.log(`Joining the group...`, lensUsername, groupId, identity);
-  
-  try{
-    const identityString = identity.toString()
+
+  try {
     const { status } = await fetch(`/api/semaphore/join-group`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        identity: identityString,
+        identity: identity.toString(),
         username: lensUsername,
         groupId,
         address,
       }),
     });
-  
+
     if (status === 200) {
       console.log(`You joined the Club space group event 🎉 `);
     } else {
       console.log("Some error occurred, please try again!");
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 };
 
 export const claimReward = async (groupId, recipient, identity, connectedAddress, signer) => {
-  const {
-    data: { groupIdentities },
-  } = await axios.post(`/api/redis/get-group`, { groupId });
+  // TODO: group identities might be out of order
+  // instead of getting them from redis, we should get them from the contract
+  // NewUser event
+  const events = await contract.queryFilter(
+    contract.filters.NewUser(undefined, undefined, groupId),
+    ZK_DEPLOYMENT_BLOCK
+  );
+  const groupIdentities = [...new Set(events.map((event) => event.args[0].toString()))] ;
+  console.log(groupIdentities)
 
   const group = new Group();
   group.addMembers(groupIdentities);

@@ -13,10 +13,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     if (recipient !== connectedAddress) {
       console.log("sending claim tx");
-      const { maxFeePerGas, maxPriorityFeePerGas, gasPrice } = await provider.getFeeData();
+      const { gasPrice } = await provider.getFeeData();
       const transaction = await contract.claim(groupId, recipient, signal, merkleRoot, nullifierHash, solidityProof, {
-        // maxFeePerGas,
-        // maxPriorityFeePerGas,
         gasPrice,
         gasLimit: 500_000,
       });
@@ -24,11 +22,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       await transaction.wait();
     }
 
-    // TODO: make a call to privy to mark this username/groupId as claimed
+    // make a call to privy to mark this username/groupId as claimed
     let clubSpaceObject = await getCurrentContentsData(connectedAddress, "clubspace-attendance", false);
     const index = clubSpaceObject.findIndex((x) => x.groupId.toString() === groupId.toString());
-    clubSpaceObject[index].claimed = true;
-    await updateField(connectedAddress, "clubspace-attendance", clubSpaceObject);
+    if (index > -1) {
+      clubSpaceObject[index].claimed = true;
+      await updateField(connectedAddress, "clubspace-attendance", clubSpaceObject);
+    }
 
     res.status(200).end();
   } catch (error: any) {
