@@ -44,7 +44,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     console.log('joining group...');
     const transaction = await contract.joinGroup(
       identityCommitment,
-      utils.formatBytes32String(username),
+      utils.formatBytes32String(username || address),
       BigNumber.from(groupId),
       { gasLimit: 2100000, gasPrice }
     );
@@ -53,11 +53,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     console.log(`joined semaphore group: ${transaction.hash}`);
 
     await redisClient.set(REDIS_KEY_JOINED_SPACE, '1');
+    res.status(200).end();
   } catch (error) {
     console.log(error.stack);
+    res.status(500).end();
   }
-
-  res.status(200).end();
 };
 
 export default handler;
