@@ -10,7 +10,7 @@ const ClaimsPage = ({ clubSpaceObject }) => {
         <div className="mt-4">No claims for this address</div>
       ) : (
         clubSpaceObject.map((object) => (
-          <div key={object.groupId} className="mt-4">
+          <div key={object.groupId} className="mt-4 mb-8">
             <p className="underline mb-2">Space ID: {object.groupId}</p>
             <ClaimGoodyBag attendanceProps={object} />
           </div>

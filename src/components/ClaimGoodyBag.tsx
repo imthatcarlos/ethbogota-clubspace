@@ -41,7 +41,7 @@ const ClaimGoodyBag = ({ attendanceProps }) => {
   }
 
   return (
-    <div className="mb-12">
+    <div className="mb-4">
       <p>You've got a reward!</p>
       {
         error && <p className="text-red-500">{error}</p>

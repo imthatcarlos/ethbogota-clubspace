@@ -182,7 +182,7 @@ const LiveSpace: FC<Props> = ({
 
   // trigger the entry if everything is loaded
   useEffect(() => {
-    if (isLoadingEntry && !isEmpty(myIdentity) && !isEmpty(creatorLensProfile) && !isEmpty(featuredDecentNFT)) {
+    if (isLoadingEntry && identity !== undefined && !isEmpty(myIdentity) && !isEmpty(creatorLensProfile) && !isEmpty(featuredDecentNFT)) {
       setIsLoadingEntry(false);
       // log impression, join group
       joinGroup(defaultProfile.handle, identity, clubSpaceObject.semGroupIdHex, address);
