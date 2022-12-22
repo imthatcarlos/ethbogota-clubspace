@@ -65,12 +65,19 @@ export const getContractDataEdition = async (address: string, chainId: number, s
       contract.saleIsActive()
     ]);
 
-    const { data } = await axios.get(`${NFT_STORAGE_URL}/${uri.split('ipfs://')[1]}`);
-    data.isVideo = data.image ? VIDEO_EXTENSIONS.includes(last(data.image.split('.'))) : false;
+    let metadata
+    if (uri.startsWith('ipfs://')) {
+      const res = await axios.get(`${NFT_STORAGE_URL}/${uri.split('ipfs://')[1]}`);
+      metadata = res.data
+    } else if (uri.startsWith('data:application/json;base64')) {
+      metadata = JSON.parse(atob(uri.substring(29)).replace(/\n/g, ' '));
+    }
+
+    metadata.isVideo = metadata.image ? VIDEO_EXTENSIONS.includes(last(metadata.image.split('.'))) : false;
 
     return {
       contract,
-      metadata: data,
+      metadata,
       price,
       totalSupply,
       availableSupply,
@@ -93,8 +100,7 @@ export const getContractDataZkEdition = async (address: string, chainId: number,
       contract.MAX_TOKENS()
     ]);
 
-    let metadata = atob(metadataBase64.substring(29)).replace(/\n/g, ' ');
-    metadata = JSON.parse(metadata);
+    let metadata = JSON.parse(atob(metadataBase64.substring(29)).replace(/\n/g, ' '));
     metadata.name = metadata?.properties?.name;
 
     return {
