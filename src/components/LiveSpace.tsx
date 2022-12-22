@@ -186,14 +186,20 @@ const LiveSpace: FC<Props> = ({
 
   // trigger the entry if everything is loaded
   useEffect(() => {
-    if (isLoadingEntry && !isEmpty(myIdentity) && !isEmpty(creatorLensProfile) && !isEmpty(featuredDecentNFT)) {
-      setIsLoadingEntry(false);
-      // log impression, join group
-      if (identity !== undefined) {
-        joinGroup(defaultProfile.handle, identity, clubSpaceObject.semGroupIdHex, address);
-      }
+    if (!isLoadingEntry && !isEmpty(identity)) {
+      joinGroup(defaultProfile.handle, identity, clubSpaceObject.semGroupIdHex, address);
     }
-  }, [isLoadingEntry, myIdentity, creatorLensProfile, featuredDecentNFT]);
+  }, [isLoadingEntry, identity]);
+
+  // useEffect(() => {
+  //   if (isLoadingEntry && !isEmpty(myIdentity) && !isEmpty(creatorLensProfile) && !isEmpty(featuredDecentNFT)) {
+  //     setIsLoadingEntry(false);
+  //     // log impression, join group
+  //     if (identity !== undefined) {
+  //       joinGroup(defaultProfile.handle, identity, clubSpaceObject.semGroupIdHex, address);
+  //     }
+  //   }
+  // }, [isLoadingEntry, myIdentity, creatorLensProfile, featuredDecentNFT]);
 
   // only lens accounts (handle includes .lens or .test)
   const toggleDrawer = async ({ handle, profile: { id } }) => {
@@ -290,9 +296,17 @@ const LiveSpace: FC<Props> = ({
       console.log(`JOINING: ${clubSpaceObject.clubSpaceId}`);
       await enterRoom(clubSpaceObject.clubSpaceId);
       console.log("JOINED");
+
+      setIsLoadingEntry(false);
     };
 
-    if (isMounted && isLoadingEntry && handle && clubSpaceObject.streamURL) {
+    if (isMounted
+      && isLoadingEntry
+      && handle
+      && clubSpaceObject.streamURL
+      && !isEmpty(creatorLensProfile)
+      && !isEmpty(featuredDecentNFT)
+    ) {
       join();
     }
   }, [
@@ -308,6 +322,8 @@ const LiveSpace: FC<Props> = ({
     setIsLoadingEntry,
     setProps,
     updateInfo,
+    creatorLensProfile,
+    featuredDecentNFT
   ]);
 
   useUnload(async () => {
@@ -380,19 +396,23 @@ const LiveSpace: FC<Props> = ({
           </div>
           <div className="decent-nft flex flex-col gap-y-3">
             {featuredDecentNFT && <FeaturedDecentNFT {...featuredDecentNFT} />}
-            <div>
-              <button
-                onClick={() => setIsHostOpen(true)}
-                className="btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center"
-              >
-                <img
-                  className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"
-                  src={getUrlForImageFromIpfs(creatorLensProfile.picture?.original?.url)}
-                  alt=""
-                />
-                <span>@{creatorLensProfile.handle}</span>
-              </button>
-            </div>
+            {
+              creatorLensProfile && (
+                <div>
+                  <button
+                    onClick={() => setIsHostOpen(true)}
+                    className="btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center"
+                  >
+                    <img
+                      className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"
+                      src={getUrlForImageFromIpfs(creatorLensProfile.picture?.original?.url)}
+                      alt=""
+                    />
+                    <span>@{creatorLensProfile.handle}</span>
+                  </button>
+                </div>
+              )
+            }
           </div>
         </div>
         <div className="bg-live-page-player bg-cover bg-no-repeat blur-[70px] inset-0 absolute z-[-1] lg:max-h-[50vh] max-h-[25vh] "></div>
