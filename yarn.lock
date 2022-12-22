@@ -8982,6 +8982,11 @@ use-callback-ref@^1.3.0:
   dependencies:
     tslib "^2.0.0"
 
+use-debounce@^9.0.2:
+  version "9.0.2"
+  resolved "https://registry.yarnpkg.com/use-debounce/-/use-debounce-9.0.2.tgz#2883982ec1eb79affec46f14047244057b78161c"
+  integrity sha512-QLyB0sxt9F5AisGDrUybCRJSLE60bTQR0yXc+IebNGUu1GCXwii1zsZl82mPGdWqDVQy7+1FKMLHQUixxf5Nbw==
+
 use-minimal-state@^3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/use-minimal-state/-/use-minimal-state-3.5.0.tgz#e9105dfc7e30efee1b15faa0817b45dc5f8385c6"

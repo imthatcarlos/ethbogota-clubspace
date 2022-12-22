@@ -4,6 +4,7 @@ import { ITrack } from "@spinamp/spinamp-sdk";
 import IcecastMetadataPlayer from "icecast-metadata-player";
 import { groupBy } from "lodash/collection";
 import { isEmpty } from "lodash/lang";
+import toast from "react-hot-toast";
 import { getUrlForImageFromIpfs } from "@/utils/ipfs";
 import { ExternalLink, Play, Pause } from "@/components/Vectors";
 import useIsMounted from "@/hooks/useIsMounted";
@@ -25,6 +26,7 @@ export const LiveAudioPlayer = ({ streamURL, playlistTracks, currentTrackId, add
 
   const onMetadata = (metadata) => {
     if (!metadata || !metadata.StreamTitle) {
+      toast('The stream has ended - thanks for coming!', { duration: 10000, icon: '🔥' });
       setStreamEnded(true);
     } else {
       setCurrentTrack(groupedPlaylistTracks[metadata.StreamTitle][0]);

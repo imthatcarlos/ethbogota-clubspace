@@ -5,6 +5,7 @@ import { useJam } from "@/lib/jam-core-react";
 import { isEmpty } from "lodash/lang";
 import toast from "react-hot-toast";
 import { use } from "use-minimal-state";
+import { useDebounce } from 'use-debounce';
 import { classNames } from "@/lib/utils/classNames";
 import { buildLensShareUrl } from "@infinity-keys/react-lens-share-button";
 import { Profile, useGetProfilesOwned, useGetProfileByHandle } from "@/services/lens/getProfile";
@@ -93,6 +94,8 @@ const LiveSpace: FC<Props> = ({
   const [isHostOpen, setIsHostOpen] = useState<boolean>(false);
   const { data: ensData, isLoading: isLoadingENS } = useENS(address);
   const { switchNetworkAsync } = useSwitchNetwork({ onSuccess: (data) => onFollowClick(true, undefined, true) });
+  const [sendingReaction, setSendingReaction] = useState<boolean>(false);
+  const [debouncedSendingReaction] = useDebounce(sendingReaction, 5000);
 
   // @TODO: should really merge these two hook calls
   // - first run tries to do the refresh call
@@ -191,6 +194,14 @@ const LiveSpace: FC<Props> = ({
     }
   }, [isLoadingEntry, identity]);
 
+  // debounce the reaction sending
+  useEffect(() => {
+    console.log('debounce!', sendingReaction);
+    if (sendingReaction && debouncedSendingReaction) {
+      setSendingReaction(false);
+    }
+  }, [debouncedSendingReaction]);
+
   // useEffect(() => {
   //   if (isLoadingEntry && !isEmpty(myIdentity) && !isEmpty(creatorLensProfile) && !isEmpty(featuredDecentNFT)) {
   //     setIsLoadingEntry(false);
@@ -202,9 +213,9 @@ const LiveSpace: FC<Props> = ({
   // }, [isLoadingEntry, myIdentity, creatorLensProfile, featuredDecentNFT]);
 
   // only lens accounts (handle includes .lens or .test)
-  const toggleDrawer = async ({ handle, profile: { id } }) => {
+  const toggleDrawer = async ({ handle, profile: { id }, hasBadge }) => {
     if ([".lens", ".test"].some((ext) => handle.includes(ext))) {
-      const [profile, { doesFollow: doesFollowData }] = await Promise.all([
+      const [profile, { doesFollow: doesFollowData }, ] = await Promise.all([
         getProfileByHandle(handle),
         doesFollow([{ followerAddress: address, profileId: id }]),
       ]);
@@ -218,6 +229,8 @@ const LiveSpace: FC<Props> = ({
         const convertedProfilePic = getUrlForImageFromIpfs(profile?.picture?.original?.url);
         profile.picture.original.url = convertedProfilePic;
       }
+
+      profile.hasBadge = hasBadge;
 
       setDrawerProfile(profile);
       setDoesFollowDrawerProfile(doesFollowData[0].follows);
@@ -437,13 +450,14 @@ const LiveSpace: FC<Props> = ({
                     <Menu as="div" className="relative flex-shrink-0 mb-32">
                       <div className="flex mt-10 items-center mx-auto">
                         <Menu.Button
-                          disabled={!defaultProfile}
+                          title="Use these wisely..."
+                          disabled={sendingReaction}
                           className="text-club-red !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
-                            fill="currentColor"
+                            fill={!sendingReaction ? "currentColor" : "gray"}
                             className="w-6 h-6"
                           >
                             <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
@@ -464,8 +478,20 @@ const LiveSpace: FC<Props> = ({
                       >
                         <Menu.Items className="absolute z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 p-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none flex gap-4 flex-wrap left-1/2 transform -translate-x-1/2">
                           {reactionsEntries.map(([key, value]) => (
-                            <Menu.Item key={value}>
-                              {({ active }) => <button onClick={() => sendReaction(value)}>{value}</button>}
+                            <Menu.Item key={key}>
+                              {({ active }) =>
+                                <button
+                                  onClick={() => {
+                                    try {
+                                      sendReaction(value);
+                                    } catch (error) {
+                                      console.log(error)
+                                    } finally {
+                                      setSendingReaction(true);
+                                    }
+                                  }}>
+                                  {value}
+                                </button>}
                             </Menu.Item>
                           ))}
                         </Menu.Items>
@@ -564,7 +590,7 @@ const LiveSpace: FC<Props> = ({
                     <img
                       src={drawerProfile?.picture?.original?.url}
                       alt=""
-                      className="rounded-full w-12 h-12 aspect-square relative border-black-[4px] top-3/4 left-[5%] outline outline-offset-0 outline-4 outline-black"
+                      className={`rounded-full w-12 h-12 aspect-square relative border-black-[4px] top-3/4 left-[5%] outline outline-offset-0 outline-2 ${hasBadge ? 'outline-red-600' : 'outline-black'}`}
                     />
                   </div>
                   <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
@@ -574,6 +600,7 @@ const LiveSpace: FC<Props> = ({
                           <span>{drawerProfile?.name}</span>
                         </div>
                         <div className="text-gray-500">@{drawerProfile?.handle}</div>
+                        {drawerProfile?.hasBadge ? <span class="text-sm badge-holder mt-1">✔️ ClubSpace Badge Holder</span>: null}
                       </div>
 
                       {drawerProfile?.id !== defaultProfile?.id ? (
