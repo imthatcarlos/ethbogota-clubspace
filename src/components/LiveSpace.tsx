@@ -79,7 +79,7 @@ const LiveSpace: FC<Props> = ({
   isLoadingEntry,
   setIsLoadingEntry,
   handle,
-  hasBadge
+  hasBadge,
 }) => {
   const isMounted = useIsMounted();
   const { data: signer } = useSigner();
@@ -117,23 +117,27 @@ const LiveSpace: FC<Props> = ({
       signer,
     }
   );
-  const {
-    data: playlistTracks,
-    isLoading: isLoadingPlaylistTracks
-  } = useGetTracksFromPlaylist({}, clubSpaceObject.spinampPlaylistId);
+  const { data: playlistTracks, isLoading: isLoadingPlaylistTracks } = useGetTracksFromPlaylist(
+    {},
+    clubSpaceObject.spinampPlaylistId
+  );
 
-  const shareURL = useMemo(() => (
-    buildLensShareUrl({
-      postBody: 'Join this space!',
-      url: `${SITE_URL}/live/${clubSpaceObject.handle}`,
-    })
-  ), [clubSpaceObject]);
+  const shareURL = useMemo(
+    () =>
+      buildLensShareUrl({
+        postBody: "Join this space!",
+        url: `${SITE_URL}/live/${clubSpaceObject.handle}`,
+      }),
+    [clubSpaceObject]
+  );
 
-  const lensterPostURL = useMemo(() => (
-    clubSpaceObject.lensPubId === "0"
-    ? undefined
-    : `${LENSTER_URL}/posts/${clubSpaceObject.creatorLensProfileId}-${clubSpaceObject.lensPubId}`
-  ), [clubSpaceObject]);
+  const lensterPostURL = useMemo(
+    () =>
+      clubSpaceObject.lensPubId === "0"
+        ? undefined
+        : `${LENSTER_URL}/posts/${clubSpaceObject.creatorLensProfileId}-${clubSpaceObject.lensPubId}`,
+    [clubSpaceObject]
+  );
 
   let [
     reactions,
@@ -182,10 +186,12 @@ const LiveSpace: FC<Props> = ({
 
   // trigger the entry if everything is loaded
   useEffect(() => {
-    if (isLoadingEntry && identity !== undefined && !isEmpty(myIdentity) && !isEmpty(creatorLensProfile) && !isEmpty(featuredDecentNFT)) {
+    if (isLoadingEntry && !isEmpty(myIdentity) && !isEmpty(creatorLensProfile) && !isEmpty(featuredDecentNFT)) {
       setIsLoadingEntry(false);
       // log impression, join group
-      joinGroup(defaultProfile.handle, identity, clubSpaceObject.semGroupIdHex, address);
+      if (identity !== undefined) {
+        joinGroup(defaultProfile.handle, identity, clubSpaceObject.semGroupIdHex, address);
+      }
     }
   }, [isLoadingEntry, myIdentity, creatorLensProfile, featuredDecentNFT]);
 
@@ -216,11 +222,10 @@ const LiveSpace: FC<Props> = ({
 
   const onFollowClick = async (profileId: string, isFollowDrawer = true, switched = false) => {
     if (!switched && ALLOWED_CHAIN_IDS[0] !== chain.id) {
-      toast('Switching chains...');
+      toast("Switching chains...");
       try {
         await switchNetworkAsync(ALLOWED_CHAIN_IDS[0]);
-      } catch {
-      }
+      } catch {}
       return;
     } else if (switched) {
       await wait(1000);
@@ -248,16 +253,14 @@ const LiveSpace: FC<Props> = ({
         success: "Followed!",
         error: (error) => {
           try {
-            const realError = typeof error === 'object'
-              ? error.toString().split('(')[0]
-              : '';
+            const realError = typeof error === "object" ? error.toString().split("(")[0] : "";
 
-            if (realError.startsWith('Error: user rejected')) {
+            if (realError.startsWith("Error: user rejected")) {
               return realError;
             }
           } catch {}
 
-          return 'Error!';
+          return "Error!";
         },
       }
     );
@@ -320,7 +323,7 @@ const LiveSpace: FC<Props> = ({
         <div className="grid-live items-center justify-center px-10 lg:px-14 gap-x-3">
           <div className="grid-container w-full audience max-h-[30rem] overflow-auto !content-baseline rounded-lg">
             {!!myIdentity
-              ? ([myPeerId].concat(audiencePeers)).map((peerId, index) => {
+              ? [myPeerId].concat(audiencePeers).map((peerId, index) => {
                   return identities[peerId] ? (
                     <LensProfile
                       allowDrawer={[".lens", ".test"].some((ext) => identities[peerId].handle.includes(ext))}
@@ -328,7 +331,9 @@ const LiveSpace: FC<Props> = ({
                       key={identities[peerId].handle}
                       handle={identities[peerId].handle}
                       picture={
-                        identities[peerId].profile.avatar ? getUrlForImageFromIpfs(identities[peerId].profile.avatar) : "/anon.png"
+                        identities[peerId].profile.avatar
+                          ? getUrlForImageFromIpfs(identities[peerId].profile.avatar)
+                          : "/anon.png"
                       }
                       name={identities[peerId].profile?.name}
                       totalFollowers={identities[peerId].profile?.totalFollowers}
@@ -357,21 +362,21 @@ const LiveSpace: FC<Props> = ({
           </div>
 
           <div className="player mx-auto">
-            {
-              !isLoadingPlaylistTracks && (
-                <>
-                  {playlistTracks?.length && clubSpaceObject.streamURL ? (
-                    <LiveAudioPlayer
-                      playlistTracks={playlistTracks}
-                      streamURL={clubSpaceObject.streamURL}
-                      playerUUID={clubSpaceObject.playerUUID}
-                      currentTrackId={clubSpaceObject.currentTrackId}
-                      address={address}
-                    />
-                  ) : <DirectToClaims address={address} />}
-                </>
-              )
-            }
+            {!isLoadingPlaylistTracks && (
+              <>
+                {playlistTracks?.length && clubSpaceObject.streamURL ? (
+                  <LiveAudioPlayer
+                    playlistTracks={playlistTracks}
+                    streamURL={clubSpaceObject.streamURL}
+                    playerUUID={clubSpaceObject.playerUUID}
+                    currentTrackId={clubSpaceObject.currentTrackId}
+                    address={address}
+                  />
+                ) : (
+                  <DirectToClaims address={address} />
+                )}
+              </>
+            )}
           </div>
           <div className="decent-nft flex flex-col gap-y-3">
             {featuredDecentNFT && <FeaturedDecentNFT {...featuredDecentNFT} />}
@@ -455,7 +460,7 @@ const LiveSpace: FC<Props> = ({
 
             <button
               className="text-black dark:text-white !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative"
-              onClick={() => window.open(shareURL, '_blank')}
+              onClick={() => window.open(shareURL, "_blank")}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -475,12 +480,12 @@ const LiveSpace: FC<Props> = ({
               <span className="sr-only">Share icon</span>
             </button>
 
-            { lensterPostURL &&
+            {lensterPostURL && (
               <button
                 className={
                   "text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-full text-sm py-2 px-6 text-center inline-flex items-center mr-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800 !m-0 max-h-[40px]"
                 }
-                onClick={() => window.open(lensterPostURL, '_blank')}
+                onClick={() => window.open(lensterPostURL, "_blank")}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -496,7 +501,8 @@ const LiveSpace: FC<Props> = ({
                     d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 011.037-.443 48.282 48.282 0 005.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"
                   />
                 </svg>
-              </button> }
+              </button>
+            )}
           </div>
         )}
       </div>
