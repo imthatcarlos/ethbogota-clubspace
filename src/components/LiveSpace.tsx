@@ -620,7 +620,7 @@ const LiveSpace: FC<Props> = ({
                     <HostCard
                       profile={creatorLensProfile}
                       drawerProfileId={creatorLensProfile.id}
-                      doesFollowDrawerProfile={doesFollowDrawerProfile}
+                      doesFollowDrawerProfile={doesFollowCreator}
                       onFollowClick={onFollowClick}
                       isHost={isHost}
                       loginWithLens={loginWithLens}
