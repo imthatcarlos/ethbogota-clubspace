@@ -2106,18 +2106,18 @@
   resolved "https://registry.yarnpkg.com/@rushstack/eslint-patch/-/eslint-patch-1.2.0.tgz#8be36a1f66f3265389e90b5f9c9962146758f728"
   integrity sha512-sXo/qW2/pAcmT43VoRKOJbDOfV3cYpq3szSVfIThQXNt+E4DfKj361vaAt3c88U5tPUxzEswam7GW48PJqtKAg==
 
-"@semaphore-protocol/group@2.5.0":
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/@semaphore-protocol/group/-/group-2.5.0.tgz#abb161caaa52590dc46176cfdc337d2bccd2df23"
-  integrity sha512-XQOw1Xj14NendmSyqHX6jpedczjWBo5KmNlfK5blVtUaXR8REldsnkI+IpGyzZyrkJSke5IbideAk0nLIkW1ng==
+"@semaphore-protocol/group@^2.6.0":
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/@semaphore-protocol/group/-/group-2.6.1.tgz#6df225aa70604b5ae8900388bb032fdbd195f583"
+  integrity sha512-OgTZijyFBP8i+AIKNPNC2q6Ks98pSJXVSStHXrNPDkcOlCjNBt2beya/pJ0GvZCb+Cdj/bxunOoXnA7iaxXoug==
   dependencies:
     "@zk-kit/incremental-merkle-tree" "1.0.0"
     circomlibjs "0.0.8"
 
-"@semaphore-protocol/identity@2.5.0":
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/@semaphore-protocol/identity/-/identity-2.5.0.tgz#27e4af486b53dc9f75730d95c01365a416742bc5"
-  integrity sha512-ovZjWZ4ioQ2htQ9Zr5ZRTS0rJ/jjm3HO3dDdijYevb3/ac1+twHTmHC668ixO8DCkjvqS4p3/H0ZxYWHtcryrg==
+"@semaphore-protocol/identity@^2.6.0":
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/@semaphore-protocol/identity/-/identity-2.6.1.tgz#49385c1004261ca2e192c43aa04005ce6ef82d83"
+  integrity sha512-pS3+p1Oer0P+S2AyRPrZcLqrWvelgVmweUuMC2hodRF5yEBUmLwXI/kez4qw8zOqwCXiAFpLTevaGlpp2EhsWg==
   dependencies:
     "@ethersproject/bignumber" "^5.5.0"
     "@ethersproject/random" "^5.5.1"
@@ -2125,10 +2125,10 @@
     "@ethersproject/strings" "^5.6.1"
     circomlibjs "0.0.8"
 
-"@semaphore-protocol/proof@2.5.0":
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/@semaphore-protocol/proof/-/proof-2.5.0.tgz#76e5aed3c0341964ba2feb04c62394f200ef20a6"
-  integrity sha512-GvjWHpCAG7DdL3w23J5SAysg46ePTJjOV3Ly3ltNM5ewsBep5AEtED4eudnXgNYuqZyuChOjXR91UOnhD8RoZQ==
+"@semaphore-protocol/proof@^2.6.0":
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/@semaphore-protocol/proof/-/proof-2.6.1.tgz#4632fa8c5ec06ae97a823ebea6913c39f651b317"
+  integrity sha512-Bsz7OlytL3avgOqBBVMjwPF4G1IDmaNOJbFc1ewmuqRmYI/9Ao5l9GB6FzTKuBAkKGueIlptn3hPiZtKzAKfOg==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/solidity" "^5.5.0"

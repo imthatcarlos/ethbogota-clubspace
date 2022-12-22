@@ -2,16 +2,18 @@ import { claimReward } from "@/lib/semaphore/semaphore";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { getAddress } from "ethers/lib/utils";
 import { useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useSigner } from "wagmi";
 
 const mainnetProvider = new JsonRpcProvider(process.env.NEXT_PUBLIC_MAINNET_RPC);
 
 const ClaimGoodyBag = ({ attendanceProps }) => {
+  const { data: signer } = useSigner();
   const { groupId, claimed, identity } = attendanceProps;
   const { address } = useAccount();
   const [newClaim, setNewClaim] = useState(false);
   const [loading, setLoading] = useState(false);
   const [recipient, setRecipient] = useState("");
+  const [error, setError] = useState("");
 
   const submit = async () => {
     setLoading(true);
@@ -25,9 +27,11 @@ const ClaimGoodyBag = ({ attendanceProps }) => {
     } catch {
       console.error("invalid address");
     }
-    const success = await claimReward(groupId, resolvedAddress, identity, address);
+    const success = await claimReward(groupId, resolvedAddress, identity, address, signer);
     if (success) {
       setNewClaim(true);
+    } else {
+      setError("Something went wrong. Please try again.");
     }
     setLoading(false);
   };
@@ -37,8 +41,11 @@ const ClaimGoodyBag = ({ attendanceProps }) => {
   }
 
   return (
-    <div className="mb-4">
+    <div className="mb-12">
       <p>You've got a reward!</p>
+      {
+        error && <p className="text-red-500">{error}</p>
+      }
       <input
         className="w-[27rem] p-2 rounded-sm mt-2"
         placeholder="Recipient address or ENS..."

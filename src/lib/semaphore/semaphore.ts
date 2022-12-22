@@ -28,26 +28,31 @@ export const createGroup = async (groupId, dcntCollection, lensPubId, lensProfil
 
 export const joinGroup = async (lensUsername, identity, groupId, address) => {
   console.log(`Joining the group...`, lensUsername, groupId, identity);
-
-  const { status } = await fetch(`/api/semaphore/join-group`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      identity: identity.toString(),
-      username: lensUsername,
-      groupId,
-      address,
-    }),
-  });
-
-  if (status === 200) {
-    console.log(`You joined the Club space group event 🎉 `);
-  } else {
-    console.log("Some error occurred, please try again!");
+  
+  try{
+    const identityString = identity.toString()
+    const { status } = await fetch(`/api/semaphore/join-group`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        identity: identityString,
+        username: lensUsername,
+        groupId,
+        address,
+      }),
+    });
+  
+    if (status === 200) {
+      console.log(`You joined the Club space group event 🎉 `);
+    } else {
+      console.log("Some error occurred, please try again!");
+    }
+  } catch (error) {
+    console.log(error)
   }
 };
 
-export const claimReward = async (groupId, recipient, identity, connectedAddress) => {
+export const claimReward = async (groupId, recipient, identity, connectedAddress, signer) => {
   const {
     data: { groupIdentities },
   } = await axios.post(`/api/redis/get-group`, { groupId });
@@ -67,18 +72,18 @@ export const claimReward = async (groupId, recipient, identity, connectedAddress
   const solidityProof = packToSolidityProof(proof);
 
   // make them pay their own gas since no privacy
-  if (recipient === connectedAddress) {
+  if (recipient === connectedAddress && signer) {
     console.log("sending claim tx");
-    const { maxFeePerGas, maxPriorityFeePerGas } = await provider.getFeeData();
-    await contract.claim(
-      groupId,
-      recipient,
-      signal,
-      publicSignals.merkleRoot,
-      publicSignals.nullifierHash,
-      solidityProof,
-      { maxFeePerGas, maxPriorityFeePerGas, gasLimit: 2100000 }
-    );
+    try {
+      const tx = await contract
+        .connect(signer)
+        .claim(groupId, recipient, signal, publicSignals.merkleRoot, publicSignals.nullifierHash, solidityProof, {
+          gasLimit: 500_000,
+        });
+      await tx.wait();
+    } catch (e) {
+      return false;
+    }
   }
 
   try {

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Identity } from "@semaphore-protocol/identity";
 
-const SEM_IDENTITY_KEY = 'sem_identity';
+const SEM_IDENTITY_KEY = "sem_identity";
 
 export default () => {
   const [identity, setIdentity] = useState<any>();
@@ -20,13 +20,14 @@ export default () => {
   }, []);
 
   const createIdentity = useCallback(async () => {
-    const _identity = new Identity();
-
-    setIdentity(_identity);
-
-    localStorage.setItem(SEM_IDENTITY_KEY, _identity.toString());
-
-    console.log("Your new Semaphore identity was just created 🎉");
+    try {
+      const _identity = new Identity();
+      setIdentity(_identity);
+      localStorage.setItem(SEM_IDENTITY_KEY, _identity.toString());
+      console.log("Your new Semaphore identity was just created 🎉");
+    } catch (e) {
+      return
+    }
   }, []);
 
   return { identity, createIdentity };
