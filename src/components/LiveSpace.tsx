@@ -90,6 +90,7 @@ const LiveSpace: FC<Props> = ({
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
   const [drawerProfile, setDrawerProfile] = useState<any>({});
   const [doesFollowDrawerProfile, setDoesFollowDrawerProfile] = useState<boolean>(false);
+  const [isFollowingAction, setIsFollowingAction] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHostOpen, setIsHostOpen] = useState<boolean>(false);
   const { data: ensData, isLoading: isLoadingENS } = useENS(address);
@@ -250,6 +251,8 @@ const LiveSpace: FC<Props> = ({
       await wait(1000);
     }
 
+    setIsFollowingAction(true);
+
     toast.promise(
       new Promise<void>(async (resolve, reject) => {
         try {
@@ -258,12 +261,15 @@ const LiveSpace: FC<Props> = ({
           const { txHash } = await followProfileGasless(profileId, _signer, accessToken);
 
           if (txHash) {
-            isFollowDrawer ? setDoesFollowDrawerProfile(true) : refetchDoesFollowCreator();
+            isFollowDrawer ? setDoesFollowDrawerProfile(true) : await refetchDoesFollowCreator();
           }
+
+          setIsFollowingAction(false);
 
           resolve();
         } catch (error) {
           console.log(error);
+          setIsFollowingAction(false);
           reject(error);
         }
       }),
@@ -610,7 +616,7 @@ const LiveSpace: FC<Props> = ({
                             onClick={() => {
                               onFollowClick(drawerProfile.id);
                             }}
-                            disabled={doesFollowDrawerProfile}
+                            disabled={doesFollowDrawerProfile || isFollowingAction}
                           >
                             {doesFollowDrawerProfile ? "Following" : "Follow"}
                           </button>
@@ -675,6 +681,7 @@ const LiveSpace: FC<Props> = ({
                       drawerProfileId={creatorLensProfile.id}
                       doesFollowDrawerProfile={doesFollowCreator}
                       onFollowClick={onFollowClick}
+                      isFollowingAction={isFollowingAction}
                       isHost={isHost}
                       loginWithLens={loginWithLens}
                     />

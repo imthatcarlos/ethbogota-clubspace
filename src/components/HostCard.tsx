@@ -10,9 +10,10 @@ interface HostProps {
   onFollowClick: (drawerProfileId: string) => void;
   isHost: boolean;
   loginWithLens: (options: any, something: boolean) => void;
+  isFollowingAction: boolean;
 }
 
-export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, onFollowClick, isHost, loginWithLens }: HostProps) => {
+export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, onFollowClick, isHost, loginWithLens, isFollowingAction }: HostProps) => {
   const { data: lensRefreshData } = useLensRefresh();
   const { data: lensLoginData } = useLensLogin();
 
@@ -74,7 +75,7 @@ export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, on
                             onClick={() => {
                               onFollowClick(profile.id);
                             }}
-                            disabled={doesFollowDrawerProfile}
+                            disabled={doesFollowDrawerProfile || isFollowingAction}
                           >
                             {doesFollowDrawerProfile ? "Following" : "Follow"}
                           </button>
