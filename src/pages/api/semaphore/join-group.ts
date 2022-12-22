@@ -6,6 +6,7 @@ import { Identity } from "@semaphore-protocol/identity";
 import { VERIFIER_ADDRESS, JSON_RPC_URL_POKT } from "@/lib/consts";
 import { Contract, providers, Wallet, utils, BigNumber } from "ethers";
 import contractAbi from "../../../lib/semaphore/abi.json";
+import { formatBytes32String } from "ethers/lib/utils.js";
 
 const provider = new providers.JsonRpcProvider(JSON_RPC_URL_POKT);
 const signer = new Wallet(process.env.ADMIN_KEY, provider);
@@ -40,11 +41,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     await appendToField(address, "clubspace-attendance", newEntry);
     console.log('wrote to privy');
 
-    const { maxFeePerGas, maxPriorityFeePerGas, gasPrice } = await provider.getFeeData();
+    const { gasPrice } = await provider.getFeeData();
     console.log('joining group...');
     const transaction = await contract.joinGroup(
       identityCommitment,
-      utils.formatBytes32String(username || address),
+      utils.formatBytes32String(username ?? address.substring(0, 30)),
       BigNumber.from(groupId),
       { gasLimit: 2100000, gasPrice }
     );
