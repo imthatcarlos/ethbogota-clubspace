@@ -8,6 +8,8 @@ import { use } from "use-minimal-state";
 import { useDebounce } from 'use-debounce';
 import { classNames } from "@/lib/utils/classNames";
 import { buildLensShareUrl } from "@infinity-keys/react-lens-share-button";
+import { uniq } from "lodash/array";
+import { sortBy } from "lodash/collection";
 import { Profile, useGetProfilesOwned, useGetProfileByHandle } from "@/services/lens/getProfile";
 import { getUrlForImageFromIpfs, wait } from "@/utils";
 import { LensProfile, reactionsEntries } from "@/components/LensProfile";
@@ -184,7 +186,13 @@ const LiveSpace: FC<Props> = ({
     }
   }, [defaultProfile, creatorLensProfile]);
 
-  const audiencePeers = peers.filter((id) => !isEmpty(identities[id]));
+  // @TODO: memoized
+  const getAudience = () => {
+    const res = uniq([myPeerId].concat(peers))
+      .filter((id) => !isEmpty(identities[id]));
+
+    return sortBy(res, (r) => -identities[r].profile?.totalFollowers || 0);
+  };
 
   const { identity } = useIdentity();
 
@@ -300,20 +308,22 @@ const LiveSpace: FC<Props> = ({
 
   useEffect(() => {
     const join = async () => {
-      await setProps("roomId", clubSpaceObject.clubSpaceId);
-      await updateInfo({
-        handle,
-        hasBadge,
-        profile: {
-          avatar: defaultProfile?.picture?.original?.url || ensData?.avatar,
-          name: defaultProfile?.name,
-          totalFollowers: defaultProfile?.stats?.totalFollowers,
-          id: defaultProfile?.id,
-        },
-      });
-      console.log(`JOINING: ${clubSpaceObject.clubSpaceId}`);
-      await enterRoom(clubSpaceObject.clubSpaceId);
-      console.log("JOINED");
+      if (!inRoom) {
+        await setProps("roomId", clubSpaceObject.clubSpaceId);
+        await updateInfo({
+          handle,
+          hasBadge,
+          profile: {
+            avatar: defaultProfile?.picture?.original?.url || ensData?.avatar,
+            name: defaultProfile?.name,
+            totalFollowers: defaultProfile?.stats?.totalFollowers,
+            id: defaultProfile?.id,
+          },
+        });
+        console.log(`JOINING: ${clubSpaceObject.clubSpaceId}`);
+        await enterRoom(clubSpaceObject.clubSpaceId);
+        console.log("JOINED");
+      }
 
       setIsLoadingEntry(false);
     };
@@ -357,7 +367,7 @@ const LiveSpace: FC<Props> = ({
         <div className="grid-live items-center justify-center px-10 lg:px-14 gap-x-3">
           <div className="grid-container w-full audience max-h-[30rem] overflow-auto !content-baseline rounded-lg">
             {!!myIdentity
-              ? [myPeerId].concat(audiencePeers).map((peerId, index) => {
+              ? getAudience().map((peerId, index) => {
                   return identities[peerId] ? (
                     <LensProfile
                       allowDrawer={[".lens", ".test"].some((ext) => identities[peerId].handle.includes(ext))}
@@ -605,7 +615,7 @@ const LiveSpace: FC<Props> = ({
                           <span>{drawerProfile?.name}</span>
                         </div>
                         <div className="text-gray-500">@{drawerProfile?.handle}</div>
-                        {drawerProfile?.hasBadge ? <span class="text-sm badge-holder mt-1">✔️ ClubSpace Badge Holder</span>: null}
+                        {drawerProfile?.hasBadge ? <span className="text-sm badge-holder mt-1">✔️ ClubSpace Badge Holder</span>: null}
                       </div>
 
                       {drawerProfile?.id !== defaultProfile?.id ? (
