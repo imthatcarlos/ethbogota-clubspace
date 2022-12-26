@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Contract, BigNumber, utils } from "ethers";
 import { useNetwork, useSigner, useSwitchNetwork, useAccount } from "wagmi";
 import toast from "react-hot-toast";
+import { unescape } from "lodash/string";
 import { getUrlForImageFromIpfs } from "@/utils/ipfs";
 import { CONTRACT_TYPE_CRESCENDO, CONTRACT_TYPE_EDITION } from "@/services/decent/utils";
 import { CURRENCY_MAP, CHAIN_NAME_MAP } from "@/lib/consts";
+
+const MAX_DESCRIPTION_LENGTH = 250;
 
 interface Props {
   contract: Contract;
@@ -101,6 +104,15 @@ export const FeaturedDecentNFT = ({
     );
   };
 
+  const parsedDescription = useMemo(() => {
+    const replacements = {'\\\\': '\\', '\\n': '\n', '\\"': '"'};
+    let d = unescape(metadata.description.substring(0, MAX_DESCRIPTION_LENGTH));
+    d = d.replace(/\\(\\|n|")/g, (replace) => replacements[replace]);
+    return metadata.description.length > MAX_DESCRIPTION_LENGTH
+      ? `${d}...`
+      : d;
+  }, [metadata.description]);
+
   return (
     <>
       <div>
@@ -132,14 +144,16 @@ export const FeaturedDecentNFT = ({
                 <h3 className="text-center text-xl text-gray-900 dark:text-gray-300 font-medium leading-8 -mb-2">
                   {metadata.name}
                 </h3>
-                <div className="text-center text-gray-400 text-sm font-semibold mb-1 mt-1">
+
+                <p className="text-sm text-gray-500 dark:text-white mb-0 p-4 text-center">{parsedDescription}</p>
+
+                <div className="text-center text-gray-400 text-sm font-semibold mb-4 -mt-2">
                   <p>
                     <a target="_blank" rel="noreferrer" href={decentURL}>
                       See on Decent.xyz
                     </a>
                   </p>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-white mb-0 p-4 text-center">{metadata.description}</p>
 
                 <div className="flex justify-center mb-8 text-sm gap-x-4">
                   <div className="flex gap-x-2">

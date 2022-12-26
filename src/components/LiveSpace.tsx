@@ -197,7 +197,6 @@ const LiveSpace: FC<Props> = ({
 
   // debounce the reaction sending
   useEffect(() => {
-    console.log('debounce!', sendingReaction);
     if (sendingReaction && debouncedSendingReaction) {
       setSendingReaction(false);
     }
