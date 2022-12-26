@@ -3,7 +3,7 @@ import CreateLensPost from "@/components/CreateLensPost";
 import SelectPlaylist from "@/components/SelectPlaylist";
 import SetFeaturedProduct from "@/components/SetFeaturedProduct";
 import { IPlaylist } from "@spinamp/spinamp-sdk";
-import { useAccount, useContractRead, useSigner, useNetwork } from "wagmi";
+import { useAccount, useContractRead, useSigner, useNetwork, useSwitchNetwork } from "wagmi";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { BigNumber } from "ethers";
@@ -21,6 +21,7 @@ import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import useENS from "@/hooks/useENS";
 import createZkEdition from "@/services/decent/createZkEdition";
+import { wait } from "@/utils";
 
 type MultiFormData = {
   lensPost: string;
@@ -40,6 +41,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
   const { chain } = useNetwork();
   const { address, isConnected } = useAccount();
   const { data: signer } = useSigner();
+  const { switchNetworkAsync } = useSwitchNetwork({ onSuccess: (data) => submit(true) });
 
   const [playlist, setPlaylist] = useState<IPlaylist>();
   const [decentProduct, setDecentProduct] = useState<any>();
@@ -154,8 +156,21 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     args: [defaultProfile?.id]
   });
 
-  const submit = async () => {
+  const submit = async (switched = false) => {
     setUploading(true);
+
+    // if no goody contract set, we're deploying one and need to be on the right network
+    if (!goodyContract && !switched && chain.id !== ALLOWED_CHAIN_IDS[0]) {
+      toast('Switching chains...');
+      try {
+        await switchNetworkAsync(ALLOWED_CHAIN_IDS[0]);
+      } catch (error) {
+        setUploading(false);
+      }
+      return;
+    } else if (switched) {
+      await wait(1000);
+    }
 
     const handle = defaultProfile?.handle || ensData?.handle || address;
 

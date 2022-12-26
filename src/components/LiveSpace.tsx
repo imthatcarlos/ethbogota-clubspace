@@ -9,7 +9,7 @@ import { useDebounce } from 'use-debounce';
 import { classNames } from "@/lib/utils/classNames";
 import { buildLensShareUrl } from "@infinity-keys/react-lens-share-button";
 import { Profile, useGetProfilesOwned, useGetProfileByHandle } from "@/services/lens/getProfile";
-import { getUrlForImageFromIpfs } from "@/utils/ipfs";
+import { getUrlForImageFromIpfs, wait } from "@/utils";
 import { LensProfile, reactionsEntries } from "@/components/LensProfile";
 import useIsMounted from "@/hooks/useIsMounted";
 import useUnload from "@/hooks/useUnload";

@@ -3,7 +3,7 @@ import { Contract, BigNumber, utils } from "ethers";
 import { useNetwork, useSigner, useSwitchNetwork, useAccount } from "wagmi";
 import toast from "react-hot-toast";
 import { unescape } from "lodash/string";
-import { getUrlForImageFromIpfs } from "@/utils/ipfs";
+import { getUrlForImageFromIpfs, wait } from "@/utils";
 import { CONTRACT_TYPE_CRESCENDO, CONTRACT_TYPE_EDITION } from "@/services/decent/utils";
 import { CURRENCY_MAP, CHAIN_NAME_MAP } from "@/lib/consts";
 
@@ -40,7 +40,7 @@ export const FeaturedDecentNFT = ({
   const { connector: activeConnector } = useAccount();
   const { switchNetworkAsync } = useSwitchNetwork({ onSuccess: (data) => onBuyClick(true) });
 
-  const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 
   const onBuyClick = async (switched = false) => {
     setIsBuying(true);

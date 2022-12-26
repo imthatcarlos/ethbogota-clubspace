@@ -5,7 +5,7 @@ import IcecastMetadataPlayer from "icecast-metadata-player";
 import { groupBy } from "lodash/collection";
 import { isEmpty } from "lodash/lang";
 import toast from "react-hot-toast";
-import { getUrlForImageFromIpfs } from "@/utils/ipfs";
+import { getUrlForImageFromIpfs } from "@/utils";
 import { ExternalLink, Play, Pause } from "@/components/Vectors";
 import useIsMounted from "@/hooks/useIsMounted";
 import Link from "next/link";

@@ -1,6 +1,6 @@
 import React from "react";
 import { Profile } from "@/services/lens/getProfile";
-import { getUrlForImageFromIpfs } from "@/utils/ipfs";
+import { getUrlForImageFromIpfs } from "@/utils";
 import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 
 interface HostProps {
