@@ -2,7 +2,6 @@ import "tailwindcss/tailwind.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import "@/styles/globals.css";
 import "@/styles/fonts.css";
-import { ThemeProvider } from "next-themes";
 import { NextSeo } from "next-seo";
 import Web3Provider from "@/components/Web3Provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -24,7 +23,6 @@ const queryClient = new QueryClient({
 const App = ({ Component, pageProps }) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class">
         <NextSeo
           title="ClubSpace"
           description="Promote your music NFTs with a live listening party"
@@ -75,7 +73,6 @@ const App = ({ Component, pageProps }) => {
             <Footer />
           </div>
         </Web3Provider>
-      </ThemeProvider>
       <ReactQueryDevtools />
     </QueryClientProvider>
   );

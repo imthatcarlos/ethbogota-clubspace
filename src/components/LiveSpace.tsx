@@ -482,7 +482,7 @@ const LiveSpace: FC<Props> = ({
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items className="absolute z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 p-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none flex gap-4 flex-wrap left-1/2 transform -translate-x-1/2">
+                        <Menu.Items className="absolute z-10 mt-2 w-48 origin-top-right rounded-md bg-gray-800 p-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none flex gap-4 flex-wrap left-1/2 transform -translate-x-1/2">
                           {reactionsEntries.map(([key, value]) => (
                             <Menu.Item key={key}>
                               {({ active }) =>
@@ -511,7 +511,7 @@ const LiveSpace: FC<Props> = ({
             </Popover>
 
             <button
-              className="text-black dark:text-white !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative"
+              className="text-white !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative"
               onClick={() => window.open(shareURL, "_blank")}
             >
               <svg
@@ -535,7 +535,7 @@ const LiveSpace: FC<Props> = ({
             {lensterPostURL && (
               <button
                 className={
-                  "text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-full text-sm py-2 px-6 text-center inline-flex items-center mr-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800 !m-0 max-h-[40px]"
+                  "text-white focus:ring-4 focus:outline-none font-medium rounded-full text-sm py-2 px-6 text-center inline-flex items-center mr-2 bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-800 !m-0 max-h-[40px]"
                 }
                 onClick={() => window.open(lensterPostURL, "_blank")}
               >
@@ -586,7 +586,7 @@ const LiveSpace: FC<Props> = ({
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95 translate-y-[100%]"
               >
-                <Dialog.Panel className="relative w-full max-w-md transform overflow-hidden rounded-tl-[35px] rounded-tr-[35px] bg-white dark:bg-black p-6 text-left align-middle shadow-xl transition-all min-h-[20rem] pt-[155px]">
+                <Dialog.Panel className="relative w-full max-w-md transform overflow-hidden rounded-tl-[35px] rounded-tr-[35px] bg-black p-6 text-left align-middle shadow-xl transition-all min-h-[20rem] pt-[155px]">
                   <div className={`absolute top-0 right-0 h-[125px] w-full shimmer`}>
                     <img
                       className="absolute t-0 left-0 right-0 w-full h-full object-cover"
@@ -602,7 +602,7 @@ const LiveSpace: FC<Props> = ({
                   <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                     <div className="flex justify-between items-center">
                       <div className="flex flex-col">
-                        <div className="mb-[-3px] dark:text-white">
+                        <div className="mb-[-3px] text-white">
                           <span>{drawerProfile?.name}</span>
                         </div>
                         <div className="text-gray-500">@{drawerProfile?.handle}</div>
@@ -629,7 +629,7 @@ const LiveSpace: FC<Props> = ({
                     </div>
                   </Dialog.Title>
                   <div className="mt-2">
-                    <p className="text-sm text-gray-500 dark:text-white mb-6">
+                    <p className="text-sm text-white mb-6">
                       {drawerProfile.bio || <em>No bio provided.</em>}
                     </p>
 

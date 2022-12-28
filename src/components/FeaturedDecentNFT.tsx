@@ -129,7 +129,7 @@ export const FeaturedDecentNFT = ({
                 }
               </div>
               <div className="p-2 pt-10 relative">
-                <h3 className="text-center text-xl text-gray-900 dark:text-gray-300 font-medium leading-8 -mb-2">
+                <h3 className="text-center text-xl text-gray-300 font-medium leading-8 -mb-2">
                   {metadata.name}
                 </h3>
                 <div className="text-center text-gray-400 text-sm font-semibold mb-1 mt-1">
@@ -139,7 +139,7 @@ export const FeaturedDecentNFT = ({
                     </a>
                   </p>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-white mb-0 p-4 text-center">{metadata.description}</p>
+                <p className="text-sm text-white mb-0 p-4 text-center">{metadata.description}</p>
 
                 <div className="flex justify-center mb-8 text-sm gap-x-4">
                   <div className="flex gap-x-2">
@@ -149,14 +149,14 @@ export const FeaturedDecentNFT = ({
                         {availableSupply ? ` / ${availableSupply}` : ""}
                       </strong>
                     </span>
-                    <span className="dark:text-gray-400">Minted</span>
+                    <span className="text-gray-400">Minted</span>
                   </div>
 
                   <div className="flex gap-x-2">
                     <span>
                       <strong>{utils.formatEther(price)}</strong>
                     </span>
-                    <span className="dark:text-gray-400">{CURRENCY_MAP[chainId]}</span>
+                    <span className="text-gray-400">{CURRENCY_MAP[chainId]}</span>
                   </div>
                 </div>
 
