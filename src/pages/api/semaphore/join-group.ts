@@ -1,16 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import redisClient from "@/lib/utils/redisClient";
 import { appendToField } from "@/lib/utils/privyClient";
-import { Identity } from "@semaphore-protocol/identity";
-
-import { VERIFIER_ADDRESS, JSON_RPC_URL_POKT } from "@/lib/consts";
-import { Contract, providers, Wallet, utils, BigNumber } from "ethers";
-import contractAbi from "../../../lib/semaphore/abi.json";
-import { formatBytes32String } from "ethers/lib/utils.js";
-
-const provider = new providers.JsonRpcProvider(JSON_RPC_URL_POKT);
-const signer = new Wallet(process.env.ADMIN_KEY, provider);
-const contract = new Contract(VERIFIER_ADDRESS, contractAbi, signer);
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { groupId, address } = req.body;

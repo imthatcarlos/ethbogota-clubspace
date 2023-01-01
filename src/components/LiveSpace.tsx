@@ -28,8 +28,8 @@ import { SITE_URL, LENSTER_URL, ALLOWED_CHAIN_IDS } from "@/lib/consts";
 
 import * as mockIdentities from "@/constants/mockIdentities.json";
 import DirectToClaims from "./DirectToClaims";
-import { joinGroup } from "@/lib/semaphore/semaphore";
 import useENS from "@/hooks/useENS";
+import { joinGroup } from "@/lib/claim-without-semaphore/claims";
 
 type ClubSpaceObject = {
   clubSpaceId: string;

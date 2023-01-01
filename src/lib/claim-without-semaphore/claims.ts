@@ -30,3 +30,27 @@ export const createGroup = async (groupId, dcntCollection, lensPubId, lensProfil
   const tx = await contract.createGroup(groupId, dcntCollection, lensPubId, lensProfileId);
   await tx.wait();
 };
+
+export const joinGroup = async (groupId, address) => {
+    console.log(`Joining the group...`, groupId);
+  
+    try {
+      const { status } = await fetch(`/api/semaphore/join-group`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          groupId,
+          address,
+        }),
+      });
+  
+      if (status === 200) {
+        console.log(`You joined the Club space group event 🎉 `);
+      } else {
+        console.log("Some error occurred, please try again!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
