@@ -2,7 +2,7 @@ import { FormEvent, Fragment, useState } from "react";
 import CreateLensPost from "@/components/CreateLensPost";
 import SelectPlaylist from "@/components/SelectPlaylist";
 import SetFeaturedProduct from "@/components/SetFeaturedProduct";
-import { IPlaylist } from "@spinamp/spinamp-sdk";
+import { IPlaylist, fetchPlaylistById } from "@spinamp/spinamp-sdk";
 import { useAccount, useContractRead, useSigner, useNetwork, useSwitchNetwork } from "wagmi";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -134,6 +134,11 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     // const _image = { IpfsHash: (await coverResponse.json()).ipfsHash };
     const _image = await pinFileToIPFS(cover);
 
+    // get track list for description
+    const playlistData = await fetchPlaylistById(playlist.id);
+    const tracklist = playlistData.playlistTracks.map((t, i) => `${i}. ${t.artist.name} - ${t.title}`).join('\n')
+    const description = `ClubSpace hosted by ${handle}\n\n${tracklist}`;
+
     console.log("uploading metadata");
     const metadataResponse = await fetch(
       '/api/ipfs/post',
@@ -141,7 +146,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
         method: 'POST',
         body: JSON.stringify({
           name: goody.name,
-          description: `ClubSpace hosted by ${handle}`,
+          description,
           image: `ipfs://${_image.IpfsHash}`,
           // animation_url: `ipfs://${_music.IpfsHash}`,
           external_url: "https://joinclubspace.xyz",
