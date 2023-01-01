@@ -81,7 +81,7 @@ const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles,
     <MultiStepFormWrapper>
       <div className="w-full flex flex-col gap-3">
         <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Select your Party Favor NFT or Create One</h2>
-        <p>Party Favors are a free gift that anyone who attends your space can claim</p>
+        <p>Party Favors are a free gift that anyone who attends your space for at least 3 minutes can claim</p>
         {
           isLoading && (
             <p>Loading Party Favors...</p>

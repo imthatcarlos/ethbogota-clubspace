@@ -194,10 +194,10 @@ const LiveSpace: FC<Props> = ({
     return sortBy(res, (r) => -identities[r].profile?.totalFollowers || 0);
   };
 
-  // trigger the entry if everything is loaded
+  // log impression for party favor after 3 minutes
   useEffect(() => {
     if (!isLoadingEntry) {
-      joinGroup(clubSpaceObject.semGroupIdHex, address);
+      setTimeout(() => joinGroup(clubSpaceObject.semGroupIdHex, address), 180_000);
     }
   }, [isLoadingEntry]);
 
