@@ -36,8 +36,11 @@ export const Header = () => {
           </a>
         </div>
       )*/}
-      <div className="connect absolute md:right-5 xs:relative">
-        <div className="flex gap-4 justify-center md:min-w-[220px] scale-[0.8] xs:scale-100">
+      <div className="connect md:right-5 xs:relative">
+        <div className="md:flex gap-4 justify-center md:min-w-[220px] scale-[0.8] xs:scale-100">
+          <div className="min-w-[200px]">
+            <ConnectWallet showBalance={false} />
+          </div>
           {isConnected && (
             <button
               disabled={lensLoginData || lensRefreshData}
@@ -47,9 +50,6 @@ export const Header = () => {
               {!(lensLoginData || lensRefreshData) ? "Login with Lens" : (profilesResponse?.defaultProfile.handle || 'No Lens')}
             </button>
           )}
-          <div className="min-w-[225px]">
-            <ConnectWallet showBalance={false} />
-          </div>
         </div>
       </div>
     </header>
