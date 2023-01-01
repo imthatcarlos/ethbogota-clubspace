@@ -10,7 +10,6 @@ import { BigNumber } from "ethers";
 import { useJam } from "@/lib/jam-core-react";
 import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
-import { createGroup } from "@/lib/semaphore/semaphore";
 import { makePostGasless, publicationBody } from "@/services/lens/gaslessTxs";
 import { LENSHUB_PROXY, ALLOWED_CHAIN_IDS } from "@/lib/consts";
 import { LensHubProxy } from "@/services/lens/abi";
@@ -22,6 +21,7 @@ import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import useENS from "@/hooks/useENS";
 import createZkEdition from "@/services/decent/createZkEdition";
 import { wait } from "@/utils";
+import { createGroup } from "@/lib/claim-without-semaphore/claims";
 
 type MultiFormData = {
   lensPost: string;
@@ -259,7 +259,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
         } = await axios.post(`/api/space/create`, spaceData);
 
         // call sempahore/create-group
-        await createGroup(semGroupIdHex, collectionAddress, lensPubId, defaultProfile.id);
+        await createGroup(semGroupIdHex, collectionAddress, lensPubId, defaultProfile.id, signer);
 
         // PUSH
         // await axios.post(`/api/push/send`, { url });

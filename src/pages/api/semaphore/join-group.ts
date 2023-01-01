@@ -13,9 +13,7 @@ const signer = new Wallet(process.env.ADMIN_KEY, provider);
 const contract = new Contract(VERIFIER_ADDRESS, contractAbi, signer);
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { identity, username, groupId, address } = req.body;
-
-  console.log(identity, username, groupId);
+  const { groupId, address } = req.body;
 
   const REDIS_KEY_JOINED_SPACE = `joined-${groupId}-${address}`;
 
@@ -25,33 +23,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(200).end();
   }
 
-  const identityObject = new Identity(identity);
-  const identityCommitment = identityObject.generateCommitment().toString();
-
   try {
     console.log("setting redis");
-    const newLength = await redisClient.lpush(`rolecall-${groupId}`, [identityCommitment.toString()]);
+    const newLength = await redisClient.lpush(`rolecall-${groupId}`, [address]);
     console.log(`wrote to redis for id commitment for semGroupIdHex: ${groupId} (length: ${newLength})`);
 
     const newEntry = {
       groupId,
-      identity,
       claimed: false,
     };
     await appendToField(address, "clubspace-attendance", newEntry);
     console.log('wrote to privy');
-
-    const { gasPrice } = await provider.getFeeData();
-    console.log('joining group...');
-    const transaction = await contract.joinGroup(
-      identityCommitment,
-      utils.formatBytes32String(username ?? address.substring(0, 30)),
-      BigNumber.from(groupId),
-      { gasLimit: 2100000, gasPrice }
-    );
-
-    await transaction.wait();
-    console.log(`joined semaphore group: ${transaction.hash}`);
 
     await redisClient.set(REDIS_KEY_JOINED_SPACE, '1');
     res.status(200).end();
