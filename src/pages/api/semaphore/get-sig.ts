@@ -13,9 +13,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     // verify recipient and groupId with privy call
     const clubSpaceObject = await getCurrentContentsData(address as string, "clubspace-attendance");
-    if (!clubSpaceObject.find(e => e.groupId === groupId)) {
+    const record = clubSpaceObject.find(e => e.groupId === groupId)
+    if (!record) {
       throw "groupId not found in clubSpaceObject";
+    } else if (record.claimed) {
+      throw "groupId already claimed";
     }
+    
     // create signature
     const nonceFilter = contract.filters.NonceUsed();
     const events = await contract.queryFilter(nonceFilter, -100000);

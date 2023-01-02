@@ -10,7 +10,7 @@ import { BigNumber } from "ethers";
 import { useJam } from "@/lib/jam-core-react";
 import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
-import { makePostGasless, publicationBody } from "@/services/lens/gaslessTxs";
+import { makePostGasless, publicationBody, ZERO_ADDRESS } from "@/services/lens/gaslessTxs";
 import { LENSHUB_PROXY, ALLOWED_CHAIN_IDS } from "@/lib/consts";
 import { LensHubProxy } from "@/services/lens/abi";
 import { launchSpace } from "@/services/jam/core";
@@ -112,7 +112,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       updateFields={updateFields}
       goodyContract={goodyContract}
       setGoodyContract={setGoodyContract}
-    />
+    />,
   ]);
 
   const handleSubmit = (e: FormEvent) => {
@@ -136,23 +136,20 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
     // get track list for description
     const playlistData = await fetchPlaylistById(playlist.id);
-    const tracklist = playlistData.playlistTracks.map((t, i) => `${i}. ${t.artist.name} - ${t.title}`).join('\n')
+    const tracklist = playlistData.playlistTracks.map((t, i) => `${i}. ${t.artist.name} - ${t.title}`).join("\n");
     const description = `ClubSpace hosted by ${handle}\n\n${tracklist}`;
 
     console.log("uploading metadata");
-    const metadataResponse = await fetch(
-      '/api/ipfs/post',
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          name: goody.name,
-          description,
-          image: `ipfs://${_image.IpfsHash}`,
-          // animation_url: `ipfs://${_music.IpfsHash}`,
-          external_url: "https://joinclubspace.xyz",
-        })
-      }
-    );
+    const metadataResponse = await fetch("/api/ipfs/post", {
+      method: "POST",
+      body: JSON.stringify({
+        name: goody.name,
+        description,
+        image: `ipfs://${_image.IpfsHash}`,
+        // animation_url: `ipfs://${_music.IpfsHash}`,
+        external_url: "https://joinclubspace.xyz",
+      }),
+    });
     const metadata = { IpfsHash: (await metadataResponse.json()).ipfsHash };
 
     return `ipfs://${metadata.IpfsHash}`;
@@ -162,16 +159,16 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     address: LENSHUB_PROXY,
     abi: LensHubProxy,
     chainId: ALLOWED_CHAIN_IDS[0],
-    functionName: 'getPubCount',
-    args: [defaultProfile?.id]
+    functionName: "getPubCount",
+    args: [defaultProfile?.id],
   });
 
   const submit = async (switched = false) => {
     setUploading(true);
 
     // if no goody contract set, we're deploying one and need to be on the right network
-    if (!goodyContract && !switched && chain.id !== ALLOWED_CHAIN_IDS[0]) {
-      toast('Switching chains...');
+    if (goody && !switched && chain.id !== ALLOWED_CHAIN_IDS[0]) {
+      toast("Switching chains...");
       try {
         await switchNetworkAsync(ALLOWED_CHAIN_IDS[0]);
       } catch (error) {
@@ -197,8 +194,8 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
     let toastId;
     let collectionAddress;
-    if (goodyContract) {
-      collectionAddress = goodyContract.address;
+    if (!goody) {
+      collectionAddress = ZERO_ADDRESS;
     } else {
       toastId = toast.loading("Creating your Party Favor...");
       const goodyUri = await uploadToIPFS(handle);
@@ -208,7 +205,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
         chainId: chain.id,
         signer,
         name: goody.name,
-        uri: goodyUri
+        uri: goodyUri,
       });
       console.log("collectionAddress:", collectionAddress);
       toast.dismiss(toastId);
@@ -217,15 +214,12 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     // create lens post
     let lensPubId = "0";
     if (lensPost) {
-      const response = await fetch(
-        '/api/ipfs/post',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            json: publicationBody(lensPost, [], defaultProfile.handle)
-          })
-        },
-      );
+      const response = await fetch("/api/ipfs/post", {
+        method: "POST",
+        body: JSON.stringify({
+          json: publicationBody(lensPost, [], defaultProfile.handle),
+        }),
+      });
       const content = { IpfsHash: (await response.json()).ipfsHash };
 
       toastId = toast.loading("Creating Lens post...", { duration: 10000 });
@@ -235,7 +229,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       if (!accessToken) {
         throw new Error("Error - lens profile not authenticated. This is likely a bug with login/refresh logic");
       }
-      lensPubId = lensPubCount.add(BigNumber.from('1')).toHexString();
+      lensPubId = lensPubCount.add(BigNumber.from("1")).toHexString();
 
       await makePostGasless(defaultProfile.id, `ipfs://${content.IpfsHash}`, signer, accessToken);
 
@@ -264,8 +258,9 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
         } = await axios.post(`/api/space/create`, spaceData);
 
         // call sempahore/create-group
-        await createGroup(semGroupIdHex, collectionAddress, lensPubId, defaultProfile.id, signer);
-
+        if (collectionAddress !== ZERO_ADDRESS) {
+          await createGroup(semGroupIdHex, collectionAddress, lensPubId, defaultProfile.id, signer);
+        }
         // PUSH
         // await axios.post(`/api/push/send`, { url });
 
@@ -395,14 +390,9 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
                         className="btn disabled:cursor-not-allowed disabled:opacity-50"
                         disabled={uploading}
                       >
-                        {isLastStep ? `${uploading ? 'Creating...' : 'Create Space'}` : "Next"}
+                        {isLastStep ? `${uploading ? "Creating..." : "Create Space"}` : "Next"}
                       </button>
                     </div>
-                    {isLastStep && goody?.files?.length > 0 && isLastStep && (goody?.files?.length !== 1 && !goodyContract) ? (
-                      <div className="text-red-400 text-center">
-                        ⚠️ To continue, you need to set an image
-                      </div>
-                    ) : null}
                   </form>
                 </Dialog.Panel>
               </Transition.Child>
