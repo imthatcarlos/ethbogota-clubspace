@@ -434,47 +434,67 @@ const LiveSpace: FC<Props> = ({
           <div className="decent-nft flex flex-col gap-y-3">
             {featuredDecentNFT && <FeaturedDecentNFT {...featuredDecentNFT} />}
             {creatorLensProfile && (
-              <div>
-                {isHost && iSpeak && (
+              <>
+                {isHost && (
+                  <div className="flex flex w-full justify-center relative grid-cols-2 gap-4">
+                    <div>
+                      <button
+                        onClick={toggleSpeaking}
+                        className="btn !w-auto mx-auto bg-almost-black border-t-[0.5px] border-t-slate-700 !text-white flex gap-x-1 relative"
+                      >
+                        <>
+                          {micOn && micMuted && (
+                            <>
+                              {/*<MicOffSvg
+                                className="w-5 h-5 mr-2 opacity-80 inline-block"
+                                stroke={roomColors.buttonPrimary}
+                              />*/}
+                              Speak
+                            </>
+                          )}
+                          {micOn && !micMuted && (
+                            <>
+                              {/*<MicOnSvg
+                                className="w-5 h-5 mr-2 opacity-80 inline-block"
+                                stroke={roomColors.buttonPrimary}
+                              />*/}
+                              Mute
+                            </>
+                          )}
+                          {!micOn && <>Enable Mic</>}
+                        </>
+                      </button>
+                    </div>
+                    <div>
+                      <button
+                        onClick={() => setIsHostOpen(true)}
+                        className="btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center"
+                      >
+                        <img
+                          className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"
+                          src={getUrlForImageFromIpfs(creatorLensProfile.picture?.original?.url)}
+                          alt=""
+                        />
+                        <span>@{creatorLensProfile.handle}</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {!isHost && (
                   <button
-                    onClick={toggleSpeaking}
-                    className="btn !w-auto mx-auto bg-almost-black border-t-[0.5px] border-t-slate-700 !text-white flex gap-x-1 relative justify-between items-center"
+                    onClick={() => setIsHostOpen(true)}
+                    className="btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center"
                   >
-                    <>
-                      {micOn && micMuted && (
-                        <>
-                          {/*<MicOffSvg
-                            className="w-5 h-5 mr-2 opacity-80 inline-block"
-                            stroke={roomColors.buttonPrimary}
-                          />*/}
-                          Speak
-                        </>
-                      )}
-                      {micOn && !micMuted && (
-                        <>
-                          {/*<MicOnSvg
-                            className="w-5 h-5 mr-2 opacity-80 inline-block"
-                            stroke={roomColors.buttonPrimary}
-                          />*/}
-                          You are speaking
-                        </>
-                      )}
-                      {!micOn && <>Enable mic for speaking</>}
-                    </>
+                    <img
+                      className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"
+                      src={getUrlForImageFromIpfs(creatorLensProfile.picture?.original?.url)}
+                      alt=""
+                    />
+                    <span>@{creatorLensProfile.handle}</span>
                   </button>
                 )}
-                <button
-                  onClick={() => setIsHostOpen(true)}
-                  className="btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center"
-                >
-                  <img
-                    className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"
-                    src={getUrlForImageFromIpfs(creatorLensProfile.picture?.original?.url)}
-                    alt=""
-                  />
-                  <span>@{creatorLensProfile.handle}</span>
-                </button>
-              </div>
+              </>
             )}
           </div>
         </div>
