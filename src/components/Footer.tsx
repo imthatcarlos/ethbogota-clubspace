@@ -7,8 +7,8 @@ export default () => {
   const isLivePage = router.pathname.includes('/live/');
 
   return (
-    <footer className="flex items-center justify-between py-1 px-4 xs:px-8 bg-black relative z-9 border-t-[0.1px] border-t-slate-700 w-full">
-      <div className={`px-8 md:px-16 py-12 ${isLivePage ? 'pb-36' : 'pb-12'} mx-auto`}>
+    <footer className="flex items-center justify-between py-1 bg-black relative z-9 border-t-[0.1px] border-t-slate-700 w-full">
+      <div className={`px-4 xs:px-8 md:px-16 py-12 ${isLivePage ? 'pb-36' : 'pb-12'} mx-auto`}>
         <div className="flex items-center justify-between gap-8">
           <div className="flex items-center justify-evenly w-full md:w-fit md:gap-8">
             <img src="/clubspace-logo.png" alt="Clubspace logo" className="max-w-[75px]" />
