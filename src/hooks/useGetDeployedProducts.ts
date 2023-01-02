@@ -30,6 +30,8 @@ export default (
       }
 
       if (!contracts.length) return [];
+      // uncomment if on mumbai and want to test with a specific contract
+      // const contracts = [{deployment: "0xaAd7E6c2E0bD6ab8D6B0a56785c103868d20FE86", chainid: 80001, key: CONTRACT_TYPE_CRESCENDO}]
 
       return await Promise.all(contracts.map(async ({ deployment, chainid, key }) => {
         const data = await getContractData(deployment, chainid, undefined, key);

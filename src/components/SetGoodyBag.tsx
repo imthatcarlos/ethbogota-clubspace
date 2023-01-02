@@ -80,7 +80,7 @@ const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles,
   return (
     <MultiStepFormWrapper>
       <div className="w-full flex flex-col gap-3">
-        <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Select your Party Favor NFT or Create One</h2>
+        <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Create a Party Favor NFT (Optional)</h2>
         <p>Party Favors are a free gift that anyone who attends your space for at least 3 minutes can claim</p>
         {/* {
           isLoading && (
@@ -155,7 +155,7 @@ const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles,
                 </>
               )} */}
               {/* <p>Or create a new Party Favor NFT:</p> */}
-              <i className="text-sm">The track list for the space will be included in the NFT metadata automatically</i>
+              <i className="text-sm">The track list for the space will be included in the NFT description automatically</i>
               <div className="w-full flex flex-col gap-3">
                 <input
                   type="text"
@@ -163,7 +163,6 @@ const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles,
                   placeholder="Give your NFT a title"
                   value={goodyName}
                   onChange={(e) => onChange({ name: e.target.value, files: goodyFiles })}
-                  required={!goodyContract}
                 />
                 <div {...getRootProps()} className={style}>
                   <input {...getInputProps()} />

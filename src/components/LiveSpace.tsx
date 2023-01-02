@@ -19,7 +19,7 @@ import { useGetTracksFromPlaylist } from "@/services/spinamp/getPlaylists";
 import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import { getProfileByHandle } from "@/services/lens/getProfile";
 import { doesFollow, useDoesFollow } from "@/services/lens/doesFollow";
-import { followProfileGasless } from "@/services/lens/gaslessTxs";
+import { followProfileGasless, ZERO_ADDRESS } from "@/services/lens/gaslessTxs";
 import { useGetContractData } from "@/services/decent/getDecentNFT";
 import { HostCard } from "./HostCard";
 import { FeaturedDecentNFT } from "./FeaturedDecentNFT";
@@ -47,6 +47,7 @@ type ClubSpaceObject = {
   streamURL?: string;
   // currentTrackId?: string;
   queuedTrackIds: [string];
+  partyFavorContractAddress: string;
 };
 
 type LensProfileObject = {
@@ -198,7 +199,7 @@ const LiveSpace: FC<Props> = ({
 
   // log impression for party favor after 3 minutes
   useEffect(() => {
-    if (!isLoadingEntry) {
+    if (!isLoadingEntry && clubSpaceObject.partyFavorContractAddress !== ZERO_ADDRESS) {
       axios.post(`/api/privy/get-claim-status`, { groupId: clubSpaceObject.semGroupIdHex, address }).then((data) => {
         if (data.data.status === FavorStatus.NOT_CLAIMABLE) {
           setTimeout(async () => {
@@ -562,12 +563,14 @@ const LiveSpace: FC<Props> = ({
                 </svg>
               </button>
             )}
-            <button
-              onClick={() => setModalOpen(true)}
-              className="text-white !bg-transparent focus:outline-none rounded-lg text-[26px] text-center inline-flex items-center relative"
-            >
-              🎁
-            </button>
+            {clubSpaceObject.partyFavorContractAddress !== ZERO_ADDRESS && (
+              <button
+                onClick={() => setModalOpen(true)}
+                className="text-white !bg-transparent focus:outline-none rounded-lg text-[26px] text-center inline-flex items-center relative"
+              >
+                🎁
+              </button>
+            )}
           </div>
         )}
       </div>
