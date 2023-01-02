@@ -19,7 +19,7 @@ const theme = {
       min-width: 200px;
       width: 200px;
       max-width: 200px;
-      padding-left: 80px;
+      padding-left: 75px;
     }
   `,
   playerTextContainer: () => css`
