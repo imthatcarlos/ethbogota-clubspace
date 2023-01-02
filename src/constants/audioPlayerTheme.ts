@@ -18,6 +18,8 @@ const theme = {
     @media (max-width: 768px) {
       min-width: 200px;
       width: 200px;
+      max-width: 200px;
+      padding-left: 100px;
     }
   `,
   playerTextContainer: () => css`
@@ -56,7 +58,7 @@ const theme = {
     color: #e5e5e5;
 
     @media (max-width: 768px) {
-      font-size: 12px;
+      font-size: 14px;
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 100px;
@@ -80,8 +82,8 @@ const theme = {
     height: 100px;
 
     @media (max-width: 768px) {
-      width: 80px;
-      height: 80px;
+      width: 60px;
+      height: 60px;
     }
   `,
   playerSpinner: `
@@ -99,11 +101,11 @@ const theme = {
     animation-name: none;
 
     @media (max-width: 768px) {
-      top: 10px;
+      top: 20px;
     }
   `,
   playerInfoNextTag: `
-    font-size: 14px;
+    font-size: 12px;
     min-width: 100px;
     color: #e5e5e5;
     text-transform: uppercase;
@@ -124,6 +126,10 @@ const theme = {
   playerInfoNextText: `
     max-width: 250px;
     display: block;
+
+    @media (max-width: 768px) {
+      font-size: 14px;
+    }
   `,
 };
 
