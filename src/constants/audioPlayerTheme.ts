@@ -19,7 +19,7 @@ const theme = {
       min-width: 200px;
       width: 200px;
       max-width: 200px;
-      padding-left: 90px;
+      padding-left: 80px;
     }
   `,
   playerTextContainer: () => css`
@@ -102,7 +102,7 @@ const theme = {
 
     @media (max-width: 768px) {
       top: 20px;
-      left: 14px;
+      left: 10px;
     }
   `,
   playerInfoNextTag: `
