@@ -45,7 +45,7 @@ export const Header = () => {
             <button
               disabled={lensLoginData || lensRefreshData}
               onClick={() => loginWithLens()}
-              className="btn justify-center items-center"
+              className="btn btn-lens justify-center items-center"
             >
               {!(lensLoginData || lensRefreshData) ? "Login with Lens" : (profilesResponse?.defaultProfile.handle || 'No Lens')}
             </button>
