@@ -16,9 +16,9 @@ const theme = {
     max-width: 500px;
 
     @media (max-width: 768px) {
-      min-width: 200px;
-      width: 200px;
-      max-width: 200px;
+      min-width: 150px;
+      width: 150px;
+      max-width: 150px;
       padding-left: 75px;
     }
   `,
@@ -45,12 +45,12 @@ const theme = {
     margin-top: 8px;
 
     @media (max-width: 768px) {
-      font-size: 16px;
-      margin-top: 14px;
+      font-size: 14px;
+      margin-top: 20px;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 100px;
-      min-width: 100px;
+      max-width: 85px;
+      min-width: 85px
     }
   `,
   playerTextArtist: `
@@ -58,11 +58,11 @@ const theme = {
     color: #e5e5e5;
 
     @media (max-width: 768px) {
-      font-size: 14px;
+      font-size: 12px;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 100px;
-      min-width: 100px;
+      max-width: 80px;
+      min-width: 80px;
     }
     :hover {
       color: #e5e5e5;
@@ -82,8 +82,8 @@ const theme = {
     height: 100px;
 
     @media (max-width: 768px) {
-      width: 60px;
-      height: 60px;
+      width: 55px;
+      height: 55px;
     }
   `,
   playerSpinner: `
@@ -101,7 +101,7 @@ const theme = {
     animation-name: none;
 
     @media (max-width: 768px) {
-      top: 20px;
+      top: 25px;
       left: 10px;
     }
   `,
