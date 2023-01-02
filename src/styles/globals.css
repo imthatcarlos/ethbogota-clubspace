@@ -2,7 +2,7 @@
 
 :root {
   --ease-squish-1: cubic-bezier(0.5, -0.1, 0.1, 1.5);
-  --clamped-container-width: clamp(350px, 75%, 800px);
+  --clamped-container-width: clamp(400px, 75%, 800px);
   --club-red: hsl(357deg 99% 56%);
   --club-red-dark: hsl(357deg 99% 56% / 0.35);
   --hero-gradient: linear-gradient(327.21deg, rgba(33, 0, 75, 0.24) 3.65%, rgba(60, 0, 136, 0) 40.32%),
@@ -34,6 +34,13 @@ body {
 
 .btn {
   @apply flex w-full cursor-pointer justify-center rounded-md border border-transparent bg-white py-2 px-4 text-sm font-medium text-black shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
+}
+
+.btn-lens {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
 }
 
 .input {
