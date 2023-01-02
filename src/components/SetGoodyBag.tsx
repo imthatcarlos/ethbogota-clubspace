@@ -90,7 +90,7 @@ const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles,
         {
           !isLoading && (
             <>
-              {deployedZkEditions && (
+              {/* {deployedZkEditions && (
                 <>
                   <Listbox value={goodyContract} onChange={setGoodyContract}>
                     {({ open }) => (
@@ -152,8 +152,8 @@ const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles,
                   </Listbox>
                   <br/>
                 </>
-              )}
-              <p>Or create a new Party Favor NFT:</p>
+              )} */}
+              {/* <p>Or create a new Party Favor NFT:</p> */}
               <i className="text-sm">The track list for the space will be included in the NFT metadata automatically</i>
               <div className="w-full flex flex-col gap-3">
                 <input
