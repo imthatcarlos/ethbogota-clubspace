@@ -44,7 +44,8 @@ type ClubSpaceObject = {
   semGroupIdHex: string;
   spinampPlaylistId: string;
   streamURL?: string;
-  currentTrackId?: string;
+  // currentTrackId?: string;
+  queuedTrackIds: [string];
 };
 
 type LensProfileObject = {
@@ -404,24 +405,6 @@ const LiveSpace: FC<Props> = ({
               />
             ))} */}
           </div>
-
-          <div className="player mx-auto">
-            {!isLoadingPlaylistTracks && (
-              <>
-                {playlistTracks?.length && clubSpaceObject.streamURL ? (
-                  <LiveAudioPlayer
-                    playlistTracks={playlistTracks}
-                    streamURL={clubSpaceObject.streamURL}
-                    playerUUID={clubSpaceObject.playerUUID}
-                    currentTrackId={clubSpaceObject.currentTrackId}
-                    address={address}
-                  />
-                ) : (
-                  <DirectToClaims address={address} />
-                )}
-              </>
-            )}
-          </div>
           <div className="decent-nft flex flex-col gap-y-3">
             {featuredDecentNFT && <FeaturedDecentNFT {...featuredDecentNFT} />}
             {
@@ -446,6 +429,22 @@ const LiveSpace: FC<Props> = ({
         <div className="bg-live-page-player bg-cover bg-no-repeat blur-[70px] inset-0 absolute z-[-1] lg:max-h-[50vh] max-h-[25vh] "></div>
 
         {/* Button group (reactions, share, comment) */}
+
+        {!isLoadingPlaylistTracks && (
+          <>
+            {playlistTracks?.length && clubSpaceObject.streamURL ? (
+              <LiveAudioPlayer
+                playlistTracks={playlistTracks}
+                streamURL={clubSpaceObject.streamURL}
+                playerUUID={clubSpaceObject.playerUUID}
+                queuedTrackIds={clubSpaceObject.queuedTrackIds}
+                currentTrackId={clubSpaceObject.queuedTrackIds[0]}
+              />
+            ) : (
+              <DirectToClaims address={address} />
+            )}
+          </>
+        )}
 
         {/* isHost ? */}
 

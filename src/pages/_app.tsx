@@ -76,7 +76,7 @@ const App = ({ Component, pageProps }) => {
           </div>
         </Web3Provider>
       </ThemeProvider>
-      <ReactQueryDevtools />
+      { /* <ReactQueryDevtools /> */ }
     </QueryClientProvider>
   );
 };

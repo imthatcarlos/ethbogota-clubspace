@@ -74,6 +74,11 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     next();
   };
 
+  const selectDecentProduct = (product) => {
+    setDecentProduct(product);
+    next();
+  };
+
   const setPostData = (postData) => {
     setLensPost(postData);
   };
@@ -88,7 +93,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     <SelectPlaylist key="a" selectPlaylist={selectPlaylist} playlist={playlist} />,
     <SetFeaturedProduct
       key="b"
-      setDecentProduct={setDecentProduct}
+      setDecentProduct={selectDecentProduct}
       decentProduct={decentProduct}
       {...formMultiFormData}
       updateFields={updateFields}

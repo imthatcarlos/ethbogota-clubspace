@@ -42,3 +42,18 @@ export const getCurrentTrack = async (playerUUID) => {
     return null;
   }
 };
+
+export const getQueuedTracks = async (playerUUID) => {
+  try {
+    const { data } = await axios.get(
+      `${RADIOMAST_API_URL}/audioplayers/${playerUUID}/queued-tracks/`,
+      { headers: { 'Authorization': `Token ${RADIOMAST_API_KEY}` } }
+    );
+
+    return data?.map(({ track }) => track.song);
+  } catch (error) {
+    console.log(error.statusCode || error);
+
+    return [];
+  }
+};
