@@ -29,8 +29,9 @@ import { SITE_URL, LENSTER_URL, ALLOWED_CHAIN_IDS } from "@/lib/consts";
 import * as mockIdentities from "@/constants/mockIdentities.json";
 import DirectToClaims from "./DirectToClaims";
 import useENS from "@/hooks/useENS";
-import { claimReward, FavorStatus, joinGroup } from "@/lib/claim-without-semaphore/claims";
+import { FavorStatus, joinGroup } from "@/lib/claim-without-semaphore/claims";
 import axios from "axios";
+import ClaimFavorModal from "./ClaimFavorModal";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -100,7 +101,7 @@ const LiveSpace: FC<Props> = ({
   const { switchNetworkAsync } = useSwitchNetwork({ onSuccess: (data) => onFollowClick(true, undefined, true) });
   const [sendingReaction, setSendingReaction] = useState<boolean>(false);
   const [debouncedSendingReaction] = useDebounce(sendingReaction, 5000);
-  const [claimable, setClaimable] = useState<FavorStatus>(FavorStatus.NOT_CLAIMABLE);
+  const [modalOpen, setModalOpen] = useState(false);
 
   // @TODO: should really merge these two hook calls
   // - first run tries to do the refresh call
@@ -199,15 +200,9 @@ const LiveSpace: FC<Props> = ({
   useEffect(() => {
     if (!isLoadingEntry) {
       axios.post(`/api/privy/get-claim-status`, { groupId: clubSpaceObject.semGroupIdHex, address }).then((data) => {
-        const joinStatus = data.data.status;
-        if (joinStatus === FavorStatus.CLAIMABLE) {
-          setClaimable(FavorStatus.CLAIMABLE);
-        } else if (joinStatus === FavorStatus.CLAIMED) {
-          setClaimable(FavorStatus.CLAIMED);
-        } else {
+        if (data.data.status === FavorStatus.NOT_CLAIMABLE) {
           setTimeout(async () => {
             await joinGroup(clubSpaceObject.semGroupIdHex, address);
-            setClaimable(FavorStatus.CLAIMABLE);
           }, 180_000);
         }
       });
@@ -356,16 +351,6 @@ const LiveSpace: FC<Props> = ({
     creatorLensProfile,
     featuredDecentNFT,
   ]);
-
-  const claimPartyFavor = async () => {
-    try {
-      await claimReward(clubSpaceObject.semGroupIdHex, address, signer);
-      setClaimable(FavorStatus.CLAIMED);
-    } catch (error) {
-      console.log(error);
-      toast.error("Error claiming favor");
-    }
-  };
 
   useUnload(async () => {
     console.log(`LEAVING`);
@@ -577,18 +562,12 @@ const LiveSpace: FC<Props> = ({
                 </svg>
               </button>
             )}
-            {claimable === FavorStatus.CLAIMABLE ? (
-              <button
-                onClick={claimPartyFavor}
-                className="text-white !bg-transparent focus:outline-none rounded-lg text-[26px] text-center inline-flex items-center relative"
-              >
-                🎁
-              </button>
-            ) : claimable === FavorStatus.CLAIMED ? (
-              <a href={`/claim/${address}`} target="_blank" className="text-[26px]">
-                🎁
-              </a>
-            ) : null}
+            <button
+              onClick={() => setModalOpen(true)}
+              className="text-white !bg-transparent focus:outline-none rounded-lg text-[26px] text-center inline-flex items-center relative"
+            >
+              🎁
+            </button>
           </div>
         )}
       </div>
@@ -728,6 +707,12 @@ const LiveSpace: FC<Props> = ({
           </div>
         </Dialog>
       </Transition>
+      <ClaimFavorModal
+        isOpen={modalOpen}
+        setIsOpen={setModalOpen}
+        semGroupIdHex={clubSpaceObject.semGroupIdHex}
+        address={address}
+      />
     </>
   );
 };

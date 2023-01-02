@@ -16,8 +16,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     } else if (record.claimed) {
       status = 2;
     }
-    console.log(status);
-
     res.json({ status });
   } catch (error: any) {
     console.error(error);
