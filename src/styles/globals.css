@@ -28,6 +28,8 @@ body {
   background-size: cover;
   min-height: 100vh;
   background-attachment: fixed;
+  color: white;
+  background: black;
 }
 
 .btn {
@@ -35,7 +37,7 @@ body {
 }
 
 .input {
-  @apply block w-full rounded-md dark:bg-gray-800 dark:text-white dark:border-gray-600 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm;
+  @apply block w-full rounded-md bg-gray-800 text-white border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm;
 }
 
 .responsive-container {
@@ -43,12 +45,12 @@ body {
 }
 
 .stage-container {
-  @apply border-[0.1px] dark:border-gray-600 p-4 md:p-8 lg:grid place-content-center gap-x-4 gap-y-6 mt-10 grid-cols-3 mx-8;
+  @apply border-[0.1px] border-gray-600 p-4 md:p-8 lg:grid place-content-center gap-x-4 gap-y-6 mt-10 grid-cols-3 mx-8;
 }
 
 .grid-container {
   grid-template-columns: repeat(auto-fill, 90px);
-  @apply border-[0.1px] dark:border-gray-600 p-4 md:p-8 grid place-content-center mx-auto gap-x-4 gap-y-6 mt-10;
+  @apply border-[0.1px] border-gray-600 p-4 md:p-8 grid place-content-center mx-auto gap-x-4 gap-y-6 mt-10;
 }
 
 .abs-center {

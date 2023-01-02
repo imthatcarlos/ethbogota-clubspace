@@ -39,7 +39,7 @@ const SetFeaturedProduct = ({ setDecentProduct, decentProduct = undefined, updat
                       <Listbox value={decentProduct} onChange={setDecentProduct}>
                         {({ open }) => (
                           <>
-                            <div className="relative mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md">
+                            <div className="relative mt-1 bg-gray-800 border border-gray-600 rounded-md">
                               <Listbox.Button className="relative input py-2 pl-3 pr-10 text-left ">
                                 <span className="block truncate">{decentProduct ? getProductName(decentProduct) : "Select from your collections"}</span>
                                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -54,7 +54,7 @@ const SetFeaturedProduct = ({ setDecentProduct, decentProduct = undefined, updat
                                 leaveFrom="opacity-100"
                                 leaveTo="opacity-0"
                               >
-                                <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md dark:bg-gray-800 bg-white py-1 text-base shadow-sm ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-gray-800 py-1 text-base shadow-sm ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                   {deployedProducts.map((contract, index) => (
                                     <Listbox.Option
                                       key={index}

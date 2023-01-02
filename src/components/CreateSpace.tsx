@@ -310,16 +310,16 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-xl min-h-[300px] transform overflow-hidden rounded-2xl bg-white dark:bg-black p-6 text-left align-middle shadow-xl transition-all flex flex-col">
+                <Dialog.Panel className="w-full max-w-xl min-h-[300px] transform overflow-hidden rounded-2xl bg-black p-6 text-left align-middle shadow-xl transition-all flex flex-col">
                   <Dialog.Title
                     as="h3"
-                    className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 border-b-[1px] border-b-gray-600 pb-3"
+                    className="text-lg font-medium leading-6 text-gray-900 text-gray-100 border-b-[1px] border-b-gray-600 pb-3"
                   >
                     Your space is live!
                   </Dialog.Title>
                   <div className="flex-1 flex items-center justify-center">
                     <p>
-                      <a href={shareUrl} target="_blank" rel="noreferrer" className="dark:text-club-red">
+                      <a href={shareUrl} target="_blank" rel="noreferrer" className="text-club-red">
                         {shareUrl}
                       </a>
                     </p>
@@ -360,14 +360,14 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-xl min-h-[300px] transform overflow-hidden rounded-2xl bg-white dark:bg-black p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-full max-w-xl min-h-[300px] transform overflow-hidden rounded-2xl bg-black p-6 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
                     as="h3"
-                    className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 border-b-[1px] border-b-gray-600 pb-3"
+                    className="text-lg font-medium leading-6 text-gray-100 border-b-[1px] border-b-gray-600 pb-3"
                   >
                     <div className="flex justify-between items-center">
-                      <span className="dark:text-gray-300">Create a Space</span>
-                      <span className="dark:text-gray-500 text-sm">
+                      <span className="text-gray-300">Create a Space</span>
+                      <span className="text-gray-500 text-sm">
                         {currenStepIndex + 1} / {steps.length}
                       </span>
                     </div>

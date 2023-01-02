@@ -1,9 +1,6 @@
-import { useRouter } from "next/router";
-import Link from "next/link";
 import { useAccount } from "wagmi";
 import { ConnectWallet } from "./ConnectWallet";
 import { useGetProfilesOwned } from "@/services/lens/getProfile";
-import useIsMounted from "@/hooks/useIsMounted";
 import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import ClubspaceNeonHeader from "@/assets/svg/clubspace-neon-header.svg";
 
@@ -13,12 +10,9 @@ export const Header = () => {
   const { data: lensRefreshData } = useLensRefresh();
   const { data: lensLoginData, refetch: loginWithLens } = useLensLogin();
 
-  const router = useRouter();
-  const isLandingPage = router.pathname === "/";
-
   return (
     <header className="flex items-center justify-between py-6 px-4 xs:px-8 bg-black relative z-10 border-b-[0.1px] border-b-slate-700">
-      <div className="logo -ml-16 sm:ml-0">
+      <div className="logo -ml-16 md:ml-0">
         <div className="flex gap-x-2 items-center flex-col xs:flex-row">
           <a href="/" className="realtive group">
             <ClubspaceNeonHeader height={65} />
@@ -42,8 +36,11 @@ export const Header = () => {
           </a>
         </div>
       )*/}
-      <div className="connect absolute right-5 xs:relative">
-        <div className="flex gap-4 justify-center md:min-w-[220px] scale-[0.8] xs:scale-100">
+      <div className="connect md:right-5 xs:relative">
+        <div className="md:flex gap-4 justify-center md:min-w-[220px] scale-[0.8] xs:scale-100">
+          <div className="min-w-[200px] mb-2">
+            <ConnectWallet showBalance={false} />
+          </div>
           {isConnected && (
             <button
               disabled={lensLoginData || lensRefreshData}
@@ -53,9 +50,6 @@ export const Header = () => {
               {!(lensLoginData || lensRefreshData) ? "Login with Lens" : (profilesResponse?.defaultProfile.handle || 'No Lens')}
             </button>
           )}
-          <div className="min-w-[225px]">
-            <ConnectWallet showBalance={false} />
-          </div>
         </div>
       </div>
     </header>
