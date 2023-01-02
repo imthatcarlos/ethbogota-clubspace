@@ -29,7 +29,7 @@ body {
   min-height: 100vh;
   background-attachment: fixed;
   color: white;
-  background: black;
+  /* background: black; */
 }
 
 .btn {
