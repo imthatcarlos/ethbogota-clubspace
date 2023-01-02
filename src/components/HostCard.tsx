@@ -38,13 +38,13 @@ export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, on
                 />
               </div>
               <div className="p-2 pt-10">
-                <h3 className="text-center text-xl text-gray-900 dark:text-gray-300 font-medium leading-8 -mb-2">
+                <h3 className="text-center text-xl text-gray-300 font-medium leading-8 -mb-2">
                   @{profile.handle}
                 </h3>
                 <div className="text-center text-gray-400 text-md font-semibold mb-1">
                   <p>{profile.id}</p>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-white mb-0 p-4 text-center">
+                <p className="text-sm text-white mb-0 p-4 text-center">
                   {profile.bio || <em>No bio provided.</em>}
                 </p>
 
@@ -53,14 +53,14 @@ export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, on
                     <span>
                       <strong>{profile.stats.totalFollowing}</strong>
                     </span>
-                    <span className="dark:text-gray-400">following</span>
+                    <span className="text-gray-400">following</span>
                   </div>
 
                   <div className="flex gap-x-2">
                     <span>
                       <strong>{profile.stats.totalFollowers}</strong>
                     </span>
-                    <span className="dark:text-gray-400">
+                    <span className="text-gray-400">
                       {profile.stats.totalFollowers === 1 ? "follower" : "followers"}
                     </span>
                   </div>
