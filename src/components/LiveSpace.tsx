@@ -5,7 +5,7 @@ import { useJam } from "@/lib/jam-core-react";
 import { isEmpty } from "lodash/lang";
 import toast from "react-hot-toast";
 import { use } from "use-minimal-state";
-import { useDebounce } from 'use-debounce';
+import { useDebounce } from "use-debounce";
 import { classNames } from "@/lib/utils/classNames";
 import { buildLensShareUrl } from "@infinity-keys/react-lens-share-button";
 import { uniq } from "lodash/array";
@@ -28,9 +28,8 @@ import { SITE_URL, LENSTER_URL, ALLOWED_CHAIN_IDS } from "@/lib/consts";
 
 import * as mockIdentities from "@/constants/mockIdentities.json";
 import DirectToClaims from "./DirectToClaims";
-import { joinGroup } from "@/lib/semaphore/semaphore";
-import useIdentity from "@/hooks/useIdentity";
 import useENS from "@/hooks/useENS";
+import { joinGroup } from "@/lib/claim-without-semaphore/claims";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -195,17 +194,16 @@ const LiveSpace: FC<Props> = ({
     return sortBy(res, (r) => -identities[r].profile?.totalFollowers || 0);
   };
 
-  const { identity } = useIdentity();
-
-  // trigger the entry if everything is loaded
+  // log impression for party favor after 3 minutes
   useEffect(() => {
-    if (!isLoadingEntry && !isEmpty(identity)) {
-      joinGroup(defaultProfile.handle, identity, clubSpaceObject.semGroupIdHex, address);
+    if (!isLoadingEntry) {
+      setTimeout(() => joinGroup(clubSpaceObject.semGroupIdHex, address), 180_000);
     }
-  }, [isLoadingEntry, identity]);
+  }, [isLoadingEntry]);
 
   // debounce the reaction sending
   useEffect(() => {
+    console.log("debounce!", sendingReaction);
     if (sendingReaction && debouncedSendingReaction) {
       setSendingReaction(false);
     }
@@ -224,7 +222,7 @@ const LiveSpace: FC<Props> = ({
   // only lens accounts (handle includes .lens or .test)
   const toggleDrawer = async ({ handle, profile: { id }, hasBadge }) => {
     if ([".lens", ".test"].some((ext) => handle.includes(ext))) {
-      const [profile, { doesFollow: doesFollowData }, ] = await Promise.all([
+      const [profile, { doesFollow: doesFollowData }] = await Promise.all([
         getProfileByHandle(handle),
         doesFollow([{ followerAddress: address, profileId: id }]),
       ]);
@@ -329,12 +327,13 @@ const LiveSpace: FC<Props> = ({
       setIsLoadingEntry(false);
     };
 
-    if (isMounted
-      && isLoadingEntry
-      && handle
-      && clubSpaceObject.streamURL
-      && !isEmpty(creatorLensProfile)
-      && !isEmpty(featuredDecentNFT)
+    if (
+      isMounted &&
+      isLoadingEntry &&
+      handle &&
+      clubSpaceObject.streamURL &&
+      !isEmpty(creatorLensProfile) &&
+      !isEmpty(featuredDecentNFT)
     ) {
       join();
     }
@@ -352,7 +351,7 @@ const LiveSpace: FC<Props> = ({
     setProps,
     updateInfo,
     creatorLensProfile,
-    featuredDecentNFT
+    featuredDecentNFT,
   ]);
 
   useUnload(async () => {
@@ -407,23 +406,21 @@ const LiveSpace: FC<Props> = ({
           </div>
           <div className="decent-nft flex flex-col gap-y-3">
             {featuredDecentNFT && <FeaturedDecentNFT {...featuredDecentNFT} />}
-            {
-              creatorLensProfile && (
-                <div>
-                  <button
-                    onClick={() => setIsHostOpen(true)}
-                    className="btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center"
-                  >
-                    <img
-                      className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"
-                      src={getUrlForImageFromIpfs(creatorLensProfile.picture?.original?.url)}
-                      alt=""
-                    />
-                    <span>@{creatorLensProfile.handle}</span>
-                  </button>
-                </div>
-              )
-            }
+            {creatorLensProfile && (
+              <div>
+                <button
+                  onClick={() => setIsHostOpen(true)}
+                  className="btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center"
+                >
+                  <img
+                    className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"
+                    src={getUrlForImageFromIpfs(creatorLensProfile.picture?.original?.url)}
+                    alt=""
+                  />
+                  <span>@{creatorLensProfile.handle}</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
         <div className="bg-live-page-player bg-cover bg-no-repeat blur-[70px] inset-0 absolute z-[-1] lg:max-h-[50vh] max-h-[25vh] "></div>
@@ -493,19 +490,21 @@ const LiveSpace: FC<Props> = ({
                         <Menu.Items className="absolute z-10 mt-2 w-48 origin-top-right rounded-md bg-gray-800 p-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none flex gap-4 flex-wrap left-1/2 transform -translate-x-1/2">
                           {reactionsEntries.map(([key, value]) => (
                             <Menu.Item key={key}>
-                              {({ active }) =>
+                              {({ active }) => (
                                 <button
                                   onClick={() => {
                                     try {
                                       sendReaction(value);
                                     } catch (error) {
-                                      console.log(error)
+                                      console.log(error);
                                     } finally {
                                       setSendingReaction(true);
                                     }
-                                  }}>
+                                  }}
+                                >
                                   {value}
-                                </button>}
+                                </button>
+                              )}
                             </Menu.Item>
                           ))}
                         </Menu.Items>
@@ -604,7 +603,9 @@ const LiveSpace: FC<Props> = ({
                     <img
                       src={drawerProfile?.picture?.original?.url}
                       alt=""
-                      className={`rounded-full w-12 h-12 aspect-square relative border-black-[4px] top-3/4 left-[5%] outline outline-offset-0 outline-2 ${drawerProfile?.hasBadge ? 'outline-red-600' : 'outline-black'}`}
+                      className={`rounded-full w-12 h-12 aspect-square relative border-black-[4px] top-3/4 left-[5%] outline outline-offset-0 outline-2 ${
+                        drawerProfile?.hasBadge ? "outline-red-600" : "outline-black"
+                      }`}
                     />
                   </div>
                   <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
@@ -614,7 +615,9 @@ const LiveSpace: FC<Props> = ({
                           <span>{drawerProfile?.name}</span>
                         </div>
                         <div className="text-gray-500">@{drawerProfile?.handle}</div>
-                        {drawerProfile?.hasBadge ? <span className="text-sm badge-holder mt-1">✔️ ClubSpace Badge Holder</span>: null}
+                        {drawerProfile?.hasBadge ? (
+                          <span className="text-sm badge-holder mt-1">✔️ ClubSpace Badge Holder</span>
+                        ) : null}
                       </div>
 
                       {drawerProfile?.id !== defaultProfile?.id ? (
@@ -637,9 +640,7 @@ const LiveSpace: FC<Props> = ({
                     </div>
                   </Dialog.Title>
                   <div className="mt-2">
-                    <p className="text-sm text-white mb-6">
-                      {drawerProfile.bio || <em>No bio provided.</em>}
-                    </p>
+                    <p className="text-sm text-white mb-6">{drawerProfile.bio || <em>No bio provided.</em>}</p>
 
                     {/**
                       <button className="flex gap-x-4 items-center">

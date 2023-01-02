@@ -1,4 +1,4 @@
-import { claimReward } from "@/lib/semaphore/semaphore";
+import { claimReward } from "@/lib/claim-without-semaphore/claims";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { getAddress } from "ethers/lib/utils";
 import { useState } from "react";
@@ -27,7 +27,7 @@ const ClaimGoodyBag = ({ attendanceProps }) => {
     } catch {
       console.error("invalid address");
     }
-    const success = await claimReward(groupId, resolvedAddress, identity, address, signer);
+    const success = await claimReward(groupId, resolvedAddress, signer);
     if (success) {
       setNewClaim(true);
     } else {
@@ -47,8 +47,8 @@ const ClaimGoodyBag = ({ attendanceProps }) => {
         error && <p className="text-red-500">{error}</p>
       }
       <input
-        className="w-[27rem] p-2 rounded-sm mt-2"
-        placeholder="Recipient address or ENS..."
+        className="w-[27rem] p-2 rounded-md mt-2 bg-transparent border border-gray-500"
+        placeholder="Enter an address or ENS to receive at"
         value={recipient}
         onChange={(e) => setRecipient(e.target.value)}
       />

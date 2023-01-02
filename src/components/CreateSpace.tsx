@@ -2,7 +2,7 @@ import { FormEvent, Fragment, useState } from "react";
 import CreateLensPost from "@/components/CreateLensPost";
 import SelectPlaylist from "@/components/SelectPlaylist";
 import SetFeaturedProduct from "@/components/SetFeaturedProduct";
-import { IPlaylist } from "@spinamp/spinamp-sdk";
+import { IPlaylist, fetchPlaylistById } from "@spinamp/spinamp-sdk";
 import { useAccount, useContractRead, useSigner, useNetwork, useSwitchNetwork } from "wagmi";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -10,7 +10,6 @@ import { BigNumber } from "ethers";
 import { useJam } from "@/lib/jam-core-react";
 import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
-import { createGroup } from "@/lib/semaphore/semaphore";
 import { makePostGasless, publicationBody } from "@/services/lens/gaslessTxs";
 import { LENSHUB_PROXY, ALLOWED_CHAIN_IDS } from "@/lib/consts";
 import { LensHubProxy } from "@/services/lens/abi";
@@ -22,6 +21,7 @@ import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import useENS from "@/hooks/useENS";
 import createZkEdition from "@/services/decent/createZkEdition";
 import { wait } from "@/utils";
+import { createGroup } from "@/lib/claim-without-semaphore/claims";
 
 type MultiFormData = {
   lensPost: string;
@@ -134,6 +134,11 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     // const _image = { IpfsHash: (await coverResponse.json()).ipfsHash };
     const _image = await pinFileToIPFS(cover);
 
+    // get track list for description
+    const playlistData = await fetchPlaylistById(playlist.id);
+    const tracklist = playlistData.playlistTracks.map((t, i) => `${i}. ${t.artist.name} - ${t.title}`).join('\n')
+    const description = `ClubSpace hosted by ${handle}\n\n${tracklist}`;
+
     console.log("uploading metadata");
     const metadataResponse = await fetch(
       '/api/ipfs/post',
@@ -141,7 +146,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
         method: 'POST',
         body: JSON.stringify({
           name: goody.name,
-          description: `ClubSpace hosted by ${handle}`,
+          description,
           image: `ipfs://${_image.IpfsHash}`,
           // animation_url: `ipfs://${_music.IpfsHash}`,
           external_url: "https://joinclubspace.xyz",
@@ -259,7 +264,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
         } = await axios.post(`/api/space/create`, spaceData);
 
         // call sempahore/create-group
-        await createGroup(semGroupIdHex, collectionAddress, lensPubId, defaultProfile.id);
+        await createGroup(semGroupIdHex, collectionAddress, lensPubId, defaultProfile.id, signer);
 
         // PUSH
         // await axios.post(`/api/push/send`, { url });

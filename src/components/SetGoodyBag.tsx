@@ -1,4 +1,4 @@
-import { FC, Fragment, useCallback, useMemo } from "react";
+import { Fragment, useCallback, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
 import { useAccount, useSigner, useNetwork } from "wagmi";
 import { Listbox, Transition } from "@headlessui/react";
@@ -81,6 +81,7 @@ const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles,
     <MultiStepFormWrapper>
       <div className="w-full flex flex-col gap-3">
         <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Select your Party Favor NFT or Create One</h2>
+        <p>Party Favors are a free gift that anyone who attends your space for at least 3 minutes can claim</p>
         {
           isLoading && (
             <p>Loading Party Favors...</p>
@@ -152,6 +153,8 @@ const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles,
                   <br/>
                 </>
               )}
+              <p>Or create a new Party Favor NFT:</p>
+              <i className="text-sm">The track list for the space will be included in the NFT metadata automatically</i>
               <div className="w-full flex flex-col gap-3">
                 <input
                   type="text"
