@@ -802,10 +802,10 @@
     "@json-rpc-tools/types" "^1.7.6"
     "@pedrouid/environment" "^1.0.1"
 
-"@madfi/jam-core@^0.5.10":
-  version "0.5.10"
-  resolved "https://registry.yarnpkg.com/@madfi/jam-core/-/jam-core-0.5.10.tgz#10b1d99eb2084da6124b25a050427ce1ad648ba5"
-  integrity sha512-faJNT7iS9/9yx2iOjIhiSzTdg0gN/uFMEPV/b8x/f8UfEUatIlABiIlKJp6Os0moK9ptXt2W5nrjhZjsglPJzA==
+"@madfi/jam-core@^0.5.13":
+  version "0.5.13"
+  resolved "https://registry.yarnpkg.com/@madfi/jam-core/-/jam-core-0.5.13.tgz#d288feb606031f40a83fab0592b9a29304946088"
+  integrity sha512-AMAEnH9MtkkLDk6phNo4Ong8tddhrP0BlTPJJ14IJNrpnBrf9dTz1EIRRFK6SXidOaWR7FvCFC28PXHtyXbHIQ==
   dependencies:
     fast-base64 "^0.1.8"
     mediasoup-client "^3.6.31"

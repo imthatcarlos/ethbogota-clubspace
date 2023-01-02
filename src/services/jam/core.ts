@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 
-const STAGE_ONLY = true;
+const STAGE_ONLY = false; // stageOnly: users join directly on stage instead of in the audience
 
 export const launchSpace = async (handle: string, { createRoom }) => {
   const uuid = uuidv4();
