@@ -29,7 +29,8 @@ import { SITE_URL, LENSTER_URL, ALLOWED_CHAIN_IDS } from "@/lib/consts";
 import * as mockIdentities from "@/constants/mockIdentities.json";
 import DirectToClaims from "./DirectToClaims";
 import useENS from "@/hooks/useENS";
-import { joinGroup } from "@/lib/claim-without-semaphore/claims";
+import { claimReward, FavorStatus, joinGroup } from "@/lib/claim-without-semaphore/claims";
+import axios from "axios";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -99,6 +100,7 @@ const LiveSpace: FC<Props> = ({
   const { switchNetworkAsync } = useSwitchNetwork({ onSuccess: (data) => onFollowClick(true, undefined, true) });
   const [sendingReaction, setSendingReaction] = useState<boolean>(false);
   const [debouncedSendingReaction] = useDebounce(sendingReaction, 5000);
+  const [claimable, setClaimable] = useState<FavorStatus>(FavorStatus.NOT_CLAIMABLE);
 
   // @TODO: should really merge these two hook calls
   // - first run tries to do the refresh call
@@ -188,8 +190,7 @@ const LiveSpace: FC<Props> = ({
 
   // @TODO: memoized
   const getAudience = () => {
-    const res = uniq([myPeerId].concat(peers))
-      .filter((id) => !isEmpty(identities[id]));
+    const res = uniq([myPeerId].concat(peers)).filter((id) => !isEmpty(identities[id]));
 
     return sortBy(res, (r) => -identities[r].profile?.totalFollowers || 0);
   };
@@ -197,7 +198,19 @@ const LiveSpace: FC<Props> = ({
   // log impression for party favor after 3 minutes
   useEffect(() => {
     if (!isLoadingEntry) {
-      setTimeout(() => joinGroup(clubSpaceObject.semGroupIdHex, address), 180_000);
+      axios.post(`/api/privy/get-claim-status`, { groupId: clubSpaceObject.semGroupIdHex, address }).then((data) => {
+        const joinStatus = data.data.status;
+        if (joinStatus === FavorStatus.CLAIMABLE) {
+          setClaimable(FavorStatus.CLAIMABLE);
+        } else if (joinStatus === FavorStatus.CLAIMED) {
+          setClaimable(FavorStatus.CLAIMED);
+        } else {
+          setTimeout(async () => {
+            await joinGroup(clubSpaceObject.semGroupIdHex, address);
+            setClaimable(FavorStatus.CLAIMABLE);
+          }, 180_000);
+        }
+      });
     }
   }, [isLoadingEntry]);
 
@@ -208,16 +221,6 @@ const LiveSpace: FC<Props> = ({
       setSendingReaction(false);
     }
   }, [debouncedSendingReaction]);
-
-  // useEffect(() => {
-  //   if (isLoadingEntry && !isEmpty(myIdentity) && !isEmpty(creatorLensProfile) && !isEmpty(featuredDecentNFT)) {
-  //     setIsLoadingEntry(false);
-  //     // log impression, join group
-  //     if (identity !== undefined) {
-  //       joinGroup(defaultProfile.handle, identity, clubSpaceObject.semGroupIdHex, address);
-  //     }
-  //   }
-  // }, [isLoadingEntry, myIdentity, creatorLensProfile, featuredDecentNFT]);
 
   // only lens accounts (handle includes .lens or .test)
   const toggleDrawer = async ({ handle, profile: { id }, hasBadge }) => {
@@ -354,6 +357,16 @@ const LiveSpace: FC<Props> = ({
     featuredDecentNFT,
   ]);
 
+  const claimPartyFavor = async () => {
+    try {
+      await claimReward(clubSpaceObject.semGroupIdHex, address, signer);
+      setClaimable(FavorStatus.CLAIMED);
+    } catch (error) {
+      console.log(error);
+      toast.error("Error claiming favor");
+    }
+  };
+
   useUnload(async () => {
     console.log(`LEAVING`);
     await leaveRoom(clubSpaceObject.clubSpaceId);
@@ -446,7 +459,7 @@ const LiveSpace: FC<Props> = ({
         {/* isHost ? */}
 
         {false ? null : (
-          <div className="flex gap-x-5 left-1/2 transform -translate-x-1/2 relative w-[150px] items-baseline">
+          <div className="flex left-1/2 transform -translate-x-1/2 relative w-[150px] items-baseline">
             <Popover
               className={({ open }) =>
                 classNames(
@@ -518,7 +531,9 @@ const LiveSpace: FC<Props> = ({
             </Popover>
 
             <button
-              className="text-white !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative"
+              className={`text-white !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative ml-5 ${
+                lensterPostURL ? "" : "mr-7"
+              }`}
               onClick={() => window.open(shareURL, "_blank")}
             >
               <svg
@@ -542,7 +557,7 @@ const LiveSpace: FC<Props> = ({
             {lensterPostURL && (
               <button
                 className={
-                  "text-white focus:ring-4 focus:outline-none font-medium rounded-full text-sm py-2 px-6 text-center inline-flex items-center mr-2 bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-800 !m-0 max-h-[40px]"
+                  "text-white focus:ring-4 focus:outline-none font-medium rounded-full text-sm py-2 px-6 text-center inline-flex items-center mr-2  focus:ring-indigo-800 !m-0 max-h-[40px]"
                 }
                 onClick={() => window.open(lensterPostURL, "_blank")}
               >
@@ -562,6 +577,18 @@ const LiveSpace: FC<Props> = ({
                 </svg>
               </button>
             )}
+            {claimable === FavorStatus.CLAIMABLE ? (
+              <button
+                onClick={claimPartyFavor}
+                className="text-white !bg-transparent focus:outline-none rounded-lg text-[26px] text-center inline-flex items-center relative"
+              >
+                🎁
+              </button>
+            ) : claimable === FavorStatus.CLAIMED ? (
+              <a href={`/claim/${address}`} target="_blank" className="text-[26px]">
+                🎁
+              </a>
+            ) : null}
           </div>
         )}
       </div>

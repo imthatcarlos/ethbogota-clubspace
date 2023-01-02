@@ -1,20 +1,20 @@
 import { Fragment, useCallback, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
-import { useAccount, useSigner, useNetwork } from "wagmi";
-import { Listbox, Transition } from "@headlessui/react";
-import { CheckIcon, ChevronDownIcon } from "@heroicons/react/outline";
+// import { useAccount, useSigner, useNetwork } from "wagmi";
+// import { Listbox, Transition } from "@headlessui/react";
+// import { CheckIcon, ChevronDownIcon } from "@heroicons/react/outline";
 import { MultiStepFormWrapper } from "./MultiStepFormWrapper";
-import { classNames } from "@/lib/utils/classNames";
-import useGetDeployedZkEditions from "@/hooks/useGetDeployedZkEditions";
-import { DEFAULT_PARTY_FAVOR } from "@/services/decent/utils";
+// import { classNames } from "@/lib/utils/classNames";
+// import useGetDeployedZkEditions from "@/hooks/useGetDeployedZkEditions";
+// import { DEFAULT_PARTY_FAVOR } from "@/services/decent/utils";
 
 const allowableImageTypes = [".png", ".gif", ".jpeg", ".jpg"];
 
 const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles, goodyContract, setGoodyContract }) => {
-  const { chain } = useNetwork();
-  const { address, isConnected } = useAccount();
-  const { data: signer } = useSigner();
-  const { data: deployedZkEditions, isLoading } = useGetDeployedZkEditions(address, chain.id, signer);
+  // const { chain } = useNetwork();
+  // const { address, isConnected } = useAccount();
+  // const { data: signer } = useSigner();
+  // const { data: deployedZkEditions, isLoading } = useGetDeployedZkEditions(address, chain.id, signer);
 
   const onDrop = useCallback(
     (acceptedFiles) => {
@@ -73,22 +73,23 @@ const SetGoodyBag = ({ setGoody, goodyName, goodyDesc, updateFields, goodyFiles,
       </div>
     ));
 
-  const getGoodyBagName = ({ address, metadata }) => (
-    address.toLowerCase() === DEFAULT_PARTY_FAVOR.toLowerCase() ? `[DEFAULT] ${metadata.name}` : metadata.name
-  )
+  // const getGoodyBagName = ({ address, metadata }) => (
+  //   address.toLowerCase() === DEFAULT_PARTY_FAVOR.toLowerCase() ? `[DEFAULT] ${metadata.name}` : metadata.name
+  // )
 
   return (
     <MultiStepFormWrapper>
       <div className="w-full flex flex-col gap-3">
         <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Select your Party Favor NFT or Create One</h2>
         <p>Party Favors are a free gift that anyone who attends your space for at least 3 minutes can claim</p>
-        {
+        {/* {
           isLoading && (
             <p>Loading Party Favors...</p>
           )
-        }
+        } */}
         {
-          !isLoading && (
+          (
+          // !isLoading && (
             <>
               {/* {deployedZkEditions && (
                 <>

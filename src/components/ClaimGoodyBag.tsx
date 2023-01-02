@@ -36,16 +36,18 @@ const ClaimGoodyBag = ({ attendanceProps }) => {
     setLoading(false);
   };
 
-  if (claimed || newClaim) {
-    return <div>Your claim has been submitted! Your goody bag will arrive in your wallet shortly</div>;
+  if (claimed) {
+    return <div>Party favor claimed for this space already</div>;
+  }
+
+  if (newClaim) {
+    return <div>Your claim has been submitted! Your party favor will arrive in your wallet shortly</div>;
   }
 
   return (
     <div className="mb-4">
       <p>You've got a reward!</p>
-      {
-        error && <p className="text-red-500">{error}</p>
-      }
+      {error && <p className="text-red-500">{error}</p>}
       <input
         className="w-[27rem] p-2 rounded-md mt-2 bg-transparent border border-gray-500"
         placeholder="Enter an address or ENS to receive at"

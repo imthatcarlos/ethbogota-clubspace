@@ -89,7 +89,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
           </div>
         </div>
       )}
-      {isConnected && !loadingDefaultProfile && ensDone && !isLoadingBadge && (
+      {isConnected && !loadingDefaultProfile && ensDone && !isLoadingBadge && clubSpaceObject.queuedTrackIds?.length ? (
         <JamProviderWrapper>
           <PlayerContext.Provider value={audioPlayerState}>
             <DispatchPlayerContext.Provider value={audioPlayerDispatch}>
@@ -105,7 +105,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
             </DispatchPlayerContext.Provider>
           </PlayerContext.Provider>
         </JamProviderWrapper>
-      )}
+      ) : null}
     </>
   );
 };
