@@ -4,13 +4,13 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { FC, Fragment, useEffect, useMemo, useRef, useState, useReducer } from "react";
-import { DispatchPlayerContext, PlayerContext, playerInitialState, playerReducer } from "decent-audio-player";
+import { DispatchPlayerContext, PlayerContext, playerInitialState, playerReducer } from "@madfi/ux-components";
 import { useAccount, useNetwork, useQuery } from "wagmi";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import useENS from "@/hooks/useENS";
 import { SPACE_API_URL, REDIS_SPACE_PREFIX, REDIS_STREAM_PREFIX, SITE_URL } from "@/lib/consts";
-import { getCurrentTrack } from "@/services/radio";
+import { getQueuedTracks } from "@/services/radio";
 import useHasBadge from "@/hooks/useHasBadge";
 
 const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
@@ -70,7 +70,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
           ],
         }}
       />
-      {isLoadingEntry && (
+      {isLoadingEntry && clubSpaceObject.queuedTrackIds?.length && (
         <div className="flex-1 min-h-screen">
           <div className="abs-center">
             <p className="animate-move-txt-bg gradient-txt text-4xl">Entering ClubSpace...</p>
@@ -79,6 +79,13 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
                 <ConnectWallet showBalance={false} />
               </div>
             ) : null}
+          </div>
+        </div>
+      )}
+      {!clubSpaceObject.queuedTrackIds?.length && (
+        <div className="flex-1 min-h-screen">
+          <div className="abs-center">
+            <p className="animate-move-txt-bg gradient-txt text-4xl">This ClubSpace ended.</p>
           </div>
         </div>
       )}
@@ -128,7 +135,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (streamData) {
       const { streamURL, playerUUID } = JSON.parse(streamData);
       clubSpaceObject.streamURL = streamURL;
-      clubSpaceObject.currentTrackId = await getCurrentTrack(playerUUID);
+      clubSpaceObject.queuedTrackIds = await getQueuedTracks(playerUUID);
     }
 
     // console.log(clubSpaceObject);

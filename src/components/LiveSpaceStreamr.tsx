@@ -11,7 +11,7 @@ import { STREAMR_PUBLIC_ID } from "@/lib/consts";
 import { classNames } from "@/lib/utils/classNames";
 import { joinGroup } from "@/lib/semaphore/semaphore";
 import { Profile, useGetProfilesByHandles, useGetProfilesOwned } from "@/services/lens/getProfile";
-import { getUrlForImageFromIpfs } from "@/utils/ipfs";
+import { getUrlForImageFromIpfs } from "@/utils";
 import { LensProfile, reactionsEntries } from "@/components/LensProfile";
 import useIdentity from "@/hooks/useIdentity";
 import useIsMounted from "@/hooks/useIsMounted";
