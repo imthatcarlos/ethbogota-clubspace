@@ -88,7 +88,7 @@ const LiveSpace: FC<Props> = ({
   const { data: signer } = useSigner();
   const { connector: activeConnector } = useAccount();
   const { chain } = useNetwork();
-  const [state, { enterRoom, leaveRoom, setProps, updateInfo, sendReaction }] = useJam();
+  const [state, { enterRoom, leaveRoom, setProps, updateInfo, sendReaction, selectMicrophone, retryMic, addSpeaker }] = useJam();
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
   const [drawerProfile, setDrawerProfile] = useState<any>({});
   const [doesFollowDrawerProfile, setDoesFollowDrawerProfile] = useState<boolean>(false);
@@ -154,11 +154,14 @@ const LiveSpace: FC<Props> = ({
     iModerate,
     iMayEnter,
     myIdentity,
+    myAudio,
+    micMuted,
     inRoom,
     peers,
     peerState,
     myPeerState,
     hasMicFailed,
+    availableMicrophones,
   ] = use(state, [
     "reactions",
     "handRaised",
@@ -168,11 +171,14 @@ const LiveSpace: FC<Props> = ({
     "iAmModerator",
     "iAmAuthorized",
     "myIdentity",
+    "myAudio",
+    "micMuted",
     "inRoom",
     "peers",
     "peerState",
     "myPeerState",
     "hasMicFailed",
+    "availableMicrophones",
   ]);
 
   const myInfo = myIdentity.info;
@@ -185,6 +191,8 @@ const LiveSpace: FC<Props> = ({
       return defaultProfile.id === creatorLensProfile.id;
     }
   }, [defaultProfile, creatorLensProfile]);
+  const hostIsSpeaking = speaking?.length;
+  const micOn = myAudio?.active; // only for the host
 
   // @TODO: memoized
   const getAudience = () => {
@@ -354,6 +362,26 @@ const LiveSpace: FC<Props> = ({
     featuredDecentNFT,
   ]);
 
+  useEffect(() => {
+    if (isMounted && inRoom && isHost) {
+      console.log('adding host as speaker');
+      addSpeaker(clubSpaceObject.clubSpaceId, myPeerId);
+
+      if (availableMicrophones?.length) {
+        console.log('selecting mic: ', availableMicrophones[0]);
+        selectMicrophone(availableMicrophones[0]);
+      }
+    }
+  }, [isMounted, inRoom, isHost, myPeerId]);
+
+  const toggleSpeaking = () => {
+    if (micOn) {
+      setProps('micMuted', !micMuted);
+    } else {
+      retryMic();
+    }
+  };
+
   useUnload(async () => {
     console.log(`LEAVING`);
     await leaveRoom(clubSpaceObject.clubSpaceId);
@@ -408,6 +436,34 @@ const LiveSpace: FC<Props> = ({
             {featuredDecentNFT && <FeaturedDecentNFT {...featuredDecentNFT} />}
             {creatorLensProfile && (
               <div>
+                {isHost && iSpeak && (
+                  <button
+                    onClick={toggleSpeaking}
+                    className="btn !w-auto mx-auto bg-almost-black border-t-[0.5px] border-t-slate-700 !text-white flex gap-x-1 relative justify-between items-center"
+                  >
+                    <>
+                      {micOn && micMuted && (
+                        <>
+                          {/*<MicOffSvg
+                            className="w-5 h-5 mr-2 opacity-80 inline-block"
+                            stroke={roomColors.buttonPrimary}
+                          />*/}
+                          Speak
+                        </>
+                      )}
+                      {micOn && !micMuted && (
+                        <>
+                          {/*<MicOnSvg
+                            className="w-5 h-5 mr-2 opacity-80 inline-block"
+                            stroke={roomColors.buttonPrimary}
+                          />*/}
+                          You are speaking
+                        </>
+                      )}
+                      {!micOn && <>Enable mic for speaking</>}
+                    </>
+                  </button>
+                )}
                 <button
                   onClick={() => setIsHostOpen(true)}
                   className="btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center"
