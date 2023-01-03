@@ -41,7 +41,6 @@ export const appendToField = async (
   if (convertFieldId) {
     fieldId = BigNumber.from(fieldId).toString();
   }
-  console.log("field id", fieldId);
 
   const currentData = await getCurrentContentsData(address, fieldId, convertFieldId);
 

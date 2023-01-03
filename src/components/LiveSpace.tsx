@@ -19,7 +19,7 @@ import { useGetTracksFromPlaylist } from "@/services/spinamp/getPlaylists";
 import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import { getProfileByHandle } from "@/services/lens/getProfile";
 import { doesFollow, useDoesFollow } from "@/services/lens/doesFollow";
-import { followProfileGasless } from "@/services/lens/gaslessTxs";
+import { followProfileGasless, ZERO_ADDRESS } from "@/services/lens/gaslessTxs";
 import { useGetContractData } from "@/services/decent/getDecentNFT";
 import { HostCard } from "./HostCard";
 import { FeaturedDecentNFT } from "./FeaturedDecentNFT";
@@ -29,7 +29,9 @@ import { SITE_URL, LENSTER_URL, ALLOWED_CHAIN_IDS } from "@/lib/consts";
 import * as mockIdentities from "@/constants/mockIdentities.json";
 import DirectToClaims from "./DirectToClaims";
 import useENS from "@/hooks/useENS";
-import { joinGroup } from "@/lib/claim-without-semaphore/claims";
+import { FavorStatus, joinGroup } from "@/lib/claim-without-semaphore/claims";
+import axios from "axios";
+import ClaimFavorModal from "./ClaimFavorModal";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -45,6 +47,7 @@ type ClubSpaceObject = {
   streamURL?: string;
   // currentTrackId?: string;
   queuedTrackIds: [string];
+  partyFavorContractAddress: string;
 };
 
 type LensProfileObject = {
@@ -99,6 +102,7 @@ const LiveSpace: FC<Props> = ({
   const { switchNetworkAsync } = useSwitchNetwork({ onSuccess: (data) => onFollowClick(true, undefined, true) });
   const [sendingReaction, setSendingReaction] = useState<boolean>(false);
   const [debouncedSendingReaction] = useDebounce(sendingReaction, 5000);
+  const [modalOpen, setModalOpen] = useState(false);
 
   // @TODO: should really merge these two hook calls
   // - first run tries to do the refresh call
@@ -196,16 +200,21 @@ const LiveSpace: FC<Props> = ({
 
   // @TODO: memoized
   const getAudience = () => {
-    const res = uniq([myPeerId].concat(peers))
-      .filter((id) => !isEmpty(identities[id]));
+    const res = uniq([myPeerId].concat(peers)).filter((id) => !isEmpty(identities[id]));
 
     return sortBy(res, (r) => -identities[r].profile?.totalFollowers || 0);
   };
 
   // log impression for party favor after 3 minutes
   useEffect(() => {
-    if (!isLoadingEntry) {
-      setTimeout(() => joinGroup(clubSpaceObject.semGroupIdHex, address), 180_000);
+    if (!isLoadingEntry && clubSpaceObject.partyFavorContractAddress !== ZERO_ADDRESS) {
+      axios.post(`/api/privy/get-claim-status`, { groupId: clubSpaceObject.semGroupIdHex, address }).then((data) => {
+        if (data.data.status === FavorStatus.NOT_CLAIMABLE) {
+          setTimeout(async () => {
+            await joinGroup(clubSpaceObject.semGroupIdHex, address);
+          }, 180_000);
+        }
+      });
     }
   }, [isLoadingEntry]);
 
@@ -216,16 +225,6 @@ const LiveSpace: FC<Props> = ({
       setSendingReaction(false);
     }
   }, [debouncedSendingReaction]);
-
-  // useEffect(() => {
-  //   if (isLoadingEntry && !isEmpty(myIdentity) && !isEmpty(creatorLensProfile) && !isEmpty(featuredDecentNFT)) {
-  //     setIsLoadingEntry(false);
-  //     // log impression, join group
-  //     if (identity !== undefined) {
-  //       joinGroup(defaultProfile.handle, identity, clubSpaceObject.semGroupIdHex, address);
-  //     }
-  //   }
-  // }, [isLoadingEntry, myIdentity, creatorLensProfile, featuredDecentNFT]);
 
   // only lens accounts (handle includes .lens or .test)
   const toggleDrawer = async ({ handle, profile: { id }, hasBadge }) => {
@@ -522,7 +521,7 @@ const LiveSpace: FC<Props> = ({
         {/* isHost ? */}
 
         {false ? null : (
-          <div className="flex gap-x-5 left-1/2 transform -translate-x-1/2 relative w-[150px] items-baseline">
+          <div className="flex left-1/2 transform -translate-x-1/2 relative w-[150px] items-baseline">
             <Popover
               className={({ open }) =>
                 classNames(
@@ -594,7 +593,9 @@ const LiveSpace: FC<Props> = ({
             </Popover>
 
             <button
-              className="text-white !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative"
+              className={`text-white !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative ml-5 ${
+                lensterPostURL ? "" : "mr-7"
+              }`}
               onClick={() => window.open(shareURL, "_blank")}
             >
               <svg
@@ -618,7 +619,7 @@ const LiveSpace: FC<Props> = ({
             {lensterPostURL && (
               <button
                 className={
-                  "text-white focus:ring-4 focus:outline-none font-medium rounded-full text-sm py-2 px-6 text-center inline-flex items-center mr-2 bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-800 !m-0 max-h-[40px]"
+                  "text-white focus:ring-4 focus:outline-none font-medium rounded-full text-sm py-2 px-6 text-center inline-flex items-center mr-2  focus:ring-indigo-800 !m-0 max-h-[40px]"
                 }
                 onClick={() => window.open(lensterPostURL, "_blank")}
               >
@@ -636,6 +637,14 @@ const LiveSpace: FC<Props> = ({
                     d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 011.037-.443 48.282 48.282 0 005.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"
                   />
                 </svg>
+              </button>
+            )}
+            {clubSpaceObject.partyFavorContractAddress !== ZERO_ADDRESS && (
+              <button
+                onClick={() => setModalOpen(true)}
+                className="text-white !bg-transparent focus:outline-none rounded-lg text-[26px] text-center inline-flex items-center relative"
+              >
+                🎁
               </button>
             )}
           </div>
@@ -777,6 +786,12 @@ const LiveSpace: FC<Props> = ({
           </div>
         </Dialog>
       </Transition>
+      <ClaimFavorModal
+        isOpen={modalOpen}
+        setIsOpen={setModalOpen}
+        semGroupIdHex={clubSpaceObject.semGroupIdHex}
+        address={address}
+      />
     </>
   );
 };
