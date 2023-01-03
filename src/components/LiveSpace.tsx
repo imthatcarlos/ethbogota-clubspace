@@ -436,7 +436,7 @@ const LiveSpace: FC<Props> = ({
             {featuredDecentNFT && <FeaturedDecentNFT {...featuredDecentNFT} />}
             {creatorLensProfile && (
               <>
-                {isHost && (
+                {isHost && iSpeak && (
                   <div className="flex flex w-full justify-center relative grid-cols-2 gap-4">
                     <div>
                       <button
