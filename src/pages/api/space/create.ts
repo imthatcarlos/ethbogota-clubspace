@@ -76,7 +76,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     try {
       await client.createField({
-        name: BigNumber.from(semGroupIdHex).toString(),
+        name: `CLUBSPACE-${BigNumber.from(semGroupIdHex).toString()}`,
         description: `club space impressions for semaphone group id: ${semGroupIdHex}`,
         default_access_group: 'self-admin',
       });
