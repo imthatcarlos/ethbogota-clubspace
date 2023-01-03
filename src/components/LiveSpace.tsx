@@ -710,12 +710,14 @@ const LiveSpace: FC<Props> = ({
           </div>
         </Dialog>
       </Transition>
-      <ClaimFavorModal
-        isOpen={modalOpen}
-        setIsOpen={setModalOpen}
-        semGroupIdHex={clubSpaceObject.semGroupIdHex}
-        address={address}
-      />
+      {clubSpaceObject.partyFavorContractAddress !== ZERO_ADDRESS && (
+        <ClaimFavorModal
+          isOpen={modalOpen}
+          setIsOpen={setModalOpen}
+          semGroupIdHex={clubSpaceObject.semGroupIdHex}
+          address={address}
+        />
+      )}
     </>
   );
 };
