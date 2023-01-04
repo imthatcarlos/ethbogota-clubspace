@@ -3,8 +3,9 @@ import { getAddress } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import {PrivyClient} from '@privy-io/privy-node';
 import redisClient from "@/lib/utils/redisClient";
-import { REDIS_SPACE_PREFIX, REDIS_SPACE_EXP, SITE_URL } from "@/lib/consts";
+import { REDIS_SPACE_PREFIX, REDIS_SPACE_EXP, SITE_URL, APP_NAME } from "@/lib/consts";
 import { startRadio } from "@/services/radio";
+import { fieldNamePrivy } from "@/utils";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // write club space object to redis for lookup
@@ -74,9 +75,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     // create privy field for impressions
     const client = new PrivyClient(process.env.PRIVY_API_KEY, process.env.PRIVY_API_SECRET);
 
+    const fieldName = fieldNamePrivy(semGroupIdHex)
     try {
       await client.createField({
-        name: `CLUBSPACE-${BigNumber.from(semGroupIdHex).toString()}`,
+        name: fieldName,
         description: `club space impressions for semaphone group id: ${semGroupIdHex}`,
         default_access_group: 'self-admin',
       });

@@ -344,7 +344,7 @@
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/properties" "^5.7.0"
 
-"@ethersproject/bignumber@5.7.0", "@ethersproject/bignumber@^5.5.0", "@ethersproject/bignumber@^5.7.0":
+"@ethersproject/bignumber@5.7.0", "@ethersproject/bignumber@^5.5.0", "@ethersproject/bignumber@^5.6.2", "@ethersproject/bignumber@^5.7.0":
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/bignumber/-/bignumber-5.7.0.tgz#e2f03837f268ba655ffba03a57853e18a18dc9c2"
   integrity sha512-n1CAdIHRWjSucQO3MC1zPSVgV/6dy/fjL9pMrPP9peL+QxEg9wOsVqwD4+818B6LUEtaXzVHQiuivzRoxPxUGw==
@@ -812,6 +812,14 @@
     minimal-state "^5.6.0"
     ua-parser-js "^0.7.24"
     watsign "^0.1.8"
+
+"@madfi/ts-sdk@^0.2.0-alpha.4":
+  version "0.2.0-alpha.4"
+  resolved "https://registry.yarnpkg.com/@madfi/ts-sdk/-/ts-sdk-0.2.0-alpha.4.tgz#96a1f0477c5a760d8b4418903b03dcf54f196983"
+  integrity sha512-WFCQ6nQchk+aIpa/eKaaOw74jHKr3pkMEx4X+M4CxFFG4LuB1e2q/HDf1Aj4M0kAve70FRJCRTitTVCtTSCA0w==
+  dependencies:
+    "@ethersproject/address" "^5.7.0"
+    "@ethersproject/bignumber" "^5.6.2"
 
 "@madfi/ux-components@^1.0.15":
   version "1.0.15"

@@ -13,9 +13,10 @@ interface Props {
   playlistTracks: ITrack[];
   queuedTrackIds: [string];
   currentTrackId?: string;
+  updateTimeSpent: any
 };
 
-export const LiveAudioPlayer = ({ streamURL, playlistTracks, queuedTrackIds, currentTrackId }: Props) => {
+export const LiveAudioPlayer = ({ streamURL, playlistTracks, queuedTrackIds, currentTrackId, updateTimeSpent }: Props) => {
   const isMounted = useIsMounted();
   const [currentTrack, setCurrentTrack] = useState<ITrack | undefined>();
   const [nextTrack, setNextTrack] = useState<ITrack | undefined>();
@@ -33,6 +34,7 @@ export const LiveAudioPlayer = ({ streamURL, playlistTracks, queuedTrackIds, cur
 
       setCurrentTrack(groupedPlaylistTracks[metadata.StreamTitle][0]);
       currentTrackIndex++;
+      updateTimeSpent(currentTrackIndex);
 
       if (currentTrackIndex + 1 <= queuedTrackIds.length) {
         const nextTrackId = queuedTrackIds[currentTrackIndex + 1];
