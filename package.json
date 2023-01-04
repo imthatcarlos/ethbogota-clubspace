@@ -14,6 +14,7 @@
     "@heroicons/react": "^1.0.6",
     "@infinity-keys/react-lens-share-button": "^0.0.5",
     "@madfi/jam-core": "^0.5.10",
+    "@madfi/ts-sdk": "^0.2.0-alpha.4",
     "@madfi/ux-components": "^1.0.15",
     "@pinata/sdk": "^1.1.26",
     "@privy-io/privy-node": "^0.0.2",

@@ -11,7 +11,7 @@ import { buildLensShareUrl } from "@infinity-keys/react-lens-share-button";
 import { uniq } from "lodash/array";
 import { sortBy } from "lodash/collection";
 import { Profile, useGetProfilesOwned, useGetProfileByHandle } from "@/services/lens/getProfile";
-import { getUrlForImageFromIpfs, wait } from "@/utils";
+import { fieldNamePrivy, getUrlForImageFromIpfs, wait } from "@/utils";
 import { LensProfile, reactionsEntries } from "@/components/LensProfile";
 import useIsMounted from "@/hooks/useIsMounted";
 import useUnload from "@/hooks/useUnload";
@@ -24,7 +24,8 @@ import { useGetContractData } from "@/services/decent/getDecentNFT";
 import { HostCard } from "./HostCard";
 import { FeaturedDecentNFT } from "./FeaturedDecentNFT";
 import { LiveAudioPlayer } from "./LiveAudioPlayer";
-import { SITE_URL, LENSTER_URL, ALLOWED_CHAIN_IDS } from "@/lib/consts";
+import { SITE_URL, LENSTER_URL, ALLOWED_CHAIN_IDS, APP_NAME } from "@/lib/consts";
+import { addToGuestList, logAction, logOverwriteAction } from "@madfi/ts-sdk";
 
 import * as mockIdentities from "@/constants/mockIdentities.json";
 import DirectToClaims from "./DirectToClaims";
@@ -103,6 +104,20 @@ const LiveSpace: FC<Props> = ({
   const [sendingReaction, setSendingReaction] = useState<boolean>(false);
   const [debouncedSendingReaction] = useDebounce(sendingReaction, 5000);
   const [modalOpen, setModalOpen] = useState(false);
+  const [startTime, setStartTime] = useState(Date.now());
+
+  const updateTimeSpent = (currentTrackIndex: number) => {
+    logOverwriteAction(
+      address,
+      fieldNamePrivy(clubSpaceObject.clubSpaceId),
+      {
+        action: "time_spent",
+        songsListened: currentTrackIndex,
+        time: Date.now() - startTime,
+      },
+      "time_spent"
+    );
+  };
 
   // @TODO: should really merge these two hook calls
   // - first run tries to do the refresh call
@@ -208,6 +223,10 @@ const LiveSpace: FC<Props> = ({
         }
       });
     }
+    if (!isLoadingEntry) {
+      addToGuestList(APP_NAME, address);
+      setStartTime(Date.now());
+    }
   }, [isLoadingEntry]);
 
   // debounce the reaction sending
@@ -264,6 +283,7 @@ const LiveSpace: FC<Props> = ({
           const accessToken = localStorage.getItem("lens_accessToken");
           const _signer = switched ? await activeConnector.getSigner() : signer;
           const { txHash } = await followProfileGasless(profileId, _signer, accessToken);
+          logAction(address, fieldNamePrivy(clubSpaceObject.clubSpaceId), { action: "follow_lens", profileId });
 
           if (txHash) {
             isFollowDrawer ? setDoesFollowDrawerProfile(true) : await refetchDoesFollowCreator();
@@ -404,7 +424,9 @@ const LiveSpace: FC<Props> = ({
             ))} */}
           </div>
           <div className="decent-nft flex flex-col gap-y-3">
-            {featuredDecentNFT && <FeaturedDecentNFT {...featuredDecentNFT} />}
+            {featuredDecentNFT && (
+              <FeaturedDecentNFT {...featuredDecentNFT} semGroupIdHex={clubSpaceObject.clubSpaceId} />
+            )}
             {creatorLensProfile && (
               <div>
                 <button
@@ -435,6 +457,7 @@ const LiveSpace: FC<Props> = ({
                 playerUUID={clubSpaceObject.playerUUID}
                 queuedTrackIds={clubSpaceObject.queuedTrackIds}
                 currentTrackId={clubSpaceObject.queuedTrackIds[0]}
+                updateTimeSpent={updateTimeSpent}
               />
             ) : (
               <DirectToClaims address={address} />

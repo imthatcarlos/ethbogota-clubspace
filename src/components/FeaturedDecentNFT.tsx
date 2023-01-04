@@ -3,9 +3,10 @@ import { Contract, BigNumber, utils } from "ethers";
 import { useNetwork, useSigner, useSwitchNetwork, useAccount } from "wagmi";
 import toast from "react-hot-toast";
 import { unescape } from "lodash/string";
-import { getUrlForImageFromIpfs, wait } from "@/utils";
+import { fieldNamePrivy, getUrlForImageFromIpfs, wait } from "@/utils";
 import { CONTRACT_TYPE_CRESCENDO, CONTRACT_TYPE_EDITION } from "@/services/decent/utils";
-import { CURRENCY_MAP, CHAIN_NAME_MAP } from "@/lib/consts";
+import { CURRENCY_MAP, CHAIN_NAME_MAP, APP_NAME } from "@/lib/consts";
+import { logAction } from "@madfi/ts-sdk";
 
 const MAX_DESCRIPTION_LENGTH = 250;
 
@@ -20,6 +21,7 @@ interface Props {
   saleIsActive: boolean;
   decentURL: string;
   chainId: number; // chain the decent contract is deployed on
+  semGroupIdHex: string;
 }
 
 export const FeaturedDecentNFT = ({
@@ -33,20 +35,19 @@ export const FeaturedDecentNFT = ({
   saleIsActive,
   decentURL,
   chainId,
+  semGroupIdHex,
 }: Props) => {
   const [isBuying, setIsBuying] = useState<boolean>(false);
   const { chain } = useNetwork();
   const { data: signer } = useSigner();
-  const { connector: activeConnector } = useAccount();
+  const { connector: activeConnector, address: userAddress } = useAccount();
   const { switchNetworkAsync } = useSwitchNetwork({ onSuccess: (data) => onBuyClick(true) });
-
-
 
   const onBuyClick = async (switched = false) => {
     setIsBuying(true);
 
     if (!switched && chainId !== chain.id) {
-      toast('Switching chains...');
+      toast("Switching chains...");
       try {
         await switchNetworkAsync(chainId);
       } catch (error) {
@@ -60,9 +61,7 @@ export const FeaturedDecentNFT = ({
     toast.promise(
       new Promise(async (resolve, reject) => {
         try {
-          const _signer = switched
-            ? await activeConnector.getSigner()
-            : signer;
+          const _signer = switched ? await activeConnector.getSigner() : signer;
           const tx =
             contractType == CONTRACT_TYPE_CRESCENDO
               ? await contract.connect(_signer).buy(0, { value: price })
@@ -70,6 +69,7 @@ export const FeaturedDecentNFT = ({
 
           console.log(`tx: ${tx.hash}`);
           await tx.wait();
+          logAction(userAddress, fieldNamePrivy(semGroupIdHex), { action: "buy_drop", address: contract.address });
 
           setIsBuying(false);
 
@@ -87,30 +87,26 @@ export const FeaturedDecentNFT = ({
           setIsBuying(false);
 
           try {
-            const realError = typeof error === 'object'
-              ? error.toString().split('(')[0]
-              : '';
+            const realError = typeof error === "object" ? error.toString().split("(")[0] : "";
 
-            if (realError.startsWith('Error: user rejected')) {
+            if (realError.startsWith("Error: user rejected")) {
               return realError;
-            } else if (error.data?.message.startsWith('err: insufficient')) {
+            } else if (error.data?.message.startsWith("err: insufficient")) {
               return "Insufficient funds";
             }
           } catch {}
 
-          return 'Error!';
+          return "Error!";
         },
       }
     );
   };
 
   const parsedDescription = useMemo(() => {
-    const replacements = {'\\\\': '\\', '\\n': '\n', '\\"': '"'};
+    const replacements = { "\\\\": "\\", "\\n": "\n", '\\"': '"' };
     let d = unescape(metadata.description.substring(0, MAX_DESCRIPTION_LENGTH));
     d = d.replace(/\\(\\|n|")/g, (replace) => replacements[replace]);
-    return metadata.description.length > MAX_DESCRIPTION_LENGTH
-      ? `${d}...`
-      : d;
+    return metadata.description.length > MAX_DESCRIPTION_LENGTH ? `${d}...` : d;
   }, [metadata.description]);
 
   return (
@@ -123,27 +119,25 @@ export const FeaturedDecentNFT = ({
           <div className="max-w-[20rem] min-w-[17rem]">
             <div className="bg-slate-800 shadow-xl rounded-lg relative">
               <div className="photo-wrapper p-2 pt-0 overflow-hidden">
-                {
-                  !metadata.isVideo
-                    ? <img
-                        className="absolute t-0 left-0 right-0 w-full h-full object-cover opacity-50 rounded-md"
-                        src={getUrlForImageFromIpfs(metadata.image)}
-                        alt=""
-                      />
-                    : <video
-                        className="absolute t-0 left-0 right-0 w-full h-full object-cover opacity-50 rounded-md"
-                        src={getUrlForImageFromIpfs(metadata.animation_url || metadata.image)}
-                        alt=""
-                        autoPlay
-                        muted
-                        loop
-                      />
-                }
+                {!metadata.isVideo ? (
+                  <img
+                    className="absolute t-0 left-0 right-0 w-full h-full object-cover opacity-50 rounded-md"
+                    src={getUrlForImageFromIpfs(metadata.image)}
+                    alt=""
+                  />
+                ) : (
+                  <video
+                    className="absolute t-0 left-0 right-0 w-full h-full object-cover opacity-50 rounded-md"
+                    src={getUrlForImageFromIpfs(metadata.animation_url || metadata.image)}
+                    alt=""
+                    autoPlay
+                    muted
+                    loop
+                  />
+                )}
               </div>
               <div className="p-2 pt-10 relative">
-                <h3 className="text-center text-xl text-gray-300 font-medium leading-8 -mb-2">
-                  {metadata.name}
-                </h3>
+                <h3 className="text-center text-xl text-gray-300 font-medium leading-8 -mb-2">{metadata.name}</h3>
 
                 <p className="text-sm text-gray-500 dark:text-white mb-0 p-4 text-center">{parsedDescription}</p>
 
@@ -177,7 +171,8 @@ export const FeaturedDecentNFT = ({
                 {saleIsActive ? (
                   <div className="text-center my-3 px-3">
                     <button className="!w-full btn" onClick={() => onBuyClick()} disabled={isBuying}>
-                      {price.isZero() ? 'Free Mint': 'Mint'} {chainId != chain.id ? `(on ${CHAIN_NAME_MAP[chainId]})` : ''}
+                      {price.isZero() ? "Free Mint" : "Mint"}{" "}
+                      {chainId != chain.id ? `(on ${CHAIN_NAME_MAP[chainId]})` : ""}
                     </button>
                   </div>
                 ) : null}
