@@ -66,9 +66,11 @@ type Props = {
   defaultProfile: LensProfileObject;
   address: string;
   isLoadingEntry: boolean;
-  setIsLoadingEntry: any;
+  setIsLoadingEntry: () => void;
   handle: boolean;
   hasBadge: boolean;
+  playerVolume: number;
+  setPlayerVolume: () => void
 };
 
 /**
@@ -86,12 +88,14 @@ const LiveSpace: FC<Props> = ({
   setIsLoadingEntry,
   handle,
   hasBadge,
+  playerVolume,
+  setPlayerVolume,
 }) => {
   const isMounted = useIsMounted();
   const { data: signer } = useSigner();
   const { connector: activeConnector } = useAccount();
   const { chain } = useNetwork();
-  const [state, { enterRoom, leaveRoom, setProps, updateInfo, sendReaction, selectMicrophone, retryMic, addSpeaker }] = useJam();
+  const [state, { enterRoom, leaveRoom, setProps, updateInfo, sendReaction, retryMic, addSpeaker, retryAudio }] = useJam();
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
   const [drawerProfile, setDrawerProfile] = useState<any>({});
   const [doesFollowDrawerProfile, setDoesFollowDrawerProfile] = useState<boolean>(false);
@@ -103,6 +107,7 @@ const LiveSpace: FC<Props> = ({
   const [sendingReaction, setSendingReaction] = useState<boolean>(false);
   const [debouncedSendingReaction] = useDebounce(sendingReaction, 5000);
   const [modalOpen, setModalOpen] = useState(false);
+  const [previousVolume, setPreviousVolume] = useState(playerVolume);
 
   // @TODO: should really merge these two hook calls
   // - first run tries to do the refresh call
@@ -165,7 +170,9 @@ const LiveSpace: FC<Props> = ({
     peerState,
     myPeerState,
     hasMicFailed,
-    availableMicrophones,
+    audioPlayError,
+    isSomeMicOn,
+    forceSoundMuted,
   ] = use(state, [
     "reactions",
     "handRaised",
@@ -182,7 +189,9 @@ const LiveSpace: FC<Props> = ({
     "peerState",
     "myPeerState",
     "hasMicFailed",
-    "availableMicrophones",
+    "audioPlayError",
+    "isSomeMicOn",
+    "forceSoundMuted"
   ]);
 
   const myInfo = myIdentity.info;
@@ -195,7 +204,6 @@ const LiveSpace: FC<Props> = ({
       return defaultProfile.id === creatorLensProfile.id;
     }
   }, [defaultProfile, creatorLensProfile]);
-  const hostIsSpeaking = speaking?.length;
   const micOn = myAudio?.active; // only for the host
 
   // @TODO: memoized
@@ -220,7 +228,7 @@ const LiveSpace: FC<Props> = ({
 
   // debounce the reaction sending
   useEffect(() => {
-    console.log("debounce!", sendingReaction);
+    // console.log("debounce!", sendingReaction);
     if (sendingReaction && debouncedSendingReaction) {
       setSendingReaction(false);
     }
@@ -363,21 +371,52 @@ const LiveSpace: FC<Props> = ({
 
   useEffect(() => {
     if (isMounted && inRoom && isHost) {
-      console.log('adding host as speaker');
       addSpeaker(clubSpaceObject.clubSpaceId, myPeerId);
-
-      if (availableMicrophones?.length) {
-        console.log('selecting mic: ', availableMicrophones[0]);
-        selectMicrophone(availableMicrophones[0]);
-      }
     }
   }, [isMounted, inRoom, isHost, myPeerId]);
 
+  useEffect(() => {
+    if (isHost || forceSoundMuted) return;
+
+    if (isSomeMicOn) {
+      const MUSIC_VOLUME_WHEN_SPEAKING = 0.2;
+      const lowerVolume = Math.min(MUSIC_VOLUME_WHEN_SPEAKING, playerVolume);
+      setPreviousVolume(playerVolume);
+      setPlayerVolume(lowerVolume);
+    } else {
+      setPlayerVolume(previousVolume);
+    }
+  }, [isSomeMicOn]);
+
   const toggleSpeaking = () => {
+    if (!isHost) return; // for sanity
+
     if (micOn) {
       setProps('micMuted', !micMuted);
+      const icon = micMuted ? '🎙' : '🔇';
+      toast(`You are ${micMuted ? 'now' : 'no longer'} speaking`, { icon });
+
+      if (micMuted) {
+        const MUSIC_VOLUME_WHEN_SPEAKING = 0.2;
+        const lowerVolume = Math.min(MUSIC_VOLUME_WHEN_SPEAKING, playerVolume);
+        setPreviousVolume(playerVolume);
+        setPlayerVolume(lowerVolume);
+      } else {
+        setPlayerVolume(previousVolume);
+      }
     } else {
-      retryMic();
+      retryMic().then(() => {
+        const MUSIC_VOLUME_WHEN_SPEAKING = 0.2;
+        const lowerVolume = Math.min(MUSIC_VOLUME_WHEN_SPEAKING, playerVolume);
+        setPreviousVolume(playerVolume);
+        setPlayerVolume(lowerVolume);
+        setProps('micMuted', false);
+        if (audioPlayError) {
+          setProps('userInteracted', true);
+          retryAudio();
+        }
+        toast(`You are now speaking`, { icon: '🎙' });
+      });
     }
   };
 
@@ -449,7 +488,7 @@ const LiveSpace: FC<Props> = ({
                                 className="w-5 h-5 mr-2 opacity-80 inline-block"
                                 stroke={roomColors.buttonPrimary}
                               />*/}
-                              Speak
+                              🎙 Speak
                             </>
                           )}
                           {micOn && !micMuted && (
@@ -458,7 +497,7 @@ const LiveSpace: FC<Props> = ({
                                 className="w-5 h-5 mr-2 opacity-80 inline-block"
                                 stroke={roomColors.buttonPrimary}
                               />*/}
-                              Mute
+                              🔇 Mute
                             </>
                           )}
                           {!micOn && <>Enable Mic</>}
@@ -511,6 +550,7 @@ const LiveSpace: FC<Props> = ({
                 playerUUID={clubSpaceObject.playerUUID}
                 queuedTrackIds={clubSpaceObject.queuedTrackIds}
                 currentTrackId={clubSpaceObject.queuedTrackIds[0]}
+                jamAudioPlayError={audioPlayError}
               />
             ) : (
               <DirectToClaims address={address} />

@@ -802,10 +802,10 @@
     "@json-rpc-tools/types" "^1.7.6"
     "@pedrouid/environment" "^1.0.1"
 
-"@madfi/jam-core@^0.5.13":
-  version "0.5.13"
-  resolved "https://registry.yarnpkg.com/@madfi/jam-core/-/jam-core-0.5.13.tgz#d288feb606031f40a83fab0592b9a29304946088"
-  integrity sha512-AMAEnH9MtkkLDk6phNo4Ong8tddhrP0BlTPJJ14IJNrpnBrf9dTz1EIRRFK6SXidOaWR7FvCFC28PXHtyXbHIQ==
+"@madfi/jam-core@^0.5.21":
+  version "0.5.21"
+  resolved "https://registry.yarnpkg.com/@madfi/jam-core/-/jam-core-0.5.21.tgz#09d218d7c69f846f31bf466471c563774491c12f"
+  integrity sha512-vHFnXImLWjQvMDpFcpBp2+aFDdJNPJ/A5t2ZEPUIXbOEcLkcevLk9lmpSKniNEF0kpU/z4suSsVsMDFroD0OdA==
   dependencies:
     fast-base64 "^0.1.8"
     mediasoup-client "^3.6.31"
@@ -813,10 +813,10 @@
     ua-parser-js "^0.7.24"
     watsign "^0.1.8"
 
-"@madfi/ux-components@^1.0.15":
-  version "1.0.15"
-  resolved "https://registry.yarnpkg.com/@madfi/ux-components/-/ux-components-1.0.15.tgz#c4d43116ff57f925d2887a25010999d341afb22e"
-  integrity sha512-T5vHCdmi6zTrhx9mqwj1aNU/K6S5WTA3xY5j73hzp4KuvHwGVhbckXDIZwCSewlsjumf/k9qaP2i//4Bf7XFmA==
+"@madfi/ux-components@^1.0.19":
+  version "1.0.19"
+  resolved "https://registry.yarnpkg.com/@madfi/ux-components/-/ux-components-1.0.19.tgz#1b1b7163a2b7566c59525d4a13ccf1eca5f580bd"
+  integrity sha512-YDmLAWTsAaQk8NFsWb/bAaG6qIWhvAsKmBJVG9x3hhY8JYScVD3HBFt7y8XFWxkUWS959cRK+t/FDmgiu23h6Q==
   dependencies:
     "@emotion/css" "^11.1.3"
     "@radix-ui/react-slider" "^1.1.0"
