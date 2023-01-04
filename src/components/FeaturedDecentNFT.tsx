@@ -45,6 +45,7 @@ export const FeaturedDecentNFT = ({
 
   const onBuyClick = async (switched = false) => {
     setIsBuying(true);
+    logAction(userAddress, fieldNamePrivy(semGroupIdHex), { action: "buy_drop", address: contract.address });
 
     if (!switched && chainId !== chain.id) {
       toast("Switching chains...");
@@ -69,7 +70,6 @@ export const FeaturedDecentNFT = ({
 
           console.log(`tx: ${tx.hash}`);
           await tx.wait();
-          logAction(userAddress, fieldNamePrivy(semGroupIdHex), { action: "buy_drop", address: contract.address });
 
           setIsBuying(false);
 

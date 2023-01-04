@@ -265,6 +265,8 @@ const LiveSpace: FC<Props> = ({
   };
 
   const onFollowClick = async (profileId: string, isFollowDrawer = true, switched = false) => {
+    logAction(address, fieldNamePrivy(clubSpaceObject.clubSpaceId), { action: "follow_lens", profileId });
+    
     if (!switched && ALLOWED_CHAIN_IDS[0] !== chain.id) {
       toast("Switching chains...");
       try {
@@ -283,7 +285,6 @@ const LiveSpace: FC<Props> = ({
           const accessToken = localStorage.getItem("lens_accessToken");
           const _signer = switched ? await activeConnector.getSigner() : signer;
           const { txHash } = await followProfileGasless(profileId, _signer, accessToken);
-          logAction(address, fieldNamePrivy(clubSpaceObject.clubSpaceId), { action: "follow_lens", profileId });
 
           if (txHash) {
             isFollowDrawer ? setDoesFollowDrawerProfile(true) : await refetchDoesFollowCreator();
