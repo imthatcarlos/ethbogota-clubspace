@@ -15,6 +15,7 @@ interface Props {
   queuedTrackIds: [string];
   currentTrackId?: string;
   jamAudioPlayError: boolean;
+  updateTimeSpent: () => void;
 };
 
 export const LiveAudioPlayer = ({
@@ -23,6 +24,7 @@ export const LiveAudioPlayer = ({
   queuedTrackIds,
   currentTrackId,
   jamAudioPlayError,
+  updateTimeSpent,
 }: Props) => {
   const isMounted = useIsMounted();
   const [_, { setProps, retryAudio }] = useJam();
@@ -42,6 +44,7 @@ export const LiveAudioPlayer = ({
 
       setCurrentTrack(groupedPlaylistTracks[metadata.StreamTitle][0]);
       currentTrackIndex++;
+      updateTimeSpent(currentTrackIndex);
 
       if (currentTrackIndex + 1 <= queuedTrackIds.length) {
         const nextTrackId = queuedTrackIds[currentTrackIndex + 1];
