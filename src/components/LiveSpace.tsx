@@ -67,9 +67,11 @@ type Props = {
   defaultProfile: LensProfileObject;
   address: string;
   isLoadingEntry: boolean;
-  setIsLoadingEntry: any;
+  setIsLoadingEntry: () => void;
   handle: boolean;
   hasBadge: boolean;
+  playerVolume: number;
+  setPlayerVolume: () => void
 };
 
 /**
@@ -87,12 +89,14 @@ const LiveSpace: FC<Props> = ({
   setIsLoadingEntry,
   handle,
   hasBadge,
+  playerVolume,
+  setPlayerVolume,
 }) => {
   const isMounted = useIsMounted();
   const { data: signer } = useSigner();
   const { connector: activeConnector } = useAccount();
   const { chain } = useNetwork();
-  const [state, { enterRoom, leaveRoom, setProps, updateInfo, sendReaction }] = useJam();
+  const [state, { enterRoom, leaveRoom, setProps, updateInfo, sendReaction, retryMic, addSpeaker, retryAudio }] = useJam();
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
   const [drawerProfile, setDrawerProfile] = useState<any>({});
   const [doesFollowDrawerProfile, setDoesFollowDrawerProfile] = useState<boolean>(false);
@@ -104,6 +108,7 @@ const LiveSpace: FC<Props> = ({
   const [sendingReaction, setSendingReaction] = useState<boolean>(false);
   const [debouncedSendingReaction] = useDebounce(sendingReaction, 5000);
   const [modalOpen, setModalOpen] = useState(false);
+  const [previousVolume, setPreviousVolume] = useState(playerVolume);
   const [startTime, setStartTime] = useState(Date.now());
 
   const updateTimeSpent = (currentTrackIndex: number) => {
@@ -173,11 +178,16 @@ const LiveSpace: FC<Props> = ({
     iModerate,
     iMayEnter,
     myIdentity,
+    myAudio,
+    micMuted,
     inRoom,
     peers,
     peerState,
     myPeerState,
     hasMicFailed,
+    audioPlayError,
+    isSomeMicOn,
+    forceSoundMuted,
   ] = use(state, [
     "reactions",
     "handRaised",
@@ -187,11 +197,16 @@ const LiveSpace: FC<Props> = ({
     "iAmModerator",
     "iAmAuthorized",
     "myIdentity",
+    "myAudio",
+    "micMuted",
     "inRoom",
     "peers",
     "peerState",
     "myPeerState",
     "hasMicFailed",
+    "audioPlayError",
+    "isSomeMicOn",
+    "forceSoundMuted"
   ]);
 
   const myInfo = myIdentity.info;
@@ -204,6 +219,7 @@ const LiveSpace: FC<Props> = ({
       return defaultProfile.id === creatorLensProfile.id;
     }
   }, [defaultProfile, creatorLensProfile]);
+  const micOn = myAudio?.active; // only for the host
 
   // @TODO: memoized
   const getAudience = () => {
@@ -231,7 +247,7 @@ const LiveSpace: FC<Props> = ({
 
   // debounce the reaction sending
   useEffect(() => {
-    console.log("debounce!", sendingReaction);
+    // console.log("debounce!", sendingReaction);
     if (sendingReaction && debouncedSendingReaction) {
       setSendingReaction(false);
     }
@@ -266,7 +282,7 @@ const LiveSpace: FC<Props> = ({
 
   const onFollowClick = async (profileId: string, isFollowDrawer = true, switched = false) => {
     logAction(address, fieldNamePrivy(clubSpaceObject.clubSpaceId), { action: "follow_lens", profileId });
-    
+
     if (!switched && ALLOWED_CHAIN_IDS[0] !== chain.id) {
       toast("Switching chains...");
       try {
@@ -374,6 +390,59 @@ const LiveSpace: FC<Props> = ({
     featuredDecentNFT,
   ]);
 
+  useEffect(() => {
+    if (isMounted && inRoom && isHost) {
+      addSpeaker(clubSpaceObject.clubSpaceId, myPeerId);
+    }
+  }, [isMounted, inRoom, isHost, myPeerId]);
+
+  useEffect(() => {
+    if (isHost || forceSoundMuted) return;
+
+    if (isSomeMicOn) {
+      const MUSIC_VOLUME_WHEN_SPEAKING = 0.2;
+      const lowerVolume = Math.min(MUSIC_VOLUME_WHEN_SPEAKING, playerVolume);
+      setPreviousVolume(playerVolume);
+      setPlayerVolume(lowerVolume);
+    } else {
+      // @TODO: little slope on the increment
+      setPlayerVolume(previousVolume);
+    }
+  }, [isSomeMicOn]);
+
+  const toggleSpeaking = () => {
+    if (!isHost) return; // for sanity
+
+    if (micOn) {
+      setProps('micMuted', !micMuted);
+      const icon = micMuted ? '🎙' : '🔇';
+      toast(`You are ${micMuted ? 'now' : 'no longer'} speaking`, { icon });
+
+      if (micMuted) {
+        const MUSIC_VOLUME_WHEN_SPEAKING = 0.2;
+        const lowerVolume = Math.min(MUSIC_VOLUME_WHEN_SPEAKING, playerVolume);
+        setPreviousVolume(playerVolume);
+        setPlayerVolume(lowerVolume);
+      } else {
+        setPlayerVolume(previousVolume);
+      }
+    } else {
+      // @TODO: we should not lower the volume + nofif until micOn
+      retryMic().then(() => {
+        const MUSIC_VOLUME_WHEN_SPEAKING = 0.2;
+        const lowerVolume = Math.min(MUSIC_VOLUME_WHEN_SPEAKING, playerVolume);
+        setPreviousVolume(playerVolume);
+        setPlayerVolume(lowerVolume);
+        setProps('micMuted', false);
+        if (audioPlayError) {
+          setProps('userInteracted', true);
+          retryAudio();
+        }
+        toast(`You are now speaking`, { icon: '🎙' });
+      });
+    }
+  };
+
   useUnload(async () => {
     console.log(`LEAVING`);
     await leaveRoom(clubSpaceObject.clubSpaceId);
@@ -429,19 +498,67 @@ const LiveSpace: FC<Props> = ({
               <FeaturedDecentNFT {...featuredDecentNFT} semGroupIdHex={clubSpaceObject.clubSpaceId} />
             )}
             {creatorLensProfile && (
-              <div>
-                <button
-                  onClick={() => setIsHostOpen(true)}
-                  className="btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center"
-                >
-                  <img
-                    className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"
-                    src={getUrlForImageFromIpfs(creatorLensProfile.picture?.original?.url)}
-                    alt=""
-                  />
-                  <span>@{creatorLensProfile.handle}</span>
-                </button>
-              </div>
+              <>
+                {isHost && iSpeak && (
+                  <div className="flex flex w-full justify-center relative grid-cols-2 gap-4">
+                    <div>
+                      <button
+                        onClick={toggleSpeaking}
+                        className="btn !w-full mx-auto bg-almost-black border-t-[0.5px] border-t-slate-700 !text-white flex gap-x-1"
+                      >
+                        <>
+                          {micOn && micMuted && (
+                            <span className="!w-16">
+                              {/*<MicOffSvg
+                                className="w-5 h-5 mr-2 opacity-80 inline-block"
+                                stroke={roomColors.buttonPrimary}
+                              />*/}
+                              🎙 Speak
+                            </span>
+                          )}
+                          {micOn && !micMuted && (
+                            <span className="!w-16">
+                              {/*<MicOnSvg
+                                className="w-5 h-5 mr-2 opacity-80 inline-block"
+                                stroke={roomColors.buttonPrimary}
+                              />*/}
+                              🚫 Mute
+                            </span>
+                          )}
+                          {!micOn && <>Enable Mic</>}
+                        </>
+                      </button>
+                    </div>
+                    <div>
+                      <button
+                        onClick={() => setIsHostOpen(true)}
+                        className={`btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center ${isSomeMicOn ? 'glowing-border-club' : ''}`}
+                      >
+                        <img
+                          className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"
+                          src={getUrlForImageFromIpfs(creatorLensProfile.picture?.original?.url)}
+                          alt=""
+                        />
+                        <span>@{creatorLensProfile.handle}</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {!isHost && (
+                  <button
+                    onClick={() => setIsHostOpen(true)}
+                    className={`btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center ${isSomeMicOn ? 'glowing-border-club' : ''}`}
+                  >
+                    <img
+                      className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"
+                      src={getUrlForImageFromIpfs(creatorLensProfile.picture?.original?.url)}
+                      alt=""
+                    />
+                    <span>@{creatorLensProfile.handle}</span>
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -459,6 +576,7 @@ const LiveSpace: FC<Props> = ({
                 queuedTrackIds={clubSpaceObject.queuedTrackIds}
                 currentTrackId={clubSpaceObject.queuedTrackIds[0]}
                 updateTimeSpent={updateTimeSpent}
+                jamAudioPlayError={audioPlayError}
               />
             ) : (
               <DirectToClaims address={address} />

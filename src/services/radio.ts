@@ -8,10 +8,10 @@ const {
 
 const RADIOMAST_API_URL = 'https://api.radiomast.io/v1';
 
-export const startRadio = async ({ clubSpaceId, spinampPlaylistId, handle }) => {
+export const startRadio = async ({ clubSpaceId, spinampPlaylistId, spaceRedisKey }) => {
   const res = await axios.post(
     `${NEXT_PUBLIC_SPACE_API_URL}/stream/${clubSpaceId}`,
-    { spinampPlaylistId, handle },
+    { spinampPlaylistId, spaceRedisKey },
     { headers: { 'Authorization': `Bearer ${SPACE_API_BEARER}` }}
   );
 

@@ -4,7 +4,13 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { FC, Fragment, useEffect, useMemo, useRef, useState, useReducer } from "react";
-import { DispatchPlayerContext, PlayerContext, playerInitialState, playerReducer } from "@madfi/ux-components";
+import {
+  DispatchPlayerContext,
+  PlayerContext,
+  playerInitialState,
+  playerReducer,
+  setAudioVolumeAction,
+} from "@madfi/ux-components";
 import { useAccount, useNetwork, useQuery } from "wagmi";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import { ConnectWallet } from "@/components/ConnectWallet";
@@ -101,6 +107,8 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
                 address={address}
                 handle={defaultProfile?.handle || ensData?.handle || address}
                 hasBadge={hasBadge}
+                playerVolume={audioPlayerState.audioVolume}
+                setPlayerVolume={(volume: number) => audioPlayerDispatch(setAudioVolumeAction(volume))}
               />
             </DispatchPlayerContext.Provider>
           </PlayerContext.Provider>

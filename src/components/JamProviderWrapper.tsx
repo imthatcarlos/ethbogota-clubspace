@@ -17,7 +17,8 @@ const JamProviderWrapper = ({ children }) => {
       //   credential: process.env.JAM_TURN_SERVER_CREDENTIAL || 'yieChoi0PeoKo8ni',
       // },
     },
-    development: false, // DISABLE IN PROD
+    development: false,
+    sfu: true,
   };
 
   return (

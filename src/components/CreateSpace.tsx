@@ -264,11 +264,15 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
         // PUSH
         // await axios.post(`/api/push/send`, { url });
 
-        setUploading(false);
+        // HACK: give the radio worker time to finish
+        // @TODO: some status api
+        if (!collectionAddress) {
+          await wait(3000);
+        }
 
+        setUploading(false);
         setShareUrl(url);
         setIsShareOpen(true);
-
         resolve();
       }),
       {

@@ -5,6 +5,7 @@
   --clamped-container-width: clamp(350px, 75%, 800px);
   --club-red: hsl(357deg 99% 56%);
   --club-red-dark: hsl(357deg 99% 56% / 0.35);
+  --club-red-light: hsl(357deg 99% 75%);
   --hero-gradient: linear-gradient(327.21deg, rgba(33, 0, 75, 0.24) 3.65%, rgba(60, 0, 136, 0) 40.32%),
     linear-gradient(245.93deg, rgba(209, 21, 111, 0.16) 0%, rgba(209, 25, 80, 0) 36.63%),
     linear-gradient(147.6deg, rgba(58, 19, 255, 0) 29.79%, rgba(98, 19, 255, 0.01) 85.72%), #13111c;
@@ -36,6 +37,18 @@ body {
   @apply flex w-full cursor-pointer justify-center rounded-md border border-transparent bg-white py-2 px-4 text-sm font-medium text-black shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
 }
 
+.btn:focus {
+  --tw-ring-shadow: 0 0 #000 !important;
+  --tw-ring-offset-shadow: 0 0 #000 !important;
+}
+
+.btn-lens {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
 .input {
   @apply block w-full rounded-md bg-gray-800 text-white border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm;
 }
@@ -59,6 +72,23 @@ body {
 
 .shimmer {
   @apply bg-indigo-300;
+}
+
+.glowing-border-club {
+  outline: none;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 20px var(--club-red-dark);
+  }
+  50% {
+    box-shadow: 0 0 25px var(--club-red-light);
+  }
+  100% {
+    box-shadow: 0 0 20px var(--club-red-dark);
+  }
 }
 
 .grid-live {
