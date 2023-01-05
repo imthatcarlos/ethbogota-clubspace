@@ -418,6 +418,8 @@ const LiveSpace: FC<Props> = ({
       const icon = micMuted ? '🎙' : '🔇';
       toast(`You are ${micMuted ? 'now' : 'no longer'} speaking`, { icon });
 
+      if (forceSoundMuted) return;
+
       if (micMuted) {
         const MUSIC_VOLUME_WHEN_SPEAKING = 0.2;
         const lowerVolume = Math.min(MUSIC_VOLUME_WHEN_SPEAKING, playerVolume);
