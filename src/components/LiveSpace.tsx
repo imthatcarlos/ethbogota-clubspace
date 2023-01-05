@@ -384,6 +384,7 @@ const LiveSpace: FC<Props> = ({
       setPreviousVolume(playerVolume);
       setPlayerVolume(lowerVolume);
     } else {
+      // @TODO: little slope on the increment
       setPlayerVolume(previousVolume);
     }
   }, [isSomeMicOn]);
@@ -405,6 +406,7 @@ const LiveSpace: FC<Props> = ({
         setPlayerVolume(previousVolume);
       }
     } else {
+      // @TODO: we should not lower the volume + nofif until micOn
       retryMic().then(() => {
         const MUSIC_VOLUME_WHEN_SPEAKING = 0.2;
         const lowerVolume = Math.min(MUSIC_VOLUME_WHEN_SPEAKING, playerVolume);
@@ -479,26 +481,26 @@ const LiveSpace: FC<Props> = ({
                     <div>
                       <button
                         onClick={toggleSpeaking}
-                        className="btn !w-auto mx-auto bg-almost-black border-t-[0.5px] border-t-slate-700 !text-white flex gap-x-1 relative"
+                        className="btn !w-full mx-auto bg-almost-black border-t-[0.5px] border-t-slate-700 !text-white flex gap-x-1"
                       >
                         <>
                           {micOn && micMuted && (
-                            <>
+                            <span className="!w-16">
                               {/*<MicOffSvg
                                 className="w-5 h-5 mr-2 opacity-80 inline-block"
                                 stroke={roomColors.buttonPrimary}
                               />*/}
                               🎙 Speak
-                            </>
+                            </span>
                           )}
                           {micOn && !micMuted && (
-                            <>
+                            <span className="!w-16">
                               {/*<MicOnSvg
                                 className="w-5 h-5 mr-2 opacity-80 inline-block"
                                 stroke={roomColors.buttonPrimary}
                               />*/}
-                              🔇 Mute
-                            </>
+                              🚫 Mute
+                            </span>
                           )}
                           {!micOn && <>Enable Mic</>}
                         </>
@@ -507,7 +509,7 @@ const LiveSpace: FC<Props> = ({
                     <div>
                       <button
                         onClick={() => setIsHostOpen(true)}
-                        className="btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center"
+                        className={`btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center ${isSomeMicOn ? 'glowing-border-club' : ''}`}
                       >
                         <img
                           className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"
@@ -523,7 +525,7 @@ const LiveSpace: FC<Props> = ({
                 {!isHost && (
                   <button
                     onClick={() => setIsHostOpen(true)}
-                    className="btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center"
+                    className={`btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center ${isSomeMicOn ? 'glowing-border-club' : ''}`}
                   >
                     <img
                       className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"

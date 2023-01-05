@@ -56,12 +56,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       partyFavorContractAddress,
     };
     console.log(JSON.stringify(clubSpaceObject, null, 2));
+    const spaceRedisKey = `${REDIS_SPACE_PREFIX}/${handle}`;
 
     // stick it in redis
     try {
       console.log("setting redis");
       await redisClient.set(
-        `${REDIS_SPACE_PREFIX}/${handle}`,
+        spaceRedisKey,
         JSON.stringify(clubSpaceObject),
         "EX",
         REDIS_SPACE_EXP
@@ -87,7 +88,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     // post the playlist id for our api to create the audio stream async; will be written to redis
-    await startRadio({ clubSpaceId, spinampPlaylistId });
+    await startRadio({ clubSpaceId, spinampPlaylistId, spaceRedisKey });
 
     return res
       .status(200)
