@@ -266,7 +266,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
         // HACK: give the radio worker time to finish
         // @TODO: some status api
-        if (!collectionAddress) {
+        if (collectionAddress === ZERO_ADDRESS) {
           await wait(3000);
         }
 
