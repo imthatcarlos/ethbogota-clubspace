@@ -16,7 +16,7 @@ interface Activity {
 
 const ActivityItem = ({ activity }: { activity: Activity }) => {
   return (
-    <div className="p-3 bg-slate-500 rounded-xl min-w-[240px]">
+    <div className="p-3 rounded-xl min-w-[240px] border-slate-500 border-[1px]">
       <img
         src={getUrlForImageFromIpfs(activity.decentContract.image)}
         width="220"
@@ -44,11 +44,11 @@ const ActivityFeed = () => {
   }, []);
 
   return (
-    <div className="max-w-full">
+    <div className="w-full">
       {hostedSpaces.length >= MIN_SPACES ? (
         <>
           <h2 className="text-md font-bold tracking-tight text-3xl mt-16 mb-8">Past Spaces</h2>
-          <div className="flex overflow-x-auto gap-8">
+          <div className="flex overflow-auto gap-8">
             {hostedSpaces.map((activity: Activity, i: number) => (
               <ActivityItem key={i} activity={activity} />
             ))}
