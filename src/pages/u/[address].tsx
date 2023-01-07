@@ -62,7 +62,7 @@ const ClaimsPage = ({ clubSpaceObject }) => {
                 <p className="mb-2 font-bold underline">Space ID: {`0x` + space.clubspaceId}</p>
                 <p className="mb-2">Started: {new Date(space.createdAt * 1000).toString()}</p>
                 <p className="mb-2">Ended: {new Date((space.createdAt + space.length) * 1000).toString()}</p>
-                <p className="mb-2">Unique Attendees: {Object.keys(space.guests).length}</p>
+                <p className="mb-2">Unique Attendees: {space.numGuests}</p>
                 <p className="mb-2">
                   Promoted Drop:{" "}
                   <a target="_blank" href={decentUrl(space.decentContract)} className=" text-blue-300">
