@@ -27,6 +27,11 @@ const ClaimsPage = ({ clubSpaceObject }) => {
     }
   }, [address, defaultProfile]);
 
+  const decentUrl = ({ chainId, type, address }) => {
+    type = type === "DCNT721A" ? "Editions" : "Crescendo";
+    return `https://hq.decent.xyz/${chainId}/${type}/${address}`;
+  };
+
   if (address !== addressFromQuery) {
     return (
       <div className="mt-12 ml-12 full-height-page">
@@ -44,7 +49,7 @@ const ClaimsPage = ({ clubSpaceObject }) => {
         height="180"
         className=" rounded-xl"
       />
-      <h2 className="text-md font-bold tracking-tight text-xl mb-8 mt-4">{defaultProfile?.handle ?? address}</h2>
+      <h2 className="text-md font-bold tracking-tight text-2xl mb-8 mt-4">{defaultProfile?.handle ?? address}</h2>
       <hr />
       <div className="grid-profile">
         <div>
@@ -54,11 +59,16 @@ const ClaimsPage = ({ clubSpaceObject }) => {
           ) : (
             hostedSpaces.map((space) => (
               <div key={space.id} className="mt-4 mb-8">
-                <p className="underline mb-2">Space ID: {`0x` + space.clubspaceId}</p>
+                <p className="mb-2 font-bold underline">Space ID: {`0x` + space.clubspaceId}</p>
                 <p className="mb-2">Started: {new Date(space.createdAt * 1000).toString()}</p>
                 <p className="mb-2">Ended: {new Date((space.createdAt + space.length) * 1000).toString()}</p>
-                <p className="mb-2">Attendees: {Object.keys(space.guests).length}</p>
-                <p className="mb-2">Promoted Drop: {space.decentContract.address}</p>
+                <p className="mb-2">Unique Attendees: {Object.keys(space.guests).length}</p>
+                <p className="mb-2">
+                  Promoted Drop:{" "}
+                  <a target="_blank" href={decentUrl(space.decentContract)} className=" text-blue-300">
+                    {space.decentContract.name}
+                  </a>
+                </p>
                 <p className="mb-2">
                   Total Sales: {utils.formatEther(space.totalSales).toString()}{" "}
                   {space.decentContract.chainId === 137 ? "MATIC" : "ETH"}
@@ -75,7 +85,7 @@ const ClaimsPage = ({ clubSpaceObject }) => {
           ) : (
             clubSpaceObject.map((object, i) => (
               <div key={i} className="mt-4 mb-8">
-                <p className="underline mb-2">Space ID: {object.groupId}</p>
+                <p className="underline font-bold mb-2">Space ID: {object.groupId}</p>
                 <ClaimGoodyBag attendanceProps={object} />
               </div>
             ))
