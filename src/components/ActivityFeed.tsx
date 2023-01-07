@@ -3,8 +3,6 @@ import axios from "axios";
 import { utils } from "ethers";
 import { useEffect, useState } from "react";
 
-const MIN_SPACES = process.env.NEXT_PUBLIC_IS_PRODUCTION === "true" ? 5 : 0;
-
 interface Activity {
   numGuests: number;
   decentContract: any;
@@ -53,16 +51,12 @@ const ActivityFeed = () => {
 
   return (
     <div className="w-full">
-      {hostedSpaces.length >= MIN_SPACES ? (
-        <>
-          <h2 className="text-md font-bold tracking-tight text-3xl mt-16 mb-8">Activity</h2>
-          <div className="flex overflow-auto gap-8">
-            {hostedSpaces.map((activity: Activity, i: number) => (
-              <ActivityItem key={i} activity={activity} />
-            ))}
-          </div>
-        </>
-      ) : null}
+      <h2 className="text-md font-bold tracking-tight text-3xl mt-16 mb-8">Activity</h2>
+      <div className="flex overflow-auto gap-8">
+        {hostedSpaces.map((activity: Activity, i: number) => (
+          <ActivityItem key={i} activity={activity} />
+        ))}
+      </div>
     </div>
   );
 };
