@@ -51,12 +51,16 @@ const ActivityFeed = () => {
 
   return (
     <div className="w-full">
-      <h2 className="text-md font-bold tracking-tight text-3xl mt-16 mb-8">Activity</h2>
-      <div className="flex overflow-auto gap-8">
-        {hostedSpaces.map((activity: Activity, i: number) => (
-          <ActivityItem key={i} activity={activity} />
-        ))}
-      </div>
+      {hostedSpaces.length > 0 && (
+        <>
+          <h2 className="text-md font-bold tracking-tight text-3xl mt-16 mb-8">Activity</h2>
+          <div className="flex overflow-auto gap-8">
+            {hostedSpaces.map((activity: Activity, i: number) => (
+              <ActivityItem key={i} activity={activity} />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };
