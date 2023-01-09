@@ -76,7 +76,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
           ],
         }}
       />
-      {isLoadingEntry && clubSpaceObject.queuedTrackIds?.length && (
+      {isLoadingEntry && clubSpaceObject.queuedTrackIds?.length ? (
         <div className="flex-1 min-h-screen">
           <div className="abs-center">
             <p className="animate-move-txt-bg gradient-txt text-4xl">Entering ClubSpace...</p>
@@ -87,14 +87,14 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
             ) : null}
           </div>
         </div>
-      )}
-      {!clubSpaceObject.queuedTrackIds?.length && (
+      ) : null}
+      {!clubSpaceObject.queuedTrackIds?.length ? (
         <div className="flex-1 min-h-screen">
           <div className="abs-center">
-            <p className="animate-move-txt-bg gradient-txt text-4xl">This ClubSpace ended.</p>
+            <p className="animate-move-txt-bg gradient-txt text-4xl">This ClubSpace has ended</p>
           </div>
         </div>
-      )}
+      ) : null}
       {isConnected && !loadingDefaultProfile && ensDone && !isLoadingBadge && clubSpaceObject.queuedTrackIds?.length ? (
         <JamProviderWrapper>
           <PlayerContext.Provider value={audioPlayerState}>
