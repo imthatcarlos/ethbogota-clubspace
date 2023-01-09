@@ -10,6 +10,7 @@ import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import { IM_WITH_THE_DJ, GOOGLE_FORM_WAITLIST_URL } from "@/lib/consts";
+import ActivityFeed from "./ActivityFeed";
 
 const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
 const CreateSpace = dynamic(() => import("@/components/CreateSpace"), { ssr: false });
@@ -25,7 +26,7 @@ export const Hero = () => {
 
   useEffect(() => {
     if (!isLoadingBadge && !hasBadge) {
-      toast.error('ClubSpace is currently in closed beta', { duration: 10000, icon: '🚧' });
+      toast.error("ClubSpace is currently in closed beta", { duration: 10000, icon: "🚧" });
     }
   }, [isLoadingBadge, hasBadge]);
 
@@ -68,40 +69,58 @@ export const Hero = () => {
             </span>
           </h2>
 
-          {
-            isConnected
-              ? (
-                  <>
-                    {!(lensLoginData || lensRefreshData) ? (
-                      <button onClick={() => loginWithLens()} className="btn max-w-[200px] btn justify-center items-center">
-                        Login with Lens
+          {isConnected ? (
+            <>
+              {!(lensLoginData || lensRefreshData) ? (
+                <button onClick={() => loginWithLens()} className="btn max-w-[200px] btn justify-center items-center">
+                  Login with Lens
+                </button>
+              ) : (
+                <>
+                  {!isLoadingBadge && (hasBadge || IM_WITH_THE_DJ.includes(address)) ? (
+                    <button
+                      onClick={() => setModalOpen(true)}
+                      className="btn-create-space relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold duration-300 transition-all hover:-translate-y-[2px] hover:text-white"
+                    >
+                      <span className="z-10">Create a space</span>
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        disabled
+                        className="relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold"
+                      >
+                        <span className="z-10">Closed Beta</span>
                       </button>
-                    ) : (
-                      <>
-                        {
-                          !isLoadingBadge && (hasBadge || IM_WITH_THE_DJ.includes(address))
-                            ? <button
-                                onClick={() => setModalOpen(true)}
-                                className="btn-create-space relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold duration-300 transition-all hover:-translate-y-[2px] hover:text-white"
-                              >
-                                <span className="z-10">Create a space</span>
-                              </button>
-                            : <>
-                                <button
-                                  disabled
-                                  className="relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold"
-                                >
-                                  <span className="z-10">Closed Beta</span>
-                                </button>
-                                <span className="z-10">Get access with our <a href="https://playground.sismo.io/madfi-lens-followers-s01" target="_blank" rel="noreferrer" className="text-club-red font-extrabold">Sismo Badge</a> or get on the <a href={GOOGLE_FORM_WAITLIST_URL} target="_blank" rel="noreferrer" className="text-club-red font-extrabold">Creator Waitlist</a></span>
-                              </>
-                        }
-                      </>
-                    )}
-                  </>
-                )
-              : <ConnectWallet showBalance={false} />
-          }
+                      <span className="z-10">
+                        Get access with our{" "}
+                        <a
+                          href="https://playground.sismo.io/madfi-lens-followers-s01"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-club-red font-extrabold"
+                        >
+                          Sismo Badge
+                        </a>{" "}
+                        or get on the{" "}
+                        <a
+                          href={GOOGLE_FORM_WAITLIST_URL}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-club-red font-extrabold"
+                        >
+                          Creator Waitlist
+                        </a>
+                      </span>
+                    </>
+                  )}
+                </>
+              )}
+            </>
+          ) : (
+            <ConnectWallet showBalance={false} />
+          )}
+          <ActivityFeed />
         </div>
         <div className="w-full">
           <JamProviderWrapper>

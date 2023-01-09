@@ -220,3 +220,18 @@ button[disabled]:hover {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+.grid-profile {
+  display: grid;
+  grid-template-columns: auto auto;
+  padding: 10px;
+  justify-content: left;
+  grid-column-gap: 64px;
+  grid-row-gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .grid-profile {
+    grid-template-columns: auto;
+  }
+}

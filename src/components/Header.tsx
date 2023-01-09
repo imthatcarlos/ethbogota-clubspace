@@ -3,12 +3,22 @@ import { ConnectWallet } from "./ConnectWallet";
 import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import ClubspaceNeonHeader from "@/assets/svg/clubspace-neon-header.svg";
+import { useRouter } from "next/router";
 
 export const Header = () => {
+  const { push } = useRouter();
   const { isConnected, address } = useAccount();
   const { data: profilesResponse } = useGetProfilesOwned({}, address);
   const { data: lensRefreshData } = useLensRefresh();
   const { data: lensLoginData, refetch: loginWithLens } = useLensLogin();
+
+  const lensButton = () => {
+    if (!(lensLoginData || lensRefreshData)) {
+      loginWithLens();
+    } else {
+      push("/u/" + address);
+    }
+  };
 
   return (
     <header className="flex items-center justify-between py-4 px-4 xs:px-8 bg-black relative z-10 border-b-[0.1px] border-b-slate-700">
@@ -40,11 +50,12 @@ export const Header = () => {
           </div>
           {isConnected && (
             <button
-              disabled={lensLoginData || lensRefreshData}
-              onClick={() => loginWithLens()}
+              onClick={lensButton}
               className="btn btn-lens justify-center items-center"
             >
-              {!(lensLoginData || lensRefreshData) ? "Login with Lens" : (profilesResponse?.defaultProfile.handle || 'No Lens')}
+              {!(lensLoginData || lensRefreshData)
+                ? "Login with Lens"
+                : profilesResponse?.defaultProfile.handle || "No Lens"}
             </button>
           )}
         </div>
