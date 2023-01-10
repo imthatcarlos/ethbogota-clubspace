@@ -209,6 +209,11 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       });
       console.log("collectionAddress:", collectionAddress);
       toast.dismiss(toastId);
+
+      if (!collectionAddress) {
+        toast.error('Error - could not create Party Favor');
+        return;
+      }
     }
 
     // create lens post

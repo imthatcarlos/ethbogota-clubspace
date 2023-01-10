@@ -31,31 +31,35 @@ export default async ({
   symbol = `CLUB-${handle}`,
   uri,
 }: CreateProps) => {
-  const sdk = new DecentSDK(chainIdToChain[chainId], signer);
+  try {
+    const sdk = new DecentSDK(chainIdToChain[chainId], signer);
 
-  const myNFT = await zkEdition.deploy(
-    sdk,
-    name,
-    symbol,
-    DEFAULT_HAS_ADJUSTABLE_CAP,
-    DEFAULT_MAX_TOKENS,
-    DEFAULT_TOKEN_PRICE,
-    DEFAULT_MAX_TOKEN_PURCHASE,
-    null, // presaleMerkleRoot
-    0, // presaleStart
-    0, // presaleEnd
-    0, // saleStart
-    0, // saleEnd
-    DEFAULT_MAX_ROYALTY_BPS,
-    DEFAULT_CONTRACT_URI, // @TODO: this should be custom per collection
-    uri,
-    null, // MetadataRendererInit
-    null, // TokenGateConfig
-    VERIFIER_ADDRESS
-    // onTxPending,
-    // onTxReceipt
-    // parentIP
-  );
+    const myNFT = await zkEdition.deploy(
+      sdk,
+      name,
+      symbol,
+      DEFAULT_HAS_ADJUSTABLE_CAP,
+      DEFAULT_MAX_TOKENS,
+      DEFAULT_TOKEN_PRICE,
+      DEFAULT_MAX_TOKEN_PURCHASE,
+      null, // presaleMerkleRoot
+      0, // presaleStart
+      0, // presaleEnd
+      0, // saleStart
+      0, // saleEnd
+      DEFAULT_MAX_ROYALTY_BPS,
+      DEFAULT_CONTRACT_URI, // @TODO: this should be custom per collection
+      uri,
+      null, // MetadataRendererInit
+      null, // TokenGateConfig
+      VERIFIER_ADDRESS
+      // onTxPending,
+      // onTxReceipt
+      // parentIP
+    );
 
-  return myNFT.address;
+    return myNFT.address;
+  } catch (error) {
+    console.log(error);
+  }
 };
