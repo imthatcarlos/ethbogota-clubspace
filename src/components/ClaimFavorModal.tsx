@@ -6,7 +6,7 @@ import { useNetwork, useSigner } from "wagmi";
 import axios from "axios";
 import { getDeploymentForGroup } from "@/hooks/useGetDeployedZkEditions";
 
-const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address }) => {
+const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed = undefined }) => {
   const { data: signer } = useSigner();
   const { chain } = useNetwork();
   const [loading, setLoading] = useState<boolean>();
@@ -21,15 +21,24 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address }) => {
 
   useEffect(() => {
     setLoading(true);
-    axios.post(`/api/privy/get-claim-status`, { groupId: semGroupIdHex, address }).then((data) => {
-      const joinStatus = data.data.status;
-      if (joinStatus === FavorStatus.CLAIMABLE) {
-        setClaimable(FavorStatus.CLAIMABLE);
-      } else if (joinStatus === FavorStatus.CLAIMED) {
+    if (isClaimed === undefined) {
+      axios.post(`/api/privy/get-claim-status`, { groupId: semGroupIdHex, address }).then((data) => {
+        const joinStatus = data.data.status;
+        if (joinStatus === FavorStatus.CLAIMABLE) {
+          setClaimable(FavorStatus.CLAIMABLE);
+        } else if (joinStatus === FavorStatus.CLAIMED) {
+          setClaimable(FavorStatus.CLAIMED);
+        }
+        setLoading(false);
+      });
+    } else {
+      if (isClaimed) {
         setClaimable(FavorStatus.CLAIMED);
+      } else {
+        setClaimable(FavorStatus.CLAIMABLE);
       }
       setLoading(false);
-    });
+    }
   }, []);
 
   const submit = async () => {
