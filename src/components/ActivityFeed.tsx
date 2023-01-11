@@ -50,7 +50,7 @@ const ActivityFeed = () => {
   }, []);
 
   return (
-    <div className="w-full">
+    <div className="w-full mb-16">
       {hostedSpaces.length > 0 && (
         <>
           <h2 className="text-md font-bold tracking-tight text-3xl mt-16 mb-8">Activity</h2>

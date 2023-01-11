@@ -49,6 +49,10 @@ body {
   padding-right: 0.25rem;
 }
 
+.copy-btn:active {
+  @apply stroke-black bg-white rounded-full;
+}
+
 .input {
   @apply block w-full rounded-md bg-gray-800 text-white border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm;
 }
