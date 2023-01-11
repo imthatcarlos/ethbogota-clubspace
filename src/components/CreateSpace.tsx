@@ -337,6 +337,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
                     <p className="mt-4">Tips & Tricks for a great time:</p>
                     <p>1. ClubSpace works best on Chrome browser on your desktop or laptop</p>
                     <p>2. If you're planning to hop on the mic use headphones for the best experience</p>
+                    <p>3. Have fun and stay hydrated!</p>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
