@@ -18,6 +18,7 @@ import useENS from "@/hooks/useENS";
 import { SPACE_API_URL, REDIS_SPACE_PREFIX, REDIS_STREAM_PREFIX, SITE_URL } from "@/lib/consts";
 import { getQueuedTracks } from "@/services/radio";
 import useHasBadge from "@/hooks/useHasBadge";
+import MobileMessage from "@/components/MobileMessage";
 
 const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
 const LiveSpace = dynamic(() => import("@/components/LiveSpace"), { ssr: false });
@@ -85,6 +86,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
                 <ConnectWallet showBalance={false} />
               </div>
             ) : null}
+            <MobileMessage />
           </div>
         </div>
       ) : null}
