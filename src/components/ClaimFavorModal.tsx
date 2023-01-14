@@ -5,15 +5,14 @@ import toast from "react-hot-toast";
 import { useNetwork, useSigner } from "wagmi";
 import axios from "axios";
 import { getDeploymentForGroup } from "@/hooks/useGetDeployedZkEditions";
+import { pinataGatewayURL } from "@/services/pinata/pinata";
 
-const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address }) => {
+const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed = undefined }) => {
   const { data: signer } = useSigner();
   const { chain } = useNetwork();
   const [loading, setLoading] = useState<boolean>();
   const [claimable, setClaimable] = useState<FavorStatus>(FavorStatus.NOT_CLAIMABLE);
   const { data: deployedZkEdition, isLoading } = getDeploymentForGroup(semGroupIdHex, chain.id, signer);
-
-  console.log(deployedZkEdition);
 
   function closeModal() {
     setIsOpen(false);
@@ -21,15 +20,24 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address }) => {
 
   useEffect(() => {
     setLoading(true);
-    axios.post(`/api/privy/get-claim-status`, { groupId: semGroupIdHex, address }).then((data) => {
-      const joinStatus = data.data.status;
-      if (joinStatus === FavorStatus.CLAIMABLE) {
-        setClaimable(FavorStatus.CLAIMABLE);
-      } else if (joinStatus === FavorStatus.CLAIMED) {
+    if (isClaimed === undefined) {
+      axios.post(`/api/privy/get-claim-status`, { groupId: semGroupIdHex, address }).then((data) => {
+        const joinStatus = data.data.status;
+        if (joinStatus === FavorStatus.CLAIMABLE) {
+          setClaimable(FavorStatus.CLAIMABLE);
+        } else if (joinStatus === FavorStatus.CLAIMED) {
+          setClaimable(FavorStatus.CLAIMED);
+        }
+        setLoading(false);
+      });
+    } else {
+      if (isClaimed) {
         setClaimable(FavorStatus.CLAIMED);
+      } else {
+        setClaimable(FavorStatus.CLAIMABLE);
       }
       setLoading(false);
-    });
+    }
   }, []);
 
   const submit = async () => {
@@ -88,14 +96,15 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address }) => {
                 {isLoading ? (
                   <div>Loading...</div>
                 ) : (
-                  <div className="">
+                  <div>
                     <p className="text-xl">{deployedZkEdition?.metadata?.name}</p>
-                    <img
-                      src={`https://ipfs.io/ipfs/${deployedZkEdition?.imgUri?.substring(7)}`}
-                      className="m-auto max-w-xs"
-                    />
-                    {deployedZkEdition?.description?.split("\n").map((line) => {
-                      return <p className="text-md">{line}</p>;
+                    <img src={pinataGatewayURL(deployedZkEdition?.imgUri ?? "")} className="m-auto max-w-xs" />
+                    {deployedZkEdition?.description?.split("\n").map((line, i) => {
+                      return (
+                        <p className="text-md" key={i}>
+                          {line}
+                        </p>
+                      );
                     })}
                   </div>
                 )}

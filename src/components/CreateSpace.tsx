@@ -22,6 +22,7 @@ import useENS from "@/hooks/useENS";
 import createZkEdition from "@/services/decent/createZkEdition";
 import { wait, getUrlForImageFromIpfs } from "@/utils";
 import { createGroup } from "@/lib/claim-without-semaphore/claims";
+import Copy from "@/assets/svg/copy.svg";
 
 type MultiFormData = {
   lensPost: string;
@@ -324,16 +325,21 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
                 <Dialog.Panel className="w-full max-w-xl min-h-[300px] transform overflow-hidden rounded-2xl bg-black p-6 text-left align-middle shadow-xl transition-all flex flex-col">
                   <Dialog.Title
                     as="h3"
-                    className="text-lg font-medium leading-6 text-gray-900 text-gray-100 border-b-[1px] border-b-gray-600 pb-3"
+                    className="text-lg font-medium leading-6 text-gray-100 border-b-[1px] border-b-gray-600 pb-3"
                   >
                     Your space is live!
                   </Dialog.Title>
-                  <div className="flex-1 flex items-center justify-center">
-                    <p>
-                      <a href={shareUrl} target="_blank" rel="noreferrer" className="text-club-red">
+                  <div className=" items-center justify-center">
+                    <p className="flex mt-3">
+                      <a href={shareUrl} target="_blank" rel="noreferrer" className="underline mr-2">
                         {shareUrl}
                       </a>
+                      <Copy  onClick={() => navigator.clipboard.writeText(shareUrl)} className="copy-btn w-7 p-1 " />
                     </p>
+                    <p className="mt-4">Tips & Tricks for a great time:</p>
+                    <p>1. ClubSpace works best on Chrome browser on your desktop or laptop</p>
+                    <p>2. If you're planning to hop on the mic use headphones for the best experience</p>
+                    <p>3. Have fun and stay hydrated!</p>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

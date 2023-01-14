@@ -17,7 +17,13 @@ const ClaimGoodyBag = ({ attendanceProps }) => {
         {claimed ? "View" : "Claim Reward"}
       </button>
       {modalOpen && (
-        <ClaimFavorModal isOpen={modalOpen} setIsOpen={setModalOpen} semGroupIdHex={groupId} address={address} />
+        <ClaimFavorModal
+          isOpen={modalOpen}
+          setIsOpen={setModalOpen}
+          semGroupIdHex={groupId}
+          address={address}
+          isClaimed={claimed}
+        />
       )}
     </div>
   );

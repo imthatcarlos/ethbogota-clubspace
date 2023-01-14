@@ -4,6 +4,7 @@ import { DEFAULT_PARTY_FAVOR, CONTRACT_TYPE_ZK_EDITION, ZK_EDITION_CHAIN_ID } fr
 import { IS_PRODUCTION, VERIFIER_ADDRESS } from "@/lib/consts";
 import { BigNumberish, Contract } from "ethers";
 import axios from "axios";
+import { apiUrls } from "@/constants/apiUrls";
 
 export const getZkEditionList = (address: string, chainId: number, signer: any, options: UseQueryOptions = {}) => {
   const result = useQuery<any>(
@@ -59,7 +60,7 @@ export const getDeploymentForGroup = (
       const data = await getContractDataZkEdition(deployment, chainId, signer);
 
       const baseUri = await data.contract.baseURI();
-      const { data: uriObject } = await axios.get(`https://ipfs.io/ipfs/${baseUri.substring(7)}`);
+      const { data: uriObject } = await axios.get(`${apiUrls.ipfs}/${baseUri.substring(7)}`);
 
       return {
         ...data,

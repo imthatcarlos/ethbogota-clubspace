@@ -42,18 +42,18 @@ const ActivityItem = ({ activity }: { activity: Activity }) => {
 const ActivityFeed = () => {
   const [hostedSpaces, setHostedSpaces] = useState([]);
   useEffect(() => {
-    const getHostedSpaces = async () => {
+    const _fetchAsync = async () => {
       const { data } = await axios.get(`/api/mongo/activity-feed`);
       setHostedSpaces(data);
     };
-    getHostedSpaces();
+    _fetchAsync();
   }, []);
 
   return (
-    <div className="w-full">
+    <div className="w-full mb-16">
       {hostedSpaces.length > 0 && (
         <>
-          <h2 className="text-md font-bold tracking-tight text-3xl mt-16 mb-8">Activity</h2>
+          <h2 className="text-md font-bold tracking-tight text-3xl mt-16 mb-8">Recent Spaces</h2>
           <div className="flex overflow-auto gap-8">
             {hostedSpaces.map((activity: Activity, i: number) => (
               <ActivityItem key={i} activity={activity} />
