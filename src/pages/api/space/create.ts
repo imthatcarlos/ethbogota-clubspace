@@ -22,6 +22,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       handle,
       clubSpaceId,
       partyFavorContractAddress,
+      startAt, // ts UTC
+      productBannerUrl,
     } = req.body;
 
     if (
@@ -37,8 +39,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     const semGroupIdHex = `0x${clubSpaceId}`;
-    const createdAt = Date.now();
-    const endAt = Math.floor(Date.now() / 1000) + REDIS_SPACE_EXP;
+    const createdAt = Math.floor(Date.now() / 1000);
+    const endAt = createdAt + REDIS_SPACE_EXP;
 
     const clubSpaceObject = {
       creatorAddress: getAddress(creatorAddress),
@@ -55,6 +57,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       semGroupIdHex,
       handle,
       partyFavorContractAddress,
+      startAt,
+      productBannerUrl,
     };
     console.log(JSON.stringify(clubSpaceObject, null, 2));
     const spaceRedisKey = `${REDIS_SPACE_PREFIX}/${handle}`;
@@ -89,12 +93,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       console.log('ERROR - privy field exists');
     }
 
-    // post the playlist id for our api to create the audio stream async; will be written to redis
-    await startRadio({ clubSpaceId, spinampPlaylistId, spaceRedisKey });
+    // post the playlist id for our api to create the audio stream async;
+    // if startAt != undefined, it means this space should be scheduled
+    await startRadio({ clubSpaceId, spinampPlaylistId, spaceRedisKey, startAt });
 
     return res
       .status(200)
-      .json({ url: `${SITE_URL}/live/${handle}`, semGroupIdHex });
+      .json({ url: `${SITE_URL}/live/${handle}`, semGroupIdHex, startAt });
   } catch (e) {
     console.log(e);
     return res.status(500).json({});

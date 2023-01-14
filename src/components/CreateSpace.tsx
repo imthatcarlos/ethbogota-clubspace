@@ -20,7 +20,7 @@ import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import useENS from "@/hooks/useENS";
 import createZkEdition from "@/services/decent/createZkEdition";
-import { wait } from "@/utils";
+import { wait, getUrlForImageFromIpfs } from "@/utils";
 import { createGroup } from "@/lib/claim-without-semaphore/claims";
 
 type MultiFormData = {
@@ -253,10 +253,12 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
           decentContractAddress: decentProduct.address,
           decentContractChainId: decentProduct.chainId,
           decentContractType: decentProduct.contractType,
+          productBannerUrl: getUrlForImageFromIpfs(decentProduct.metadata.image),
           lensPubId,
           clubSpaceId,
           uuid,
           partyFavorContractAddress: collectionAddress,
+          // startAt: Math.floor(1673647200000 / 1000) // @TODO: datetime picker
         };
         const {
           data: { url, semGroupIdHex },

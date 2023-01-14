@@ -8,21 +8,30 @@ const {
 
 const RADIOMAST_API_URL = 'https://api.radiomast.io/v1';
 
-export const startRadio = async ({ clubSpaceId, spinampPlaylistId, spaceRedisKey }) => {
+export const startRadio = async ({ clubSpaceId, spinampPlaylistId, spaceRedisKey, startAt }) => {
   const res = await axios.post(
     `${NEXT_PUBLIC_SPACE_API_URL}/stream/${clubSpaceId}`,
-    { spinampPlaylistId, spaceRedisKey },
+    { spinampPlaylistId, spaceRedisKey, startAt },
     { headers: { 'Authorization': `Bearer ${SPACE_API_BEARER}` }}
   );
 
   console.log(`started radio: ${res.status}`);
 };
 
-export const getRadio = async ({ clubSpaceId }) => {
+export const getStreamURL = async ({ clubSpaceId }) => {
   try {
     const res = await axios.get(`${NEXT_PUBLIC_SPACE_API_URL}/stream/${clubSpaceId}`);
 
     return res.data.streamURL;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const getLiveClubspace = async (handle: string) => {
+  try {
+    const res = await axios.get(`${NEXT_PUBLIC_SPACE_API_URL}/live/${handle}?includeTracks=true`);
+    return res.data;
   } catch (error) {
     return null;
   }

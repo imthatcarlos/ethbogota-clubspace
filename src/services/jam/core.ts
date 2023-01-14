@@ -4,10 +4,13 @@ const STAGE_ONLY = false; // stageOnly: users join directly on stage instead of 
 
 export const launchSpace = async (handle: string, { createRoom }) => {
   const uuid = uuidv4();
-  const parts = uuid.split("-");
-  parts.pop();
-  parts.pop();
-  const clubSpaceId = parts.join("");
+
+  // needed for semaphore...
+  // const parts = uuid.split("-");
+  // parts.pop();
+  // parts.pop();
+  // const clubSpaceId = parts.join("");
+  const clubSpaceId = uuid;
 
   // create jam room on the server
   const ok = await createRoom(clubSpaceId, { stageOnly: STAGE_ONLY });

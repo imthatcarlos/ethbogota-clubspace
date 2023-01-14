@@ -16,7 +16,7 @@ import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import useENS from "@/hooks/useENS";
 import { SPACE_API_URL, REDIS_SPACE_PREFIX, REDIS_STREAM_PREFIX, SITE_URL } from "@/lib/consts";
-import { getQueuedTracks } from "@/services/radio";
+import { getLiveClubspace } from "@/services/radio";
 import useHasBadge from "@/hooks/useHasBadge";
 
 const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
@@ -128,25 +128,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!handle) return { props: {} };
 
   try {
-    const data = await redisClient.get(`${REDIS_SPACE_PREFIX}/${handle}`);
-    if (!data) {
-      // @TODO: space duration should depend on whether the audio stream is still running
+    const clubSpaceObject = await getLiveClubspace(handle);
+    if (!clubSpaceObject) {
       console.log("SPACE NOT FOUND! MAY HAVE EXPIRED FROM REDIS");
       return { props: {} };
     }
 
-    const clubSpaceObject = JSON.parse(data);
     console.log(`found space with id: ${clubSpaceObject.clubSpaceId}`);
-
-    // NOTE: might not be there if the radio worker has not finished
-    const streamData = await redisClient.get(`${REDIS_STREAM_PREFIX}/${clubSpaceObject.clubSpaceId}`);
-    if (streamData) {
-      const { streamURL, playerUUID } = JSON.parse(streamData);
-      clubSpaceObject.streamURL = streamURL;
-      clubSpaceObject.queuedTrackIds = await getQueuedTracks(playerUUID);
-    }
-
-    // console.log(clubSpaceObject);
 
     return { props: { clubSpaceObject } };
   } catch (error) {
