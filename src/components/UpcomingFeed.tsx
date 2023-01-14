@@ -4,13 +4,7 @@ import { useEffect, useState } from "react";
 import Bell from "@/assets/svg/bell.svg";
 import { subscribeNotifications } from "@/services/push/clientSide";
 import { useAccount, useSigner } from "wagmi";
-
-interface Activity {
-  decentContract: any;
-  handle: string;
-  avatar: string;
-  startAt: number;
-}
+import Link from "next/link";
 
 function timeUntil(timeStamp) {
   let time = new Date(timeStamp * 1000);
@@ -26,29 +20,39 @@ function timeUntil(timeStamp) {
   return `${dayString} ${hours}:${minutes}`;
 }
 
-const UpcomingItem = ({ activity }: { activity: Activity }) => {
+const filterTestSpaces = (space: any) => {
+  if (process.env.NEXT_PUBLIC_IS_PRODUCTION === "false") {
+    return true;
+  }
   return (
-    <div className="rounded-md min-w-[220px]">
-      <div
-        style={{
-          backgroundImage: `url(${getUrlForImageFromIpfs(activity.decentContract.image)})`,
-          height: "130px",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          width: "100%",
-          borderRadius: "8px",
-          paddingTop: "4px",
-          paddingLeft: "4px",
-        }}
-      >
-        <p className="text-black rounded-md bg-white/75 text-sm px-3 w-fit">{timeUntil(activity.startAt)}</p>
-        <div style={{ padding: "56px 0 0 0" }}>
-          <p className="">{activity.decentContract.name}</p>
-          <p className="text-xl font-semibold">{activity.handle}</p>
+    space.decentContractChainId !== 80001 && space.decentContractChainId !== 5 && space.decentContractChainId !== 420
+  );
+};
+
+const UpcomingItem = ({ activity }: { activity: any }) => {
+  return (
+    <Link href={`/live/${activity.handle}`}>
+      <div className="rounded-md min-w-[220px] cursor-pointer">
+        <div
+          style={{
+            backgroundImage: `url(${getUrlForImageFromIpfs(activity.productBannerUrl)})`,
+            height: "130px",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            width: "100%",
+            borderRadius: "8px",
+            paddingTop: "4px",
+            paddingLeft: "6px",
+          }}
+        >
+          <p className="text-black rounded-md bg-white/75 text-sm px-3 w-fit">{timeUntil(activity.createdAt)}</p>
+          <div style={{ padding: "72px 0 0 0" }}>
+            <p className="text-xl font-semibold">{activity.handle}</p>
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
@@ -58,16 +62,10 @@ const UpcomingFeed = () => {
   const [spaces, setSpaces] = useState([]);
   useEffect(() => {
     const _fetchAsync = async () => {
-      // TODO: get upcoming spaces
-      // const { data } = await axios.get(`/api/mongo/activity-feed`);
-      // setSpaces([
-      //   {
-      //     decentContract: data[0].decentContract,
-      //     handle: data[0].handle,
-      //     avatar: "https://cdn.stamp.fyi/avatar/eth:0xdc4471ee9dfca619ac5465fde7cf2634253a9dc6?s=250",
-      //     startAt: 1673823600,
-      //   },
-      // ]);
+      const {
+        data: { spaces },
+      } = await axios.get(`${process.env.NEXT_PUBLIC_SPACE_API_URL}/upcoming/all`);
+      setSpaces(spaces.filter((space) => !space.ended && filterTestSpaces(space)));
     };
     _fetchAsync();
   }, []);
@@ -87,7 +85,7 @@ const UpcomingFeed = () => {
             <h2 className="text-md font-bold tracking-tight text-3xl">Upcoming Spaces</h2>
           </div>
           <div className="flex overflow-auto gap-8">
-            {spaces.map((activity: Activity, i: number) => (
+            {spaces.map((activity: any, i: number) => (
               <UpcomingItem key={i} activity={activity} />
             ))}
           </div>
