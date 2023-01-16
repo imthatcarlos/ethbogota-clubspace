@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { useNetwork, useSigner } from "wagmi";
 import axios from "axios";
 import { getDeploymentForGroup } from "@/hooks/useGetDeployedZkEditions";
-import { pinataGatewayURL } from "@/services/pinata/pinata";
+import { apiUrls } from "@/constants/apiUrls";
 
 const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed = undefined }) => {
   const { data: signer } = useSigner();
@@ -31,11 +31,7 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
         setLoading(false);
       });
     } else {
-      if (isClaimed) {
-        setClaimable(FavorStatus.CLAIMED);
-      } else {
-        setClaimable(FavorStatus.CLAIMABLE);
-      }
+      setClaimable(isClaimed ? FavorStatus.CLAIMED : FavorStatus.CLAIMABLE);
       setLoading(false);
     }
   }, []);
@@ -97,8 +93,11 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
                   <div>Loading...</div>
                 ) : (
                   <div>
-                    <p className="text-xl">{deployedZkEdition?.metadata?.name}</p>
-                    <img src={pinataGatewayURL(deployedZkEdition?.imgUri ?? "")} className="m-auto max-w-xs" />
+                    <p className="text-xl">{deployedZkEdition?.name}</p>
+                    <img
+                      src={`${apiUrls.ipfs}/${deployedZkEdition?.image.substring(7) ?? ""}`}
+                      className="m-auto max-w-xs"
+                    />
                     {deployedZkEdition?.description?.split("\n").map((line, i) => {
                       return (
                         <p className="text-md" key={i}>

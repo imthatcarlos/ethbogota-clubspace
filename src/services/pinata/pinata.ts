@@ -2,16 +2,9 @@ import { apiUrls } from "@/constants/apiUrls";
 import pinataSDK from "@pinata/sdk";
 import axios from "axios";
 
-const pinata = pinataSDK(
-  process.env.NEXT_PUBLIC_PINATA_KEY ?? "",
-  process.env.NEXT_PUBLIC_PINATA_SECRET_KEY ?? "",
-);
+const pinata = pinataSDK(process.env.NEXT_PUBLIC_PINATA_KEY ?? "", process.env.NEXT_PUBLIC_PINATA_SECRET_KEY ?? "");
 
-const _hash = (uriOrHash: string) => (
-  uriOrHash.startsWith('ipfs://')
-    ? uriOrHash.split('ipfs://')[1]
-    : uriOrHash
-);
+const _hash = (uriOrHash: string) => (uriOrHash.startsWith("ipfs://") ? uriOrHash.split("ipfs://")[1] : uriOrHash);
 
 export const pinFileToIPFS = (file: any) => {
   const url = `https://api.pinata.cloud/pinning/pinFileToIPFS`;
@@ -49,7 +42,7 @@ export const pinFileToIPFS = (file: any) => {
 export const pinJson = (data: any, address?: string) => {
   const options = {
     pinataMetadata: {
-      name: `goody_bag_${address || ""}`
+      name: `goody_bag_${address || ""}`,
     },
     pinataOptions: {
       cidVersion: 0,
@@ -71,7 +64,11 @@ export const pinJson = (data: any, address?: string) => {
 };
 
 export const getViaPinataGateway = async (uriOrHash: string) => {
-  const { data } = await axios.get(`${apiUrls.pinataGateway}/${_hash(uriOrHash)}`);
+  const { data } = await axios.get(`${apiUrls.pinataGateway}/${_hash(uriOrHash)}`, {
+    headers: {
+      Accept: "application/json, text/plain",
+    },
+  });
   return data;
 };
 

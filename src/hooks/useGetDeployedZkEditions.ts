@@ -5,6 +5,7 @@ import { IS_PRODUCTION, VERIFIER_ADDRESS } from "@/lib/consts";
 import { BigNumberish, Contract } from "ethers";
 import axios from "axios";
 import { apiUrls } from "@/constants/apiUrls";
+import { getViaPinataGateway } from "@/services/pinata/pinata";
 
 export const getZkEditionList = (address: string, chainId: number, signer: any, options: UseQueryOptions = {}) => {
   const result = useQuery<any>(
@@ -63,10 +64,8 @@ export const getDeploymentForGroup = (
       const { data: uriObject } = await axios.get(`${apiUrls.ipfs}/${baseUri.substring(7)}`);
 
       return {
-        ...data,
         address: deployment,
-        imgUri: uriObject.image,
-        description: uriObject.description,
+        ...uriObject,
       };
     },
     {
