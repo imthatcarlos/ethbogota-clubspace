@@ -11,7 +11,7 @@ import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import { IM_WITH_THE_DJ, GOOGLE_FORM_WAITLIST_URL } from "@/lib/consts";
 import ActivityFeed from "./ActivityFeed";
-import UpcomingFeed from "./UpcomingFeed";
+import {UpcomingFeed} from "./UpcomingFeed";
 
 const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
 const CreateSpace = dynamic(() => import("@/components/CreateSpace"), { ssr: false });

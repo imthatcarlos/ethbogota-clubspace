@@ -34,7 +34,7 @@ export const LiveAudioPlayer = ({
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
 
   const onMetadata = (metadata) => {
-    if (!metadata || !metadata.StreamTitle) {
+    if ((!metadata || !metadata.StreamTitle) && currentTrackIndex !== 0) {
       toast('The stream has ended - thanks for coming!', { duration: 10000, icon: '🔥' });
       setStreamEnded(true);
       setCurrentTrack();

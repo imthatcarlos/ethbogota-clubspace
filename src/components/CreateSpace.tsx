@@ -259,7 +259,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
           clubSpaceId,
           uuid,
           partyFavorContractAddress: collectionAddress,
-          // startAt: Math.floor(1673647200000 / 1000) // @TODO: datetime picker
+          // startAt: Math.floor(1673997600000 / 1000) // @TODO: datetime picker
         };
         const {
           data: { url, semGroupIdHex },
