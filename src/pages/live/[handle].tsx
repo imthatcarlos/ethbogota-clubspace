@@ -19,6 +19,9 @@ import { SPACE_API_URL, REDIS_SPACE_PREFIX, REDIS_STREAM_PREFIX, SITE_URL } from
 import { getLiveClubspace } from "@/services/radio";
 import useHasBadge from "@/hooks/useHasBadge";
 import MobileMessage from "@/components/MobileMessage";
+import {UpcomingItem} from "@/components/UpcomingFeed";
+import Countdown from "@/components/Countdown";
+import { wait } from "@/utils";
 
 const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
 const LiveSpace = dynamic(() => import("@/components/LiveSpace"), { ssr: false });
@@ -27,6 +30,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   const {
     push,
     query: { handle },
+    reload
   } = useRouter();
   const { address, isConnected } = useAccount();
   const { data: profilesResponse, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
@@ -90,10 +94,27 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
           </div>
         </div>
       ) : null}
-      {!clubSpaceObject.queuedTrackIds?.length ? (
+      {clubSpaceObject.ended ? (
         <div className="flex-1 min-h-screen">
           <div className="abs-center">
             <p className="animate-move-txt-bg gradient-txt text-4xl">This ClubSpace has ended</p>
+          </div>
+        </div>
+      ) : null}
+      {clubSpaceObject.startAt && !clubSpaceObject.ended && !clubSpaceObject.queuedTrackIds?.length ? (
+        <div className="flex-1 min-h-screen">
+          <div className="abs-center">
+            <div className="w-full justify-center">
+              <p className="animate-move-txt-bg gradient-txt text-4xl text-center -ml-5">ClubSpace starting in</p>
+              <Countdown
+                date={clubSpaceObject.startAt * 1000}
+                onComplete={async () => {
+                  await wait(2000); // wait on the worker...
+                  reload();
+                }}
+              />
+              { /** <UpcomingItem activity={clubSpaceObject} link={false} /> */ }
+            </div>
           </div>
         </div>
       ) : null}
