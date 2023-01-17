@@ -23,6 +23,7 @@
     "@semaphore-protocol/group": "^2.6.0",
     "@semaphore-protocol/identity": "^2.6.0",
     "@semaphore-protocol/proof": "^2.6.0",
+    "@soundxyz/sdk": "^0.13.2",
     "@sentry/nextjs": "^7.35.0",
     "@spinamp/spinamp-sdk": "^0.0.7",
     "@tailwindcss/forms": "^0.5.3",
