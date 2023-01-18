@@ -1,4 +1,4 @@
-import { FC, Fragment, useEffect, useState, useCallback, useMemo } from "react";
+import { FC, Fragment, useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { Dialog, Menu, Popover, Transition } from "@headlessui/react";
 import { useSigner, useNetwork, useSwitchNetwork, useAccount } from "wagmi";
 import { useJam } from "@/lib/jam-core-react";
@@ -33,6 +33,7 @@ import useENS from "@/hooks/useENS";
 import { FavorStatus, joinGroup } from "@/lib/claim-without-semaphore/claims";
 import axios from "axios";
 import ClaimFavorModal from "./ClaimFavorModal";
+import { usePrevious } from "@/hooks/usePrevious";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -64,10 +65,10 @@ type LensProfileObject = {
 
 type Props = {
   clubSpaceObject: ClubSpaceObject;
-  defaultProfile: LensProfileObject;
-  address: string;
+  defaultProfile?: LensProfileObject;
+  address?: string;
   isLoadingEntry: boolean;
-  setIsLoadingEntry: () => void;
+  setIsLoadingEntry: (x: boolean) => void;
   handle: boolean;
   hasBadge: boolean;
   playerVolume: number;
@@ -94,7 +95,7 @@ const LiveSpace: FC<Props> = ({
 }) => {
   const isMounted = useIsMounted();
   const { data: signer } = useSigner();
-  const { connector: activeConnector } = useAccount();
+  const { connector: activeConnector, isConnected } = useAccount();
   const { chain } = useNetwork();
   const [state, { enterRoom, leaveRoom, setProps, updateInfo, sendReaction, retryMic, addSpeaker, retryAudio }] = useJam();
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
@@ -144,7 +145,6 @@ const LiveSpace: FC<Props> = ({
       address: clubSpaceObject.decentContractAddress,
       chainId: clubSpaceObject.decentContractChainId,
       contractType: clubSpaceObject.decentContractType,
-      signer,
     }
   );
   const { data: playlistTracks, isLoading: isLoadingPlaylistTracks } = useGetTracksFromPlaylist(
@@ -371,7 +371,11 @@ const LiveSpace: FC<Props> = ({
       !isEmpty(creatorLensProfile) &&
       !isEmpty(featuredDecentNFT)
     ) {
+      console.log("call join")
       join();
+    } else if (!handle && !address) {
+      console.log("no handle")
+      setIsLoadingEntry(false);
     }
   }, [
     clubSpaceObject.clubSpaceId,
@@ -389,6 +393,15 @@ const LiveSpace: FC<Props> = ({
     creatorLensProfile,
     featuredDecentNFT,
   ]);
+
+  const prevConnect: boolean = usePrevious(isConnected);
+  useEffect(() => {
+    console.log("isConnected", isConnected, prevConnect);
+    if (isConnected && prevConnect === false) {
+      console.log("reloading");
+      location.reload();
+    }
+  }, [prevConnect, isConnected])
 
   useEffect(() => {
     if (isMounted && inRoom && isHost) {
@@ -590,7 +603,7 @@ const LiveSpace: FC<Props> = ({
 
         {false ? null : (
           <div className="flex left-1/2 transform -translate-x-1/2 relative w-[150px] items-baseline">
-            <Popover
+            {handle && <Popover
               className={({ open }) =>
                 classNames(
                   open ? "inset-0 z-40 overflow-y-auto" : "",
@@ -658,7 +671,7 @@ const LiveSpace: FC<Props> = ({
                   </>
                 );
               }}
-            </Popover>
+            </Popover>}
 
             <button
               className={`text-white !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative ml-5 ${

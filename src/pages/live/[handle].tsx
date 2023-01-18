@@ -51,7 +51,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   }, [address, isLoadingProfiles]);
 
   useEffect(() => {
-    if (!isLoadingENS) {
+    if (!address || !isLoadingENS) {
       setEnsDone(true);
     }
   }, [isLoadingENS]);
@@ -97,7 +97,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
           </div>
         </div>
       ) : null}
-      {isConnected && !loadingDefaultProfile && ensDone && !isLoadingBadge && clubSpaceObject.queuedTrackIds?.length ? (
+      {!loadingDefaultProfile && ensDone && !isLoadingBadge && clubSpaceObject.queuedTrackIds?.length ? (
         <JamProviderWrapper>
           <PlayerContext.Provider value={audioPlayerState}>
             <DispatchPlayerContext.Provider value={audioPlayerDispatch}>

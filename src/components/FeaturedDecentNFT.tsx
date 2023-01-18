@@ -170,10 +170,12 @@ export const FeaturedDecentNFT = ({
 
                 {saleIsActive ? (
                   <div className="text-center my-3 px-3">
-                    <button className="!w-full btn" onClick={() => onBuyClick()} disabled={isBuying}>
-                      {price.isZero() ? "Free Mint" : "Mint"}{" "}
-                      {chainId != chain.id ? `(on ${CHAIN_NAME_MAP[chainId]})` : ""}
-                    </button>
+                    {chain && (
+                      <button className="!w-full btn" onClick={() => onBuyClick()} disabled={isBuying}>
+                        {price.isZero() ? "Free Mint" : "Mint"}{" "}
+                        {chainId != chain.id ? `(on ${CHAIN_NAME_MAP[chainId]})` : ""}
+                      </button>
+                    )}
                   </div>
                 ) : null}
               </div>
