@@ -13,6 +13,7 @@ import { sortBy } from "lodash/collection";
 import { Profile, useGetProfilesOwned, useGetProfileByHandle } from "@/services/lens/getProfile";
 import { fieldNamePrivy, getUrlForImageFromIpfs, wait } from "@/utils";
 import { LensProfile, reactionsEntries } from "@/components/LensProfile";
+import { ConnectWallet } from "@/components/ConnectWallet";
 import useIsMounted from "@/hooks/useIsMounted";
 import useUnload from "@/hooks/useUnload";
 import { useGetTracksFromPlaylist } from "@/services/spinamp/getPlaylists";
@@ -33,7 +34,6 @@ import useENS from "@/hooks/useENS";
 import { FavorStatus, joinGroup } from "@/lib/claim-without-semaphore/claims";
 import axios from "axios";
 import ClaimFavorModal from "./ClaimFavorModal";
-import { usePrevious } from "@/hooks/usePrevious";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -359,22 +359,21 @@ const LiveSpace: FC<Props> = ({
         await enterRoom(clubSpaceObject.clubSpaceId);
         console.log("JOINED");
       }
-
-      setIsLoadingEntry(false);
     };
 
     if (
       isMounted &&
-      isLoadingEntry &&
+      (isLoadingEntry || !inRoom) &&
       handle &&
       clubSpaceObject.streamURL &&
       !isEmpty(creatorLensProfile) &&
-      !isEmpty(featuredDecentNFT)
+      !isEmpty(featuredDecentNFT) &&
+      isConnected
     ) {
-      console.log("call join")
+      // @TODO: this runs twice - should only be once
       join();
-    } else if (!handle && !address) {
-      console.log("no handle")
+    } else {
+      // @TODO: maybe wait for other data to load as well
       setIsLoadingEntry(false);
     }
   }, [
@@ -392,16 +391,9 @@ const LiveSpace: FC<Props> = ({
     updateInfo,
     creatorLensProfile,
     featuredDecentNFT,
+    isConnected,
+    inRoom
   ]);
-
-  const prevConnect: boolean = usePrevious(isConnected);
-  useEffect(() => {
-    console.log("isConnected", isConnected, prevConnect);
-    if (isConnected && prevConnect === false) {
-      console.log("reloading");
-      location.reload();
-    }
-  }, [prevConnect, isConnected])
 
   useEffect(() => {
     if (isMounted && inRoom && isHost) {
@@ -470,6 +462,12 @@ const LiveSpace: FC<Props> = ({
       <div className="relative grow flex flex-col justify-center min-h-screen">
         <div className="grid-live items-center justify-center px-10 lg:px-14 gap-x-3">
           <div className="grid-container w-full audience max-h-[30rem] overflow-auto !content-baseline rounded-lg">
+            {!isConnected ? (
+              <div className="justify-center md:min-w-[40rem] p-10 z-10 bg-[rgb(30, 30, 36, 0.25)] backdrop-blur-sm items-center">
+                <p className="animate-move-txt-bg gradient-txt text-2xl mb-5">Connect your wallet to join the space</p>
+                <ConnectWallet showBalance={false} />
+              </div>
+            ) : null}
             {!!myIdentity
               ? getAudience().map((peerId, index) => {
                   return identities[peerId] ? (

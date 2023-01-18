@@ -12,7 +12,7 @@ export default (options: UseQueryOptions = {}) => {
     },
     {
       ...(options as any),
-      // enabled: !!address,
+      enabled: !!address,
     }
   );
 
