@@ -337,9 +337,11 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
                       <Copy  onClick={() => navigator.clipboard.writeText(shareUrl)} className="copy-btn w-7 p-1 " />
                     </p>
                     <p className="mt-4">Tips & Tricks for a great time:</p>
-                    <p>1. ClubSpace works best on Chrome browser on your desktop or laptop</p>
-                    <p>2. If you're planning to hop on the mic use headphones for the best experience</p>
-                    <p>3. Have fun and stay hydrated!</p>
+                    <ol className="ml-6 list-decimal">
+                      <li>ClubSpace works best on Chrome browser on your desktop or laptop</li>
+                      <li>If you're planning to hop on the mic use headphones for the best experience</li>
+                      <li>Have fun and stay hydrated!</li>
+                    </ol>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
