@@ -29,14 +29,14 @@ const filterTestSpaces = (space: any) => {
   );
 };
 
-const UpcomingItem = ({ activity }: { activity: any }) => {
+export const UpcomingItem = ({ activity, link = true }: { activity: any, link: boolean }) => {
   return (
-    <Link href={`/live/${activity.handle}`}>
-      <div className="rounded-md min-w-[220px] cursor-pointer">
+    <Link href={link ? `/live/${activity.handle}` : '#'} disabled={!link}>
+      <div className={`rounded-md min-w-[220px] ${link ? 'cursor-pointer' : 'cursor-default'}`}>
         <div
           style={{
             backgroundImage: `url(${getUrlForImageFromIpfs(activity.productBannerUrl)})`,
-            height: "130px",
+            height: "150px",
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
@@ -46,9 +46,9 @@ const UpcomingItem = ({ activity }: { activity: any }) => {
             paddingLeft: "6px",
           }}
         >
-          <p className="text-black rounded-md bg-white/75 text-sm px-3 w-fit">{timeUntil(activity.createdAt)}</p>
-          <div style={{ padding: "72px 0 0 0" }}>
-            <p className="text-xl font-semibold">{activity.handle}</p>
+          <p className="text-black rounded-md bg-white/75 text-sm px-3 w-fit">{timeUntil(activity.startAt)}</p>
+          <div style={{ padding: "90px 0 0 0" }}>
+            <p className="text-xl font-semibold">@{activity.handle}</p>
           </div>
         </div>
       </div>
@@ -56,7 +56,7 @@ const UpcomingItem = ({ activity }: { activity: any }) => {
   );
 };
 
-const UpcomingFeed = () => {
+export const UpcomingFeed = () => {
   const { address } = useAccount();
   const { data: signer } = useSigner();
   const [spaces, setSpaces] = useState([]);
@@ -71,17 +71,21 @@ const UpcomingFeed = () => {
   }, []);
 
   return (
-    <div className="w-full mb-16">
+    <div className="w-full mb-8 mt-8">
       {spaces.length > 0 && (
         <>
           <div className="flex mt-16 mb-8">
-            <button
-              className="p-1 rounded-md border-white border-[2px] mr-3"
-              onClick={() => subscribeNotifications(signer, address)}
-              disabled={!signer || !address}
-            >
-              <Bell />
-            </button>
+            {
+              /**
+                <button
+                  className="p-1 rounded-md border-white border-[2px] mr-3"
+                  onClick={() => subscribeNotifications(signer, address)}
+                  disabled={!signer || !address}
+                >
+                  <Bell />
+                </button>
+              */
+            }
             <h2 className="text-md font-bold tracking-tight text-3xl">Upcoming Spaces</h2>
           </div>
           <div className="flex overflow-auto gap-8">
@@ -94,5 +98,3 @@ const UpcomingFeed = () => {
     </div>
   );
 };
-
-export default UpcomingFeed;
