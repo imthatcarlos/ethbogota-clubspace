@@ -23,11 +23,13 @@ import createZkEdition from "@/services/decent/createZkEdition";
 import { wait, getUrlForImageFromIpfs } from "@/utils";
 import { createGroup } from "@/lib/claim-without-semaphore/claims";
 import Copy from "@/assets/svg/copy.svg";
+import CreateLaunchTime from "./CreateLaunchTime";
 
 type MultiFormData = {
   lensPost: string;
   goodyName: string;
   goodyDesc: string;
+  launchDate: Date;
   goodyFiles: File[];
 };
 
@@ -35,6 +37,7 @@ const INITIAL_DATA: MultiFormData = {
   lensPost: "",
   goodyName: "",
   goodyDesc: "",
+  launchDate: new Date(),
   goodyFiles: [],
 };
 
@@ -49,6 +52,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
   const [lensPost, setLensPost] = useState<any>();
   const [goody, setGoody] = useState<any>();
   const [goodyContract, setGoodyContract] = useState<any>();
+  const [launchDate, setLaunchDate] = useState<Date>();
   const [uploading, setUploading] = useState<boolean>();
   const [shareUrl, setShareUrl] = useState<string>();
   const [isShareOpen, setIsShareOpen] = useState<boolean>(false);
@@ -106,8 +110,9 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       {...formMultiFormData}
       updateFields={updateFields}
     />,
+    <CreateLaunchTime key="d" setLaunchDate={setLaunchDate} {...formMultiFormData} updateFields={updateFields} />,
     <SetGoodyBag
-      key="d"
+      key="e"
       setGoody={setGoody}
       {...formMultiFormData}
       updateFields={updateFields}
@@ -259,7 +264,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
           clubSpaceId,
           uuid,
           partyFavorContractAddress: collectionAddress,
-          // startAt: Math.floor(1673997600000 / 1000) // @TODO: datetime picker
+          startAt: launchDate // @TODO: datetime picker
         };
         const {
           data: { url, semGroupIdHex },
@@ -379,7 +384,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-xl min-h-[300px] transform rounded-2xl bg-black p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-full max-w-xl min-h-[300px] transform overflow-visible rounded-2xl bg-black p-6 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-100 border-b-[1px] border-b-gray-600 pb-3"

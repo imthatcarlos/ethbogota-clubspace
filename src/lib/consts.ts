@@ -1,4 +1,4 @@
-export const IS_PRODUCTION = process.env.NEXT_PUBLIC_IS_PRODUCTION === 'true';
+export const IS_PRODUCTION = process.env.NEXT_PUBLIC_IS_PRODUCTION === "true";
 export const APP_NAME = "Clubspace";
 
 export const REDIS_SPACE_PREFIX = "space";
@@ -54,24 +54,22 @@ export const JSON_RPC_URL_ALCHEMY_MAP = {
 };
 
 export const CURRENCY_MAP = {
-  80001: 'MATIC (MUMBAI)',
-  137: 'MATIC',
-  1: 'ETH',
-  5: 'ETH (GOERLI)',
-  10: 'ETH (OPTIMISM)',
+  80001: "MATIC (MUMBAI)",
+  137: "MATIC",
+  1: "ETH",
+  5: "ETH (GOERLI)",
+  10: "ETH (OPTIMISM)",
 };
 
 export const CHAIN_NAME_MAP = {
-  80001: 'Mumbai',
-  137: 'Polygon',
-  1: 'Ethereum',
-  5: 'Goerli',
-  10: 'Optimism',
+  80001: "Mumbai",
+  137: "Polygon",
+  1: "Ethereum",
+  5: "Goerli",
+  10: "Optimism",
 };
 
-export const ALLOWED_CHAIN_IDS = IS_PRODUCTION
-  ? [137, 1, 10]
-  : [80001, 5]
+export const ALLOWED_CHAIN_IDS = IS_PRODUCTION ? [137, 1, 10] : [80001, 5];
 
 export const IM_WITH_THE_DJ = [
   '0x7F0408bc8Dfe90C09072D8ccF3a1C544737BcDB6',
@@ -84,7 +82,8 @@ export const IM_WITH_THE_DJ = [
   '0xB5bb48aF9510951FB869B34267b827e73f0Ab486',
   '0xF1c5bACc57b29bD704B768DE3389359dA00986E7',
   '0xc27773DD7e25D878C814fB238e5f7372F3a18A74',
-  '0x64dC62CB349780064F4fe831d5DE5817dB819D95'
+  '0x64dC62CB349780064F4fe831d5DE5817dB819D95',
+  '0x2954DbfBbDF8Dafd86c8DCaCe63b26796ef2bf52'
 ];
 
-export const GOOGLE_FORM_WAITLIST_URL = 'https://forms.gle/XEU44w1gHt3LTC9A7';
+export const GOOGLE_FORM_WAITLIST_URL = "https://forms.gle/XEU44w1gHt3LTC9A7";

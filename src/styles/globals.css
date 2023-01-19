@@ -30,7 +30,6 @@ body {
   min-height: 100vh;
   background-attachment: fixed;
   color: white;
-  /* background: black; */
 }
 
 .btn {
@@ -53,7 +52,8 @@ body {
   @apply stroke-black bg-white rounded-full;
 }
 
-.input {
+.input,
+.react-datepicker__input-container input {
   @apply block w-full rounded-md bg-gray-800 text-white border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm;
 }
 
