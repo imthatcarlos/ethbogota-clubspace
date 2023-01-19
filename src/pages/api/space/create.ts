@@ -38,7 +38,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       return res.status(400).json({ error: "missing a param sonnn" });
     }
 
-    const semGroupIdHex = `0x${clubSpaceId}`;
+    const semGroupIdHex = `0x${clubSpaceId.replace(/-/g, "")}`;
     const createdAt = Math.floor(Date.now() / 1000);
     const endAt = createdAt + REDIS_SPACE_EXP;
 
