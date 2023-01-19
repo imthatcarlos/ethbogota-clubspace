@@ -37,7 +37,7 @@ const INITIAL_DATA: MultiFormData = {
   lensPost: "",
   goodyName: "",
   goodyDesc: "",
-  launchDate: new Date(),
+  launchDate: null,
   goodyFiles: [],
 };
 
@@ -264,7 +264,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
           clubSpaceId,
           uuid,
           partyFavorContractAddress: collectionAddress,
-          startAt: launchDate // @TODO: datetime picker
+          startAt: launchDate,
         };
         const {
           data: { url, semGroupIdHex },
@@ -332,7 +332,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-100 border-b-[1px] border-b-gray-600 pb-3"
                   >
-                    Your space is live!
+                    Your space is {launchDate ? 'scheduled' : 'live'}!
                   </Dialog.Title>
                   <div className=" items-center justify-center">
                     <p className="flex mt-3">
