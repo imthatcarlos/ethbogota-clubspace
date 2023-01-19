@@ -182,7 +182,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       }
       return;
     } else if (switched) {
-      await wait(1000);
+      await wait(2000);
     }
 
     const handle = defaultProfile?.handle || ensData?.handle || address;
@@ -272,7 +272,9 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
         // call sempahore/create-group
         if (collectionAddress !== ZERO_ADDRESS) {
+          toastId = toast.loading("Registering your Party Favor...");
           await createGroup(semGroupIdHex, collectionAddress, lensPubId, defaultProfile.id, signer);
+          toast.dismiss(toastId);
         }
         // PUSH
         // await axios.post(`/api/push/send`, { url });
