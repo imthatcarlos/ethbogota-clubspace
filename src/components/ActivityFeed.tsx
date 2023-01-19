@@ -22,14 +22,26 @@ const ActivityItem = ({ activity }: { activity: Activity }) => {
 
   return (
     <div className="p-3 rounded-xl min-w-[240px] border-slate-500 border-[1px]">
-      <img
-        src={getUrlForImageFromIpfs(activity.decentContract.image)}
-        width="220"
-        height="220"
-        className="rounded-xl mb-2"
-      />
+      {!activity.decentContract.isVideo ? (
+        <img
+          src={getUrlForImageFromIpfs(activity.decentContract.image)}
+          width="220"
+          height="220"
+          className="rounded-xl mb-2"
+        />
+      ) : (
+        <video
+          src={getUrlForImageFromIpfs(activity.decentContract.image)}
+          width="220"
+          height="220"
+          className="rounded-xl mb-2"
+          autoPlay
+          muted
+          loop
+        />
+      )}
       <p className="text-xl font-semibold">{activity.decentContract.name}</p>
-      <p>Hosted by {activity.handle}</p>
+      <p>@{activity.handle}</p>
       <p>{activity.numGuests} attendees</p>
       <p>
         {utils.formatEther(activity.totalSales)} {activity.decentContract.chainId === 137 ? "MATIC" : "ETH"} in sales
