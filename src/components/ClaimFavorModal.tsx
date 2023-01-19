@@ -38,7 +38,7 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
       setClaimable(isClaimed ? FavorStatus.CLAIMED : FavorStatus.CLAIMABLE);
       setLoading(false);
     }
-  }, []);
+  }, [isOpen]);
 
   const submit = async () => {
     setLoading(true);
@@ -118,7 +118,13 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
                 )}
 
                 <button disabled={claimable !== FavorStatus.CLAIMABLE || loading} onClick={submit} className="btn mt-4">
-                  {isLoading || loading ? "..." : claimable === FavorStatus.CLAIMED ? "Already Claimed" : "Claim"}
+                  {isLoading || loading
+                    ? "..."
+                    : claimable === FavorStatus.CLAIMED
+                    ? "Already Claimed"
+                    : claimable === FavorStatus.NOT_CLAIMABLE
+                    ? "Stay in the party for 3 minutes to claim"
+                    : "Claim"}
                 </button>
               </Dialog.Panel>
             </div>

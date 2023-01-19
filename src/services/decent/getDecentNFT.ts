@@ -24,6 +24,8 @@ const _getMetadata = async (sdk: any, contract: any, contractType: string) => {
       uri = await contract.uri(1);
     } else if (contractType === CONTRACT_TYPE_EDITION) {
       uri = await contract.baseURI();
+    } else if (contractType === CONTRACT_TYPE_ZK_EDITION) {
+      uri = await contract.baseURI();
     }
   } catch {} // some revert
 
