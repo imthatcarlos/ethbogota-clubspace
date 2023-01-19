@@ -139,7 +139,7 @@ export const getContractData = async (address: string, chainId: number, signer: 
   throw new Error(`getDecentNFT: invalid contract type: ${contractType}`);
 };
 
-export const useGetContractData = (options: UseQueryOptions = {}, { address, chainId, signer, contractType }) => {
+export const useGetContractData = (options: UseQueryOptions = {}, { address, chainId, contractType }) => {
   const result = useQuery<Profile[]>(
     ["useGetContractData", address],
     async () => {
@@ -151,7 +151,7 @@ export const useGetContractData = (options: UseQueryOptions = {}, { address, cha
     },
     {
       ...(options as any),
-      enabled: !!(address && chainId && signer && contractType),
+      enabled: !!(address && chainId && contractType),
     }
   );
 

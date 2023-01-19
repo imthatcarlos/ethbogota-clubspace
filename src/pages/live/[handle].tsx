@@ -13,7 +13,6 @@ import {
 } from "@madfi/ux-components";
 import { useAccount, useNetwork, useQuery } from "wagmi";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
-import { ConnectWallet } from "@/components/ConnectWallet";
 import useENS from "@/hooks/useENS";
 import { SPACE_API_URL, REDIS_SPACE_PREFIX, REDIS_STREAM_PREFIX, NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
 import { getLiveClubspace } from "@/services/radio";
@@ -55,7 +54,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   }, [address, isLoadingProfiles]);
 
   useEffect(() => {
-    if (!isLoadingENS) {
+    if (!address || !isLoadingENS) {
       setEnsDone(true);
     }
   }, [isLoadingENS]);
@@ -85,11 +84,6 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
         <div className="flex-1 min-h-screen">
           <div className="abs-center">
             <p className="animate-move-txt-bg gradient-txt text-4xl">Entering ClubSpace...</p>
-            {!isConnected ? (
-              <div className="flex gap-4 justify-center md:min-w-[300px] mt-50 pt-8">
-                <ConnectWallet showBalance={false} />
-              </div>
-            ) : null}
             <MobileMessage />
           </div>
         </div>
@@ -118,7 +112,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
           </div>
         </div>
       ) : null}
-      {isConnected && !loadingDefaultProfile && ensDone && !isLoadingBadge && clubSpaceObject.queuedTrackIds?.length ? (
+      {!loadingDefaultProfile && ensDone && (!isLoadingBadge || !address) && clubSpaceObject.queuedTrackIds?.length ? (
         <JamProviderWrapper>
           <PlayerContext.Provider value={audioPlayerState}>
             <DispatchPlayerContext.Provider value={audioPlayerDispatch}>

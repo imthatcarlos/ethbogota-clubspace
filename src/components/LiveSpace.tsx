@@ -1,4 +1,4 @@
-import { FC, Fragment, useEffect, useState, useCallback, useMemo } from "react";
+import { FC, Fragment, useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { Dialog, Menu, Popover, Transition } from "@headlessui/react";
 import { useSigner, useNetwork, useSwitchNetwork, useAccount } from "wagmi";
 import { useJam } from "@/lib/jam-core-react";
@@ -13,6 +13,7 @@ import { sortBy } from "lodash/collection";
 import { Profile, useGetProfilesOwned, useGetProfileByHandle } from "@/services/lens/getProfile";
 import { fieldNamePrivy, getUrlForImageFromIpfs, wait } from "@/utils";
 import { LensProfile, reactionsEntries } from "@/components/LensProfile";
+import { ConnectWallet } from "@/components/ConnectWallet";
 import useIsMounted from "@/hooks/useIsMounted";
 import useUnload from "@/hooks/useUnload";
 import { useGetTracksFromPlaylist } from "@/services/spinamp/getPlaylists";
@@ -64,10 +65,10 @@ type LensProfileObject = {
 
 type Props = {
   clubSpaceObject: ClubSpaceObject;
-  defaultProfile: LensProfileObject;
-  address: string;
+  defaultProfile?: LensProfileObject;
+  address?: string;
   isLoadingEntry: boolean;
-  setIsLoadingEntry: () => void;
+  setIsLoadingEntry: (x: boolean) => void;
   handle: boolean;
   hasBadge: boolean;
   playerVolume: number;
@@ -94,7 +95,7 @@ const LiveSpace: FC<Props> = ({
 }) => {
   const isMounted = useIsMounted();
   const { data: signer } = useSigner();
-  const { connector: activeConnector } = useAccount();
+  const { connector: activeConnector, isConnected } = useAccount();
   const { chain } = useNetwork();
   const [state, { enterRoom, leaveRoom, setProps, updateInfo, sendReaction, retryMic, addSpeaker, retryAudio }] = useJam();
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
@@ -110,6 +111,7 @@ const LiveSpace: FC<Props> = ({
   const [modalOpen, setModalOpen] = useState(false);
   const [previousVolume, setPreviousVolume] = useState(playerVolume);
   const [startTime, setStartTime] = useState(Date.now());
+  const hasJoined = useRef(false);
 
   const updateTimeSpent = (currentTrackIndex: number) => {
     logOverwriteAction(
@@ -156,7 +158,6 @@ const LiveSpace: FC<Props> = ({
       address: clubSpaceObject.decentContractAddress,
       chainId: clubSpaceObject.decentContractChainId,
       contractType: clubSpaceObject.decentContractType,
-      signer,
     }
   );
   const { data: playlistTracks, isLoading: isLoadingPlaylistTracks } = useGetTracksFromPlaylist(
@@ -235,8 +236,6 @@ const LiveSpace: FC<Props> = ({
 
   // @TODO: memoized
   const getAudience = () => {
-    console.log(`myPeerId: ${myPeerId}`);
-    console.log(identities);
     const res = uniq([myPeerId].concat(peers)).filter((id) => !isEmpty(identities[id]));
 
     return sortBy(res, (r) => -identities[r].profile?.totalFollowers || 0);
@@ -373,19 +372,24 @@ const LiveSpace: FC<Props> = ({
         await enterRoom(clubSpaceObject.clubSpaceId);
         console.log("JOINED");
       }
-
-      setIsLoadingEntry(false);
     };
 
     if (
       isMounted &&
-      isLoadingEntry &&
+      (isLoadingEntry || !inRoom) &&
       handle &&
       clubSpaceObject.streamURL &&
       !isEmpty(creatorLensProfile) &&
-      !isEmpty(featuredDecentNFT)
+      !isEmpty(featuredDecentNFT) &&
+      isConnected
     ) {
-      join();
+      if (!hasJoined.current) {
+        hasJoined.current = true;
+        join();
+      }
+    } else {
+      // @TODO: maybe wait for other data to load as well
+      setIsLoadingEntry(false);
     }
   }, [
     clubSpaceObject.clubSpaceId,
@@ -402,6 +406,8 @@ const LiveSpace: FC<Props> = ({
     updateInfo,
     creatorLensProfile,
     featuredDecentNFT,
+    isConnected,
+    inRoom
   ]);
 
   useEffect(() => {
@@ -471,6 +477,12 @@ const LiveSpace: FC<Props> = ({
       <div className="relative grow flex flex-col justify-center min-h-screen">
         <div className="grid-live items-center justify-center px-10 lg:px-14 gap-x-3">
           <div className="grid-container w-full audience max-h-[30rem] overflow-auto !content-baseline rounded-lg">
+            {!isConnected ? (
+              <div className="justify-center md:min-w-[40rem] p-10 z-10 bg-[rgb(30, 30, 36, 0.25)] backdrop-blur-sm items-center">
+                <p className="animate-move-txt-bg gradient-txt text-2xl mb-5">Connect your wallet to join the space</p>
+                <ConnectWallet showBalance={false} />
+              </div>
+            ) : null}
             {!!myIdentity
               ? getAudience().map((peerId, index) => {
                   return identities[peerId] ? (
@@ -604,7 +616,7 @@ const LiveSpace: FC<Props> = ({
 
         {false ? null : (
           <div className="flex left-1/2 transform -translate-x-1/2 relative w-[150px] items-baseline">
-            <Popover
+            {handle && <Popover
               className={({ open }) =>
                 classNames(
                   open ? "inset-0 z-40 overflow-y-auto" : "",
@@ -672,7 +684,7 @@ const LiveSpace: FC<Props> = ({
                   </>
                 );
               }}
-            </Popover>
+            </Popover>}
 
             <button
               className={`text-white !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative ml-5 ${
