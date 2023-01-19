@@ -231,10 +231,10 @@ const LiveSpace: FC<Props> = ({
   // log impression for party favor after 3 minutes
   useEffect(() => {
     if (!isLoadingEntry && clubSpaceObject.partyFavorContractAddress !== ZERO_ADDRESS) {
-      axios.post(`/api/privy/get-claim-status`, { groupId: clubSpaceObject.semGroupIdHex, address }).then((data) => {
+      axios.post(`/api/privy/get-claim-status`, { groupId: clubSpaceObject.semGroupIdHex.replace(/-/g, ''), address }).then((data) => {
         if (data.data.status === FavorStatus.NOT_CLAIMABLE) {
           setTimeout(async () => {
-            await joinGroup(clubSpaceObject.semGroupIdHex, address);
+            await joinGroup(clubSpaceObject.semGroupIdHex.replace(/-/g, ''), address);
           }, 180_000);
         }
       });
@@ -497,7 +497,7 @@ const LiveSpace: FC<Props> = ({
           </div>
           <div className="decent-nft flex flex-col gap-y-3">
             {featuredDecentNFT && (
-              <FeaturedDecentNFT {...featuredDecentNFT} semGroupIdHex={clubSpaceObject.clubSpaceId} />
+              <FeaturedDecentNFT {...featuredDecentNFT} semGroupIdHex={clubSpaceObject.clubSpaceId.replace(/-/g, '')} />
             )}
             {creatorLensProfile && (
               <>
@@ -858,7 +858,7 @@ const LiveSpace: FC<Props> = ({
         <ClaimFavorModal
           isOpen={modalOpen}
           setIsOpen={setModalOpen}
-          semGroupIdHex={clubSpaceObject.semGroupIdHex}
+          semGroupIdHex={clubSpaceObject.semGroupIdHex.replace(/-/g, '')}
           address={address}
         />
       )}

@@ -11,16 +11,16 @@ export const getUrlForImageFromIpfs = (uri: string) => {
 export const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const fieldNamePrivy = (semGroupIdHex: any) => {
-  semGroupIdHex = semGroupIdHex.toString();
+  semGroupIdHex = semGroupIdHex.toString().replace(/-/g, '');
 
   let id;
 
-  if (semGroupIdHex.includes('-')) { // uuid
-    id = semGroupIdHex;
-  } else if (!semGroupIdHex.startsWith("0x")) { // semaphore limitation
+  if (!semGroupIdHex.startsWith("0x")) { // semaphore limitation
     semGroupIdHex = `0x${semGroupIdHex}`;
-    id = BigNumber.from(semGroupIdHex).toString();
   }
+  id = BigNumber.from(semGroupIdHex).toString();
+
+  console.log('privy ID:', `${APP_NAME.toLowerCase()}-${id}`);
 
   return `${APP_NAME.toLowerCase()}-${id}`;
 };

@@ -2,12 +2,21 @@ import { getUrlForImageFromIpfs } from "@/utils";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Bell from "@/assets/svg/bell.svg";
+import Live from "@/assets/svg/live.svg";
 import { subscribeNotifications } from "@/services/push/clientSide";
 import Link from "next/link";
 
 function timeUntil(timeStamp) {
   let time = new Date(timeStamp * 1000);
   let now = new Date();
+  if (time < now) {
+    return (
+      <div className="flex">
+        <Live />
+        Live Now
+      </div>
+    );
+  }
   let hours = time.getHours();
   let minutes: any = time.getMinutes();
   if (minutes < 10) {
@@ -45,7 +54,9 @@ export const UpcomingItem = ({ activity }: { activity: any }) => {
             paddingLeft: "6px",
           }}
         >
-          <p className="text-black rounded-md bg-white/75 text-sm px-3 w-fit">{timeUntil(activity.startAt || activity.createdAt)}</p>
+          <p className="text-black rounded-md bg-white/75 text-sm px-3 w-fit">
+            {timeUntil(activity.startAt || activity.createdAt)}
+          </p>
           <div style={{ padding: "90px 0 0 0" }}>
             <p className="text-xl font-semibold">@{activity.handle}</p>
           </div>
@@ -73,8 +84,7 @@ export const UpcomingFeed = () => {
       {spaces.length > 0 && (
         <>
           <div className="flex mt-16 mb-8">
-            {
-              /**
+            {/**
                 <button
                   className="p-1 rounded-md border-white border-[2px] mr-3"
                   onClick={() => subscribeNotifications(signer, address)}
@@ -82,8 +92,7 @@ export const UpcomingFeed = () => {
                 >
                   <Bell />
                 </button>
-              */
-            }
+              */}
             <h2 className="text-md font-bold tracking-tight text-3xl">Upcoming Spaces</h2>
           </div>
           <div className="flex overflow-auto gap-8">

@@ -84,7 +84,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       await client.createField({
         name: fieldName,
-        description: `club space impressions for semaphone group id: ${semGroupIdHex}`,
+        description: `club space impressions for semaphore group id: ${semGroupIdHex}`,
         default_access_group: 'self-admin',
       });
     } catch (error) {
