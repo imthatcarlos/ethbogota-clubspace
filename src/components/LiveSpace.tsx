@@ -125,10 +125,15 @@ const LiveSpace: FC<Props> = ({
   };
 
   useEffect(() => {
-    logAction(address, fieldNamePrivy(clubSpaceObject.clubSpaceId), {
-      action: "joined",
-      time: Date.now(),
-    });
+    logOverwriteAction(
+      address,
+      fieldNamePrivy(clubSpaceObject.clubSpaceId),
+      {
+        action: "joined",
+        time: Date.now(),
+      },
+      "joined"
+    );
   }, []);
 
   // @TODO: should really merge these two hook calls
