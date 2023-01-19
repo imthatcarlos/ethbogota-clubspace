@@ -142,7 +142,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     query: { handle },
   } = context;
 
-  if (!handle) return { props: {} };
+  if (!handle || handle === '<no source>') return { props: {} };
 
   try {
     const clubSpaceObject = await getLiveClubspace(handle);

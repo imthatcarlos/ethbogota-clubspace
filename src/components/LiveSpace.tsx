@@ -243,7 +243,7 @@ const LiveSpace: FC<Props> = ({
 
   // log impression for party favor after 3 minutes
   useEffect(() => {
-    if (!isLoadingEntry && clubSpaceObject.partyFavorContractAddress !== ZERO_ADDRESS) {
+    if (!isLoadingEntry && clubSpaceObject.partyFavorContractAddress !== ZERO_ADDRESS && hasJoined.current) {
       axios.post(`/api/privy/get-claim-status`, { groupId: clubSpaceObject.semGroupIdHex.replace(/-/g, ''), address }).then((data) => {
         if (data.data.status === FavorStatus.NOT_CLAIMABLE) {
           setTimeout(async () => {
@@ -256,7 +256,7 @@ const LiveSpace: FC<Props> = ({
       addToGuestList(APP_NAME, address);
       setStartTime(Date.now());
     }
-  }, [isLoadingEntry]);
+  }, [isLoadingEntry, hasJoined]);
 
   // debounce the reaction sending
   useEffect(() => {
@@ -733,7 +733,7 @@ const LiveSpace: FC<Props> = ({
                 </svg>
               </button>
             )}
-            {clubSpaceObject.partyFavorContractAddress !== ZERO_ADDRESS && (
+            {clubSpaceObject.partyFavorContractAddress !== ZERO_ADDRESS && isConnected && (
               <button
                 onClick={() => setModalOpen(true)}
                 className="text-white !bg-transparent focus:outline-none rounded-lg text-[26px] text-center inline-flex items-center relative"

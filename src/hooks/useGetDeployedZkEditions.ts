@@ -50,7 +50,7 @@ export const getZkEditionList = (address: string, chainId: number, signer: any, 
 
 export const getDeploymentForGroup = (
   groupId: BigNumberish,
-  chainId: number,
+  chainId?: number,
   signer: any,
   options: UseQueryOptions = {}
 ) => {
@@ -72,7 +72,7 @@ export const getDeploymentForGroup = (
     },
     {
       ...(options as any),
-      enabled: !!groupId,
+      enabled: !!groupId && !!chainId,
     }
   );
   return result;
