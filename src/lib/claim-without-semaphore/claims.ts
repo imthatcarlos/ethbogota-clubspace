@@ -11,6 +11,7 @@ export enum FavorStatus {
 export const claimReward = async (groupId, recipient, signer) => {
   // get auth signature from server /api/semaphore/get-sig
   const address = await signer.getAddress();
+  groupId = groupId.replace(/-/g, "");
   const {
     data: { signature, nonce },
   } = await axios.post(`/api/semaphore/get-sig`, { groupId, recipient, address });
@@ -38,7 +39,7 @@ export const createGroup = async (groupId, dcntCollection, lensPubId, lensProfil
     ],
     signer
   );
-  const tx = await contract.createGroup(groupId.replace(/-/g, ''), dcntCollection, lensPubId, lensProfileId);
+  const tx = await contract.createGroup(groupId.replace(/-/g, ""), dcntCollection, lensPubId, lensProfileId);
   await tx.wait();
 };
 

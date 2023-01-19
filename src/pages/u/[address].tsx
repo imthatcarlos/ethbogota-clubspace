@@ -85,7 +85,7 @@ const ClaimsPage = ({ clubSpaceObject }) => {
           ) : (
             clubSpaceObject.map((object, i) => (
               <div key={i} className="mt-4 mb-8">
-                <p className="underline font-bold mb-2">Space ID: {object.groupId}</p>
+                <p className="underline font-bold mb-2">Space ID: {object.groupId.replace(/-/g, "")}</p>
                 <ClaimGoodyBag attendanceProps={object} />
               </div>
             ))

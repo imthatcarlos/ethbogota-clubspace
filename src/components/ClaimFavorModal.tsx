@@ -25,7 +25,7 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
   useEffect(() => {
     setLoading(true);
     if (isClaimed === undefined) {
-      axios.post(`/api/privy/get-claim-status`, { groupId: semGroupIdHex, address }).then((data) => {
+      axios.post(`/api/privy/get-claim-status`, { groupId: semGroupIdHex.replace(/-/g, ""), address }).then((data) => {
         const joinStatus = data.data.status;
         if (joinStatus === FavorStatus.CLAIMABLE) {
           setClaimable(FavorStatus.CLAIMABLE);
