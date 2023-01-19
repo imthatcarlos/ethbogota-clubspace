@@ -6,6 +6,7 @@ import { useNetwork, useSigner } from "wagmi";
 import axios from "axios";
 import { getDeploymentForGroup } from "@/hooks/useGetDeployedZkEditions";
 import { apiUrls } from "@/constants/apiUrls";
+import { NFT_STORAGE_URL } from "@/services/decent/utils";
 
 const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed = undefined }) => {
   const { data: signer } = useSigner();
@@ -104,7 +105,7 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
                   <div>
                     <p className="text-xl">{deployedZkEdition?.name}</p>
                     <img
-                      src={`${apiUrls.ipfs}/${deployedZkEdition?.image.substring(7) ?? ""}`}
+                      src={`${NFT_STORAGE_URL}/${deployedZkEdition?.image.substring(7) ?? ""}`}
                       className="mx-auto max-w-xs my-4 rounded-sm"
                     />
                     {deployedZkEdition?.description?.split("\n").map((line, i) => {

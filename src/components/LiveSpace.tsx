@@ -124,6 +124,18 @@ const LiveSpace: FC<Props> = ({
     );
   };
 
+  useEffect(() => {
+    logOverwriteAction(
+      address,
+      fieldNamePrivy(clubSpaceObject.clubSpaceId),
+      {
+        action: "joined",
+        time: Date.now(),
+      },
+      "joined"
+    );
+  }, []);
+
   // @TODO: should really merge these two hook calls
   // - first run tries to do the refresh call
   // - all other runs force the login call
