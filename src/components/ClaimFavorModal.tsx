@@ -15,7 +15,7 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
   const [claimable, setClaimable] = useState<FavorStatus>(FavorStatus.NOT_CLAIMABLE);
   const { data: deployedZkEdition, isLoading } = getDeploymentForGroup(
     semGroupIdHex.replace(/-/g, ""),
-    chain.id,
+    chain?.id,
     signer
   );
 
@@ -25,7 +25,7 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
 
   useEffect(() => {
     setLoading(true);
-    if (isClaimed === undefined) {
+    if (isClaimed === undefined && address) {
       axios.post(`/api/privy/get-claim-status`, { groupId: semGroupIdHex.replace(/-/g, ""), address }).then((data) => {
         const joinStatus = data.data.status;
         if (joinStatus === FavorStatus.CLAIMABLE) {
@@ -54,6 +54,8 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
     }
     setLoading(false);
   };
+
+  if (!chain?.id) return null;
 
   return (
     <div className="w-full p-8 flex flex-col gap-3">
