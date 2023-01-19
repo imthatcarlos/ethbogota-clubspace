@@ -13,11 +13,13 @@ const SetFeaturedProduct = ({ setDecentProduct, decentProduct = undefined, updat
   const { data: signer } = useSigner();
   const { data: deployedProducts, isLoading } = useGetDeployedProducts(address, chain.id, signer);
 
-  const getProductName = ({ chain, metadata, contractType }) => (`[${chain}] ${metadata?.name}`);
+  const getProductName = ({ chain, metadata, contractType, availableSupply, totalSupply, soldOut }) => (
+    `[${chain}] ${metadata?.name} - ${soldOut ? 'SOLD OUT' : `${totalSupply} / ${availableSupply} minted`}`
+  );
 
   // only allowing editions + crescendo contracts deployed on certain chains
-  const getIsProductEnabled = ({ chainId, contractType }) => (
-    CONTRACT_TYPES_FOR_FEATURED.includes(contractType)
+  const getIsProductEnabled = ({ chainId, contractType, soldOut }) => (
+    CONTRACT_TYPES_FOR_FEATURED.includes(contractType) && !soldOut
   );
 
   return (

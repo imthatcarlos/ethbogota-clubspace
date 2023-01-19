@@ -36,9 +36,13 @@ export default (
 
       return await Promise.all(contracts.map(async ({ deployment, chainid, key }) => {
         const data = await getContractData(deployment, chainid, undefined, key);
+        const soldOut = data.availableSupply && data.totalSupply
+          ? data.availableSupply === data.totalSupply
+          : undefined;
 
         return {
           ...data,
+          soldOut,
           address: deployment,
           contractType: key,
           chain: CHAIN_NAME_MAP[chainid],
