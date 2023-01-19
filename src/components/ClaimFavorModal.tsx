@@ -12,7 +12,11 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
   const { chain } = useNetwork();
   const [loading, setLoading] = useState<boolean>();
   const [claimable, setClaimable] = useState<FavorStatus>(FavorStatus.NOT_CLAIMABLE);
-  const { data: deployedZkEdition, isLoading } = getDeploymentForGroup(semGroupIdHex, chain.id, signer);
+  const { data: deployedZkEdition, isLoading } = getDeploymentForGroup(
+    semGroupIdHex.replace(/-/g, ""),
+    chain.id,
+    signer
+  );
 
   function closeModal() {
     setIsOpen(false);
@@ -89,6 +93,11 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
                   </div>
                 </Dialog.Title>
 
+                {(process.env.NEXT_PUBLIC_IS_PRODUCTION === "true" && chain.id !== 137) ||
+                  (process.env.NEXT_PUBLIC_IS_PRODUCTION === "false" && chain.id !== 80001 && (
+                    <p>You need to switch to the correct network first</p>
+                  ))}
+
                 {isLoading ? (
                   <div>Loading...</div>
                 ) : (
@@ -96,7 +105,7 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
                     <p className="text-xl">{deployedZkEdition?.name}</p>
                     <img
                       src={`${apiUrls.ipfs}/${deployedZkEdition?.image.substring(7) ?? ""}`}
-                      className="m-auto max-w-xs"
+                      className="mx-auto max-w-xs my-4 rounded-sm"
                     />
                     {deployedZkEdition?.description?.split("\n").map((line, i) => {
                       return (

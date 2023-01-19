@@ -38,7 +38,7 @@ export const createGroup = async (groupId, dcntCollection, lensPubId, lensProfil
     ],
     signer
   );
-  const tx = await contract.createGroup(groupId, dcntCollection, lensPubId, lensProfileId);
+  const tx = await contract.createGroup(groupId.replace(/-/g, ''), dcntCollection, lensPubId, lensProfileId);
   await tx.wait();
 };
 

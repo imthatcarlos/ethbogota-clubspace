@@ -3,7 +3,6 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Bell from "@/assets/svg/bell.svg";
 import { subscribeNotifications } from "@/services/push/clientSide";
-import { useAccount, useSigner } from "wagmi";
 import Link from "next/link";
 
 function timeUntil(timeStamp) {
@@ -29,10 +28,10 @@ const filterTestSpaces = (space: any) => {
   );
 };
 
-export const UpcomingItem = ({ activity, link = true }: { activity: any, link: boolean }) => {
+export const UpcomingItem = ({ activity }: { activity: any }) => {
   return (
-    <Link href={link ? `/live/${activity.handle}` : '#'} disabled={!link}>
-      <div className={`rounded-md min-w-[220px] ${link ? 'cursor-pointer' : 'cursor-default'}`}>
+    <Link href={`/live/${activity.handle}`}>
+      <div className={`rounded-md min-w-[220px] cursor-pointer`}>
         <div
           style={{
             backgroundImage: `url(${getUrlForImageFromIpfs(activity.productBannerUrl)})`,
@@ -46,7 +45,7 @@ export const UpcomingItem = ({ activity, link = true }: { activity: any, link: b
             paddingLeft: "6px",
           }}
         >
-          <p className="text-black rounded-md bg-white/75 text-sm px-3 w-fit">{timeUntil(activity.startAt)}</p>
+          <p className="text-black rounded-md bg-white/75 text-sm px-3 w-fit">{timeUntil(activity.startAt || activity.createdAt)}</p>
           <div style={{ padding: "90px 0 0 0" }}>
             <p className="text-xl font-semibold">@{activity.handle}</p>
           </div>
@@ -57,9 +56,8 @@ export const UpcomingItem = ({ activity, link = true }: { activity: any, link: b
 };
 
 export const UpcomingFeed = () => {
-  const { address } = useAccount();
-  const { data: signer } = useSigner();
   const [spaces, setSpaces] = useState([]);
+
   useEffect(() => {
     const _fetchAsync = async () => {
       const {
