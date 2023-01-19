@@ -10,7 +10,7 @@ import { toast, Toaster, ToastBar } from "react-hot-toast";
 import { Analytics } from '@vercel/analytics/react';
 import { Header } from "@/components/Header";
 import Footer from "@/components/Footer";
-import { SITE_URL } from "@/lib/consts";
+import { NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,7 +28,7 @@ const App = ({ Component, pageProps }) => {
         description="Promote your music NFTs with a live listening party"
         openGraph={{
           siteName: "ClubSpace",
-          url: SITE_URL,
+          url: NEXT_PUBLIC_SITE_URL,
           title: "ClubSpace",
           description: "Promote your music NFTs with a live listening party",
           images: [

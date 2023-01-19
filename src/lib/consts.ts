@@ -8,7 +8,7 @@ export const REDIS_STREAM_PREFIX = "stream";
 export const REDIS_SPACE_EXP = 7200;
 
 export const LOCALSTORAGE_DEFAULT_PROFILE_ID = "DEFAULT_PROFILE_ID";
-export const SITE_URL = process.env.SITE_URL || "https://www.joinclubspace.xyz";
+export const NEXT_PUBLIC_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.joinclubspace.xyz";
 export const LENSTER_URL = IS_PRODUCTION ? 'https://lenster.xyz' : 'https://testnet.lenster.xyz';
 
 export const LENSHUB_PROXY = IS_PRODUCTION

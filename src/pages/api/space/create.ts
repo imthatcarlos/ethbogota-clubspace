@@ -3,7 +3,7 @@ import { getAddress } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import {PrivyClient} from '@privy-io/privy-node';
 import redisClient from "@/lib/utils/redisClient";
-import { REDIS_SPACE_PREFIX, REDIS_SPACE_EXP, SITE_URL, APP_NAME } from "@/lib/consts";
+import { REDIS_SPACE_PREFIX, REDIS_SPACE_EXP, NEXT_PUBLIC_SITE_URL, APP_NAME } from "@/lib/consts";
 import { startRadio } from "@/services/radio";
 import { fieldNamePrivy } from "@/utils";
 
@@ -99,7 +99,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     return res
       .status(200)
-      .json({ url: `${SITE_URL}/live/${handle}`, semGroupIdHex, startAt });
+      .json({ url: `${NEXT_PUBLIC_SITE_URL}/live/${handle}`, semGroupIdHex, startAt });
   } catch (e) {
     console.log(e);
     return res.status(500).json({});

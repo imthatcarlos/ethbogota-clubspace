@@ -5,6 +5,7 @@ import Bell from "@/assets/svg/bell.svg";
 import Live from "@/assets/svg/live.svg";
 import { subscribeNotifications } from "@/services/push/clientSide";
 import Link from "next/link";
+import { NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
 
 function timeUntil(timeStamp) {
   let time = new Date(timeStamp * 1000);
@@ -39,7 +40,7 @@ const filterTestSpaces = (space: any) => {
 
 export const UpcomingItem = ({ activity }: { activity: any }) => {
   return (
-    <Link href={`/live/${activity.handle}`}>
+    <a href={`${NEXT_PUBLIC_SITE_URL}/live/${activity.handle}`} target="_blank" rel="noreferrer">
       <div className={`rounded-md min-w-[220px] cursor-pointer`}>
         <div
           style={{
@@ -62,7 +63,7 @@ export const UpcomingItem = ({ activity }: { activity: any }) => {
           </div>
         </div>
       </div>
-    </Link>
+    </a>
   );
 };
 

@@ -34,19 +34,19 @@ export const LiveAudioPlayer = ({
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
 
   const onMetadata = (metadata) => {
-    if ((!metadata || !metadata.StreamTitle) && queuedTrackIds.length === 0) {
+    if (metadata.StreamTitle === currentTrack?.id || metadata.StreamTitle === currentTrackId) return; // ignore first event
+
+    if (!metadata || !metadata.StreamTitle) {
       toast('The stream has ended - thanks for coming!', { duration: 10000, icon: '🔥' });
       setStreamEnded(true);
       setCurrentTrack();
       setNextTrack();
     } else {
-      if (metadata.StreamTitle === currentTrack?.id || metadata.StreamTitle === currentTrackId) return; // ignore first event
-
       setCurrentTrack(groupedPlaylistTracks[metadata.StreamTitle][0]);
       currentTrackIndex++;
       updateTimeSpent(currentTrackIndex);
 
-      if (currentTrackIndex + 1 <= queuedTrackIds.length) {
+      if (currentTrackIndex + 1 <= queuedTrackIds.length && queuedTrackIds[currentTrackIndex + 1]) {
         const nextTrackId = queuedTrackIds[currentTrackIndex + 1];
         setNextTrack(groupedPlaylistTracks[nextTrackId][0]);
         setCurrentTrackIndex(currentTrackIndex + 1);

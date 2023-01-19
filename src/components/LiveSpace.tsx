@@ -24,7 +24,7 @@ import { useGetContractData } from "@/services/decent/getDecentNFT";
 import { HostCard } from "./HostCard";
 import { FeaturedDecentNFT } from "./FeaturedDecentNFT";
 import { LiveAudioPlayer } from "./LiveAudioPlayer";
-import { SITE_URL, LENSTER_URL, ALLOWED_CHAIN_IDS, APP_NAME } from "@/lib/consts";
+import { NEXT_PUBLIC_SITE_URL, LENSTER_URL, ALLOWED_CHAIN_IDS, APP_NAME } from "@/lib/consts";
 import { addToGuestList, logAction, logOverwriteAction } from "@madfi/ts-sdk";
 
 import * as mockIdentities from "@/constants/mockIdentities.json";
@@ -156,7 +156,7 @@ const LiveSpace: FC<Props> = ({
     () =>
       buildLensShareUrl({
         postBody: "Join this space!",
-        url: `${SITE_URL}/live/${clubSpaceObject.handle}`,
+        url: `${NEXT_PUBLIC_SITE_URL}/live/${clubSpaceObject.handle}`,
       }),
     [clubSpaceObject]
   );
@@ -223,6 +223,8 @@ const LiveSpace: FC<Props> = ({
 
   // @TODO: memoized
   const getAudience = () => {
+    console.log(`myPeerId: ${myPeerId}`);
+    console.log(identities);
     const res = uniq([myPeerId].concat(peers)).filter((id) => !isEmpty(identities[id]));
 
     return sortBy(res, (r) => -identities[r].profile?.totalFollowers || 0);
