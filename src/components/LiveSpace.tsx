@@ -111,6 +111,7 @@ const LiveSpace: FC<Props> = ({
   const [modalOpen, setModalOpen] = useState(false);
   const [previousVolume, setPreviousVolume] = useState(playerVolume);
   const [startTime, setStartTime] = useState(Date.now());
+  const hasJoined = useRef(false);
 
   const updateTimeSpent = (currentTrackIndex: number) => {
     logOverwriteAction(
@@ -235,8 +236,6 @@ const LiveSpace: FC<Props> = ({
 
   // @TODO: memoized
   const getAudience = () => {
-    console.log(`myPeerId: ${myPeerId}`);
-    console.log(identities);
     const res = uniq([myPeerId].concat(peers)).filter((id) => !isEmpty(identities[id]));
 
     return sortBy(res, (r) => -identities[r].profile?.totalFollowers || 0);
@@ -384,8 +383,10 @@ const LiveSpace: FC<Props> = ({
       !isEmpty(featuredDecentNFT) &&
       isConnected
     ) {
-      // @TODO: this runs twice - should only be once
-      join();
+      if (!hasJoined.current) {
+        hasJoined.current = true;
+        join();
+      }
     } else {
       // @TODO: maybe wait for other data to load as well
       setIsLoadingEntry(false);

@@ -20,7 +20,7 @@ export const fieldNamePrivy = (semGroupIdHex: any) => {
   }
   id = BigNumber.from(semGroupIdHex).toString();
 
-  console.log('privy ID:', `${APP_NAME.toLowerCase()}-${id}`);
+  // console.log('privy ID:', `${APP_NAME.toLowerCase()}-${id}`);
 
   return `${APP_NAME.toLowerCase()}-${id}`;
 };
