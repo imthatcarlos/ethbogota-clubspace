@@ -16,33 +16,60 @@ import { JSON_RPC_URL_ALCHEMY_MAP } from "@/lib/consts";
 
 const defaultProvider = (chainId) => new providers.JsonRpcProvider(JSON_RPC_URL_ALCHEMY_MAP[chainId]);
 
+const _getMetadata = async (sdk: any, contract: any, contractType: string) => {
+  let uri;
+
+  try {
+    if (contractType === CONTRACT_TYPE_CRESCENDO) {
+      uri = await contract.uri(1);
+    } else if (contractType === CONTRACT_TYPE_EDITION) {
+      uri = await contract.baseURI();
+    } else if (contractType === CONTRACT_TYPE_ZK_EDITION) {
+      uri = await contract.baseURI();
+    }
+  } catch {} // some revert
+
+  // try the metadata renderer
+  if (!uri) {
+    const renderer = await metadataRenderer.getContract(sdk);
+    uri = await renderer.tokenURITarget(0, contract.address);
+  }
+
+  let metadata;
+  if (uri.startsWith('ipfs://')) {
+    const res = await axios.get(`${NFT_STORAGE_URL}/${uri.split('ipfs://')[1]}`);
+    metadata = res.data
+  } else if (uri.startsWith('data:application/json;base64')) {
+    metadata = JSON.parse(atob(uri.substring(29)).replace(/\n/g, ' '));
+  }
+
+  metadata.isVideo = metadata.image ? VIDEO_EXTENSIONS.includes(last(metadata.image.split('.'))) : false;
+
+  if (!metadata.name) {
+    metadata.name = metadata?.properties?.name;
+  }
+
+  return metadata;
+};
+
 export const getContractDataCrescendo = async (address: string, chainId: number, signer: Signer | undefined) => {
   const sdk = new DecentSDK(chainIdToChain[chainId], signer || defaultProvider(chainId));
 
   try {
     const contract = await crescendo.getContract(sdk, address);
-    const [uri, price, totalSupply, saleIsActive] = await Promise.all([
-      contract.uri(1),
+    const [metadata, price, totalSupply, saleIsActive] = await Promise.all([
+      _getMetadata(sdk, contract, CONTRACT_TYPE_CRESCENDO),
       contract.calculateCurvedMintReturn(1, 0),
       contract.totalSupply(0),
       contract.saleIsActive()
     ]);
-
-    let metadata
-    if (uri.startsWith('ipfs://')) {
-      const res = await axios.get(`${NFT_STORAGE_URL}/${uri.split('ipfs://')[1]}`);
-      metadata = res.data
-    } else if (uri.startsWith('data:application/json;base64')) {
-      metadata = JSON.parse(atob(uri.substring(29)).replace(/\n/g, ' '));
-    }
-
-    metadata.isVideo = metadata.image ? VIDEO_EXTENSIONS.includes(last(metadata.image.split('.'))) : false;
 
     return {
       contract,
       metadata,
       price,
       totalSupply,
+      availableSupply: '∞',
       saleIsActive,
       decentURL: `${DECENT_HQ}/${chainId}/Crescendo/${address}`
     };
@@ -55,25 +82,14 @@ export const getContractDataEdition = async (address: string, chainId: number, s
   const sdk = new DecentSDK(chainIdToChain[chainId], signer || defaultProvider(chainId));
   try {
     const contract = await edition.getContract(sdk, address);
-    const renderer = await metadataRenderer.getContract(sdk);
-    const [uri, price, totalSupply, availableSupply, saleIsActive] = await Promise.all([
-      contract.baseURI(),
-      // renderer.tokenURITarget(0, address),
+
+    const [metadata, price, totalSupply, availableSupply, saleIsActive] = await Promise.all([
+      _getMetadata(sdk, contract, CONTRACT_TYPE_EDITION),
       contract.tokenPrice(),
       contract.totalSupply(),
       contract.MAX_TOKENS(),
       contract.saleIsActive()
     ]);
-
-    let metadata
-    if (uri.startsWith('ipfs://')) {
-      const res = await axios.get(`${NFT_STORAGE_URL}/${uri.split('ipfs://')[1]}`);
-      metadata = res.data
-    } else if (uri.startsWith('data:application/json;base64')) {
-      metadata = JSON.parse(atob(uri.substring(29)).replace(/\n/g, ' '));
-    }
-
-    metadata.isVideo = metadata.image ? VIDEO_EXTENSIONS.includes(last(metadata.image.split('.'))) : false;
 
     return {
       contract,
@@ -93,15 +109,11 @@ export const getContractDataZkEdition = async (address: string, chainId: number,
   const sdk = new DecentSDK(chainIdToChain[chainId], signer || defaultProvider(chainId));
   try {
     const contract = await zkEdition.getContract(sdk, address);
-    const renderer = await metadataRenderer.getContract(sdk);
-    const [metadataBase64, totalSupply, availableSupply] = await Promise.all([
-      renderer.tokenURITarget(0, address),
+    const [metadata, totalSupply, availableSupply] = await Promise.all([
+      _getMetadata(sdk, contract, CONTRACT_TYPE_ZK_EDITION),
       contract.totalSupply(),
       contract.MAX_TOKENS()
     ]);
-
-    let metadata = JSON.parse(atob(metadataBase64.substring(29)).replace(/\n/g, ' '));
-    metadata.name = metadata?.properties?.name;
 
     return {
       contract,

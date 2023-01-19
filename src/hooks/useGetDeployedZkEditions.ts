@@ -1,6 +1,11 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { getContractDataZkEdition } from "@/services/decent/getDecentNFT";
-import { DEFAULT_PARTY_FAVOR, CONTRACT_TYPE_ZK_EDITION, ZK_EDITION_CHAIN_ID } from "@/services/decent/utils";
+import {
+  DEFAULT_PARTY_FAVOR,
+  CONTRACT_TYPE_ZK_EDITION,
+  ZK_EDITION_CHAIN_ID,
+  NFT_STORAGE_URL,
+} from "@/services/decent/utils";
 import { IS_PRODUCTION, VERIFIER_ADDRESS } from "@/lib/consts";
 import { BigNumberish, Contract } from "ethers";
 import axios from "axios";
@@ -60,12 +65,9 @@ export const getDeploymentForGroup = (
       const deployment = await contract.groupIdCollections(groupId);
       const data = await getContractDataZkEdition(deployment, chainId, signer);
 
-      const baseUri = await data.contract.baseURI();
-      const { data: uriObject } = await axios.get(`${apiUrls.ipfs}/${baseUri.substring(7)}`);
-
       return {
         address: deployment,
-        ...uriObject,
+        ...data.metadata,
       };
     },
     {

@@ -14,7 +14,7 @@ import {
 import { useAccount, useNetwork, useQuery } from "wagmi";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import useENS from "@/hooks/useENS";
-import { SPACE_API_URL, REDIS_SPACE_PREFIX, REDIS_STREAM_PREFIX, SITE_URL } from "@/lib/consts";
+import { SPACE_API_URL, REDIS_SPACE_PREFIX, REDIS_STREAM_PREFIX, NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
 import { getLiveClubspace } from "@/services/radio";
 import useHasBadge from "@/hooks/useHasBadge";
 import MobileMessage from "@/components/MobileMessage";
@@ -66,7 +66,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
         title={`ClubSpace | ${clubSpaceObject.creatorLensHandle}`}
         description={`Join @${clubSpaceObject.creatorLensHandle} at their live listening party now!`}
         openGraph={{
-          url: `${SITE_URL}/live/${clubSpaceObject.creatorLensHandle}`,
+          url: `${NEXT_PUBLIC_SITE_URL}/live/${clubSpaceObject.creatorLensHandle}`,
           title: `ClubSpace | ${clubSpaceObject.creatorLensHandle}`,
           description: `Join @${clubSpaceObject.creatorLensHandle} at their live listening party now!`,
           images: [

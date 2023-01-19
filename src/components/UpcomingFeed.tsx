@@ -2,13 +2,22 @@ import { getUrlForImageFromIpfs } from "@/utils";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Bell from "@/assets/svg/bell.svg";
+import Live from "@/assets/svg/live.svg";
 import { subscribeNotifications } from "@/services/push/clientSide";
-import { useAccount, useSigner } from "wagmi";
 import Link from "next/link";
+import { NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
 
 function timeUntil(timeStamp) {
   let time = new Date(timeStamp * 1000);
   let now = new Date();
+  if (time < now) {
+    return (
+      <div className="flex">
+        <Live />
+        Live Now
+      </div>
+    );
+  }
   let hours = time.getHours();
   let minutes: any = time.getMinutes();
   if (minutes < 10) {
@@ -29,10 +38,10 @@ const filterTestSpaces = (space: any) => {
   );
 };
 
-export const UpcomingItem = ({ activity, link = true }: { activity: any, link: boolean }) => {
+export const UpcomingItem = ({ activity }: { activity: any }) => {
   return (
-    <Link href={link ? `/live/${activity.handle}` : '#'} disabled={!link}>
-      <div className={`rounded-md min-w-[220px] ${link ? 'cursor-pointer' : 'cursor-default'}`}>
+    <a href={`${NEXT_PUBLIC_SITE_URL}/live/${activity.handle}`} target="_blank" rel="noreferrer">
+      <div className={`rounded-md min-w-[220px] cursor-pointer`}>
         <div
           style={{
             backgroundImage: `url(${getUrlForImageFromIpfs(activity.productBannerUrl)})`,
@@ -46,20 +55,21 @@ export const UpcomingItem = ({ activity, link = true }: { activity: any, link: b
             paddingLeft: "6px",
           }}
         >
-          <p className="text-black rounded-md bg-white/75 text-sm px-3 w-fit">{timeUntil(activity.startAt)}</p>
+          <p className="text-black rounded-md bg-white/75 text-sm px-3 w-fit">
+            {timeUntil(activity.startAt || activity.createdAt)}
+          </p>
           <div style={{ padding: "90px 0 0 0" }}>
             <p className="text-xl font-semibold">@{activity.handle}</p>
           </div>
         </div>
       </div>
-    </Link>
+    </a>
   );
 };
 
 export const UpcomingFeed = () => {
-  const { address } = useAccount();
-  const { data: signer } = useSigner();
   const [spaces, setSpaces] = useState([]);
+
   useEffect(() => {
     const _fetchAsync = async () => {
       const {
@@ -75,8 +85,7 @@ export const UpcomingFeed = () => {
       {spaces.length > 0 && (
         <>
           <div className="flex mt-16 mb-8">
-            {
-              /**
+            {/**
                 <button
                   className="p-1 rounded-md border-white border-[2px] mr-3"
                   onClick={() => subscribeNotifications(signer, address)}
@@ -84,8 +93,7 @@ export const UpcomingFeed = () => {
                 >
                   <Bell />
                 </button>
-              */
-            }
+              */}
             <h2 className="text-md font-bold tracking-tight text-3xl">Upcoming Spaces</h2>
           </div>
           <div className="flex overflow-auto gap-8">

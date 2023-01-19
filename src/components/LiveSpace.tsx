@@ -25,7 +25,7 @@ import { useGetContractData } from "@/services/decent/getDecentNFT";
 import { HostCard } from "./HostCard";
 import { FeaturedDecentNFT } from "./FeaturedDecentNFT";
 import { LiveAudioPlayer } from "./LiveAudioPlayer";
-import { SITE_URL, LENSTER_URL, ALLOWED_CHAIN_IDS, APP_NAME } from "@/lib/consts";
+import { NEXT_PUBLIC_SITE_URL, LENSTER_URL, ALLOWED_CHAIN_IDS, APP_NAME } from "@/lib/consts";
 import { addToGuestList, logAction, logOverwriteAction } from "@madfi/ts-sdk";
 
 import * as mockIdentities from "@/constants/mockIdentities.json";
@@ -125,6 +125,18 @@ const LiveSpace: FC<Props> = ({
     );
   };
 
+  useEffect(() => {
+    logOverwriteAction(
+      address,
+      fieldNamePrivy(clubSpaceObject.clubSpaceId),
+      {
+        action: "joined",
+        time: Date.now(),
+      },
+      "joined"
+    );
+  }, []);
+
   // @TODO: should really merge these two hook calls
   // - first run tries to do the refresh call
   // - all other runs force the login call
@@ -156,7 +168,7 @@ const LiveSpace: FC<Props> = ({
     () =>
       buildLensShareUrl({
         postBody: "Join this space!",
-        url: `${SITE_URL}/live/${clubSpaceObject.handle}`,
+        url: `${NEXT_PUBLIC_SITE_URL}/live/${clubSpaceObject.handle}`,
       }),
     [clubSpaceObject]
   );
@@ -223,6 +235,8 @@ const LiveSpace: FC<Props> = ({
 
   // @TODO: memoized
   const getAudience = () => {
+    console.log(`myPeerId: ${myPeerId}`);
+    console.log(identities);
     const res = uniq([myPeerId].concat(peers)).filter((id) => !isEmpty(identities[id]));
 
     return sortBy(res, (r) => -identities[r].profile?.totalFollowers || 0);
@@ -231,10 +245,10 @@ const LiveSpace: FC<Props> = ({
   // log impression for party favor after 3 minutes
   useEffect(() => {
     if (!isLoadingEntry && clubSpaceObject.partyFavorContractAddress !== ZERO_ADDRESS) {
-      axios.post(`/api/privy/get-claim-status`, { groupId: clubSpaceObject.semGroupIdHex, address }).then((data) => {
+      axios.post(`/api/privy/get-claim-status`, { groupId: clubSpaceObject.semGroupIdHex.replace(/-/g, ''), address }).then((data) => {
         if (data.data.status === FavorStatus.NOT_CLAIMABLE) {
           setTimeout(async () => {
-            await joinGroup(clubSpaceObject.semGroupIdHex, address);
+            await joinGroup(clubSpaceObject.semGroupIdHex.replace(/-/g, ''), address);
           }, 180_000);
         }
       });
@@ -508,7 +522,7 @@ const LiveSpace: FC<Props> = ({
           </div>
           <div className="decent-nft flex flex-col gap-y-3">
             {featuredDecentNFT && (
-              <FeaturedDecentNFT {...featuredDecentNFT} semGroupIdHex={clubSpaceObject.clubSpaceId} />
+              <FeaturedDecentNFT {...featuredDecentNFT} semGroupIdHex={clubSpaceObject.clubSpaceId.replace(/-/g, '')} />
             )}
             {creatorLensProfile && (
               <>
@@ -869,7 +883,7 @@ const LiveSpace: FC<Props> = ({
         <ClaimFavorModal
           isOpen={modalOpen}
           setIsOpen={setModalOpen}
-          semGroupIdHex={clubSpaceObject.semGroupIdHex}
+          semGroupIdHex={clubSpaceObject.semGroupIdHex.replace(/-/g, '')}
           address={address}
         />
       )}

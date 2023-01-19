@@ -10,15 +10,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (typeof address !== "string" || typeof semGroupIdHex !== "string" || typeof impression !== "string")
       return res.status(400).end();
 
+    const groupId = semGroupIdHex.replace(/-/g, "");
     const newEntry = {
       impression,
       timestamp: Date.now(),
       userAgent: req.headers["user-agent"],
     };
 
-    await appendToField(address, semGroupIdHex, newEntry, true);
+    await appendToField(address, groupId, newEntry, true);
 
-    console.log(`wrote to privy for semGroupIdHex: ${semGroupIdHex}`);
+    console.log(`wrote to privy for semGroupIdHex: ${groupId}`);
 
     return res.status(200).end();
   } catch (e) {

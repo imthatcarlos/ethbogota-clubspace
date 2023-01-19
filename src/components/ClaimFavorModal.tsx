@@ -6,13 +6,18 @@ import { useNetwork, useSigner } from "wagmi";
 import axios from "axios";
 import { getDeploymentForGroup } from "@/hooks/useGetDeployedZkEditions";
 import { apiUrls } from "@/constants/apiUrls";
+import { NFT_STORAGE_URL } from "@/services/decent/utils";
 
 const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed = undefined }) => {
   const { data: signer } = useSigner();
   const { chain } = useNetwork();
   const [loading, setLoading] = useState<boolean>();
   const [claimable, setClaimable] = useState<FavorStatus>(FavorStatus.NOT_CLAIMABLE);
-  const { data: deployedZkEdition, isLoading } = getDeploymentForGroup(semGroupIdHex, chain.id, signer);
+  const { data: deployedZkEdition, isLoading } = getDeploymentForGroup(
+    semGroupIdHex.replace(/-/g, ""),
+    chain.id,
+    signer
+  );
 
   function closeModal() {
     setIsOpen(false);
@@ -21,7 +26,7 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
   useEffect(() => {
     setLoading(true);
     if (isClaimed === undefined) {
-      axios.post(`/api/privy/get-claim-status`, { groupId: semGroupIdHex, address }).then((data) => {
+      axios.post(`/api/privy/get-claim-status`, { groupId: semGroupIdHex.replace(/-/g, ""), address }).then((data) => {
         const joinStatus = data.data.status;
         if (joinStatus === FavorStatus.CLAIMABLE) {
           setClaimable(FavorStatus.CLAIMABLE);
@@ -34,7 +39,7 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
       setClaimable(isClaimed ? FavorStatus.CLAIMED : FavorStatus.CLAIMABLE);
       setLoading(false);
     }
-  }, []);
+  }, [isOpen]);
 
   const submit = async () => {
     setLoading(true);
@@ -89,14 +94,19 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
                   </div>
                 </Dialog.Title>
 
+                {(process.env.NEXT_PUBLIC_IS_PRODUCTION === "true" && chain.id !== 137) ||
+                  (process.env.NEXT_PUBLIC_IS_PRODUCTION === "false" && chain.id !== 80001 && (
+                    <p>You need to switch to the correct network first</p>
+                  ))}
+
                 {isLoading ? (
                   <div>Loading...</div>
                 ) : (
                   <div>
                     <p className="text-xl">{deployedZkEdition?.name}</p>
                     <img
-                      src={`${apiUrls.ipfs}/${deployedZkEdition?.image.substring(7) ?? ""}`}
-                      className="m-auto max-w-xs"
+                      src={`${NFT_STORAGE_URL}/${deployedZkEdition?.image.substring(7) ?? ""}`}
+                      className="mx-auto max-w-xs my-4 rounded-sm"
                     />
                     {deployedZkEdition?.description?.split("\n").map((line, i) => {
                       return (
@@ -109,7 +119,13 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
                 )}
 
                 <button disabled={claimable !== FavorStatus.CLAIMABLE || loading} onClick={submit} className="btn mt-4">
-                  {isLoading || loading ? "..." : claimable === FavorStatus.CLAIMED ? "Already Claimed" : "Claim"}
+                  {isLoading || loading
+                    ? "..."
+                    : claimable === FavorStatus.CLAIMED
+                    ? "Already Claimed"
+                    : claimable === FavorStatus.NOT_CLAIMABLE
+                    ? "Stay in the party for 3 minutes to claim"
+                    : "Claim"}
                 </button>
               </Dialog.Panel>
             </div>

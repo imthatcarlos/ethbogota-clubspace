@@ -8,7 +8,7 @@ export const REDIS_STREAM_PREFIX = "stream";
 export const REDIS_SPACE_EXP = 7200;
 
 export const LOCALSTORAGE_DEFAULT_PROFILE_ID = "DEFAULT_PROFILE_ID";
-export const SITE_URL = process.env.SITE_URL || "https://www.joinclubspace.xyz";
+export const NEXT_PUBLIC_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.joinclubspace.xyz";
 export const LENSTER_URL = IS_PRODUCTION ? 'https://lenster.xyz' : 'https://testnet.lenster.xyz';
 
 export const LENSHUB_PROXY = IS_PRODUCTION
@@ -83,7 +83,8 @@ export const IM_WITH_THE_DJ = [
   '0x30dCCa068F593CbFFB5afFe8A89F35AE49614972', // zombie shepherd
   '0xB5bb48aF9510951FB869B34267b827e73f0Ab486',
   '0xF1c5bACc57b29bD704B768DE3389359dA00986E7',
-  '0xc27773DD7e25D878C814fB238e5f7372F3a18A74'
+  '0xc27773DD7e25D878C814fB238e5f7372F3a18A74',
+  '0x64dC62CB349780064F4fe831d5DE5817dB819D95'
 ];
 
 export const GOOGLE_FORM_WAITLIST_URL = 'https://forms.gle/XEU44w1gHt3LTC9A7';
