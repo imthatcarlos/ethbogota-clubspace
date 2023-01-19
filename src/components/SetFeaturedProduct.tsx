@@ -6,6 +6,7 @@ import { classNames } from "@/lib/utils/classNames";
 import { MultiStepFormWrapper } from "./MultiStepFormWrapper";
 import useGetDeployedProducts from "@/hooks/useGetDeployedProducts"
 import { CONTRACT_TYPES_FOR_FEATURED } from "@/services/decent/utils";
+import { kFormatter } from '@/utils';
 
 const SetFeaturedProduct = ({ setDecentProduct, decentProduct = undefined, updateFields }) => {
   const { address } = useAccount();
@@ -13,13 +14,18 @@ const SetFeaturedProduct = ({ setDecentProduct, decentProduct = undefined, updat
   const { data: signer } = useSigner();
   const { data: deployedProducts, isLoading } = useGetDeployedProducts(address, chain.id, signer);
 
-  const getProductName = ({ chain, metadata, contractType, availableSupply, totalSupply, soldOut }) => (
-    `[${chain}] ${metadata?.name} - ${soldOut ? 'SOLD OUT' : `${totalSupply} / ${availableSupply} minted`}`
-  );
+  const getProductName = ({ chain, metadata, contractType, availableSupply, totalSupply, soldOut, saleIsActive }) => {
+    const namePart = `[${chain}] ${metadata?.name}`;
+    const salePart = saleIsActive
+      ? `${soldOut ? 'SOLD OUT' : `${totalSupply} / ${kFormatter(availableSupply)} minted`}`
+      : 'SALE IS NOT ACTIVE';
+
+    return `${namePart} - ${salePart}`;
+  };
 
   // only allowing editions + crescendo contracts deployed on certain chains
-  const getIsProductEnabled = ({ chainId, contractType, soldOut }) => (
-    CONTRACT_TYPES_FOR_FEATURED.includes(contractType) && !soldOut
+  const getIsProductEnabled = ({ chainId, contractType, soldOut, saleIsActive }) => (
+    saleIsActive && CONTRACT_TYPES_FOR_FEATURED.includes(contractType) && !soldOut
   );
 
   return (
