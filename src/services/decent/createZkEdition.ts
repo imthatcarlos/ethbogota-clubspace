@@ -12,7 +12,7 @@ const DEFAULT_TOKEN_PRICE = '0';
 const DEFAULT_MAX_TOKEN_PURCHASE = 1;
 const DEFAULT_MAX_ROYALTY_BPS = 1000; // 10%
 const DEFAULT_HAS_ADJUSTABLE_CAP = true;
-const DEFAULT_CONTRACT_URI = 'ipfs://QmddchiYMQGZYLZf86jhyhkxRqrGfpBNr53b4oiV76q6aq';
+const DEFAULT_CONTRACT_URI = 'ipfs://QmcWWei8y8B4CU4K8Q7Ef4QmsgP6TkRewcZBUj1c84Tto4';
 
 type CreateProps = {
   handle: string;
