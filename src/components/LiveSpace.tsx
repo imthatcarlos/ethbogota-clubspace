@@ -494,7 +494,7 @@ const LiveSpace: FC<Props> = ({
               ? getAudience().map((peerId, index) => {
                   return identities[peerId] ? (
                     <LensProfile
-                      allowDrawer={[".lens", ".test"].some((ext) => identities[peerId].handle.includes(ext))}
+                      allowDrawer={[".lens", ".test"].some((ext) => identities[peerId].handle?.includes(ext))}
                       id={identities[peerId].profile?.id}
                       key={identities[peerId].handle}
                       handle={identities[peerId].handle}
