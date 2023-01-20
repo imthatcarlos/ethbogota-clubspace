@@ -25,7 +25,8 @@ const SetFeaturedProduct = ({ setDecentProduct, decentProduct = undefined, updat
 
   // only allowing editions + crescendo contracts deployed on certain chains
   const getIsProductEnabled = ({ chainId, contractType, soldOut, saleIsActive }) => (
-    saleIsActive && CONTRACT_TYPES_FOR_FEATURED.includes(contractType) && !soldOut
+    // saleIsActive && CONTRACT_TYPES_FOR_FEATURED.includes(contractType) && !soldOut
+    CONTRACT_TYPES_FOR_FEATURED.includes(contractType) && !soldOut
   );
 
   return (
