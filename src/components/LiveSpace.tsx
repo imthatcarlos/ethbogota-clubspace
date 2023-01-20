@@ -246,8 +246,8 @@ const LiveSpace: FC<Props> = ({
     if (!isLoadingEntry && clubSpaceObject.partyFavorContractAddress !== ZERO_ADDRESS && hasJoined.current) {
       axios.post(`/api/privy/get-claim-status`, { groupId: clubSpaceObject.semGroupIdHex.replace(/-/g, ''), address }).then((data) => {
         if (data.data.status === FavorStatus.NOT_CLAIMABLE) {
-          setTimeout(async () => {
-            await joinGroup(clubSpaceObject.semGroupIdHex.replace(/-/g, ''), address);
+          setTimeout(() => {
+            joinGroup(clubSpaceObject.semGroupIdHex.replace(/-/g, ''), address);
           }, 180_000);
         }
       });
