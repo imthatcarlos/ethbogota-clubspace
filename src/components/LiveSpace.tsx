@@ -499,7 +499,7 @@ const LiveSpace: FC<Props> = ({
                       key={identities[peerId].handle}
                       handle={identities[peerId].handle}
                       picture={
-                        identities[peerId].profile.avatar
+                        identities[peerId].profile?.avatar
                           ? getUrlForImageFromIpfs(identities[peerId].profile.avatar)
                           : "/anon.png"
                       }
