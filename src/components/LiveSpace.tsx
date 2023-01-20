@@ -780,7 +780,7 @@ const LiveSpace: FC<Props> = ({
                       alt=""
                     />
                     <img
-                      src={drawerProfile?.picture?.original?.url}
+                      src={drawerProfile?.picture?.original?.url || "/anon.png"}
                       alt=""
                       className={`rounded-full w-12 h-12 aspect-square relative border-black-[4px] top-3/4 left-[5%] outline outline-offset-0 outline-2 ${
                         drawerProfile?.hasBadge ? "outline-red-600" : "outline-black"

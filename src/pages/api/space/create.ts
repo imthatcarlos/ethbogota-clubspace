@@ -24,6 +24,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       partyFavorContractAddress,
       startAt, // ts UTC
       productBannerUrl,
+      productBannerIsVideo,
     } = req.body;
 
     if (
@@ -59,6 +60,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       partyFavorContractAddress,
       startAt,
       productBannerUrl,
+      productBannerIsVideo,
     };
     console.log(JSON.stringify(clubSpaceObject, null, 2));
     const spaceRedisKey = `${REDIS_SPACE_PREFIX}/${handle}`;

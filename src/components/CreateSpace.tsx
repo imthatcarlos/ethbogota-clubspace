@@ -260,6 +260,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
           decentContractChainId: decentProduct.chainId,
           decentContractType: decentProduct.contractType,
           productBannerUrl: getUrlForImageFromIpfs(decentProduct.metadata.image),
+          productBannerIsVideo: decentProduct.metadata.isVideo,
           lensPubId,
           clubSpaceId,
           uuid,

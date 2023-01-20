@@ -41,10 +41,14 @@ const filterTestSpaces = (space: any) => {
 export const UpcomingItem = ({ activity }: { activity: any }) => {
   return (
     <a href={`${NEXT_PUBLIC_SITE_URL}/live/${activity.handle}`} target="_blank" rel="noreferrer">
-      <div className={`rounded-md min-w-[220px] cursor-pointer`}>
+      <div className="rounded-md min-w-[220px] cursor-pointer">
         <div
           style={{
-            backgroundImage: `url(${getUrlForImageFromIpfs(activity.productBannerUrl)})`,
+            backgroundImage: (
+              !activity.productBannerIsVideo
+                ? `url(${getUrlForImageFromIpfs(activity.productBannerUrl)})`
+                : undefined
+            ),
             height: "150px",
             backgroundSize: "cover",
             backgroundPosition: "center",
@@ -55,6 +59,18 @@ export const UpcomingItem = ({ activity }: { activity: any }) => {
             paddingLeft: "6px",
           }}
         >
+          {activity.productBannerIsVideo && (
+            <div className="absolute -p-1 -mx-2 -my-2 max-w-[260px]">
+              <video
+                className="opacity-50 rounded-md"
+                src={getUrlForImageFromIpfs(activity.productBannerUrl)}
+                alt=""
+                autoPlay
+                muted
+                loop
+              />
+            </div>
+          )}
           <p className="text-black rounded-md bg-white/75 text-sm px-3 w-fit">
             {timeUntil(activity.startAt || activity.createdAt)}
           </p>
