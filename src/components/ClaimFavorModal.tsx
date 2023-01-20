@@ -90,7 +90,7 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
                           ? "Claim your party favor now!"
                           : claimable === FavorStatus.CLAIMED
                           ? "You have claimed your party favor!"
-                          : "You need to stay in the party for 3 minutes to claim your party favor"}
+                          : "Stay in the party to become eligible"}
                       </p>
                     )}
                   </div>
@@ -126,7 +126,7 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
                     : claimable === FavorStatus.CLAIMED
                     ? "Already Claimed"
                     : claimable === FavorStatus.NOT_CLAIMABLE
-                    ? "Stay in the party for 3 minutes to claim"
+                    ? "Stay in the party to become eligible"
                     : "Claim"}
                 </button>
               </Dialog.Panel>
