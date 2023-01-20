@@ -243,16 +243,16 @@ const LiveSpace: FC<Props> = ({
 
   // log impression for party favor after 3 minutes
   useEffect(() => {
-    if (!isLoadingEntry && clubSpaceObject.partyFavorContractAddress !== ZERO_ADDRESS && hasJoined.current) {
-      axios.post(`/api/privy/get-claim-status`, { groupId: clubSpaceObject.semGroupIdHex.replace(/-/g, ''), address }).then((data) => {
-        if (data.data.status === FavorStatus.NOT_CLAIMABLE) {
-          // TODO: make this work somehow
-          // setTimeout(() => {
-            joinGroup(clubSpaceObject.semGroupIdHex.replace(/-/g, ''), address);
-          // }, 180_000);
-        }
-      });
-    }
+    // TODO: the 3 minute timeout
+    // if (!isLoadingEntry && clubSpaceObject.partyFavorContractAddress !== ZERO_ADDRESS && hasJoined.current) {
+    //   axios.post(`/api/privy/get-claim-status`, { groupId: clubSpaceObject.semGroupIdHex.replace(/-/g, ''), address }).then((data) => {
+    //     if (data.data.status === FavorStatus.NOT_CLAIMABLE) {
+    //       setTimeout(() => {
+    //         joinGroup(clubSpaceObject.semGroupIdHex.replace(/-/g, ''), address);
+    //       }, 180_000);
+    //     }
+    //   });
+    // }
     if (!isLoadingEntry) {
       addToGuestList(APP_NAME, address);
       setStartTime(Date.now());
@@ -372,6 +372,12 @@ const LiveSpace: FC<Props> = ({
         console.log(`JOINING: ${clubSpaceObject.clubSpaceId}`);
         await enterRoom(clubSpaceObject.clubSpaceId);
         console.log("JOINED");
+        // TODO: the 3 minute timeout
+        axios.post(`/api/privy/get-claim-status`, { groupId: clubSpaceObject.semGroupIdHex.replace(/-/g, ''), address }).then((data) => {
+          if (data.data.status === FavorStatus.NOT_CLAIMABLE) {
+              joinGroup(clubSpaceObject.semGroupIdHex.replace(/-/g, ''), address);
+          }
+        });
       }
     };
 
