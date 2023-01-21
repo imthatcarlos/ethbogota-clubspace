@@ -19,6 +19,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         handle: 1,
         createdAt: 1,
         totalSales: 1,
+        totalSalesAmount: 1,
       },
       limit: 10,
     });
