@@ -21,9 +21,11 @@ const ActivityItem = ({ activity }: { activity: Activity }) => {
     return Math.floor(timePassed / 86400000);
   };
 
+  const isVideo = () => activity.decentContract.isVideo || activity.decentContract.image.endsWith(".mp4");
+
   return (
     <div className="p-3 rounded-xl min-w-[240px] border-slate-500 border-[1px]">
-      {!activity.decentContract.isVideo ? (
+      {!isVideo() ? (
         <img
           src={getUrlForImageFromIpfs(activity.decentContract.image)}
           width="220"
