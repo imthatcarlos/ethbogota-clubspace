@@ -66,13 +66,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const spaceRedisKey = `${REDIS_SPACE_PREFIX}/${handle}`;
 
     // stick it in redis
+    const exp = startAt
+      ? startAt - Math.floor(Date.now() / 1000) + REDIS_SPACE_EXP
+      : REDIS_SPACE_EXP;
     try {
       console.log("setting redis");
       await redisClient.set(
         spaceRedisKey,
         JSON.stringify(clubSpaceObject),
         "EX",
-        REDIS_SPACE_EXP
+        exp
       );
       console.log("set!");
     } catch (error) {
