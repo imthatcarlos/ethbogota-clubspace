@@ -107,7 +107,7 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
                   <div>
                     <p className="text-xl">{deployedZkEdition?.name}</p>
                     <img
-                      src={`${NFT_STORAGE_URL}/${deployedZkEdition?.image.substring(7) ?? ""}`}
+                      src={`${NFT_STORAGE_URL}/${deployedZkEdition?.image?.substring(7) ?? ""}`}
                       className="mx-auto max-w-xs my-4 rounded-sm"
                     />
                     {deployedZkEdition?.description?.split("\n").map((line, i) => {
