@@ -10,6 +10,7 @@ interface Activity {
   spinampPlaylistId: string;
   createdAt: number;
   totalSales: string;
+  totalSalesAmount?: string;
 }
 
 const ActivityItem = ({ activity }: { activity: Activity }) => {
@@ -46,6 +47,7 @@ const ActivityItem = ({ activity }: { activity: Activity }) => {
       <p>
         {utils.formatEther(activity.totalSales)} {activity.decentContract.chainId === 137 ? "MATIC" : "ETH"} in sales
       </p>
+      {activity.totalSalesAmount && <p>{activity.totalSalesAmount} purchases</p>}
       <p>{activityTime()} days ago</p>
     </div>
   );

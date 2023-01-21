@@ -73,6 +73,7 @@ const ClaimsPage = ({ clubSpaceObject }) => {
                   Total Sales: {utils.formatEther(space.totalSales).toString()}{" "}
                   {space.decentContract.chainId === 137 ? "MATIC" : "ETH"}
                 </p>
+                {space.totalSalesAmount && <p>{space.totalSalesAmount} purchases</p>}
                 <p className="mb-2">Total Party Favor Claims: {space.totalClaims}</p>
               </div>
             ))
