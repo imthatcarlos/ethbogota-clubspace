@@ -13,6 +13,7 @@
   --inset-right: 0;
   --inset-bottom: 0%;
   --inset-left: 0;
+  --decent-nft-min-h: 25.25rem;
 }
 
 @keyframes shimmer {
@@ -140,6 +141,7 @@ body {
 
 .grid-live .decent-nft {
   grid-area: decent;
+  min-height: var(--decent-nft-min-h);
 }
 
 .shimmer::after {

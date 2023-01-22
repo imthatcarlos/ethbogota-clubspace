@@ -27,6 +27,7 @@ import { FeaturedDecentNFT } from "./FeaturedDecentNFT";
 import { LiveAudioPlayer } from "./LiveAudioPlayer";
 import { NEXT_PUBLIC_SITE_URL, LENSTER_URL, ALLOWED_CHAIN_IDS, APP_NAME } from "@/lib/consts";
 import { addToGuestList, logAction, logOverwriteAction } from "@madfi/ts-sdk";
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 
 import * as mockIdentities from "@/constants/mockIdentities.json";
 import DirectToClaims from "./DirectToClaims";
@@ -102,6 +103,8 @@ const LiveSpace: FC<Props> = ({
   const [drawerProfile, setDrawerProfile] = useState<any>({});
   const [doesFollowDrawerProfile, setDoesFollowDrawerProfile] = useState<boolean>(false);
   const [isFollowingAction, setIsFollowingAction] = useState<boolean>(false);
+  const [audienceLoaded, setAudienceLoaded] = useState<boolean>(false)
+  const [audience, setAudience] = useState(null)
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHostOpen, setIsHostOpen] = useState<boolean>(false);
   const { data: ensData, isLoading: isLoadingENS } = useENS(address);
@@ -234,12 +237,12 @@ const LiveSpace: FC<Props> = ({
   }, [defaultProfile, creatorLensProfile]);
   const micOn = myAudio?.active; // only for the host
 
-  // @TODO: memoized
-  const getAudience = () => {
-    const res = uniq([myPeerId].concat(peers)).filter((id) => !isEmpty(identities[id]));
 
-    return sortBy(res, (r) => -identities[r].profile?.totalFollowers || 0);
-  };
+  useEffect(() => {
+    const res = uniq([myPeerId].concat(peers)).filter((id) => !isEmpty(identities[id]));
+    const sorted = sortBy(res, (r) => -identities[r].profile?.totalFollowers || 0);
+    setAudience(sorted)
+  }, [peers, identities, myPeerId])
 
   // log impression for party favor after 3 minutes
   useEffect(() => {
@@ -472,6 +475,78 @@ const LiveSpace: FC<Props> = ({
     }
   };
 
+  const DummyCard = useCallback(() => (
+    <div>
+      <Skeleton circle className='mx-auto block w-full' height={48} width={48} />
+      <Skeleton height={4} width={48} />
+    </div>
+  ), [])
+
+  const DummyDecent = useCallback(() => (
+    <SkeletonTheme baseColor='rgb(85,13,69)' highlightColor='#8B8A8C'>
+      <div>
+        <h2 className="my-4 text-4xl font-bold tracking-tight sm:text-2xl md:text-5xl drop-shadow-sm text-center">
+          Featured Drop
+        </h2>
+        <div className="flex w-full justify-center relative">
+          <div className="max-w-[20rem] min-w-[17rem]">
+            <div className="bg-slate-800 shadow-xl rounded-lg relative">
+              <div className="photo-wrapper p-2 pt-0 overflow-hidden">
+                <Skeleton width={272} height={262} className="!absolute t-0 left-0 right-0 w-full h-full object-cover opacity-50 rounded-md" />
+              </div>
+
+              <div className="p-2 pt-4 relative">
+                <h3 className="text-center text-xl text-gray-300 font-medium leading-8 -mb-2">
+                  <Skeleton className="max-w-[75%]" height={14} />
+                </h3>
+
+                <p className="text-sm text-gray-500 dark:text-white mb-0 p-4 text-center"><Skeleton className="max-w-[55%]" height={4} /></p>
+
+                <div className="text-center text-gray-400 text-sm font-semibold mb-5 -mt-2">
+                  <p>
+                  <Skeleton className="max-w-[55%]" height={4} />
+                  </p>
+                </div>
+
+                <div className="text-center text-gray-400 text-sm font-semibold mb-2 -mt-2">
+                  <p>
+                  <Skeleton className="max-w-[80%]" height={8} />
+                  </p>
+                </div>                            
+
+                <div className="flex justify-center mb-0 text-sm gap-x-4">
+                  <div className="flex gap-x-2">
+                    <span>
+                      <strong>
+                        <strong><Skeleton className="w-full" height={3} /></strong>
+                      </strong>
+                    </span>                                
+                  </div>
+
+                  <div className="flex gap-x-2">
+                    <span>
+                      <strong><Skeleton className="w-full" height={3} /></strong>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="text-center mb-3 mt-2 px-3">
+                  <Skeleton className="btn" height={40} />    
+                </div>
+              </div>                          
+            </div>
+          </div>
+        </div>
+
+      {/* Buttons */}
+        <div className="flex w-full justify-center relative grid-cols-2 gap-4 mt-2">
+          <Skeleton className="btn" height={35} width={95} />
+          <Skeleton className="btn" height={45} width={160} />
+        </div>        
+      </div>
+    </SkeletonTheme>
+  ), [])
+
   useUnload(async () => {
     console.log(`LEAVING`);
     await leaveRoom(clubSpaceObject.clubSpaceId);
@@ -489,9 +564,11 @@ const LiveSpace: FC<Props> = ({
                 <p className="animate-move-txt-bg gradient-txt text-2xl mb-5">Connect your wallet to join the space</p>
                 <ConnectWallet showBalance={false} />
               </div>
-            ) : null}
-            {!!myIdentity
-              ? getAudience().map((peerId, index) => {
+            ) :
+              null
+            }
+            {!!myIdentity && audience.length > 0
+              ? audience.map((peerId, index) => {
                   return identities[peerId] ? (
                     <LensProfile
                       allowDrawer={[".lens", ".test"].some((ext) => identities[peerId].handle?.includes(ext))}
@@ -514,7 +591,10 @@ const LiveSpace: FC<Props> = ({
                     />
                   ) : null;
                 })
-              : null}
+              : <SkeletonTheme baseColor='#090407' highlightColor='#8B8A8C'>
+                  {Array(12).fill(<DummyCard />)}
+                </SkeletonTheme>
+              }
 
             {/* {mockIdentities.identities.map(({ id, handle, profile }, index) => (
               <LensProfile
@@ -529,9 +609,10 @@ const LiveSpace: FC<Props> = ({
             ))} */}
           </div>
           <div className="decent-nft flex flex-col gap-y-3">
-            {featuredDecentNFT && (
-              <FeaturedDecentNFT {...featuredDecentNFT} semGroupIdHex={clubSpaceObject.clubSpaceId.replace(/-/g, '')} />
-            )}
+            {featuredDecentNFT ? (
+                <FeaturedDecentNFT {...featuredDecentNFT} semGroupIdHex={clubSpaceObject.clubSpaceId.replace(/-/g, '')} />
+            ) : <DummyDecent />
+            }
             {creatorLensProfile && (
               <>
                 {isHost && iSpeak && (
