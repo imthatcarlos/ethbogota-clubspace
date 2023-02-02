@@ -512,7 +512,7 @@ const LiveSpace: FC<Props> = ({
                   <p>
                   <Skeleton className="max-w-[80%]" height={8} />
                   </p>
-                </div>                            
+                </div>
 
                 <div className="flex justify-center mb-0 text-sm gap-x-4">
                   <div className="flex gap-x-2">
@@ -520,7 +520,7 @@ const LiveSpace: FC<Props> = ({
                       <strong>
                         <strong><Skeleton className="w-full" height={3} /></strong>
                       </strong>
-                    </span>                                
+                    </span>
                   </div>
 
                   <div className="flex gap-x-2">
@@ -531,9 +531,9 @@ const LiveSpace: FC<Props> = ({
                 </div>
 
                 <div className="text-center mb-3 mt-2 px-3">
-                  <Skeleton className="btn" height={40} />    
+                  <Skeleton className="btn" height={40} />
                 </div>
-              </div>                          
+              </div>
             </div>
           </div>
         </div>
@@ -542,7 +542,7 @@ const LiveSpace: FC<Props> = ({
         <div className="flex w-full justify-center relative grid-cols-2 gap-4 mt-2">
           <Skeleton className="btn" height={35} width={95} />
           <Skeleton className="btn" height={45} width={160} />
-        </div>        
+        </div>
       </div>
     </SkeletonTheme>
   ), [])
@@ -567,8 +567,8 @@ const LiveSpace: FC<Props> = ({
             ) :
               null
             }
-            {!!myIdentity && audience.length > 0
-              ? audience.map((peerId, index) => {
+            {!!myIdentity && audience?.length > 0
+              ? audience?.map((peerId, index) => {
                   return identities[peerId] ? (
                     <LensProfile
                       allowDrawer={[".lens", ".test"].some((ext) => identities[peerId].handle?.includes(ext))}
@@ -592,7 +592,7 @@ const LiveSpace: FC<Props> = ({
                   ) : null;
                 })
               : <SkeletonTheme baseColor='#090407' highlightColor='#8B8A8C'>
-                  {Array(12).fill(<DummyCard />)}
+                  {Array(4).fill(<DummyCard />)}
                 </SkeletonTheme>
               }
 
@@ -702,7 +702,7 @@ const LiveSpace: FC<Props> = ({
 
         {/* isHost ? */}
 
-        
+
           <div className="flex left-1/2 transform -translate-x-1/2 relative w-[150px] items-baseline -mt-4">
             {handle && <Popover
               className={({ open }) =>
@@ -830,7 +830,7 @@ const LiveSpace: FC<Props> = ({
               </button>
             )}
           </div>
-        
+
       </div>
 
       {/* Start Drawer */}
