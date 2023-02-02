@@ -173,7 +173,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     setUploading(true);
 
     // if no goody contract set, we're deploying one and need to be on the right network
-    if (goody && !switched && chain.id !== ALLOWED_CHAIN_IDS[0]) {
+    if ((goody || lensPost) && !switched && chain.id !== ALLOWED_CHAIN_IDS[0]) {
       toast("Switching chains...");
       try {
         await switchNetworkAsync(ALLOWED_CHAIN_IDS[0]);
