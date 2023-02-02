@@ -39,45 +39,33 @@ const filterTestSpaces = (space: any) => {
 };
 
 export const UpcomingItem = ({ activity }: { activity: any }) => {
+  const isVideo = () => activity.productBannerIsVideo || activity.productBannerUrl.endsWith(".mp4");
+
   return (
     <a href={`${NEXT_PUBLIC_SITE_URL}/live/${activity.handle}`} target="_blank" rel="noreferrer">
-      <div className="rounded-md min-w-[220px] cursor-pointer">
-        <div
-          style={{
-            backgroundImage: (
-              !activity.productBannerIsVideo
-                ? `url(${getUrlForImageFromIpfs(activity.productBannerUrl)})`
-                : undefined
-            ),
-            height: "150px",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            width: "100%",
-            borderRadius: "8px",
-            paddingTop: "4px",
-            paddingLeft: "6px",
-          }}
-        >
-          {activity.productBannerIsVideo && (
-            <div className="absolute -p-1 -mx-2 -my-2 max-w-[260px]">
-              <video
-                className="opacity-50 rounded-md"
-                src={getUrlForImageFromIpfs(activity.productBannerUrl)}
-                alt=""
-                autoPlay
-                muted
-                loop
-              />
-            </div>
-          )}
-          <p className="text-black rounded-md bg-white/75 text-sm px-3 w-fit">
-            {timeUntil(activity.startAt || activity.createdAt)}
-          </p>
-          <div style={{ padding: "90px 0 0 0" }}>
-            <p className="text-xl font-semibold">@{activity.handle}</p>
-          </div>
-        </div>
+      <div className="p-3 rounded-xl min-w-[240px] border-slate-500 border-[1px] cursor-pointer">
+        <p className="text-black rounded-md bg-white/75 text-sm px-3 mb-3 w-fit">
+          {timeUntil(activity.startAt || activity.createdAt)}
+        </p>
+        {!isVideo() ? (
+          <img
+            src={getUrlForImageFromIpfs(activity.productBannerUrl)}
+            width="220"
+            height="220"
+            className="rounded-xl mb-2"
+          />
+        ) : (
+          <video
+            src={getUrlForImageFromIpfs(activity.productBannerUrl)}
+            width="220"
+            height="220"
+            className="rounded-xl mb-2"
+            autoPlay
+            muted
+            loop
+          />
+        )}
+        <p className="text-xl font-semibold">@{activity.handle}</p>
       </div>
     </a>
   );
