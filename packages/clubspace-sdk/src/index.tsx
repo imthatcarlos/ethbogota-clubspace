@@ -1,3 +1,4 @@
 export * from './types';
-export * from './onMetadata';
+export * from './LiveAudioPlayer';
 export * from './fetchData';
+export { use, useJam } from './jam-core-react';
