@@ -1,7 +1,6 @@
 import { DecentSDK, chain, crescendo, edition, zkEdition, metadataRenderer } from "@decent.xyz/sdk";
 import { Signer, providers } from 'ethers';
 import axios from 'axios';
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { last } from 'lodash/array';
 import {
   chainIdToChain,
@@ -137,23 +136,4 @@ export const getContractData = async (address: string, chainId: number, signer: 
   }
 
   throw new Error(`getDecentNFT: invalid contract type: ${contractType}`);
-};
-
-export const useGetContractData = (options: UseQueryOptions = {}, { address, chainId, contractType }) => {
-  const result = useQuery<Profile[]>(
-    ["useGetContractData", address],
-    async () => {
-      const data = await getContractData(address, chainId, undefined, contractType);
-      data.contractType = contractType;
-      data.chainId = chainId;
-
-      return data;
-    },
-    {
-      ...(options as any),
-      enabled: !!(address && chainId && contractType),
-    }
-  );
-
-  return result;
 };

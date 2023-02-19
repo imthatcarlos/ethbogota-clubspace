@@ -33,13 +33,20 @@ const filterTestSpaces = (space: any) => {
   if (process.env.NEXT_PUBLIC_IS_PRODUCTION === "false") {
     return true;
   }
+  const testChains = [80001, 5, 420];
   return (
-    space.decentContractChainId !== 80001 && space.decentContractChainId !== 5 && space.decentContractChainId !== 420
+    !testChains.includes(space.decentContractChainId)
+      && !testChains.includes(space.drop.decentContractChainId)
   );
 };
 
 export const UpcomingItem = ({ activity }: { activity: any }) => {
-  const isVideo = () => activity.productBannerIsVideo || activity.productBannerUrl.endsWith(".mp4");
+  const isVideo = () => (
+    activity.productBannerIsVideo ||
+      activity.drop?.productBannerIsVideo ||
+      activity.productBannerUrl?.endsWith(".mp4") ||
+      activity.drop?.productBannerUrl?.endsWith(".mp4")
+  );
 
   return (
     <a href={`${NEXT_PUBLIC_SITE_URL}/live/${activity.handle}`} target="_blank" rel="noreferrer">
@@ -49,14 +56,14 @@ export const UpcomingItem = ({ activity }: { activity: any }) => {
         </p>
         {!isVideo() ? (
           <img
-            src={getUrlForImageFromIpfs(activity.productBannerUrl)}
+            src={activity.drop.productBannerUrl || getUrlForImageFromIpfs(activity.productBannerUrl)}
             width="220"
             height="220"
             className="rounded-xl mb-2"
           />
         ) : (
           <video
-            src={getUrlForImageFromIpfs(activity.productBannerUrl)}
+            src={activity.drop.productBannerUrl || getUrlForImageFromIpfs(activity.productBannerUrl)}
             width="220"
             height="220"
             className="rounded-xl mb-2"

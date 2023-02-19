@@ -16,6 +16,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         _id: 0,
         numGuests: 1,
         decentContract: 1,
+        drop: 1,
         handle: 1,
         createdAt: 1,
         totalSales: 1,

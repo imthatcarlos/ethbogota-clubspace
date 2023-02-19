@@ -88,4 +88,7 @@ export const IM_WITH_THE_DJ = [
   '0x3585CA22dF80D70f6D1cC0867D8387c360181349'
 ];
 
-export const GOOGLE_FORM_WAITLIST_URL = "https://forms.gle/XEU44w1gHt3LTC9A7";
+export const GOOGLE_FORM_WAITLIST_URL = 'https://w6iolkscuz1.typeform.com/to/DKIh7kV7';
+
+export const DROP_PROTOCOL_DECENT = 'DECENT_XYZ';
+export const DROP_PROTOCOL_SOUND = 'SOUND_XYZ';

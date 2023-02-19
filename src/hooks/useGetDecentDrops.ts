@@ -18,7 +18,7 @@ export default (
   options: UseQueryOptions = {}
 ) => {
   const result = useQuery<any>(
-    ["decent-deployed-products", address],
+    ["decent-drops", address],
     async () => {
       const res = await fetch(`/api/decent/getDeployedContracts?address=${address}`);
       const data = (await res.json());
