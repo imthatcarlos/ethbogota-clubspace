@@ -33,6 +33,7 @@ import {
   APP_NAME,
   DROP_PROTOCOL_DECENT,
   DROP_PROTOCOL_SOUND,
+  NEXT_PUBLIC_SITE_URL,
 } from "@/lib/consts";
 import { addToGuestList, logAction, logOverwriteAction } from "@madfi/ts-sdk";
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'

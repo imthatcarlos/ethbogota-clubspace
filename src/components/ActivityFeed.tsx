@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 
 interface Activity {
   numGuests: number;
-  decentContract: any;
+  drop: any;
+  decentContract?: any;
   handle: string;
   spinampPlaylistId: string;
   createdAt: number;
@@ -14,6 +15,10 @@ interface Activity {
 }
 
 const ActivityItem = ({ activity }: { activity: Activity }) => {
+  const drop = activity.decentContract || activity.drop;
+
+  if (!drop) return;
+
   // get days passed since space was live
   const activityTime = () => {
     const now = new Date();
@@ -21,20 +26,20 @@ const ActivityItem = ({ activity }: { activity: Activity }) => {
     return Math.floor(timePassed / 86400000);
   };
 
-  const isVideo = () => activity.decentContract.isVideo || activity.decentContract.image.endsWith(".mp4");
+  const isVideo = () => drop.isVideo || drop.image.endsWith(".mp4");
 
   return (
     <div className="p-3 rounded-xl min-w-[240px] border-slate-500 border-[1px]">
       {!isVideo() ? (
         <img
-          src={getUrlForImageFromIpfs(activity.decentContract.image)}
+          src={getUrlForImageFromIpfs(drop.image)}
           width="220"
           height="220"
           className="rounded-xl mb-2"
         />
       ) : (
         <video
-          src={getUrlForImageFromIpfs(activity.decentContract.image)}
+          src={getUrlForImageFromIpfs(drop.image)}
           width="220"
           height="220"
           className="rounded-xl mb-2"
@@ -43,11 +48,11 @@ const ActivityItem = ({ activity }: { activity: Activity }) => {
           loop
         />
       )}
-      <p className="text-xl font-semibold">{activity.decentContract.name}</p>
+      <p className="text-xl font-semibold">{drop.name}</p>
       <p>@{activity.handle}</p>
       <p>{activity.numGuests} attendees</p>
       <p>
-        {utils.formatEther(activity.totalSales)} {activity.decentContract.chainId === 137 ? "MATIC" : "ETH"} in sales
+        {utils.formatEther(activity.totalSales)} {drop.chainId === 137 ? "MATIC" : "ETH"} in sales
       </p>
       {activity.totalSalesAmount && <p>{activity.totalSalesAmount} purchases</p>}
       <p>{activityTime()} days ago</p>
@@ -73,7 +78,7 @@ const ActivityFeed = () => {
           <div className="flex overflow-auto gap-8">
             {hostedSpaces.map((activity: Activity, i: number) => (
               <ActivityItem key={i} activity={activity} />
-            ))}
+            )).filter((a) => a)}
           </div>
         </>
       )}

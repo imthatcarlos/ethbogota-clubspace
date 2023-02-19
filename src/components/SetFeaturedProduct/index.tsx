@@ -14,7 +14,7 @@ const SetFeaturedProduct = ({ selectDrop, drop }) => {
   const { chain } = useNetwork();
   const { data: signer } = useSigner();
   const { data: decentDrops, isLoading: isLoadingDecent } = useGetDecentDrops(address, chain.id, signer);
-  const { data: soundDrops, isLoading: isLoadingSound } = useGetSoundDrops('0x3025338412b37f366ed71bd8b0c63f4ccf845615');
+  const { data: soundDrops, isLoading: isLoadingSound } = useGetSoundDrops(address);
   const [selectedProtocol, setSelectedProtocol] = useState(DROP_PROTOCOL_DECENT);
 
   const isLoading = isLoadingDecent || isLoadingSound;

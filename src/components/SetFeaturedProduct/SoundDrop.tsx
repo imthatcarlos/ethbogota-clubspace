@@ -32,8 +32,9 @@ export default ({ deployedProducts, selectDrop, protocol }) => {
     setSoundProduct(data);
     selectDrop({
       contractAddress: data.contractAddress,
+      price: data.price,
       productBannerUrl: data.animatedCoverImage?.url || data.coverImage.url,
-      productBannerIsVideo: !isEmpty(drop.animatedCoverImage),
+      productBannerIsVideo: !isEmpty(data.animatedCoverImage),
       chainId: 1, // @TODO: until they open up testnet api
       protocol,
     });
