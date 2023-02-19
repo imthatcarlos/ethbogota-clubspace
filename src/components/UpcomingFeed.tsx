@@ -44,7 +44,7 @@ export const UpcomingItem = ({ activity }: { activity: any }) => {
   const isVideo = () => (
     activity.productBannerIsVideo ||
       activity.drop?.productBannerIsVideo ||
-      activity.productBannerUrl?.endsWith(".mp4")
+      activity.productBannerUrl?.endsWith(".mp4") ||
       activity.drop?.productBannerUrl?.endsWith(".mp4")
   );
 
