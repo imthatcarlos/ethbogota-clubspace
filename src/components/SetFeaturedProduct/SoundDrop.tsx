@@ -2,6 +2,7 @@ import { FC, Fragment, useState } from "react";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/outline";
 import { classNames } from "@/lib/utils/classNames";
 import { Listbox, Transition } from "@headlessui/react";
+import { isEmpty } from 'lodash/lang';
 import { kFormatter } from '@/utils';
 
 export default ({ deployedProducts, selectDrop, protocol }) => {
@@ -31,7 +32,8 @@ export default ({ deployedProducts, selectDrop, protocol }) => {
     setSoundProduct(data);
     selectDrop({
       contractAddress: data.contractAddress,
-      productBannerUrl: data.coverImage.url,
+      productBannerUrl: data.animatedCoverImage?.url || data.coverImage.url,
+      productBannerIsVideo: !isEmpty(drop.animatedCoverImage),
       chainId: 1, // @TODO: until they open up testnet api
       protocol,
     });

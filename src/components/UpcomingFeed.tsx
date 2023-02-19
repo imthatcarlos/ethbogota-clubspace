@@ -41,7 +41,12 @@ const filterTestSpaces = (space: any) => {
 };
 
 export const UpcomingItem = ({ activity }: { activity: any }) => {
-  const isVideo = () => activity.productBannerIsVideo || activity.productBannerUrl.endsWith(".mp4");
+  const isVideo = () => (
+    activity.productBannerIsVideo ||
+      activity.drop?.productBannerIsVideo ||
+      activity.productBannerUrl?.endsWith(".mp4")
+      activity.drop?.productBannerUrl?.endsWith(".mp4")
+  );
 
   return (
     <a href={`${NEXT_PUBLIC_SITE_URL}/live/${activity.handle}`} target="_blank" rel="noreferrer">

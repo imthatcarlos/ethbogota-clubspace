@@ -29,7 +29,8 @@ export default ({ deployedProducts, selectDrop, protocol }) => {
       decentContractAddress: drop.decentContractAddress,
       decentContractType: drop.decentContractType,
       decentContractChainId: drop.decentContractChainId,
-      productBannerUrl: getUrlForImageFromIpfs(drop.metadata.image),
+      productBannerUrl: getUrlForImageFromIpfs(drop.metadata.animation_url || drop.metadata.image),
+      productBannerIsVideo: drop.metadata.isVideo,
       protocol,
     });
   };
