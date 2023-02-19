@@ -1,22 +1,44 @@
-import { FC, Fragment } from "react";
+import { FC, Fragment, useState } from "react";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/outline";
 import { classNames } from "@/lib/utils/classNames";
 import { Listbox, Transition } from "@headlessui/react";
 import { CONTRACT_TYPES_FOR_FEATURED } from "@/services/decent/utils";
+import { kFormatter } from '@/utils';
+import { getUrlForImageFromIpfs } from "@/utils";
 
-export default ({ deployedProducts, decentProduct, setDecentProduct }) => {
-  const getProductName = ({ chain, metadata, contractType }) => (`[${chain}] ${metadata?.name}`);
+export default ({ deployedProducts, selectDrop, protocol }) => {
+  const [decentProduct, setDecentProduct] = useState();
+
+  const getProductName = ({ chain, metadata, contractType, availableSupply, totalSupply, soldOut, saleIsActive }) => {
+    const namePart = `[${chain}] ${metadata?.name}`;
+    const salePart = saleIsActive
+      ? `${soldOut ? 'SOLD OUT' : `${totalSupply} / ${kFormatter(availableSupply)} minted`}`
+      : 'SALE IS NOT ACTIVE';
+
+    return `${namePart} - ${salePart}`;
+  };
 
   // only allowing editions + crescendo contracts deployed on certain chains
   const getIsProductEnabled = ({ chainId, contractType }) => (
     CONTRACT_TYPES_FOR_FEATURED.includes(contractType)
   );
 
+  const _setDecentProduct = (data) => {
+    setDecentProduct(data);
+    selectDrop({
+      decentContractAddress: drop.decentContractAddress,
+      decentContractType: drop.decentContractType,
+      decentContractChainId: drop.decentContractChainId,
+      productBannerUrl: getUrlForImageFromIpfs(drop.metadata.image),
+      protocol,
+    });
+  };
+
   return (
     <>
       {deployedProducts && (
         <>
-          <Listbox value={decentProduct} onChange={setDecentProduct}>
+          <Listbox value={decentProduct} onChange={_setDecentProduct}>
             {({ open }) => (
               <>
                 <div className="relative mt-1 bg-gray-800 border border-gray-600 rounded-md">

@@ -1025,7 +1025,7 @@
     "@ethereumjs/common" "^2.5.0"
     ethereumjs-util "^7.1.2"
 
-"@ethersproject/abi@5.7.0", "@ethersproject/abi@^5.6.3", "@ethersproject/abi@^5.7.0":
+"@ethersproject/abi@5.7.0", "@ethersproject/abi@^5.6.3", "@ethersproject/abi@^5.6.4", "@ethersproject/abi@^5.7.0":
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/abi/-/abi-5.7.0.tgz#b3f3e045bbbeed1af3947335c247ad625a44e449"
   integrity sha512-351ktp42TiRcYB3H1OP8yajPeAQstMW/yCFokj/AthP9bLHzQFPlOrxOcwYEDkUAICmOHljvN4K39OMTMUa9RA==
@@ -1216,7 +1216,7 @@
   dependencies:
     "@ethersproject/logger" "^5.7.0"
 
-"@ethersproject/providers@5.7.2":
+"@ethersproject/providers@5.7.2", "@ethersproject/providers@^5.6.8":
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/@ethersproject/providers/-/providers-5.7.2.tgz#f8b1a4f275d7ce58cf0a2eec222269a08beb18cb"
   integrity sha512-g34EWZ1WWAVgr4aptGlVBF8mhl3VWjv+8hoAnzStu8Ah22VHBsuGzP17eb6xDVRzw895G4W7vvx60lFFur/1Rg==
@@ -3150,6 +3150,15 @@
     "@ethersproject/address" "^5.7.0"
     keccak256 "^1.0.6"
     zod "^3.18.0"
+
+"@soundxyz/sound-protocol@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@soundxyz/sound-protocol/-/sound-protocol-1.3.0.tgz#0addf47ae753962858e8af4bbe760b149abf2000"
+  integrity sha512-FPZMxfL5KPvnaIBTiBTYyxoFP1XPK8lhSwCx5hYUQH0zRTs3YbGrA91g3S67EQp2Q2JNaT3QcqU4vMKsphe+9w==
+  dependencies:
+    "@ethersproject/abi" "^5.6.4"
+    "@ethersproject/providers" "^5.6.8"
+    ethers "^5.6.9"
 
 "@spinamp/spinamp-sdk@^0.0.7":
   version "0.0.7"
@@ -5941,7 +5950,7 @@ ethereumjs-util@^7.0.10, ethereumjs-util@^7.1.0, ethereumjs-util@^7.1.1, ethereu
     ethereum-cryptography "^0.1.3"
     rlp "^2.2.4"
 
-ethers@^5.7.2:
+ethers@^5.6.9, ethers@^5.7.2:
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.7.2.tgz#3a7deeabbb8c030d4126b24f84e525466145872e"
   integrity sha512-wswUsmWo1aOK8rR7DIKiWSw9DbLWe6x98Jrn8wcTflTVvaXhAMaB5zGAXy0GYQEQp9iO1iSHWVyARQm11zUtyg==

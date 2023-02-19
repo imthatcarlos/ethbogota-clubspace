@@ -21,11 +21,19 @@ import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import { getProfileByHandle } from "@/services/lens/getProfile";
 import { doesFollow, useDoesFollow } from "@/services/lens/doesFollow";
 import { followProfileGasless, ZERO_ADDRESS } from "@/services/lens/gaslessTxs";
-import { useGetContractData } from "@/services/decent/getDecentNFT";
+import useGetClubspaceDrop from "@/hooks/useGetClubspaceDrop";
 import { HostCard } from "./HostCard";
 import { FeaturedDecentNFT } from "./FeaturedDecentNFT";
+import { FeaturedSoundNFT } from "./FeaturedSoundNFT";
 import { LiveAudioPlayer } from "./LiveAudioPlayer";
-import { NEXT_PUBLIC_SITE_URL, LENSTER_URL, ALLOWED_CHAIN_IDS, APP_NAME } from "@/lib/consts";
+import {
+  SITE_URL,
+  LENSTER_URL,
+  ALLOWED_CHAIN_IDS,
+  APP_NAME,
+  DROP_PROTOCOL_DECENT,
+  DROP_PROTOCOL_SOUND,
+} from "@/lib/consts";
 import { addToGuestList, logAction, logOverwriteAction } from "@madfi/ts-sdk";
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 
@@ -42,7 +50,7 @@ type ClubSpaceObject = {
   creatorAddress: string;
   creatorLensHandle: string;
   creatorLensProfileId: string;
-  decentContractAddress: string;
+  drop: any; // { protocol, ...data }
   endAt: number;
   lensPubId: string;
   semGroupIdHex: string;
@@ -155,13 +163,9 @@ const LiveSpace: FC<Props> = ({
     clubSpaceObject.creatorLensHandle,
     "creatorLensProfile"
   );
-  const { data: featuredDecentNFT } = useGetContractData(
+  const { data: featuredDrop } = useGetClubspaceDrop(
     {},
-    {
-      address: clubSpaceObject.decentContractAddress,
-      chainId: clubSpaceObject.decentContractChainId,
-      contractType: clubSpaceObject.decentContractType,
-    }
+    { drop: clubSpaceObject.drop, signer }
   );
   const { data: playlistTracks, isLoading: isLoadingPlaylistTracks } = useGetTracksFromPlaylist(
     {},
@@ -390,8 +394,7 @@ const LiveSpace: FC<Props> = ({
       handle &&
       clubSpaceObject.streamURL &&
       !isEmpty(creatorLensProfile) &&
-      !isEmpty(featuredDecentNFT) &&
-      isConnected
+      !isEmpty(featuredDrop)
     ) {
       if (!hasJoined.current) {
         hasJoined.current = true;
@@ -415,9 +418,9 @@ const LiveSpace: FC<Props> = ({
     setProps,
     updateInfo,
     creatorLensProfile,
-    featuredDecentNFT,
     isConnected,
-    inRoom
+    inRoom,
+    featuredDrop,
   ]);
 
   useEffect(() => {
@@ -609,10 +612,12 @@ const LiveSpace: FC<Props> = ({
             ))} */}
           </div>
           <div className="decent-nft flex flex-col gap-y-3">
-            {featuredDecentNFT ? (
-                <FeaturedDecentNFT {...featuredDecentNFT} semGroupIdHex={clubSpaceObject.clubSpaceId.replace(/-/g, '')} />
-            ) : <DummyDecent />
-            }
+            {featuredDrop?.protocol === DROP_PROTOCOL_DECENT && (
+              <FeaturedDecentNFT {...featuredDrop} semGroupIdHex={clubSpaceObject.clubSpaceId} />
+            )}
+            {featuredDrop?.protocol === DROP_PROTOCOL_SOUND && (
+              <p><FeaturedSoundNFT {...featuredDrop} semGroupIdHex={clubSpaceObject.clubSpaceId} /></p>
+            )}
             {creatorLensProfile && (
               <>
                 {isHost && iSpeak && (

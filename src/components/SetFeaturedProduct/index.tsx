@@ -4,16 +4,20 @@ import DecentLogo from "@/assets/svg/decent.svg";
 import SoundLogo from "@/assets/svg/sound.svg";
 import { MultiStepFormWrapper } from "./../MultiStepFormWrapper";
 import useGetDecentDrops from "@/hooks/useGetDecentDrops";
+import useGetSoundDrops from "@/hooks/useGetSoundDrops";
 import { DROP_PROTOCOL_DECENT, DROP_PROTOCOL_SOUND } from "@/lib/consts";
 import DecentDrop from "./DecentDrop";
+import SoundDrop from "./SoundDrop";
 
-const SetFeaturedProduct = ({ setDecentProduct, decentProduct = undefined, updateFields }) => {
+const SetFeaturedProduct = ({ selectDrop, drop }) => {
   const { address } = useAccount();
   const { chain } = useNetwork();
   const { data: signer } = useSigner();
-  const { data: decentDrops, isLoading } = useGetDecentDrops(address, chain.id, signer);
+  const { data: decentDrops, isLoading: isLoadingDecent } = useGetDecentDrops(address, chain.id, signer);
+  const { data: soundDrops, isLoading: isLoadingSound } = useGetSoundDrops('0x3025338412b37f366ed71bd8b0c63f4ccf845615');
   const [selectedProtocol, setSelectedProtocol] = useState(DROP_PROTOCOL_DECENT);
-  const [decentProduct, setDecentProduct] = useState();
+
+  const isLoading = isLoadingDecent || isLoadingSound;
 
   return (
     <MultiStepFormWrapper>
@@ -67,8 +71,17 @@ const SetFeaturedProduct = ({ setDecentProduct, decentProduct = undefined, updat
             {selectedProtocol === DROP_PROTOCOL_DECENT && (
               <DecentDrop
                 deployedProducts={decentDrops}
-                decentProduct={decentProduct}
-                setDecentProduct={setDecentProduct}
+                decentProduct={drop}
+                selectDrop={selectDrop}
+                protocol={DROP_PROTOCOL_DECENT}
+              />
+            )}
+            {selectedProtocol === DROP_PROTOCOL_SOUND && (
+              <SoundDrop
+                deployedProducts={soundDrops}
+                soundProduct={drop}
+                selectDrop={selectDrop}
+                protocol={DROP_PROTOCOL_SOUND}
               />
             )}
           </div>
