@@ -26,11 +26,11 @@ export default ({ deployedProducts, selectDrop, protocol }) => {
   const _setDecentProduct = (data) => {
     setDecentProduct(data);
     selectDrop({
-      decentContractAddress: drop.decentContractAddress,
-      decentContractType: drop.decentContractType,
-      decentContractChainId: drop.decentContractChainId,
-      productBannerUrl: getUrlForImageFromIpfs(drop.metadata.animation_url || drop.metadata.image),
-      productBannerIsVideo: drop.metadata.isVideo,
+      decentContractAddress: data.address,
+      decentContractType: data.contractType,
+      decentContractChainId: data.chainId,
+      productBannerUrl: getUrlForImageFromIpfs(data.metadata.animation_url || data.metadata.image),
+      productBannerIsVideo: data.metadata.isVideo,
       protocol,
     });
   };

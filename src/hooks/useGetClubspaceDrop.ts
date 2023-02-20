@@ -11,14 +11,14 @@ export default (options: UseQueryOptions = {}, { drop, signer }) => {
 
       if (drop.protocol === DROP_PROTOCOL_DECENT) {
         data = await getContractData(
-          clubSpaceObject.decentContractAddress,
-          clubSpaceObject.decentContractChainId,
+          drop.decentContractAddress,
+          drop.decentContractChainId,
           undefined,
-          clubSpaceObject.decentContractType
+          drop.decentContractType
         );
 
-        data.contractType = contractType;
-        data.chainId = chainId;
+        data.contractType = drop.decentContractType;
+        data.chainId = drop.decentContractChainId;
       } else if (drop.protocol === DROP_PROTOCOL_SOUND) {
         data = await getSoundNFT(drop.contractAddress);
       } else {
