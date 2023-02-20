@@ -1,29 +1,36 @@
 import 'react-app-polyfill/ie11';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { LiveAudioPlayer, getClubSpace, use, useJam } from '../src/index';
+import { LiveAudioPlayer, getClubSpace } from '../src/index';
 
-const CLUBSPACE_ID = '0x123';
+const HANDLE = 'bananatime.test';
 
 const App = () => {
   const [clubSpaceObject, setClubspace] = React.useState<any>();
+  const [playlistTracks, setPlaylistTracks] = React.useState<any>([]);
+
   React.useEffect(() => {
-    getClubSpace(CLUBSPACE_ID).then(data => setClubspace(data));
+    getClubSpace(HANDLE).then(({ clubSpaceObject, playlistTracks }) => {
+      setClubspace(clubSpaceObject);
+      setPlaylistTracks(playlistTracks);
+    });
   }, []);
 
-  const [state] = useJam();
-  let [audioPlayError] = use(state, ['audioPlayError']);
-
   return (
-    <div>
-      <LiveAudioPlayer
-        playlistTracks={clubSpaceObject.playlistTracks}
-        streamURL={clubSpaceObject.streamURL}
-        queuedTrackIds={clubSpaceObject.queuedTrackIds}
-        currentTrackId={clubSpaceObject.queuedTrackIds[0]}
-        jamAudioPlayError={audioPlayError}
-      />
-    </div>
+    <>
+      <h1>Clubspace Lite</h1>
+      <div>
+        {playlistTracks.map(p => (
+          <span key={p.id}>{p.title} - </span>
+        ))}
+      </div>
+      {clubSpaceObject && playlistTracks.length > 0 && (
+        <LiveAudioPlayer
+          clubSpaceObject={clubSpaceObject}
+          playlistTracks={playlistTracks}
+        />
+      )}
+    </>
   );
 };
 

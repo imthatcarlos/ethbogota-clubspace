@@ -3,29 +3,25 @@ import { ITrack } from './types';
 import { IcecastPlayer } from '@madfi/ux-components';
 import { groupBy } from 'lodash';
 import useIsMounted from './useIsMounted';
-import { useJam } from './jam-core-react';
+import { use, useJam } from './jam-core-react';
 
 interface Props {
-  streamURL: string;
+  clubSpaceObject: any;
   playlistTracks: ITrack[];
-  queuedTrackIds: [string];
-  currentTrackId?: string;
-  jamAudioPlayError: boolean;
 }
 
-export const LiveAudioPlayer = ({
-  streamURL,
-  playlistTracks,
-  queuedTrackIds,
-  currentTrackId,
-  jamAudioPlayError,
-}: Props) => {
+export const LiveAudioPlayer = ({ clubSpaceObject, playlistTracks }: Props) => {
+  const { streamURL, queuedTrackIds } = clubSpaceObject;
+  const currentTrackId = queuedTrackIds[0];
+
   const isMounted = useIsMounted();
-  const [, { setProps, retryAudio }] = useJam();
+  const [state, { setProps, retryAudio }] = useJam();
   const [currentTrack, setCurrentTrack] = useState<ITrack | undefined>();
   const [nextTrack, setNextTrack] = useState<ITrack | undefined>();
   const [streamEnded, setStreamEnded] = useState<boolean>(false);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+
+  let [audioPlayError] = use(state, ['audioPlayError']);
 
   const onMetadata = (metadata: any) => {
     if (
@@ -75,7 +71,7 @@ export const LiveAudioPlayer = ({
 
   // use first press of `play` to enable audio player for host mic
   const onPlay = () => {
-    if (jamAudioPlayError) {
+    if (audioPlayError) {
       setProps('userInteracted', true);
       retryAudio();
     }

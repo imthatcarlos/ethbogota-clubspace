@@ -46,7 +46,7 @@ async function getRequest(path, getToken) {
 
   let res = await fetch(path, { headers }).catch(console.warn);
   let { state, data, status } = getCache(path);
-  if (state !== 'loading') {
+  if (state != 'loading') {
     // someone else already reset the cache, use it
     return [data, state === 'success', status];
   }

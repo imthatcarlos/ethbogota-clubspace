@@ -62,6 +62,7 @@
   "dependencies": {
     "@madfi/jam-core": "^0.5.22",
     "@madfi/ux-components": "^1.0.20",
+    "@spinamp/spinamp-sdk": "^0.0.7",
     "lodash": "^4.17.21"
   }
 }
