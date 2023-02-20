@@ -20,7 +20,7 @@ import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import useENS from "@/hooks/useENS";
 import createZkEdition from "@/services/decent/createZkEdition";
-import { wait, getUrlForImageFromIpfs } from "@/utils";
+import { wait } from "@/utils";
 import { createGroup } from "@/lib/claim-without-semaphore/claims";
 import Copy from "@/assets/svg/copy.svg";
 import CreateLaunchTime from "./CreateLaunchTime";
@@ -48,7 +48,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
   const { switchNetworkAsync } = useSwitchNetwork({ onSuccess: (data) => submit(true) });
 
   const [playlist, setPlaylist] = useState<IPlaylist>();
-  const [decentProduct, setDecentProduct] = useState<any>();
+  const [drop, setDrop] = useState<any>();
   const [lensPost, setLensPost] = useState<any>();
   const [goody, setGoody] = useState<any>();
   const [goodyContract, setGoodyContract] = useState<any>();
@@ -79,8 +79,8 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     next();
   };
 
-  const selectDecentProduct = (product) => {
-    setDecentProduct(product);
+  const selectDrop = (_drop) => {
+    setDrop(_drop);
     next();
   };
 
@@ -98,8 +98,8 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     <SelectPlaylist key="a" selectPlaylist={selectPlaylist} playlist={playlist} />,
     <SetFeaturedProduct
       key="b"
-      setDecentProduct={selectDecentProduct}
-      decentProduct={decentProduct}
+      selectDrop={selectDrop}
+      drop={drop}
       {...formMultiFormData}
       updateFields={updateFields}
     />,
@@ -187,7 +187,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
     const handle = defaultProfile?.handle || ensData?.handle || address;
 
-    console.log(handle, playlist, decentProduct, lensPost, goody, goodyContract);
+    console.log(handle, playlist, drop, lensPost, goody, goodyContract);
 
     // @TODO: delay this request so the audio doesn't start playing automatically?
     // create space in the backend
@@ -256,11 +256,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
           handle,
           creatorLensProfileId: defaultProfile.id,
           spinampPlaylistId: playlist.id,
-          decentContractAddress: decentProduct.address,
-          decentContractChainId: decentProduct.chainId,
-          decentContractType: decentProduct.contractType,
-          productBannerUrl: getUrlForImageFromIpfs(decentProduct.metadata.image),
-          productBannerIsVideo: decentProduct.metadata.isVideo,
+          drop,
           lensPubId,
           clubSpaceId,
           uuid,
