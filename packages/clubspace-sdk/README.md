@@ -28,6 +28,8 @@ npm start # or yarn start
 
 The default example imports and live reloads whatever is in `/dist`, so if you are seeing an out of date component, make sure TSDX is running in watch mode like we recommend above. **No symlinking required**, we use [Parcel's aliasing](https://parceljs.org/module_resolution.html#aliases).
 
+WARNING: sometimes the hot reload doesn't work, delete the `.parcel-cache` folder and restart the parcel server to reset it
+
 To do a one-off build, use `npm run build` or `yarn build`.
 
 To run tests, use `npm test` or `yarn test`.
