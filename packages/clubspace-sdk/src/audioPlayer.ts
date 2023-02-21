@@ -3,7 +3,7 @@ import { groupBy } from 'lodash';
 import IcecastMetadataPlayer from 'icecast-metadata-player';
 
 interface PlayerOptions {
-  playbackMethod?: "mediasource" | "webaudio" | "html5" | undefined;
+  playbackMethod?: 'mediasource' | 'webaudio' | 'html5' | undefined;
   onTrackChanged: (newTrack: ITrack) => void;
   onSpaceEnded: () => void;
 }
@@ -19,11 +19,7 @@ interface MetadataProps {
 export const getAudioPlayer = async (
   clubSpaceObject: IClubSpaceObject,
   playlistTracks: ITrack[],
-  {
-    playbackMethod,
-    onTrackChanged,
-    onSpaceEnded,
-  }: PlayerOptions
+  { playbackMethod, onTrackChanged, onSpaceEnded }: PlayerOptions
 ) => {
   const { streamURL, queuedTrackIds } = clubSpaceObject;
   const currentTrackId = queuedTrackIds[0];
@@ -42,7 +38,7 @@ export const getAudioPlayer = async (
 
   const onError = (message: string, error: any) => {
     console.log(`clubspace-sdk::audioPlayer:: onError: ${message}`, error);
-  }
+  };
 
   return new IcecastMetadataPlayer(streamURL, {
     playbackMethod,

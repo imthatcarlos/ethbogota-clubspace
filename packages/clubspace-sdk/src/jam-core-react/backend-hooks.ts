@@ -13,11 +13,15 @@ function useApiQuery(
 ) {
   const [state] = useJam();
   const getToken = useCallback(() => signedToken(state.myIdentity), []);
-  let { data, isLoading, status } = use(GetRequest, {
-    path: apiUrl() + path,
-    dontFetch,
-    fetchOnMount,
-    getToken,
-  }, null);
+  let { data, isLoading, status } = use(
+    GetRequest,
+    {
+      path: apiUrl() + path,
+      dontFetch,
+      fetchOnMount,
+      getToken,
+    },
+    null
+  );
   return [data as unknown, isLoading as boolean, status as number] as const;
 }

@@ -3,11 +3,11 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { getAudioPlayer, getClubSpace, ITrack } from '../src/index';
 
-const HANDLE = 'carlosbeltran.test';
+const HANDLE = 'bananatime.test';
 const AUDIO_PLAYER_DEFAULT_PLAYBACK = 'html5';
 
 const App = () => {
-  const [clubSpaceObject, setClubspace] = React.useState<any>();
+  const [clubSpace, setClubspace] = React.useState<any>();
   const [playlistTracks, setPlaylistTracks] = React.useState<any>([]);
   const [currentTrack, setCurrentTrack] = React.useState<ITrack>();
   const [spaceEnded, setSpaceEnded] = React.useState<boolean>(false);
@@ -21,18 +21,30 @@ const App = () => {
       setClubspace(clubSpaceObject);
       setPlaylistTracks(playlistTracks);
 
-      // @TODO: not being exported..?
-      console.log(getAudioPlayer)
-
-      audioPlayer.current = await getAudioPlayer(clubSpaceObject, playlistTracks, {
-        playbackMethod: AUDIO_PLAYER_DEFAULT_PLAYBACK,
-        onTrackChanged: (track) => setCurrentTrack(track),
-        onSpaceEnded: () => setSpaceEnded(true),
-      });
+      audioPlayer.current = await getAudioPlayer(
+        clubSpaceObject,
+        playlistTracks,
+        {
+          playbackMethod: AUDIO_PLAYER_DEFAULT_PLAYBACK,
+          onTrackChanged: track => setCurrentTrack(track),
+          onSpaceEnded: () => setSpaceEnded(true),
+        }
+      );
+      console.log('audioPlayer.current', audioPlayer.current);
     };
 
     _fetchData();
   }, []);
+
+  const play = () => {
+    if (!audioPlayer.current) return;
+    audioPlayer.current.play();
+  };
+
+  const pause = () => {
+    if (!audioPlayer.current) return;
+    // audioPlayerDispatch(setAudioVolumeAction(volume));
+  };
 
   return (
     <>
@@ -44,8 +56,17 @@ const App = () => {
         ))}
       </div>
       <div>
-        <h2>Playing</h2>
-        <span>{`${currentTrack?.title} - ${currentTrack?.artist?.name}`}</span>
+        {spaceEnded ? (
+          <h2>Space has ended</h2>
+        ) : (
+          <>
+            <h2>Playing</h2>
+            <div>{`${currentTrack?.title} - ${currentTrack?.artist?.name}`}</div>
+            <button onClick={play}>Play</button>
+            <br />
+            <button onClick={pause}>Pause</button>
+          </>
+        )}
       </div>
     </>
   );

@@ -32,16 +32,16 @@ export interface ITrack {
 }
 
 export interface IClubSpaceObject {
-  creatorAddress: string,
-  creatorLensHandle?: string,
-  creatorLensProfileId?: string,
-  lensPubId: string,
-  spinampPlaylistId: string,
-  drop: any,
-  clubSpaceId: string,
-  createdAt: number,
-  endAt: number, // @TODO: updated once space ends
-  handle: string,
+  creatorAddress: string;
+  creatorLensHandle?: string;
+  creatorLensProfileId?: string;
+  lensPubId: string;
+  spinampPlaylistId: string;
+  drop: any;
+  clubSpaceId: string;
+  createdAt: number;
+  endAt: number; // @TODO: updated once space ends
+  handle: string;
   streamURL: string;
   queuedTrackIds: string[];
 }
