@@ -3,6 +3,8 @@ import { getContractData } from "@/services/decent/getDecentNFT";
 import { CHAIN_NAME_MAP, ALLOWED_CHAIN_IDS } from "@/lib/consts";
 import { CONTRACT_TYPE_ZK_EDITION, CONTRACT_TYPE_EDITION, CONTRACT_TYPE_CRESCENDO } from "@/services/decent/utils";
 
+const { DECENT_API_KEY } = process.env;
+
 // only for testing
 const DEFAULT_ADDRESS = '0x28ff8e457feF9870B9d1529FE68Fbb95C3181f64';
 const DEFAULT_FEATURED_NFT = {
@@ -23,7 +25,7 @@ export default (
       const res = await fetch(`/api/decent/getDeployedContracts?address=${address}`);
       const data = (await res.json());
       const contracts = data
-        .filter(({ chainid, key }) => ALLOWED_CHAIN_IDS.includes(chainid) && key !== CONTRACT_TYPE_ZK_EDITION);
+        .filter(({ chainId, type }) => ALLOWED_CHAIN_IDS.includes(chainId) && type !== CONTRACT_TYPE_ZK_EDITION);
 
       if (address === DEFAULT_ADDRESS && contracts.length === 0) {
         contracts.push(DEFAULT_FEATURED_NFT);
@@ -34,8 +36,8 @@ export default (
       // uncomment if on mumbai and want to test with a specific contract
       // const contracts = [{deployment: "0xaAd7E6c2E0bD6ab8D6B0a56785c103868d20FE86", chainid: 80001, key: CONTRACT_TYPE_CRESCENDO}]
 
-      return await Promise.all(contracts.map(async ({ deployment, chainid, key }) => {
-        const data = await getContractData(deployment, chainid, undefined, key);
+      return await Promise.all(contracts.map(async ({ address, chainId, type }) => {
+        const data = await getContractData(address, chainId, undefined, type);
         const soldOut = data.availableSupply && data.totalSupply
           ? data.availableSupply === data.totalSupply
           : undefined;
@@ -43,10 +45,10 @@ export default (
         return {
           ...data,
           soldOut,
-          address: deployment,
-          contractType: key,
-          chain: CHAIN_NAME_MAP[chainid],
-          chainId: chainid,
+          address,
+          contractType: type,
+          chain: CHAIN_NAME_MAP[chainId],
+          chainId,
         };
       }));
     },

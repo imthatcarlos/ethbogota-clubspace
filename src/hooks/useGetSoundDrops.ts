@@ -8,7 +8,8 @@ export default (
   const result = useQuery<any>(
     ['sound-drops', address],
     async () => {
-      return await getArtistReleases(address);
+      const res = await getArtistReleases(address);
+      return res || null;
     },
     {
       ...(options as any),
