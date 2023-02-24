@@ -52,9 +52,9 @@ const ActivityItem = ({ activity }: { activity: Activity }) => {
       <p>@{activity.handle}</p>
       <p>{activity.numGuests} attendees</p>
       <p>
-        {utils.formatEther(activity.totalSales)} {drop.chainId === 137 ? "MATIC" : "ETH"} in sales
+        {utils.formatEther(activity.totalSales)} {drop.chainId === 137 ? "MATIC" : "ETH"} raised
       </p>
-      {activity.totalSalesAmount && <p>{activity.totalSalesAmount} purchases</p>}
+      {activity.totalSalesAmount && <p>{activity.totalSalesAmount} minted</p>}
       <p>{activityTime()} days ago</p>
     </div>
   );
