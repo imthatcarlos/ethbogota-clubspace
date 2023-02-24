@@ -32,7 +32,9 @@ export const getAudioPlayer = async (
     if (!metadata || !metadata.StreamTitle) {
       onSpaceEnded();
     } else {
-      onTrackChanged(groupedPlaylistTracks[metadata.StreamTitle][0]);
+      if (groupedPlaylistTracks[metadata.StreamTitle]) {
+        onTrackChanged(groupedPlaylistTracks[metadata.StreamTitle][0]);
+      }
     }
   };
 

@@ -11,6 +11,7 @@ const App = () => {
   const [playlistTracks, setPlaylistTracks] = React.useState<any>([]);
   const [currentTrack, setCurrentTrack] = React.useState<ITrack>();
   const [spaceEnded, setSpaceEnded] = React.useState<boolean>(false);
+  const [previousVolume, setPreviousVolume] = React.useState<number>(0.5);
 
   const audioPlayer = React.useRef<any>(null);
 
@@ -38,36 +39,58 @@ const App = () => {
 
   const play = () => {
     if (!audioPlayer.current) return;
-    audioPlayer.current.play();
+
+    if (audioPlayer.current.state !== 'playing') {
+      audioPlayer.current.play();
+    }
+
+    if (previousVolume) {
+      audioPlayer.current.audioElement.volume = previousVolume;
+    }
   };
 
   const pause = () => {
     if (!audioPlayer.current) return;
-    // audioPlayerDispatch(setAudioVolumeAction(volume));
+
+    setPreviousVolume(audioPlayer.current.audioElement.volume);
+
+    audioPlayer.current.audioElement.volume = 0;
+  };
+
+  const setVolume = (volume: number) => {
+    if (volume < 0 || volume > 1) throw new Error('volume must be between 0..1');
+
+    audioPlayer.current.audioElement.volume = volume;
   };
 
   return (
     <>
       <h1>Clubspace Lite</h1>
-      <div>
-        <h2>All Tracks</h2>
-        {playlistTracks.map(p => (
-          <span key={p.id}>{p.title} - </span>
-        ))}
-      </div>
-      <div>
-        {spaceEnded ? (
-          <h2>Space has ended</h2>
-        ) : (
-          <>
-            <h2>Playing</h2>
-            <div>{`${currentTrack?.title} - ${currentTrack?.artist?.name}`}</div>
-            <button onClick={play}>Play</button>
-            <br />
-            <button onClick={pause}>Pause</button>
-          </>
-        )}
-      </div>
+      {clubSpace && (
+        <>
+        <div>
+          <h2>All Tracks</h2>
+          {playlistTracks.map(p => (
+            <><span key={p.id}>{`${p.title} - ${p.artist?.name}`}</span><br/></>
+          ))}
+        </div>
+        <div>
+          {spaceEnded || clubSpace?.ended ? (
+            <><h2>Space has ended</h2></>
+          ) : (
+            <>
+              <h2>Playing Live [click to listen]</h2>
+              <div>{`${currentTrack?.title} - ${currentTrack?.artist?.name}`}</div>
+              <button onClick={play}>Play</button>
+              <br />
+              <button onClick={pause}>Pause</button>
+              <br/>
+              <h2>{`Total listening: ${clubSpace.stats.activeUsersInRoomCount}`}</h2>
+            </>
+          )}
+        </div>
+        </>
+      )}
     </>
   );
 };
