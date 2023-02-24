@@ -85,7 +85,7 @@ const App = () => {
               <br />
               <button onClick={pause}>Pause</button>
               <br/>
-              <h2>{`Total listening: ${clubSpace.stats.activeUsersInRoomCount}`}</h2>
+              <h2>{`Listening on joinclubspace.xyz: ${clubSpace.stats.activeUsersInRoomCount}`}</h2>
             </>
           )}
         </div>
