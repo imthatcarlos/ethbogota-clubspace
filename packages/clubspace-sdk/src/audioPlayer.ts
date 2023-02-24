@@ -21,8 +21,8 @@ export const getAudioPlayer = async (
   playlistTracks: ITrack[],
   { playbackMethod, onTrackChanged, onSpaceEnded }: PlayerOptions
 ) => {
-  const { streamURL, queuedTrackIds } = clubSpaceObject;
-  const currentTrackId = queuedTrackIds[0];
+  const { streamURL } = clubSpaceObject;
+  // const currentTrackId = queuedTrackIds[0];
 
   const groupedPlaylistTracks = groupBy(playlistTracks, 'id');
 

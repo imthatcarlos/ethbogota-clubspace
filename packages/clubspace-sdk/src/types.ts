@@ -59,3 +59,17 @@ export interface IClubSpaceObject {
     }]
   }
 }
+
+export interface ICreateSpace {
+  creatorAddress: string;
+  creatorLensHandle: string;
+  handle: string;
+  creatorLensProfileId: string;
+  spinampPlaylistId: string;
+  drop: any;
+  lensPubId: string;
+  clubSpaceId: string;
+  uuid: string;
+  partyFavorContractAddress: string;
+  startAt: any;
+}

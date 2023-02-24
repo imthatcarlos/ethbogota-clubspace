@@ -2,6 +2,7 @@ import 'react-app-polyfill/ie11';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { getAudioPlayer, getClubSpace, ITrack } from '../src/index';
+import createClubSpace from '../src/createClubSpace';
 
 const HANDLE = 'carlosbeltran.test';
 const AUDIO_PLAYER_DEFAULT_PLAYBACK = 'html5';
@@ -14,6 +15,8 @@ const App = () => {
   const [previousVolume, setPreviousVolume] = React.useState<number>(0.5);
 
   const audioPlayer = React.useRef<any>(null);
+
+  const { create } = createClubSpace();
 
   React.useEffect(() => {
     const _fetchData = async () => {
@@ -57,37 +60,51 @@ const App = () => {
   };
 
   const setVolume = (volume: number) => {
-    if (volume < 0 || volume > 1) throw new Error('volume must be between 0..1');
+    if (volume < 0 || volume > 1)
+      throw new Error('volume must be between 0..1');
 
     audioPlayer.current.audioElement.volume = volume;
   };
 
+  const _create = async () => {
+    const res = await create(
+      {},
+      ''
+    );
+  }
+
   return (
     <>
       <h1>Clubspace Lite</h1>
+      <button onClick={() => _create()}>Create Clubspace</button>
       {clubSpace && (
         <>
-        <div>
-          <h2>All Tracks</h2>
-          {playlistTracks.map(p => (
-            <><span key={p.id}>{`${p.title} - ${p.artist?.name}`}</span><br/></>
-          ))}
-        </div>
-        <div>
-          {spaceEnded || clubSpace?.ended ? (
-            <><h2>Space has ended</h2></>
-          ) : (
-            <>
-              <h2>Playing Live [click to listen]</h2>
-              <div>{`${currentTrack?.title} - ${currentTrack?.artist?.name}`}</div>
-              <button onClick={play}>Play</button>
-              <br />
-              <button onClick={pause}>Pause</button>
-              <br/>
-              <h2>{`Listening on joinclubspace.xyz: ${clubSpace.stats.activeUsersInRoomCount}`}</h2>
-            </>
-          )}
-        </div>
+          <div>
+            <h2>All Tracks</h2>
+            {playlistTracks.map(p => (
+              <>
+                <span key={p.id}>{`${p.title} - ${p.artist?.name}`}</span>
+                <br />
+              </>
+            ))}
+          </div>
+          <div>
+            {spaceEnded || clubSpace?.ended ? (
+              <>
+                <h2>Space has ended</h2>
+              </>
+            ) : (
+              <>
+                <h2>Playing Live [click to listen]</h2>
+                <div>{`${currentTrack?.title} - ${currentTrack?.artist?.name}`}</div>
+                <button onClick={play}>Play</button>
+                <br />
+                <button onClick={pause}>Pause</button>
+                <br />
+                <h2>{`Listening on joinclubspace.xyz: ${clubSpace.stats.activeUsersInRoomCount}`}</h2>
+              </>
+            )}
+          </div>
         </>
       )}
     </>
