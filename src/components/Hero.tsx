@@ -26,10 +26,14 @@ export const Hero = () => {
   const { data: hasBadge, isLoading: isLoadingBadge } = useHasBadge();
 
   useEffect(() => {
-    if (!isLoadingBadge && !hasBadge) {
-      toast.error("ClubSpace is currently in closed beta", { duration: 10000, icon: "🚧" });
+    if (!isLoadingBadge) {
+      toast("ClubSpace is currently in open beta. Handle with care. Stay hydrated.", { duration: 10000, icon: "🚧" });
     }
-  }, [isLoadingBadge, hasBadge]);
+  }, [isLoadingBadge]);
+
+  // NO LONGER IN CLOSED BETA
+  // const shouldRenderCreate = !isLoadingBadge && (hasBadge || IM_WITH_THE_DJ.includes(address));
+  const shouldRenderCreate = true;
 
   if (!isMounted) return null;
 
@@ -78,7 +82,7 @@ export const Hero = () => {
                 </button>
               ) : (
                 <>
-                  {!isLoadingBadge && (hasBadge || IM_WITH_THE_DJ.includes(address)) ? (
+                  {shouldRenderCreate ? (
                     <button
                       onClick={() => setModalOpen(true)}
                       className="btn-create-space relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold duration-300 transition-all hover:-translate-y-[2px] hover:text-white"
