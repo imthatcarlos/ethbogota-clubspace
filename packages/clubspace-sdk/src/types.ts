@@ -46,5 +46,16 @@ export interface IClubSpaceObject {
   queuedTrackIds: string[];
   stats: {
     activeUsersInRoomCount: number;
+    activeSample: [{
+      id: string;
+      handle?: string;
+      profile?: {
+        avatar?: string;
+        name?: string;
+        totalFollowers?: number;
+        id?: string;
+      };
+      hasBadge?: boolean
+    }]
   }
 }
