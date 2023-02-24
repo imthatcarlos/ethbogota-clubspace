@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { getAudioPlayer, getClubSpace, ITrack } from '../src/index';
 
-const HANDLE = 'bananatime.test';
+const HANDLE = 'carlosbeltran.test';
 const AUDIO_PLAYER_DEFAULT_PLAYBACK = 'html5';
 
 const App = () => {

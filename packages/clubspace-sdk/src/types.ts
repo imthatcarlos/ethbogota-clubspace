@@ -44,4 +44,7 @@ export interface IClubSpaceObject {
   handle: string;
   streamURL: string;
   queuedTrackIds: string[];
+  stats: {
+    activeUsersInRoomCount: number;
+  }
 }

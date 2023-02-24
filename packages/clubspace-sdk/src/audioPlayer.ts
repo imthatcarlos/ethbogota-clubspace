@@ -27,7 +27,7 @@ export const getAudioPlayer = async (
   const groupedPlaylistTracks = groupBy(playlistTracks, 'id');
 
   const onMetadata = (metadata: MetadataProps) => {
-    if (metadata.StreamTitle === currentTrackId) return; // ignore first event
+    // if (metadata.StreamTitle === currentTrackId) return; // ignore first event
 
     if (!metadata || !metadata.StreamTitle) {
       onSpaceEnded();

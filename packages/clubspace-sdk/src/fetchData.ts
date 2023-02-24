@@ -2,7 +2,7 @@ import { API_URL } from './consts';
 import { fetchPlaylistById } from '@spinamp/spinamp-sdk';
 
 export const getClubSpaceObject = async (handle: string) => {
-  const response = await fetch(`${API_URL}/live/${handle}?includeTracks=true`);
+  const response = await fetch(`${API_URL}/live/${handle}?includeTracks=true&includeStats=true`);
   const data = await response.json();
   return data;
 };
