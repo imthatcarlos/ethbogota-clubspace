@@ -3,8 +3,6 @@ import * as React from 'react';
 import { getAudioPlayer, getClubSpace, ITrack } from '../src/index';
 import createClubSpace from '../src/createClubSpace';
 import { exampleSpaceData } from './utils';
-import { JamProvider, useJam } from '../src/jam-core-react';
-import { jamConfig } from '../src/consts';
 
 const HANDLE = 'bananatime.test';
 const AUDIO_PLAYER_DEFAULT_PLAYBACK = 'html5';

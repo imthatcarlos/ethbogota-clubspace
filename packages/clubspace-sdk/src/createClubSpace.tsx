@@ -9,8 +9,7 @@ const createClubSpace = () => {
   const create = async (spaceData: ICreateSpace, apiKey: string) => {
     const uuid = uuidv4();
     const ok = await jamApi.createRoom(uuid);
-    console.log('jam room created', ok);
-    const res = await fetch(`${SITE_URL}/space/create`, {
+    const res = await fetch(`${SITE_URL}/api/space/create`, {
       method: 'post',
       headers: {
         'x-api-key': apiKey,
@@ -18,17 +17,18 @@ const createClubSpace = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        clubSpaceObject: {
-          clubSpaceId: uuid,
-          ...spaceData,
-        },
+        clubSpaceId: uuid,
+        ...spaceData,
       }),
     });
-    const {
-      data: { url, semGroupIdHex },
-    } = await res.json();
+    const { data } = await res.json();
 
-    return { res: ok, clubSpaceId: uuid, url, semGroupIdHex };
+    return {
+      res: ok,
+      clubSpaceId: uuid,
+      url: data.url,
+      semGroupIdHex: data.semGroupIdHex,
+    };
   };
 
   return { create };
