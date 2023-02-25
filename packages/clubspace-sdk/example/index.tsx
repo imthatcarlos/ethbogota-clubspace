@@ -31,7 +31,6 @@ const App = () => {
           onSpaceEnded: () => setSpaceEnded(true),
         }
       );
-      console.log('audioPlayer.current', audioPlayer.current);
     };
 
     _fetchData();
