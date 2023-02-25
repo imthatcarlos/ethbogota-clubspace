@@ -46,18 +46,20 @@ export interface IClubSpaceObject {
   queuedTrackIds: string[];
   stats: {
     activeUsersInRoomCount: number;
-    activeSample: [{
-      id: string;
-      handle?: string;
-      profile?: {
-        avatar?: string;
-        name?: string;
-        totalFollowers?: number;
-        id?: string;
-      };
-      hasBadge?: boolean
-    }]
-  }
+    activeSample: [
+      {
+        id: string;
+        handle?: string;
+        profile?: {
+          avatar?: string;
+          name?: string;
+          totalFollowers?: number;
+          id?: string;
+        };
+        hasBadge?: boolean;
+      }
+    ];
+  };
 }
 
 export interface ICreateSpace {
@@ -74,9 +76,11 @@ export interface ICreateSpace {
     productBannerIsVideo: boolean;
     protocol: string;
   };
-  createdAt: number;
-  endAt: number;
   handle: string;
   partyFavorContractAddress: string;
-  startAt: number;
+  clubSpaceId?: string;
+  semGroupIdHex?: string;
+  createdAt?: number;
+  endAt?: number;
+  startAt?: number;
 }

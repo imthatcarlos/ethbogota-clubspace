@@ -13,11 +13,6 @@ export const exampleSpaceData = {
     productBannerIsVideo: false,
     protocol: 'DECENT_XYZ',
   },
-  //   clubSpaceId: '5779b2e4-d0a3-4b57-a84c-b4d7f1f4ee07',
-  createdAt: 1677284130,
-  endAt: 1677291330,
-  //   semGroupIdHex: '0x5779b2e4d0a34b57a84cb4d7f1f4ee07',
   handle: 'bananatime.test',
   partyFavorContractAddress: '0x0000000000000000000000000000000000000000',
-  startAt: 1677286800,
 };

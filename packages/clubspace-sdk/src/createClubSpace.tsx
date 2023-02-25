@@ -1,15 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
+import { SITE_URL } from './consts';
 import { useJam } from './jam-core-react';
 import { ICreateSpace } from './types';
-import { makeSemGroupIdHex } from './utils';
 
 const createClubSpace = () => {
   const [, jamApi] = useJam();
 
   const create = async (spaceData: ICreateSpace, apiKey: string) => {
     const uuid = uuidv4();
-    const ok = await jamApi.createRoom(uuid, { stageOnly: false });
-    const res = await fetch(`https://www.joinclubspace.xyz/api/space/create`, {
+    const ok = await jamApi.createRoom(uuid);
+    console.log('jam room created', ok);
+    const res = await fetch(`${SITE_URL}/space/create`, {
       method: 'post',
       headers: {
         'x-api-key': apiKey,
@@ -17,9 +18,10 @@ const createClubSpace = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        clubSpaceId: uuid,
-        semGroupIdHex: makeSemGroupIdHex(uuid),
-        ...spaceData,
+        clubSpaceObject: {
+          clubSpaceId: uuid,
+          ...spaceData,
+        },
       }),
     });
     const {
