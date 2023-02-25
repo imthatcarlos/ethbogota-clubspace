@@ -263,8 +263,6 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
           partyFavorContractAddress: collectionAddress,
           startAt: launchDate,
         };
-        console.log("space data:", spaceData);
-        return
         const {
           data: { url, semGroupIdHex },
         } = await axios.post(`/api/space/create`, spaceData);

@@ -63,13 +63,20 @@ export interface IClubSpaceObject {
 export interface ICreateSpace {
   creatorAddress: string;
   creatorLensHandle: string;
-  handle: string;
   creatorLensProfileId: string;
-  spinampPlaylistId: string;
-  drop: any;
   lensPubId: string;
-  clubSpaceId: string;
-  uuid: string;
+  spinampPlaylistId: string;
+  drop: {
+    decentContractAddress: string;
+    decentContractType: string;
+    decentContractChainId: number;
+    productBannerUrl: string;
+    productBannerIsVideo: boolean;
+    protocol: string;
+  };
+  createdAt: number;
+  endAt: number;
+  handle: string;
   partyFavorContractAddress: string;
-  startAt: any;
+  startAt: number;
 }

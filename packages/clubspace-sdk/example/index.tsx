@@ -3,8 +3,9 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { getAudioPlayer, getClubSpace, ITrack } from '../src/index';
 import createClubSpace from '../src/createClubSpace';
+import { exampleSpaceData } from './utils';
 
-const HANDLE = 'carlosbeltran.test';
+const HANDLE = 'bananatime.test';
 const AUDIO_PLAYER_DEFAULT_PLAYBACK = 'html5';
 
 const App = () => {
@@ -68,10 +69,11 @@ const App = () => {
 
   const _create = async () => {
     const res = await create(
-      {},
-      ''
+      exampleSpaceData,
+      process.env.REACT_APP_CLUBSPACE_API_KEY
     );
-  }
+    console.log('clubspace created', res);
+  };
 
   return (
     <>

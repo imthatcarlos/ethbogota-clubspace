@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { useJam } from './jam-core-react';
 import { ICreateSpace } from './types';
+import { makeSemGroupIdHex } from './utils';
 
 const createClubSpace = () => {
   const [, jamApi] = useJam();
@@ -15,7 +16,11 @@ const createClubSpace = () => {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(spaceData),
+      body: JSON.stringify({
+        clubSpaceId: uuid,
+        semGroupIdHex: makeSemGroupIdHex(uuid),
+        ...spaceData,
+      }),
     });
     const {
       data: { url, semGroupIdHex },
