@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { SITE_URL } from './consts';
+import { API_URL } from './consts';
 import { useJam } from './jam-core-react';
 import { ICreateSpace } from './types';
 
@@ -9,7 +9,7 @@ const createClubSpace = () => {
   const create = async (spaceData: ICreateSpace, apiKey: string) => {
     const uuid = uuidv4();
     const ok = await jamApi.createRoom(uuid);
-    const res = await fetch(`${SITE_URL}/api/space/create`, {
+    const res = await fetch(`${API_URL}/space/create`, {
       method: 'post',
       headers: {
         'x-api-key': apiKey,
@@ -17,8 +17,10 @@ const createClubSpace = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        clubSpaceId: uuid,
-        ...spaceData,
+        clubSpaceObject: {
+          clubSpaceId: uuid,
+          ...spaceData,
+        }
       }),
     });
     const { data } = await res.json();
