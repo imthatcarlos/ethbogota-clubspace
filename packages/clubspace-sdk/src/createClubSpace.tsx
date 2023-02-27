@@ -14,7 +14,7 @@ const _validateLensOwnership = async (signer: Signer, profile: ILensProfile) => 
   }
 }
 
-const createClubSpace = () => {
+export const createClubSpace = () => {
   const [, jamApi] = useJam();
 
   const create = async (
@@ -45,7 +45,10 @@ const createClubSpace = () => {
         }
       }),
     });
-    const { data } = await res.json();
+
+    if (res.status !== 200) throw new Error('unable to create space, check request params')
+
+    const data = await res.json();
 
     return {
       res: ok,
@@ -57,5 +60,3 @@ const createClubSpace = () => {
 
   return { create };
 };
-
-export default createClubSpace;

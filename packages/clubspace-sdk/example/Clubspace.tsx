@@ -1,11 +1,15 @@
 import 'react-app-polyfill/ie11';
 import * as React from 'react';
 import { useAccount, useSigner } from 'wagmi';
-import { getAudioPlayer, getClubSpace, ITrack } from '../src/index';
-import createClubSpace from '../src/createClubSpace';
 import { exampleSpaceData } from './utils';
-import { ILensProfile } from './types';
-import { getProfilesOwned } from '../src/lens/getProfile';
+import {
+  createClubSpace,
+  getAudioPlayer,
+  getProfilesOwned,
+  getClubSpace,
+  ITrack,
+  ILensProfile
+} from '@madfi/clubspace-sdk';
 
 const AUDIO_PLAYER_DEFAULT_PLAYBACK = 'html5';
 
