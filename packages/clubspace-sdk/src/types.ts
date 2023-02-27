@@ -59,9 +59,6 @@ export interface IClubSpaceObject {
 }
 
 export interface ICreateSpace {
-  creatorAddress: string;
-  creatorLensHandle: string;
-  creatorLensProfileId: string;
   lensPubId: string;
   spinampPlaylistId: string;
   drop: {
@@ -72,7 +69,6 @@ export interface ICreateSpace {
     productBannerIsVideo: boolean;
     protocol: string;
   };
-  handle: string;
   partyFavorContractAddress: string;
   clubSpaceId?: string;
   semGroupIdHex?: string;
