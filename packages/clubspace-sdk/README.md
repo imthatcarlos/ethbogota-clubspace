@@ -12,13 +12,14 @@ This sdk allows third-party clients to create a clubspace (provided they have an
 
 As of now, the required inputs for creating a clubspace are:
 - the creator must have a lens handle
-- the creator must specify a `https://spinamp.xyz/` playlist id to serve as the live audio stream
-- the creator must specify an nft drop to promote from decent/sound (manifold, zora in progress)
+- the creator must specify a `https://spinamp.xyz/` playlist id to serve as the live audio stream (this part is flexible, we can also accept an array of tracks to create the stream with)
+- the creator must specify an nft drop to promote from decent/sound (manifold, zora, lens post in progress)
 - the developer must wrap their component with our exported `JamProvider` component, which handles the ws/webRTC connections, but in the case of the sdk simple adds the creator as the space host
+- the developer must include in the api key for `create()`
 
 ## check out our docs: https://docs.joinclubspace.xyz/
 
-## TSDX commands
+## TSDX commands (internal development)
 
 TSDX scaffolds your new library inside `/src`, and also sets up a [Parcel-based](https://parceljs.org) playground for it inside `/example`.
 
