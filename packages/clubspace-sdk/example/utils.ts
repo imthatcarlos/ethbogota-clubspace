@@ -1,9 +1,6 @@
 export const exampleSpaceData = {
-  creatorAddress: '0xDC4471ee9DFcA619Ac5465FdE7CF2634253a9dc6',
-  creatorLensHandle: 'bananatime.test',
-  creatorLensProfileId: '0x49f1',
   lensPubId: '0',
-  spinampPlaylistId: 'EpZIqlaV8XgvG0kXWgPY',
+  spinampPlaylistId: '4yoGj5acTJfBbSWzBFzR',
   drop: {
     decentContractAddress: '0x5170F2b89347A9A4A4870F03296f61b4747d80ce',
     decentContractType: 'DCNTCrescendo',
@@ -13,6 +10,5 @@ export const exampleSpaceData = {
     productBannerIsVideo: false,
     protocol: 'DECENT_XYZ',
   },
-  handle: 'bananatime.test',
   partyFavorContractAddress: '0x0000000000000000000000000000000000000000',
 };

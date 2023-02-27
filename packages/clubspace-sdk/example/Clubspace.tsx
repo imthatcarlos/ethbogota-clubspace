@@ -1,18 +1,23 @@
 import 'react-app-polyfill/ie11';
 import * as React from 'react';
+import { useAccount, useSigner } from 'wagmi';
 import { getAudioPlayer, getClubSpace, ITrack } from '../src/index';
 import createClubSpace from '../src/createClubSpace';
 import { exampleSpaceData } from './utils';
+import { ILensProfile } from './types';
+import { getProfilesOwned } from '../src/lens/getProfile';
 
-const HANDLE = 'bananatime.test';
 const AUDIO_PLAYER_DEFAULT_PLAYBACK = 'html5';
 
 const ClubSpace = () => {
+  const { isConnected, address } = useAccount();
+  const { data: signer } = useSigner();
   const [clubSpace, setClubspace] = React.useState<any>();
   const [playlistTracks, setPlaylistTracks] = React.useState<any>([]);
   const [currentTrack, setCurrentTrack] = React.useState<ITrack>();
   const [spaceEnded, setSpaceEnded] = React.useState<boolean>(false);
   const [previousVolume, setPreviousVolume] = React.useState<number>(0.5);
+  const [lensProfile, setLensProfile] = React.useState<ILensProfile>();
 
   const audioPlayer = React.useRef<any>(null);
 
@@ -20,7 +25,13 @@ const ClubSpace = () => {
 
   React.useEffect(() => {
     const _fetchData = async () => {
-      const { clubSpaceObject, playlistTracks } = await getClubSpace(HANDLE);
+      const profiles = await getProfilesOwned(address);
+
+      if (!profiles.length) return;
+      setLensProfile(profiles[0]);
+
+      const { clubSpaceObject, playlistTracks } = await getClubSpace(profiles[0].handle);
+      if (!clubSpaceObject) return;
 
       setClubspace(clubSpaceObject);
       setPlaylistTracks(playlistTracks);
@@ -36,8 +47,10 @@ const ClubSpace = () => {
       );
     };
 
-    _fetchData();
-  }, []);
+    if (isConnected) {
+      _fetchData();
+    }
+  }, [isConnected]);
 
   const play = () => {
     if (!audioPlayer.current) return;
@@ -69,9 +82,12 @@ const ClubSpace = () => {
   const _create = async () => {
     const res = await create(
       exampleSpaceData,
-      process.env.REACT_APP_CLUBSPACE_API_KEY
+      process.env.REACT_APP_CLUBSPACE_API_KEY,
+      signer,
+      lensProfile,
     );
     console.log('clubspace data', res);
+    window.location.reload();
   };
 
   return (

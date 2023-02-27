@@ -61,6 +61,8 @@
   },
   "dependencies": {
     "@spinamp/spinamp-sdk": "^0.0.7",
+    "ethers": "^6.0.8",
+    "graphql-request": "^5.1.0",
     "icecast-metadata-player": "^1.14.2",
     "lodash": "^4.17.21",
     "uuid": "^9.0.0"
