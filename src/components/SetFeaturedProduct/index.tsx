@@ -47,7 +47,7 @@ const SetFeaturedProduct = ({ selectDrop, drop }) => {
                         checked={selectedProtocol === DROP_PROTOCOL_DECENT}
                       />
                       <DecentLogo height={50} className="ml-5 mr-5" width={50} />
-                      <label for="radio-protocol-decent" className="w-full py-4 ml-2 text-sm font-medium text-black">Decent</label>
+                      <label htmlFor="radio-protocol-decent" className="w-full py-4 ml-2 text-sm font-medium text-black">Decent</label>
                     </div>
                     <div
                       className="flex w-full items-center pl-4 border border-gray-200 rounded bg-white cursor-pointer"
@@ -58,11 +58,11 @@ const SetFeaturedProduct = ({ selectDrop, drop }) => {
                         type="radio"
                         value=""
                         name="bordered-radio"
-                        class="w-4 h-4 text-[color:var(--club-red)] bg-gray-100 border-gray-300 focus:ring-[color:var(--club-red)]"
+                        className="w-4 h-4 text-[color:var(--club-red)] bg-gray-100 border-gray-300 focus:ring-[color:var(--club-red)]"
                         checked={selectedProtocol === DROP_PROTOCOL_SOUND}
                       />
                       <SoundLogo height={50} className="ml-5 mr-5" width={50} />
-                      <label for="radio-protocol-sound" className="w-full py-4 ml-2 text-sm font-medium text-black">Sound</label>
+                      <label htmlFor="radio-protocol-sound" className="w-full py-4 ml-2 text-sm font-medium text-black">Sound</label>
                     </div>
                   </div>
                 </>

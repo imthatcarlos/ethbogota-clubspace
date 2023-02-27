@@ -36,7 +36,7 @@ import {
   NEXT_PUBLIC_SITE_URL,
 } from "@/lib/consts";
 import { addToGuestList, logAction, logOverwriteAction } from "@madfi/ts-sdk";
-import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
 import * as mockIdentities from "@/constants/mockIdentities.json";
 import DirectToClaims from "./DirectToClaims";
@@ -44,6 +44,7 @@ import useENS from "@/hooks/useENS";
 import { FavorStatus, joinGroup } from "@/lib/claim-without-semaphore/claims";
 import axios from "axios";
 import ClaimFavorModal from "./ClaimFavorModal";
+import PinnedLensPost from "./PinnedLensPost";
 
 type ClubSpaceObject = {
   clubSpaceId: string;
@@ -60,6 +61,7 @@ type ClubSpaceObject = {
   // currentTrackId?: string;
   queuedTrackIds: [string];
   partyFavorContractAddress: string;
+  pinnedLensPost?: string;
 };
 
 type LensProfileObject = {
@@ -82,7 +84,7 @@ type Props = {
   handle: boolean;
   hasBadge: boolean;
   playerVolume: number;
-  setPlayerVolume: () => void
+  setPlayerVolume: () => void;
 };
 
 /**
@@ -107,13 +109,14 @@ const LiveSpace: FC<Props> = ({
   const { data: signer } = useSigner();
   const { connector: activeConnector, isConnected } = useAccount();
   const { chain } = useNetwork();
-  const [state, { enterRoom, leaveRoom, setProps, updateInfo, sendReaction, retryMic, addSpeaker, retryAudio }] = useJam();
+  const [state, { enterRoom, leaveRoom, setProps, updateInfo, sendReaction, retryMic, addSpeaker, retryAudio }] =
+    useJam();
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
   const [drawerProfile, setDrawerProfile] = useState<any>({});
   const [doesFollowDrawerProfile, setDoesFollowDrawerProfile] = useState<boolean>(false);
   const [isFollowingAction, setIsFollowingAction] = useState<boolean>(false);
-  const [audienceLoaded, setAudienceLoaded] = useState<boolean>(false)
-  const [audience, setAudience] = useState(null)
+  const [audienceLoaded, setAudienceLoaded] = useState<boolean>(false);
+  const [audience, setAudience] = useState(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isHostOpen, setIsHostOpen] = useState<boolean>(false);
   const { data: ensData, isLoading: isLoadingENS } = useENS(address);
@@ -164,10 +167,7 @@ const LiveSpace: FC<Props> = ({
     clubSpaceObject.creatorLensHandle,
     "creatorLensProfile"
   );
-  const { data: featuredDrop } = useGetClubspaceDrop(
-    {},
-    { drop: clubSpaceObject.drop, signer }
-  );
+  const { data: featuredDrop } = useGetClubspaceDrop({}, { drop: clubSpaceObject.drop, signer });
   const { data: playlistTracks, isLoading: isLoadingPlaylistTracks } = useGetTracksFromPlaylist(
     {},
     clubSpaceObject.spinampPlaylistId
@@ -227,7 +227,7 @@ const LiveSpace: FC<Props> = ({
     "hasMicFailed",
     "audioPlayError",
     "isSomeMicOn",
-    "forceSoundMuted"
+    "forceSoundMuted",
   ]);
 
   const myInfo = myIdentity.info;
@@ -242,12 +242,11 @@ const LiveSpace: FC<Props> = ({
   }, [defaultProfile, creatorLensProfile]);
   const micOn = myAudio?.active; // only for the host
 
-
   useEffect(() => {
     const res = uniq([myPeerId].concat(peers)).filter((id) => !isEmpty(identities[id]));
     const sorted = sortBy(res, (r) => -identities[r].profile?.totalFollowers || 0);
-    setAudience(sorted)
-  }, [peers, identities, myPeerId])
+    setAudience(sorted);
+  }, [peers, identities, myPeerId]);
 
   // log impression for party favor after 3 minutes
   useEffect(() => {
@@ -381,11 +380,13 @@ const LiveSpace: FC<Props> = ({
         await enterRoom(clubSpaceObject.clubSpaceId);
         console.log("JOINED");
         // TODO: the 3 minute timeout
-        axios.post(`/api/privy/get-claim-status`, { groupId: clubSpaceObject.semGroupIdHex.replace(/-/g, ''), address }).then((data) => {
-          if (data.data.status === FavorStatus.NOT_CLAIMABLE) {
-              joinGroup(clubSpaceObject.semGroupIdHex.replace(/-/g, ''), address);
-          }
-        });
+        axios
+          .post(`/api/privy/get-claim-status`, { groupId: clubSpaceObject.semGroupIdHex.replace(/-/g, ""), address })
+          .then((data) => {
+            if (data.data.status === FavorStatus.NOT_CLAIMABLE) {
+              joinGroup(clubSpaceObject.semGroupIdHex.replace(/-/g, ""), address);
+            }
+          });
       }
     };
 
@@ -448,9 +449,9 @@ const LiveSpace: FC<Props> = ({
     if (!isHost) return; // for sanity
 
     if (micOn) {
-      setProps('micMuted', !micMuted);
-      const icon = micMuted ? '🎙' : '🔇';
-      toast(`You are ${micMuted ? 'now' : 'no longer'} speaking`, { icon });
+      setProps("micMuted", !micMuted);
+      const icon = micMuted ? "🎙" : "🔇";
+      toast(`You are ${micMuted ? "now" : "no longer"} speaking`, { icon });
 
       if (forceSoundMuted) return;
 
@@ -469,87 +470,103 @@ const LiveSpace: FC<Props> = ({
         const lowerVolume = Math.min(MUSIC_VOLUME_WHEN_SPEAKING, playerVolume);
         setPreviousVolume(playerVolume);
         setPlayerVolume(lowerVolume);
-        setProps('micMuted', false);
+        setProps("micMuted", false);
         if (audioPlayError) {
-          setProps('userInteracted', true);
+          setProps("userInteracted", true);
           retryAudio();
         }
-        toast(`You are now speaking`, { icon: '🎙' });
+        toast(`You are now speaking`, { icon: "🎙" });
       });
     }
   };
 
-  const DummyCard = useCallback(() => (
-    <div>
-      <Skeleton circle className='mx-auto block w-full' height={48} width={48} />
-      <Skeleton height={4} width={48} />
-    </div>
-  ), [])
-
-  const DummyDecent = useCallback(() => (
-    <SkeletonTheme baseColor='rgb(85,13,69)' highlightColor='#8B8A8C'>
+  const DummyCard = useCallback(
+    () => (
       <div>
-        <h2 className="my-4 text-4xl font-bold tracking-tight sm:text-2xl md:text-5xl drop-shadow-sm text-center">
-          Featured Drop
-        </h2>
-        <div className="flex w-full justify-center relative">
-          <div className="max-w-[20rem] min-w-[17rem]">
-            <div className="bg-slate-800 shadow-xl rounded-lg relative">
-              <div className="photo-wrapper p-2 pt-0 overflow-hidden">
-                <Skeleton width={272} height={262} className="!absolute t-0 left-0 right-0 w-full h-full object-cover opacity-50 rounded-md" />
-              </div>
+        <Skeleton circle className="mx-auto block w-full" height={48} width={48} />
+        <Skeleton height={4} width={48} />
+      </div>
+    ),
+    []
+  );
 
-              <div className="p-2 pt-4 relative">
-                <h3 className="text-center text-xl text-gray-300 font-medium leading-8 -mb-2">
-                  <Skeleton className="max-w-[75%]" height={14} />
-                </h3>
-
-                <p className="text-sm text-gray-500 dark:text-white mb-0 p-4 text-center"><Skeleton className="max-w-[55%]" height={4} /></p>
-
-                <div className="text-center text-gray-400 text-sm font-semibold mb-5 -mt-2">
-                  <p>
-                  <Skeleton className="max-w-[55%]" height={4} />
-                  </p>
+  const DummyDecent = useCallback(
+    () => (
+      <SkeletonTheme baseColor="rgb(85,13,69)" highlightColor="#8B8A8C">
+        <div>
+          <h2 className="my-4 text-4xl font-bold tracking-tight sm:text-2xl md:text-5xl drop-shadow-sm text-center">
+            Featured Drop
+          </h2>
+          <div className="flex w-full justify-center relative">
+            <div className="max-w-[20rem] min-w-[17rem]">
+              <div className="bg-slate-800 shadow-xl rounded-lg relative">
+                <div className="photo-wrapper p-2 pt-0 overflow-hidden">
+                  <Skeleton
+                    width={272}
+                    height={262}
+                    className="!absolute t-0 left-0 right-0 w-full h-full object-cover opacity-50 rounded-md"
+                  />
                 </div>
 
-                <div className="text-center text-gray-400 text-sm font-semibold mb-2 -mt-2">
-                  <p>
-                  <Skeleton className="max-w-[80%]" height={8} />
-                  </p>
-                </div>
+                <div className="p-2 pt-4 relative">
+                  <h3 className="text-center text-xl text-gray-300 font-medium leading-8 -mb-2">
+                    <Skeleton className="max-w-[75%]" height={14} />
+                  </h3>
 
-                <div className="flex justify-center mb-0 text-sm gap-x-4">
-                  <div className="flex gap-x-2">
-                    <span>
-                      <strong>
-                        <strong><Skeleton className="w-full" height={3} /></strong>
-                      </strong>
-                    </span>
+                  <p className="text-sm text-gray-500 dark:text-white mb-0 p-4 text-center">
+                    <Skeleton className="max-w-[55%]" height={4} />
+                  </p>
+
+                  <div className="text-center text-gray-400 text-sm font-semibold mb-5 -mt-2">
+                    <p>
+                      <Skeleton className="max-w-[55%]" height={4} />
+                    </p>
                   </div>
 
-                  <div className="flex gap-x-2">
-                    <span>
-                      <strong><Skeleton className="w-full" height={3} /></strong>
-                    </span>
+                  <div className="text-center text-gray-400 text-sm font-semibold mb-2 -mt-2">
+                    <p>
+                      <Skeleton className="max-w-[80%]" height={8} />
+                    </p>
                   </div>
-                </div>
 
-                <div className="text-center mb-3 mt-2 px-3">
-                  <Skeleton className="btn" height={40} />
+                  <div className="flex justify-center mb-0 text-sm gap-x-4">
+                    <div className="flex gap-x-2">
+                      <span>
+                        <strong>
+                          <strong>
+                            <Skeleton className="w-full" height={3} />
+                          </strong>
+                        </strong>
+                      </span>
+                    </div>
+
+                    <div className="flex gap-x-2">
+                      <span>
+                        <strong>
+                          <Skeleton className="w-full" height={3} />
+                        </strong>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="text-center mb-3 mt-2 px-3">
+                    <Skeleton className="btn" height={40} />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-      {/* Buttons */}
-        <div className="flex w-full justify-center relative grid-cols-2 gap-4 mt-2">
-          <Skeleton className="btn" height={35} width={95} />
-          <Skeleton className="btn" height={45} width={160} />
+          {/* Buttons */}
+          <div className="flex w-full justify-center relative grid-cols-2 gap-4 mt-2">
+            <Skeleton className="btn" height={35} width={95} />
+            <Skeleton className="btn" height={45} width={160} />
+          </div>
         </div>
-      </div>
-    </SkeletonTheme>
-  ), [])
+      </SkeletonTheme>
+    ),
+    []
+  );
 
   useUnload(async () => {
     console.log(`LEAVING`);
@@ -568,37 +585,36 @@ const LiveSpace: FC<Props> = ({
                 <p className="animate-move-txt-bg gradient-txt text-2xl mb-5">Connect your wallet to join the space</p>
                 <ConnectWallet showBalance={false} />
               </div>
-            ) :
-              null
-            }
-            {!!myIdentity && audience?.length > 0
-              ? audience?.map((peerId, index) => {
-                  return identities[peerId] ? (
-                    <LensProfile
-                      allowDrawer={[".lens", ".test"].some((ext) => identities[peerId].handle?.includes(ext))}
-                      id={identities[peerId].profile?.id}
-                      key={identities[peerId].handle}
-                      handle={identities[peerId].handle}
-                      picture={
-                        identities[peerId].profile?.avatar
-                          ? getUrlForImageFromIpfs(identities[peerId].profile.avatar)
-                          : "/anon.png"
-                      }
-                      name={identities[peerId].profile?.name}
-                      totalFollowers={identities[peerId].profile?.totalFollowers}
-                      reaction={isEmpty(reactions[peerId]) ? null : reactions[peerId][0][0]}
-                      index={index}
-                      hasBadge={identities[peerId].hasBadge}
-                      onClick={() => {
-                        toggleDrawer(identities[peerId]);
-                      }}
-                    />
-                  ) : null;
-                })
-              : <SkeletonTheme baseColor='#090407' highlightColor='#8B8A8C'>
-                  {Array(4).fill(<DummyCard />)}
-                </SkeletonTheme>
-              }
+            ) : null}
+            {!!myIdentity && audience?.length > 0 ? (
+              audience?.map((peerId, index) => {
+                return identities[peerId] ? (
+                  <LensProfile
+                    allowDrawer={[".lens", ".test"].some((ext) => identities[peerId].handle?.includes(ext))}
+                    id={identities[peerId].profile?.id}
+                    key={identities[peerId].handle}
+                    handle={identities[peerId].handle}
+                    picture={
+                      identities[peerId].profile?.avatar
+                        ? getUrlForImageFromIpfs(identities[peerId].profile.avatar)
+                        : "/anon.png"
+                    }
+                    name={identities[peerId].profile?.name}
+                    totalFollowers={identities[peerId].profile?.totalFollowers}
+                    reaction={isEmpty(reactions[peerId]) ? null : reactions[peerId][0][0]}
+                    index={index}
+                    hasBadge={identities[peerId].hasBadge}
+                    onClick={() => {
+                      toggleDrawer(identities[peerId]);
+                    }}
+                  />
+                ) : null;
+              })
+            ) : (
+              <SkeletonTheme baseColor="#090407" highlightColor="#8B8A8C">
+                {Array(4).fill(<DummyCard />)}
+              </SkeletonTheme>
+            )}
 
             {/* {mockIdentities.identities.map(({ id, handle, profile }, index) => (
               <LensProfile
@@ -617,7 +633,12 @@ const LiveSpace: FC<Props> = ({
               <FeaturedDecentNFT {...featuredDrop} semGroupIdHex={clubSpaceObject.clubSpaceId} />
             )}
             {featuredDrop?.protocol === DROP_PROTOCOL_SOUND && (
-              <p><FeaturedSoundNFT {...featuredDrop} semGroupIdHex={clubSpaceObject.clubSpaceId} /></p>
+              <p>
+                <FeaturedSoundNFT {...featuredDrop} semGroupIdHex={clubSpaceObject.clubSpaceId} />
+              </p>
+            )}
+            {clubSpaceObject.pinnedLensPost && (
+              <PinnedLensPost url={clubSpaceObject.pinnedLensPost} small={!!clubSpaceObject.drop} />
             )}
             {creatorLensProfile && (
               <>
@@ -654,7 +675,9 @@ const LiveSpace: FC<Props> = ({
                     <div>
                       <button
                         onClick={() => setIsHostOpen(true)}
-                        className={`btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center ${isSomeMicOn ? 'glowing-border-club' : ''}`}
+                        className={`btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center ${
+                          isSomeMicOn ? "glowing-border-club" : ""
+                        }`}
                       >
                         <img
                           className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"
@@ -670,7 +693,9 @@ const LiveSpace: FC<Props> = ({
                 {!isHost && (
                   <button
                     onClick={() => setIsHostOpen(true)}
-                    className={`btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center ${isSomeMicOn ? 'glowing-border-club' : ''}`}
+                    className={`btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center ${
+                      isSomeMicOn ? "glowing-border-club" : ""
+                    }`}
                   >
                     <img
                       className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"
@@ -708,9 +733,9 @@ const LiveSpace: FC<Props> = ({
 
         {/* isHost ? */}
 
-
-          <div className="flex left-1/2 transform -translate-x-1/2 relative w-[150px] items-baseline -mt-4">
-            {handle && <Popover
+        <div className="flex left-1/2 transform -translate-x-1/2 relative w-[150px] items-baseline -mt-4">
+          {handle && (
+            <Popover
               className={({ open }) =>
                 classNames(
                   open ? "inset-0 z-40 overflow-y-auto" : "",
@@ -778,13 +803,39 @@ const LiveSpace: FC<Props> = ({
                   </>
                 );
               }}
-            </Popover>}
+            </Popover>
+          )}
 
+          <button
+            className={`text-white !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative ml-5 ${
+              lensterPostURL ? "" : "mr-7"
+            }`}
+            onClick={() => window.open(shareURL, "_blank")}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-7 h-7"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
+              />
+            </svg>
+
+            <span className="sr-only">Share icon</span>
+          </button>
+
+          {lensterPostURL && (
             <button
-              className={`text-white !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative ml-5 ${
-                lensterPostURL ? "" : "mr-7"
-              }`}
-              onClick={() => window.open(shareURL, "_blank")}
+              className={
+                "text-white focus:ring-4 focus:outline-none font-medium rounded-full text-sm py-2 px-6 text-center inline-flex items-center mr-2  focus:ring-indigo-800 !m-0 max-h-[40px]"
+              }
+              onClick={() => window.open(lensterPostURL, "_blank")}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -797,46 +848,20 @@ const LiveSpace: FC<Props> = ({
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
+                  d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 011.037-.443 48.282 48.282 0 005.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"
                 />
               </svg>
-
-              <span className="sr-only">Share icon</span>
             </button>
-
-            {lensterPostURL && (
-              <button
-                className={
-                  "text-white focus:ring-4 focus:outline-none font-medium rounded-full text-sm py-2 px-6 text-center inline-flex items-center mr-2  focus:ring-indigo-800 !m-0 max-h-[40px]"
-                }
-                onClick={() => window.open(lensterPostURL, "_blank")}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-7 h-7"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 011.037-.443 48.282 48.282 0 005.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"
-                  />
-                </svg>
-              </button>
-            )}
-            {clubSpaceObject.partyFavorContractAddress !== ZERO_ADDRESS && isConnected && (
-              <button
-                onClick={() => setModalOpen(true)}
-                className="text-white !bg-transparent focus:outline-none rounded-lg text-[32px] text-center inline-flex items-center relative"
-              >
-                🎁
-              </button>
-            )}
-          </div>
-
+          )}
+          {clubSpaceObject.partyFavorContractAddress !== ZERO_ADDRESS && isConnected && (
+            <button
+              onClick={() => setModalOpen(true)}
+              className="text-white !bg-transparent focus:outline-none rounded-lg text-[32px] text-center inline-flex items-center relative"
+            >
+              🎁
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Start Drawer */}
@@ -978,7 +1003,7 @@ const LiveSpace: FC<Props> = ({
         <ClaimFavorModal
           isOpen={modalOpen}
           setIsOpen={setModalOpen}
-          semGroupIdHex={clubSpaceObject.semGroupIdHex.replace(/-/g, '')}
+          semGroupIdHex={clubSpaceObject.semGroupIdHex.replace(/-/g, "")}
           address={address}
         />
       )}
