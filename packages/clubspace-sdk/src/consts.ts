@@ -12,7 +12,7 @@ export const jamConfig = {
   domain: API_URL,
   urls: {
     pantry: API_URL,
-    jam: 'https://localhost:3001',
+    jam: SITE_URL,
   },
   development: false,
   sfu: true,
