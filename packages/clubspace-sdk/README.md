@@ -16,7 +16,7 @@ As of now, the required inputs for creating a clubspace are:
 - the creator must specify an nft drop to promote from decent/sound (manifold, zora in progress)
 - the developer must wrap their component with our exported `JamProvider` component, which handles the ws/webRTC connections, but in the case of the sdk simple adds the creator as the space host
 
-## check out our docs: https://www.npmjs.com/package/@madfi/clubspace-sdk
+## check out our docs: https://docs.joinclubspace.xyz/
 
 ## TSDX commands
 
