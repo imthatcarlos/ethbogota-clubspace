@@ -426,7 +426,7 @@ const LiveSpace: FC<Props> = ({
 
   useEffect(() => {
     if (isMounted && inRoom && isHost) {
-      addSpeaker(clubSpaceObject.clubSpaceId, myPeerId);
+      addSpeaker(clubSpaceObject.clubSpaceId, myPeerId, process.env.NEXT_PUBLIC_CLUBSPACE_API_KEY_1);
     }
   }, [isMounted, inRoom, isHost, myPeerId]);
 

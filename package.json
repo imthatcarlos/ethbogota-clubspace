@@ -13,7 +13,7 @@
     "@headlessui/react": "^1.7.3",
     "@heroicons/react": "^1.0.6",
     "@infinity-keys/react-lens-share-button": "^0.0.5",
-    "@madfi/jam-core": "^0.5.22",
+    "@madfi/jam-core": "^0.5.24",
     "@madfi/ts-sdk": "^0.2.0-alpha.4",
     "@madfi/ux-components": "^1.0.20",
     "@pinata/sdk": "^1.1.26",
