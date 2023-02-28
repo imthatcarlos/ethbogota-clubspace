@@ -28,7 +28,7 @@ const PinnedLensPost = ({ url, small }) => {
       <h2 className="my-4 text-4xl font-bold tracking-tight sm:text-2xl md:text-5xl drop-shadow-sm text-center">
         Pinned Lens Post
       </h2>
-      <div className="rounded-md w-[17rem] h-[17rem] bg-black m-auto p-3 truncate">
+      <div className="rounded-md w-[17rem] min-h-[17rem] bg-black m-auto p-3">
         <a href={url} className="" target="_blank" referrerPolicy="no-referrer">
           <div className="flex mb-3">
             <img
@@ -41,7 +41,7 @@ const PinnedLensPost = ({ url, small }) => {
             />
             <span className="mt-2 ml-2">{lensPost?.profile.name || lensPost?.profile.handle}</span>
           </div>
-          <p className="mb-2">{lensPost?.metadata.content}</p>
+          <p className="mb-2 overflow-scroll max-h-[12rem]">{lensPost?.metadata.content}</p>
           <div className={`grid ${lensPost?.metadata.media.length > 1 ? "grid-cols-2" : ""} gap-2 object-cover`}>
             {lensPost?.metadata.media?.map((media) => (
               <img
