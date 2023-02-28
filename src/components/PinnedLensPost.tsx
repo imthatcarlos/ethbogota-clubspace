@@ -9,9 +9,8 @@ const PinnedLensPost = ({ url, small }) => {
     const parts = url.split("/");
     const post = await getPost(parts[parts.length - 1]);
     setLensPost(post);
+    console.log(post);
   }, [url]);
-
-  console.log("component", lensPost);
 
   if (small) {
     return (
@@ -31,7 +30,7 @@ const PinnedLensPost = ({ url, small }) => {
       </h2>
       <div className="rounded-md w-[17rem] h-[17rem] bg-black m-auto p-3 truncate">
         <a href={url} className="" target="_blank" referrerPolicy="no-referrer">
-          <div className="flex mb-4">
+          <div className="flex mb-3">
             <img
               src={getUrlForImageFromIpfs(lensPost?.profile.picture.original.url) ?? "/anon.png"}
               alt="Profile Picture"
@@ -40,9 +39,20 @@ const PinnedLensPost = ({ url, small }) => {
               className="object-cover rounded-full"
               loading="lazy"
             />
-            <span className="mt-2 ml-2">{lensPost?.profile.name}</span>
+            <span className="mt-2 ml-2">{lensPost?.profile.name || lensPost?.profile.handle}</span>
           </div>
-          <p>{lensPost?.metadata.content}</p>
+          <p className="mb-2">{lensPost?.metadata.content}</p>
+          <div className={`grid ${lensPost?.metadata.media.length > 1 ? "grid-cols-2" : ""} gap-2 object-cover`}>
+            {lensPost?.metadata.media?.map((media) => (
+              <img
+                src={getUrlForImageFromIpfs(media.original.url) ?? "/anon.png"}
+                alt="Media"
+                key={media.original.url}
+                className={`object-cover rounded-sm w-full ${lensPost?.metadata.media.length > 1 ? "h-20" : "h-full"}`}
+                loading="lazy"
+              />
+            ))}
+          </div>
         </a>
       </div>
     </>

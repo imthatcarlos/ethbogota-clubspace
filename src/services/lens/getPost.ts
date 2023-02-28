@@ -74,7 +74,7 @@ export const getPost = async (publicationId: string): Promise<any> => {
     const { publication } = await request({
       url: apiUrls.lensAPI,
       document: GET_POST,
-      variables: { publicationId: "0x15-0x02b0" },
+      variables: { publicationId },
     });
 
     return publication;

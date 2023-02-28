@@ -42,10 +42,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       startAt, // ts UTC
       productBannerUrl,
       productBannerIsVideo,
-      pinnedLensPost
+      pinnedLensPost,
     } = req.body;
 
-    if (!(creatorAddress && handle && spinampPlaylistId && drop && clubSpaceId)) {
+    if (!(creatorAddress && handle && spinampPlaylistId && (drop || pinnedLensPost) && clubSpaceId)) {
       return res.status(400).json({ error: "missing a param sonnn" });
     }
 

@@ -25,6 +25,7 @@ const SetFeaturedProduct = ({ selectDrop, drop }) => {
         <div className="w-full">
           <div className="w-full flex flex-col gap-4">
             <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Set Your Featured NFT Drop</h2>
+            <p className="mb-2">If you don't have a drop to promote you can pin a Lens post in the next step instead.</p>
             {
               isLoading && (
                 <p>Loading your drops...</p>
