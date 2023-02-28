@@ -9,7 +9,6 @@ const PinnedLensPost = ({ url, small }) => {
     const parts = url.split("/");
     const post = await getPost(parts[parts.length - 1]);
     setLensPost(post);
-    console.log(post);
   }, [url]);
 
   if (small) {

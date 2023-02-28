@@ -28,14 +28,13 @@ export const publicationBody = (publicationContent, attachments, profileHandle) 
   attributes: [
     {
       traitType: "string",
-      key: "type",
+      displayType: "string",
       value: "post",
     },
   ],
   media: attachments,
   locale: "en",
-  createdOn: new Date(),
-  appId: "Club Space",
+  appId: "ClubSpace",
 });
 
 export const makePostTx = async (contract, profileId, contentUri) => {

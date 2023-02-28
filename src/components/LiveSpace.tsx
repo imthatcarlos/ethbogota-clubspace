@@ -396,7 +396,7 @@ const LiveSpace: FC<Props> = ({
       handle &&
       clubSpaceObject.streamURL &&
       !isEmpty(creatorLensProfile) &&
-      !isEmpty(featuredDrop)
+      (!isEmpty(featuredDrop) || clubSpaceObject.pinnedLensPost)
     ) {
       if (!hasJoined.current) {
         hasJoined.current = true;
