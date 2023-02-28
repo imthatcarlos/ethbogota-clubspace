@@ -27,6 +27,7 @@ import CreateLaunchTime from "./CreateLaunchTime";
 
 type MultiFormData = {
   lensPost: string;
+  pinnedLensPost: string;
   goodyName: string;
   goodyDesc: string;
   launchDate: Date;
@@ -35,6 +36,7 @@ type MultiFormData = {
 
 const INITIAL_DATA: MultiFormData = {
   lensPost: "",
+  pinnedLensPost: "",
   goodyName: "",
   goodyDesc: "",
   launchDate: null,
@@ -262,6 +264,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
           uuid,
           partyFavorContractAddress: collectionAddress,
           startAt: launchDate,
+          pinnedLensPost: formMultiFormData.pinnedLensPost,
         };
         const {
           data: { url, semGroupIdHex },

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Bell from "@/assets/svg/bell.svg";
 import Live from "@/assets/svg/live.svg";
 import { subscribeNotifications } from "@/services/push/clientSide";
-import Link from "next/link";
 import { NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
 
 function timeUntil(timeStamp) {
@@ -34,19 +33,15 @@ const filterTestSpaces = (space: any) => {
     return true;
   }
   const testChains = [80001, 5, 420];
-  return (
-    !testChains.includes(space.decentContractChainId)
-      && !testChains.includes(space.drop.decentContractChainId)
-  );
+  return !testChains.includes(space.decentContractChainId) && !testChains.includes(space.drop.decentContractChainId);
 };
 
 export const UpcomingItem = ({ activity }: { activity: any }) => {
-  const isVideo = () => (
+  const isVideo = () =>
     activity.productBannerIsVideo ||
-      activity.drop?.productBannerIsVideo ||
-      activity.productBannerUrl?.endsWith(".mp4") ||
-      activity.drop?.productBannerUrl?.endsWith(".mp4")
-  );
+    activity.drop?.productBannerIsVideo ||
+    activity.productBannerUrl?.endsWith(".mp4") ||
+    activity.drop?.productBannerUrl?.endsWith(".mp4");
 
   return (
     <a href={`${NEXT_PUBLIC_SITE_URL}/live/${activity.handle}`} target="_blank" rel="noreferrer">
@@ -54,23 +49,27 @@ export const UpcomingItem = ({ activity }: { activity: any }) => {
         <p className="text-black rounded-md bg-white/75 text-sm px-3 mb-3 w-fit">
           {timeUntil(activity.startAt || activity.createdAt)}
         </p>
-        {!isVideo() ? (
-          <img
-            src={activity.drop.productBannerUrl || getUrlForImageFromIpfs(activity.productBannerUrl)}
-            width="220"
-            height="220"
-            className="rounded-xl mb-2"
-          />
+        {activity.drop ? (
+          !isVideo() ? (
+            <img
+              src={activity.drop.productBannerUrl || getUrlForImageFromIpfs(activity.productBannerUrl)}
+              width="220"
+              height="220"
+              className="rounded-xl mb-2"
+            />
+          ) : (
+            <video
+              src={activity.drop.productBannerUrl || getUrlForImageFromIpfs(activity.productBannerUrl)}
+              width="220"
+              height="220"
+              className="rounded-xl mb-2"
+              autoPlay
+              muted
+              loop
+            />
+          )
         ) : (
-          <video
-            src={activity.drop.productBannerUrl || getUrlForImageFromIpfs(activity.productBannerUrl)}
-            width="220"
-            height="220"
-            className="rounded-xl mb-2"
-            autoPlay
-            muted
-            loop
-          />
+          <img src="/anon.png" width="220" height="220" className="rounded-xl mb-2" />
         )}
         <p className="text-xl font-semibold">@{activity.handle}</p>
       </div>

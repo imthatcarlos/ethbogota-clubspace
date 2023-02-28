@@ -42,9 +42,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       startAt, // ts UTC
       productBannerUrl,
       productBannerIsVideo,
+      pinnedLensPost,
     } = req.body;
 
-    if (!(creatorAddress && handle && spinampPlaylistId && drop && clubSpaceId)) {
+    if (!(creatorAddress && handle && spinampPlaylistId && (drop || pinnedLensPost) && clubSpaceId)) {
       return res.status(400).json({ error: "missing a param sonnn" });
     }
 
@@ -68,6 +69,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       startAt,
       productBannerUrl,
       productBannerIsVideo,
+      pinnedLensPost,
     };
     console.log(JSON.stringify(clubSpaceObject, null, 2));
     const spaceRedisKey = `${REDIS_SPACE_PREFIX}/${handle}`;
