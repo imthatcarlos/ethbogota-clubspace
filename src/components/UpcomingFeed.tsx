@@ -33,7 +33,7 @@ const filterTestSpaces = (space: any) => {
     return true;
   }
   const testChains = [80001, 5, 420];
-  return !testChains.includes(space.decentContractChainId) && !testChains.includes(space.drop.decentContractChainId);
+  return !testChains.includes(space.drop?.decentContractChainId);
 };
 
 export const UpcomingItem = ({ activity }: { activity: any }) => {
