@@ -5,6 +5,7 @@ import Bell from "@/assets/svg/bell.svg";
 import Live from "@/assets/svg/live.svg";
 import { subscribeNotifications } from "@/services/push/clientSide";
 import { NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
+import Image from "next/image";
 
 function timeUntil(timeStamp) {
   let time = new Date(timeStamp * 1000);
@@ -51,11 +52,12 @@ export const UpcomingItem = ({ activity }: { activity: any }) => {
         </p>
         {activity.drop ? (
           !isVideo() ? (
-            <img
+            <Image
               src={activity.drop.productBannerUrl || getUrlForImageFromIpfs(activity.productBannerUrl)}
               width="220"
               height="220"
               className="rounded-xl mb-2"
+              loading="lazy"
             />
           ) : (
             <video
