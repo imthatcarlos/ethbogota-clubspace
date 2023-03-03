@@ -15,7 +15,7 @@ const PinnedLensPost = ({ url, small }) => {
   if (small) {
     return (
       <>
-        <div className="rounded-md w-[17rem] max-h-[6.5rem] bg-black m-auto p-3 drop-shadow-sm">
+        <div className="rounded-md w-[17rem] max-h-[7.6rem] bg-black m-auto p-3 drop-shadow-sm">
           <a href={url} className="" target="_blank" referrerPolicy="no-referrer">
             <div className="flex mb-3">
               <Image
@@ -29,6 +29,7 @@ const PinnedLensPost = ({ url, small }) => {
               <span className="mt-2 ml-2">{lensPost?.profile.name || lensPost?.profile.handle}</span>
             </div>
             <p className="mb-2 truncate max-h-[12rem]">{lensPost?.metadata.content}</p>
+            <p className="text-xs text-[#845eee]">Click to view more</p>
           </a>
         </div>
       </>

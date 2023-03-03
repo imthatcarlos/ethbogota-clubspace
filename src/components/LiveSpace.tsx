@@ -577,7 +577,7 @@ const LiveSpace: FC<Props> = ({
 
   return (
     <>
-      <div className="relative grow flex flex-col justify-center min-h-screen -mt-6">
+      <div className="relative grow flex flex-col justify-center min-h-screen">
         <div className="grid-live items-center justify-center px-10 lg:px-14 gap-x-3">
           <div className="grid-container w-full audience max-h-[30rem] overflow-auto !content-baseline rounded-lg">
             {!isConnected ? (
