@@ -10,6 +10,7 @@ interface Activity {
   handle: string;
   spinampPlaylistId: string;
   createdAt: number;
+  startAt: number;
   totalSales: string;
   totalSalesAmount?: string;
 }
@@ -22,7 +23,8 @@ const ActivityItem = ({ activity }: { activity: Activity }) => {
   // get days passed since space was live
   const activityTime = () => {
     const now = new Date();
-    const timePassed = Number(now) - activity.createdAt * 1000;
+    const startedAt = activity.startAt || activity.createdAt;
+    const timePassed = Number(now) - startedAt * 1000;
     return Math.floor(timePassed / 86400000);
   };
 
