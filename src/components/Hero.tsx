@@ -26,10 +26,10 @@ export const Hero = () => {
   const { data: hasBadge, isLoading: isLoadingBadge } = useHasBadge();
 
   useEffect(() => {
-    if (!isLoadingBadge) {
+    if (!isLoadingBadge && isMounted && isConnected) {
       toast("ClubSpace is currently in open beta. Handle with care. Stay hydrated.", { duration: 10000, icon: "🚧" });
     }
-  }, [isLoadingBadge]);
+  }, [isLoadingBadge, isMounted, isConnected]);
 
   // NO LONGER IN CLOSED BETA
   // const shouldRenderCreate = !isLoadingBadge && (hasBadge || IM_WITH_THE_DJ.includes(address));
@@ -67,7 +67,7 @@ export const Hero = () => {
           <ClubspaceSoftGlow />
           <ClubspaceNeon className="min-w-fit svg-logo" />
           <h2 className="uppercase text-6xl tracking-wide w-full font-ownersx text-center text-[37px] landing-page-subtext-shadow">
-            <span className="block">PROMOTE YOUR MUSIC NFTs</span>
+            <span className="block">PROMOTE YOUR NFT DROPS</span>
             <span className="block">
               WITH A <span className="text-primary italic mix-blend-lighten text-club-red font-extrabold">LIVE</span>{" "}
               LISTENING PARTY

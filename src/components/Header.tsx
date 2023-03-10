@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useAccount } from "wagmi";
 import { ConnectWallet } from "./ConnectWallet";
 import { useGetProfilesOwned } from "@/services/lens/getProfile";
@@ -6,11 +7,13 @@ import ClubspaceNeonHeader from "@/assets/svg/clubspace-neon-header.svg";
 import { useRouter } from "next/router";
 
 export const Header = () => {
-  const { push } = useRouter();
+  const { push, pathname } = useRouter();
   const { isConnected, address } = useAccount();
   const { data: profilesResponse } = useGetProfilesOwned({}, address);
   const { data: lensRefreshData } = useLensRefresh();
   const { data: lensLoginData, refetch: loginWithLens } = useLensLogin();
+
+  const isHomePage = pathname === '/';
 
   const lensButton = () => {
     if (!(lensLoginData || lensRefreshData)) {
@@ -45,6 +48,15 @@ export const Header = () => {
       )*/}
       <div className="connect md:right-5 xs:relative">
         <div className="md:flex gap-4 justify-center md:min-w-[250px] scale-[0.8] xs:scale-100">
+          {isHomePage && (
+            <div className="mb-2 sm:mb-0 text-center p-2">
+              <Link key={"/about"} href={"/about"} passHref>
+                <a className="link link-hover font-medium opacity-70 hover:opacity-100">
+                  ABOUT
+                </a>
+              </Link>
+            </div>
+          )}
           <div className="mb-2 sm:mb-0">
             <ConnectWallet showBalance={false} />
           </div>
