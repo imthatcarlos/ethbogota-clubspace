@@ -25,7 +25,13 @@ const ActivityItem = ({ activity }: { activity: Activity }) => {
     const now = new Date();
     const startedAt = activity.startAt || activity.createdAt;
     const timePassed = Number(now) - startedAt * 1000;
-    return Math.floor(timePassed / 86400000);
+    if (timePassed > 86400000) {
+      const days = Math.floor(timePassed / 86400000);
+      return `${days} day${days > 1 ? "s" : ""} ago`;
+    } else {
+      const hours = Math.floor(timePassed / 3600000);
+      return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    }
   };
 
   const isVideo = () => drop.isVideo || drop.image.endsWith(".mp4");
@@ -33,12 +39,7 @@ const ActivityItem = ({ activity }: { activity: Activity }) => {
   return (
     <div className="p-3 rounded-xl min-w-[240px] border-slate-500 border-[1px]">
       {!isVideo() ? (
-        <img
-          src={getUrlForImageFromIpfs(drop.image)}
-          width="220"
-          height="220"
-          className="rounded-xl mb-2"
-        />
+        <img src={getUrlForImageFromIpfs(drop.image)} width="220" height="220" className="rounded-xl mb-2" />
       ) : (
         <video
           src={getUrlForImageFromIpfs(drop.image)}
@@ -57,7 +58,7 @@ const ActivityItem = ({ activity }: { activity: Activity }) => {
         {utils.formatEther(activity.totalSales)} {drop.chainId === 137 ? "MATIC" : "ETH"} raised
       </p>
       {activity.totalSalesAmount && <p>{activity.totalSalesAmount} minted</p>}
-      <p>{activityTime()} days ago</p>
+      <p>{activityTime()}</p>
     </div>
   );
 };
@@ -78,9 +79,9 @@ const ActivityFeed = () => {
         <>
           <h2 className="text-md font-bold tracking-tight text-3xl mt-16 mb-8">Recent Spaces</h2>
           <div className="flex overflow-auto gap-8">
-            {hostedSpaces.map((activity: Activity, i: number) => (
-              <ActivityItem key={i} activity={activity} />
-            )).filter((a) => a)}
+            {hostedSpaces
+              .map((activity: Activity, i: number) => <ActivityItem key={i} activity={activity} />)
+              .filter((a) => a)}
           </div>
         </>
       )}
