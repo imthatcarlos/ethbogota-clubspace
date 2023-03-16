@@ -1,15 +1,27 @@
+// @ts-nocheck
 // This file sets a custom webpack configuration to use your Next.js app
 // with Sentry.
 // https://nextjs.org/docs/api-reference/next.config.js/introduction
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
-const { withSentryConfig } = require("@sentry/nextjs");
+
+/**
+ * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
+ * This is especially useful for Docker builds.
+ */
+!process.env.SKIP_ENV_VALIDATION && (await import("./src/env.mjs"));
+
+import { withSentryConfig } from "@sentry/nextjs";
+
+import withReactSvg from "next-react-svg";
+import withPlugins from "next-compose-plugins";
+import path from "path";
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+
+const __dirname = path.dirname(__filename);
 
 /** @type {import('next').NextConfig} */
-const withReactSvg = require("next-react-svg");
-const withPlugins = require("next-compose-plugins");
-const path = require("path");
-
-module.exports = withSentryConfig(
+export default withSentryConfig(
   withPlugins(
     [
       [

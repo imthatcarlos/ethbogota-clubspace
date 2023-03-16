@@ -1,9 +1,9 @@
-import redisClient from "@/lib/utils/redisClient";
-import { GetServerSideProps } from "next";
+// import redisClient from "@/lib/utils/redisClient";
+import { GetServerSideProps, InferGetServerSidePropsType, NextPage } from "next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
-import { FC, Fragment, useEffect, useMemo, useRef, useState, useReducer } from "react";
+import { useEffect, useState, useReducer } from "react";
 import {
   DispatchPlayerContext,
   PlayerContext,
@@ -11,25 +11,30 @@ import {
   playerReducer,
   setAudioVolumeAction,
 } from "@madfi/ux-components";
-import { useAccount, useNetwork, useQuery } from "wagmi";
+import { useAccount } from "wagmi";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import useENS from "@/hooks/useENS";
-import { SPACE_API_URL, REDIS_SPACE_PREFIX, REDIS_STREAM_PREFIX, NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
+import { NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
 import { getLiveClubspace } from "@/services/radio";
 import useHasBadge from "@/hooks/useHasBadge";
 import MobileMessage from "@/components/MobileMessage";
-import {UpcomingItem} from "@/components/UpcomingFeed";
+// import { UpcomingItem } from "@/components/UpcomingFeed";
 import Countdown from "@/components/Countdown";
 import { wait } from "@/utils";
+import Head from "next/head";
+import { ClubSpaceObject } from "@/components/LiveSpace";
 
 const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
 const LiveSpace = dynamic(() => import("@/components/LiveSpace"), { ssr: false });
 
-const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
+const LivePageAtHandle: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({
+  clubSpaceObject,
+}: {
+  clubSpaceObject: ClubSpaceObject | undefined;
+}) => {
   const {
-    push,
     query: { handle },
-    reload
+    reload,
   } = useRouter();
   const { address, isConnected } = useAccount();
   const { data: profilesResponse, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
@@ -40,11 +45,6 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
   const [audioPlayerState, audioPlayerDispatch] = useReducer(playerReducer, playerInitialState);
   const { data: hasBadge, isLoading: isLoadingBadge } = useHasBadge();
   const [ensDone, setEnsDone] = useState(false);
-
-  if (!clubSpaceObject) {
-    push("/404");
-    return;
-  }
 
   useEffect(() => {
     if (!isLoadingProfiles) {
@@ -58,7 +58,6 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
       setEnsDone(true);
     }
   }, [isLoadingENS]);
-
 
   return (
     <>
@@ -80,6 +79,14 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
           ],
         }}
       />
+      <Head>
+        <link
+          rel="iframely player audio"
+          type="text/html"
+          href={`${NEXT_PUBLIC_SITE_URL}/embed/${clubSpaceObject.creatorLensHandle}`}
+          media="(aspect-ratio: 2/1)"
+        />
+      </Head>
       {isLoadingEntry && clubSpaceObject.queuedTrackIds?.length ? (
         <div className="flex-1 min-h-screen">
           <div className="abs-center">
@@ -107,7 +114,7 @@ const LivePageAtHandle: FC<any> = ({ clubSpaceObject }) => {
                   reload();
                 }}
               />
-              { /** <UpcomingItem activity={clubSpaceObject} link={false} /> */ }
+              {/** <UpcomingItem activity={clubSpaceObject} link={false} /> */}
             </div>
           </div>
         </div>
@@ -142,13 +149,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     query: { handle },
   } = context;
 
-  if (!handle || handle === '<no source>') return { props: {} };
+  if (!handle || handle === "<no source>")
+    return {
+      notFound: true,
+    };
 
   try {
-    const clubSpaceObject = await getLiveClubspace(handle);
+    const clubSpaceObject = await getLiveClubspace(handle as string);
     if (!clubSpaceObject) {
       console.log("SPACE NOT FOUND! MAY HAVE EXPIRED FROM REDIS");
-      return { props: {} };
+      return {
+        notFound: true,
+      };
     }
 
     console.log(`found space with id: ${clubSpaceObject.clubSpaceId}`);
@@ -159,5 +171,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     console.log(error);
   }
 
-  return { props: {} };
+  return {
+    notFound: true,
+  };
 };

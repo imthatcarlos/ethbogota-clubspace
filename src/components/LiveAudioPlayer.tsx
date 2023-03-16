@@ -1,10 +1,10 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { ITrack } from "@spinamp/spinamp-sdk";
 import { IcecastPlayer } from "@madfi/ux-components";
 import { groupBy } from "lodash/collection";
-import { isEmpty } from "lodash/lang";
+// import { isEmpty } from "lodash/lang";
 import toast from "react-hot-toast";
-import { getUrlForImageFromIpfs } from "@/utils";
+// import { getUrlForImageFromIpfs } from "@/utils";
 import useIsMounted from "@/hooks/useIsMounted";
 import theme from "@/constants/audioPlayerTheme";
 import { useJam } from "@/lib/jam-core-react";
@@ -15,7 +15,7 @@ interface Props {
   queuedTrackIds: [string];
   currentTrackId?: string;
   jamAudioPlayError: boolean;
-  updateTimeSpent: () => void;
+  updateTimeSpent: (time: number) => void;
 };
 
 export const LiveAudioPlayer = ({
@@ -39,10 +39,12 @@ export const LiveAudioPlayer = ({
     if (!metadata || !metadata.StreamTitle) {
       toast('The stream has ended - thanks for coming!', { duration: 10000, icon: '🔥' });
       setStreamEnded(true);
-      setCurrentTrack();
-      setNextTrack();
+      setCurrentTrack(undefined);
+      setNextTrack(undefined);
     } else {
       setCurrentTrack(groupedPlaylistTracks[metadata.StreamTitle][0]);
+      // @FIXME: state should not be updated directly
+      // @ts-expect-error
       currentTrackIndex++;
       updateTimeSpent(currentTrackIndex);
 
@@ -51,7 +53,7 @@ export const LiveAudioPlayer = ({
         setNextTrack(groupedPlaylistTracks[nextTrackId][0]);
         setCurrentTrackIndex(currentTrackIndex + 1);
       } else {
-        setNextTrack();
+        setNextTrack(undefined);
       }
     }
   };
@@ -107,9 +109,11 @@ export const LiveAudioPlayer = ({
         image: nextTrack?.lossyArtworkUrl,
       }}
       options={{ playbackMethod: 'html5' }}
+      // @ts-expect-error
       callbackOnMetadata={onMetadata}
       callbackOnPlay={onPlay}
       callbackOnPause={onPause}
+      // @ts-expect-error
       theme={theme}
     />
   );
