@@ -1,5 +1,5 @@
 import { API_URL } from './consts';
-import { fetchPlaylistById } from '@spinamp/spinamp-sdk';
+import { fetchPlaylistById, fetchTracksByIds } from '@spinamp/spinamp-sdk';
 
 export const getClubSpaceObject = async (handle: string) => {
   const response = await fetch(`${API_URL}/live/${handle}?includeTracks=true&includeStats=true`);
@@ -16,5 +16,14 @@ export const getClubSpace = async (handle: string) => {
   if (!clubSpaceObject) return {};
 
   const playlist = await fetchPlaylistById(clubSpaceObject.spinampPlaylistId);
-  return { clubSpaceObject, playlistTracks: playlist.playlistTracks };
+
+  // HOTFIX
+  const ids = playlist.trackIds.map((id) => {
+    const parts = id.split('/');
+    return `${parts[0]}/${utils.getAddress(parts[1])}/${parts[2]}`;
+  });
+
+  const tracks = await fetchTracksByIds(ids);
+
+  return { clubSpaceObject, playlistTracks: tracks };
 };
