@@ -9,7 +9,7 @@ import {
   getClubSpace,
   ITrack,
   ILensProfile
-} from '@madfi/clubspace-sdk';
+} from './../src';
 
 const AUDIO_PLAYER_DEFAULT_PLAYBACK = 'html5';
 

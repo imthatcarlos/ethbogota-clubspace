@@ -2,7 +2,7 @@ import 'react-app-polyfill/ie11';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import {useAccount} from 'wagmi';
-import { JamProvider, jamConfig } from '@madfi/clubspace-sdk';
+import { JamProvider, jamConfig } from './../src';
 import Clubspace from './Clubspace';
 import { ConnectWallet } from './ConnectWallet';
 import Web3Provider from "./Web3Provider";

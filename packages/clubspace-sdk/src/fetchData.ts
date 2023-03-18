@@ -1,5 +1,6 @@
 import { API_URL } from './consts';
 import { fetchPlaylistById, fetchTracksByIds } from '@spinamp/spinamp-sdk';
+import { utils } from 'ethers';
 
 export const getClubSpaceObject = async (handle: string) => {
   const response = await fetch(`${API_URL}/live/${handle}?includeTracks=true&includeStats=true`);
@@ -15,7 +16,7 @@ export const getClubSpace = async (handle: string) => {
 
   if (!clubSpaceObject) return {};
 
-  const playlist = await fetchPlaylistById(clubSpaceObject.spinampPlaylistId);
+  const { playlist } = await fetchPlaylistById(clubSpaceObject.spinampPlaylistId);
 
   // HOTFIX
   const ids = playlist.trackIds.map((id) => {
