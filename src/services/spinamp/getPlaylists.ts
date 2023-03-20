@@ -1,6 +1,7 @@
-import { 
+import {
   fetchCollectorPlaylists,
   fetchPlaylistById,
+  fetchTracksByIds,
   IPlaylist,
   ITrack
 } from "@spinamp/spinamp-sdk";
@@ -27,8 +28,8 @@ export const useGetTracksFromPlaylist = (options: UseQueryOptions = {}, playlist
   const result = useQuery<ITrack[] | null>(
     ["tracks", playlistId],
     async () => {
-      const playlist = await fetchPlaylistById(playlistId);
-      return playlist?.playlistTracks;
+      const { playlist } = await fetchPlaylistById(playlistId);
+      return await fetchTracksByIds(playlist.trackIds);
     },
     {
       ...(options as any),

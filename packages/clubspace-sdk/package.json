@@ -1,6 +1,6 @@
 {
   "name": "@madfi/clubspace-sdk",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -61,8 +61,8 @@
   },
   "dependencies": {
     "@madfi/jam-core": "^0.5.24",
-    "@spinamp/spinamp-sdk": "^0.0.7",
-    "ethers": "^6.0.8",
+    "@spinamp/spinamp-sdk": "^0.0.8",
+    "ethers": "^5.7.2",
     "graphql-request": "^5.1.0",
     "icecast-metadata-player": "^1.14.2",
     "lodash-es": "^4.17.21",

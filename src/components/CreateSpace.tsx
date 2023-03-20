@@ -2,7 +2,7 @@ import { FormEvent, Fragment, useState } from "react";
 import CreateLensPost from "@/components/CreateLensPost";
 import SelectPlaylist from "@/components/SelectPlaylist";
 import SetFeaturedProduct from "@/components/SetFeaturedProduct";
-import { IPlaylist, fetchPlaylistById } from "@spinamp/spinamp-sdk";
+import { IPlaylist, fetchPlaylistById, fetchTracksByIds } from "@spinamp/spinamp-sdk";
 import { useAccount, useContractRead, useSigner, useNetwork, useSwitchNetwork } from "wagmi";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -143,8 +143,9 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     const _image = await pinFileToIPFS(cover);
 
     // get track list for description
-    const playlistData = await fetchPlaylistById(playlist.id);
-    const tracklist = playlistData.playlistTracks.map((t, i) => `${i}. ${t.artist.name} - ${t.title}`).join("\n");
+    const { playlist } = await fetchPlaylistById(playlist.id);
+    const tracks = await fetchTracksByIds(playlist.trackIds);
+    const tracklist = tracks.map((t, i) => `${i}. ${t.artist.name} - ${t.title}`).join("\n");
     const description = `ClubSpace hosted by ${handle}\n\n${tracklist}`;
 
     console.log("uploading metadata");
