@@ -23,7 +23,9 @@ export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, on
     ? getUrlForImageFromIpfs(profile.coverPicture?.original?.url)
     : "/default-cover.jpg";
 
-  const profilePic = profile.picture?.original?.url ? getUrlForImageFromIpfs(profile.picture?.original?.url) : "";
+  const profilePic = profile.picture?.original?.url
+    ? getUrlForImageFromIpfs(profile.picture?.original?.url)
+    : (profile.picture?.uri || "");
 
   return (
     <>

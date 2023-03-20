@@ -366,11 +366,15 @@ const LiveSpace: FC<Props> = ({
     const join = async () => {
       if (!inRoom) {
         await setProps("roomId", clubSpaceObject.clubSpaceId);
+        const avatar = defaultProfile?.picture?.original?.url
+          || defaultProfile?.picture?.uri
+          || ensData?.avatar;
+
         await updateInfo({
           handle,
           hasBadge,
           profile: {
-            avatar: defaultProfile?.picture?.original?.url || ensData?.avatar,
+            avatar,
             name: defaultProfile?.name,
             totalFollowers: defaultProfile?.stats?.totalFollowers,
             id: defaultProfile?.id,
@@ -410,6 +414,7 @@ const LiveSpace: FC<Props> = ({
     clubSpaceObject.clubSpaceId,
     defaultProfile?.id,
     defaultProfile?.name,
+    defaultProfile?.picture?.uri,
     defaultProfile?.picture?.original?.url,
     defaultProfile?.stats?.totalFollowers,
     enterRoom,
