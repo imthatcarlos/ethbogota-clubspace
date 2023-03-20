@@ -6,6 +6,7 @@ import Live from "@/assets/svg/live.svg";
 import { subscribeNotifications } from "@/services/push/clientSide";
 import { NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
 import Image from "next/image";
+import { env } from "@/env.mjs";
 
 function timeUntil(timeStamp) {
   let time = new Date(timeStamp * 1000);
@@ -86,7 +87,7 @@ export const UpcomingFeed = () => {
     const _fetchAsync = async () => {
       const {
         data: { spaces },
-      } = await axios.get(`${process.env.NEXT_PUBLIC_SPACE_API_URL}/upcoming/all`);
+      } = await axios.get(`${env.NEXT_PUBLIC_SPACE_API_URL}/upcoming/all`);
       setSpaces(spaces.filter((space) => !space.ended && filterTestSpaces(space)));
     };
     _fetchAsync();

@@ -10,6 +10,7 @@ export type Profile = {
   metadata: string | null;
   isDefault: boolean;
   picture: {
+    uri: string;
     original: {
       url: string;
     };

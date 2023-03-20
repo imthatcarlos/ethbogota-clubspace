@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss/tailwind-config').TailwindConfig} */
+const plugin = require("tailwindcss/plugin");
 module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: "class",
@@ -79,6 +80,14 @@ module.exports = {
             transform: "scale(1)",
           },
         },
+        scale: {
+          "0%, 100%": {
+            transform: "scale(1.0)",
+          },
+          "50%": {
+            transform: "scale(0)",
+          },
+        },
       },
       animation: {
         "move-txt-bg": "move-txt-bg 8s linear infinite",
@@ -86,8 +95,25 @@ module.exports = {
         "fade-in-from-top": "fade-in-from-top 0.5s var(--ease-squish-1) forwards calc(var(--_delay) * 100ms)",
         crash: "crash 6s linear",
         destroy: "destroy 6s",
+        scale: "scale 2s infinite",
       },
     },
   },
-  plugins: [require("@tailwindcss/forms")],
+  plugins: [
+    require("@tailwindcss/forms"),
+    plugin(({ matchUtilities, theme }) => {
+      matchUtilities(
+        {
+          "animation-delay": (value) => {
+            return {
+              "animation-delay": value,
+            };
+          },
+        },
+        {
+          values: theme("transitionDelay"),
+        }
+      );
+    }),
+  ],
 };

@@ -21,7 +21,6 @@ import MobileMessage from "@/components/MobileMessage";
 // import { UpcomingItem } from "@/components/UpcomingFeed";
 import Countdown from "@/components/Countdown";
 import { wait } from "@/utils";
-import Head from "next/head";
 import { ClubSpaceObject } from "@/components/LiveSpace";
 
 const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
@@ -78,15 +77,15 @@ const LivePageAtHandle: NextPage<InferGetServerSidePropsType<typeof getServerSid
             },
           ],
         }}
+        additionalLinkTags={[
+          {
+            rel: "iframely player audio",
+            type: "text/html",
+            href: `${NEXT_PUBLIC_SITE_URL}/embed/${clubSpaceObject.creatorLensHandle}`,
+            media: "(aspect-ratio: 2/1)",
+          },
+        ]}
       />
-      <Head>
-        <link
-          rel="iframely player audio"
-          type="text/html"
-          href={`${NEXT_PUBLIC_SITE_URL}/embed/${clubSpaceObject.creatorLensHandle}`}
-          media="(aspect-ratio: 2/1)"
-        />
-      </Head>
       {isLoadingEntry && clubSpaceObject.queuedTrackIds?.length ? (
         <div className="flex-1 min-h-screen">
           <div className="abs-center">

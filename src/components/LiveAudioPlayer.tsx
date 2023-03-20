@@ -12,7 +12,7 @@ import { useJam } from "@/lib/jam-core-react";
 interface Props {
   streamURL: string;
   playlistTracks: ITrack[];
-  queuedTrackIds: [string];
+  queuedTrackIds: string[];
   currentTrackId?: string;
   jamAudioPlayError: boolean;
   updateTimeSpent: (time: number) => void;

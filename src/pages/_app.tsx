@@ -14,6 +14,10 @@ import { Header } from "@/components/Header";
 import Footer from "@/components/Footer";
 // import { NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
 import SEO from "../../next-seo.config";
+import type { ReactElement, ReactNode } from "react";
+import type { NextPage } from "next";
+import type { AppProps } from "next/app";
+import CommonLayout from "@/components/Layouts/CommonLayout";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,7 +27,17 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = ({ Component, pageProps }) => {
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
+const App = ({ Component, pageProps }: AppPropsWithLayout) => {
+  const getLayout = Component.getLayout ?? ((page) => <CommonLayout>{page}</CommonLayout>);
+
   return (
     <QueryClientProvider client={queryClient}>
       <DefaultSeo {...SEO} />
@@ -48,14 +62,14 @@ const App = ({ Component, pageProps }) => {
             </ToastBar>
           )}
         </Toaster>
-        <div className="flex flex-col min-h-screen">
-          <Header />
-          <Component {...pageProps} />
-          <Analytics />
-          <Footer />
-        </div>
+        {getLayout(
+          <>
+            <Component {...pageProps} />
+            <Analytics />
+          </>
+        )}
       </Web3Provider>
-      <ReactQueryDevtools />
+      {/* <ReactQueryDevtools /> */}
     </QueryClientProvider>
   );
 };

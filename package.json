@@ -19,6 +19,7 @@
     "@pinata/sdk": "^1.1.26",
     "@privy-io/privy-node": "^0.0.2",
     "@pushprotocol/restapi": "^0.1.1",
+    "@radix-ui/react-slider": "^1.1.1",
     "@rainbow-me/rainbowkit": "^0.8.0",
     "@semaphore-protocol/group": "^2.6.0",
     "@semaphore-protocol/identity": "^2.6.0",
