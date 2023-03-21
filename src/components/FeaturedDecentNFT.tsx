@@ -63,11 +63,11 @@ export const FeaturedDecentNFT = ({
         try {
           logAction(userAddress, fieldNamePrivy(semGroupIdHex), { action: "buy_drop", address: contract.address });
 
-          const _signer = switched ? await activeConnector.getSigner() : signer;
+          const _signer = await activeConnector.getSigner();
           const tx =
             contractType == CONTRACT_TYPE_CRESCENDO
-              ? await contract.connect(_signer).buy(0, { value: price })
-              : await contract.connect(_signer).mint(1, { value: price });
+              ? await contract.connect(_signer).buy(0, { value: price, gasLimit: 150_000 })
+              : await contract.connect(_signer).mint(userAddress, 1, { value: price, gasLimit: 150_000 });
 
           console.log(`tx: ${tx.hash}`);
           await tx.wait();
