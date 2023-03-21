@@ -46,7 +46,7 @@ import axios from "axios";
 import ClaimFavorModal from "./ClaimFavorModal";
 import PinnedLensPost from "./PinnedLensPost";
 
-type ClubSpaceObject = {
+export type ClubSpaceObject = {
   clubSpaceId: string;
   createdAt: number;
   creatorAddress: string;

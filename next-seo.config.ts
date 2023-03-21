@@ -1,6 +1,9 @@
 import { NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
-const SEO = {
-  title: "ClubSpace",
+import { DefaultSeoProps } from "next-seo";
+
+const SEO: DefaultSeoProps = {
+  titleTemplate: "ClubSpace | %s",
+  defaultTitle: "ClubSpace",
   description: "Promote your music NFTs with a live listening party",
   openGraph: {
     type: "website",
