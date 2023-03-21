@@ -3,9 +3,10 @@ import { groupBy } from 'lodash';
 import IcecastMetadataPlayer from 'icecast-metadata-player';
 
 interface PlayerOptions {
-  playbackMethod?: 'mediasource' | 'webaudio' | 'html5' | undefined;
   onTrackChanged: (newTrack: ITrack) => void;
   onSpaceEnded: () => void;
+  playbackMethod?: 'mediasource' | 'webaudio' | 'html5' | undefined;
+  // audioElement?: HTMLAudioElement | undefined;
 }
 
 interface MetadataProps {
@@ -19,7 +20,12 @@ interface MetadataProps {
 export const getAudioPlayer = async (
   clubSpaceObject: IClubSpaceObject,
   playlistTracks: ITrack[],
-  { playbackMethod, onTrackChanged, onSpaceEnded }: PlayerOptions
+  {
+    playbackMethod,
+    onTrackChanged,
+    onSpaceEnded,
+  }: // audioElement
+  PlayerOptions
 ) => {
   const { streamURL } = clubSpaceObject;
   // const currentTrackId = queuedTrackIds[0];
@@ -46,5 +52,6 @@ export const getAudioPlayer = async (
     playbackMethod,
     onMetadata,
     onError,
+    // audioElement,
   });
 };

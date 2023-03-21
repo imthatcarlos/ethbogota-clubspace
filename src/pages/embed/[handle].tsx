@@ -146,6 +146,8 @@ const EmbedSpace: NextPageWithLayout = () =>
                     draggable="false"
                   />
                 </div>
+                {/* test adding the ref and updating the sdk if doesn't work */}
+                <audio className="hidden invisible" id="backup-audio"></audio>
                 <div className="flex gap-2 items-center justify-center w-full">
                   <button
                     onClick={() => {
