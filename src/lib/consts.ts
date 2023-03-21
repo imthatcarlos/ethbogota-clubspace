@@ -1,7 +1,6 @@
 import { env } from "@/env.mjs";
 
-export const IS_PRODUCTION = true;
-//  process.env.NEXT_PUBLIC_IS_PRODUCTION === "true";
+export const IS_PRODUCTION = process.env.NEXT_PUBLIC_IS_PRODUCTION === "true";
 export const APP_NAME = "Clubspace";
 
 export const REDIS_SPACE_PREFIX = "space";

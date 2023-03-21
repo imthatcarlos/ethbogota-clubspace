@@ -8,7 +8,7 @@ import { use } from "use-minimal-state";
 import { useDebounce } from "use-debounce";
 import { classNames } from "@/lib/utils/classNames";
 import { buildLensShareUrl } from "@infinity-keys/react-lens-share-button";
-import { uniq } from "lodash/array";
+import { uniqBy } from "lodash/array";
 import { sortBy } from "lodash/collection";
 import { Profile, useGetProfilesOwned, useGetProfileByHandle } from "@/services/lens/getProfile";
 import { fieldNamePrivy, getUrlForImageFromIpfs, wait } from "@/utils";
@@ -243,8 +243,10 @@ const LiveSpace: FC<Props> = ({
   const micOn = myAudio?.active; // only for the host
 
   useEffect(() => {
-    const res = uniq([myPeerId].concat(peers)).filter((id) => !isEmpty(identities[id]));
-    const sorted = sortBy(res, (r) => -identities[r].profile?.totalFollowers || 0);
+    const all = peers.concat([myPeerId]).reverse(); // to get the most recent joined at the top
+    const unique = uniqBy(all, (p) => identities[p]?.handle);
+    const sorted = sortBy(unique, (r) => -identities[r]?.profile?.totalFollowers || 0);
+
     setAudience(sorted);
   }, [peers, identities, myPeerId]);
 
