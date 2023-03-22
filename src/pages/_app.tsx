@@ -35,10 +35,13 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
 
+// pageProps flow in Next goes like this:
+// getServerSideProps | other next function in route -> _app -> Route Component
 // Fix for SEO, see: https://github.com/vercel/next.js/issues/35172
 const HandleSEO = ({ pageProps }) => {
-  if (pageProps.clubSpaceObject) {
-    const { clubSpaceObject } = pageProps;
+  const { handle, clubSpaceObject } = pageProps;
+
+  if (clubSpaceObject) {
     return (
       <>
         <title>Clubspace | {clubSpaceObject?.creatorLensHandle}</title>
@@ -108,6 +111,14 @@ const HandleSEO = ({ pageProps }) => {
         name="twitter:image"
         content="https://link.storjshare.io/raw/jwg3vujynjlvbn5gdgm5yjoob7mq/misc%2Fclubspace.png"
       ></meta>
+      {handle && (
+        <link
+          rel="iframely player audio"
+          type="text/html"
+          href={`${NEXT_PUBLIC_SITE_URL}/embed/${handle}`}
+          media="(aspect-ratio: 2/1)"
+        ></link>
+      )}
     </>
   );
 };

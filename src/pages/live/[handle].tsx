@@ -21,6 +21,7 @@ import MobileMessage from "@/components/MobileMessage";
 import Countdown from "@/components/Countdown";
 import { wait } from "@/utils";
 import { ClubSpaceObject } from "@/components/LiveSpace";
+import { SpaceEnded } from "@/components/SpaceEnded";
 
 const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
 const LiveSpace = dynamic(() => import("@/components/LiveSpace"), { ssr: false });
@@ -45,13 +46,19 @@ const LivePageAtHandle: NextPage = ({ clubSpaceObject }: { clubSpaceObject: Club
       setDefaultProfile(profilesResponse ? profilesResponse.defaultProfile : null);
       setLoadingDefaultProfile(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, isLoadingProfiles]);
 
   useEffect(() => {
     if (!address || !isLoadingENS) {
       setEnsDone(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoadingENS]);
+
+  if (!clubSpaceObject) {
+    return <SpaceEnded handle={handle as string} />;
+  }
 
   return (
     <>
@@ -117,6 +124,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     query: { handle },
   } = context;
 
+  // should never happen
   if (!handle || handle === "<no source>")
     return {
       notFound: true,
@@ -127,7 +135,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (!clubSpaceObject) {
       console.log("SPACE NOT FOUND! MAY HAVE EXPIRED FROM REDIS");
       return {
-        notFound: true,
+        // we need to have the handle in the _app when there's no space
+        // to provide the correct iframely link
+        props: { handle },
       };
     }
 
