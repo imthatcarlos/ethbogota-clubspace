@@ -26,6 +26,7 @@ import { HostCard } from "./HostCard";
 import { FeaturedDecentNFT } from "./FeaturedDecentNFT";
 import { FeaturedSoundNFT } from "./FeaturedSoundNFT";
 import { LiveAudioPlayer } from "./LiveAudioPlayer";
+import LensSvg from "@/assets/svg/lens.svg";
 import {
   SITE_URL,
   LENSTER_URL,
@@ -109,8 +110,10 @@ const LiveSpace: FC<Props> = ({
   const { data: signer } = useSigner();
   const { connector: activeConnector, isConnected } = useAccount();
   const { chain } = useNetwork();
-  const [state, { enterRoom, leaveRoom, setProps, updateInfo, sendReaction, retryMic, addSpeaker, retryAudio }] =
-    useJam();
+  const [
+    state,
+    { enterRoom, leaveRoom, setProps, updateInfo, sendReaction, retryMic, addSpeaker, removeSpeaker, retryAudio }
+  ] = useJam();
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
   const [drawerProfile, setDrawerProfile] = useState<any>({});
   const [doesFollowDrawerProfile, setDoesFollowDrawerProfile] = useState<boolean>(false);
@@ -194,6 +197,7 @@ const LiveSpace: FC<Props> = ({
     reactions,
     handRaised,
     identities,
+    room,
     speaking,
     iSpeak,
     iModerate,
@@ -213,6 +217,7 @@ const LiveSpace: FC<Props> = ({
     "reactions",
     "handRaised",
     "identities",
+    "room",
     "speaking",
     "iAmSpeaker",
     "iAmModerator",
@@ -250,6 +255,12 @@ const LiveSpace: FC<Props> = ({
     setAudience(sorted);
   }, [peers, identities, myPeerId]);
 
+  useEffect(() => {
+    if (iSpeak && !isHost) {
+      toast(`You are now a speaker. Enable your mic to speak and don't forget to mute yourself after!`, { icon: "🎙" });
+    }
+  }, [isHost, iSpeak]);
+
   // log impression for party favor after 3 minutes
   useEffect(() => {
     // TODO: the 3 minute timeout
@@ -277,7 +288,7 @@ const LiveSpace: FC<Props> = ({
   }, [debouncedSendingReaction]);
 
   // only lens accounts (handle includes .lens or .test)
-  const toggleDrawer = async ({ handle, profile: { id }, hasBadge }) => {
+  const toggleDrawer = async (peerId, { handle, profile: { id }, hasBadge }) => {
     if ([".lens", ".test"].some((ext) => handle.includes(ext))) {
       const [profile, { doesFollow: doesFollowData }] = await Promise.all([
         getProfileByHandle(handle),
@@ -295,6 +306,7 @@ const LiveSpace: FC<Props> = ({
       }
 
       profile.hasBadge = hasBadge;
+      profile.peerId = peerId;
 
       setDrawerProfile(profile);
       setDoesFollowDrawerProfile(doesFollowData[0].follows);
@@ -432,8 +444,9 @@ const LiveSpace: FC<Props> = ({
     featuredDrop,
   ]);
 
+  // HACK: when the room is created from the clubspace-sdk
   useEffect(() => {
-    if (isMounted && inRoom && isHost) {
+    if (isMounted && inRoom && isHost && !iSpeak) {
       addSpeaker(clubSpaceObject.clubSpaceId, myPeerId, process.env.NEXT_PUBLIC_CLUBSPACE_API_KEY_1);
     }
   }, [isMounted, inRoom, isHost, myPeerId]);
@@ -453,7 +466,7 @@ const LiveSpace: FC<Props> = ({
   }, [isSomeMicOn]);
 
   const toggleSpeaking = () => {
-    if (!isHost) return; // for sanity
+    if (!isHost && !iSpeak) return; // for sanity
 
     if (micOn) {
       setProps("micMuted", !micMuted);
@@ -484,6 +497,17 @@ const LiveSpace: FC<Props> = ({
         }
         toast(`You are now speaking`, { icon: "🎙" });
       });
+    }
+  };
+
+  const toggleSpeaker = (peerId) => {
+    closeModal();
+    if (room.speakers.includes(peerId)) {
+      removeSpeaker(clubSpaceObject.clubSpaceId, peerId);
+      toast(`Speaker has been removed`, { icon: "➖" });
+    } else {
+      addSpeaker(clubSpaceObject.clubSpaceId, peerId);
+      toast(`Speaker has been added`, { icon: "➕" });
     }
   };
 
@@ -588,7 +612,7 @@ const LiveSpace: FC<Props> = ({
         <div className="grid-live items-center justify-center px-10 lg:px-14 gap-x-3">
           <div className="grid-container w-full audience max-h-[30rem] overflow-auto !content-baseline rounded-lg">
             {!isConnected ? (
-              <div className="justify-center md:min-w-[40rem] p-10 z-10 bg-[rgb(30, 30, 36, 0.25)] backdrop-blur-sm items-center">
+              <div className="justify-center md:min-w-[40rem] p-5 z-10 bg-[rgb(30, 30, 36, 0.25)] backdrop-blur-sm items-center">
                 <p className="animate-move-txt-bg gradient-txt text-2xl mb-5">Connect your wallet to join the space</p>
                 <ConnectWallet showBalance={false} />
               </div>
@@ -612,8 +636,11 @@ const LiveSpace: FC<Props> = ({
                     index={index}
                     hasBadge={identities[peerId].hasBadge}
                     onClick={() => {
-                      toggleDrawer(identities[peerId]);
+                      toggleDrawer(peerId, identities[peerId]);
                     }}
+                    isHost={creatorLensProfile.id === identities[peerId].profile?.id}
+                    isSpeaker={room?.speakers?.includes(peerId)}
+                    isSpeaking={speaking.has(peerId)}
                   />
                 ) : null;
               })
@@ -649,7 +676,7 @@ const LiveSpace: FC<Props> = ({
             )}
             {creatorLensProfile && (
               <>
-                {isHost && iSpeak && (
+                {(isHost || iSpeak) && (
                   <div className="flex flex w-full justify-center relative grid-cols-2 gap-4">
                     <div>
                       <button
@@ -697,7 +724,7 @@ const LiveSpace: FC<Props> = ({
                   </div>
                 )}
 
-                {!isHost && (
+                {!isHost && !iSpeak && (
                   <button
                     onClick={() => setIsHostOpen(true)}
                     className={`btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center ${
@@ -924,28 +951,22 @@ const LiveSpace: FC<Props> = ({
                           <span className="text-sm badge-holder mt-1">✔️ ClubSpace Badge Holder</span>
                         ) : null}
                       </div>
-
-                      {drawerProfile?.id !== defaultProfile?.id ? (
-                        lensLoginData || lensRefreshData ? (
-                          <button
-                            className="!w-auto btn"
-                            onClick={() => {
-                              onFollowClick(drawerProfile.id);
-                            }}
-                            disabled={doesFollowDrawerProfile || isFollowingAction}
-                          >
-                            {doesFollowDrawerProfile ? "Following" : "Follow"}
-                          </button>
-                        ) : (
-                          <button onClick={() => loginWithLens({}, true)} className="btn justify-center items-center">
-                            Login with Lens
-                          </button>
-                        )
-                      ) : null}
                     </div>
                   </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-white mb-6">{drawerProfile.bio || <em>No bio provided.</em>}</p>
+
+                    {defaultProfile?.id && drawerProfile?.id !== defaultProfile?.id && (
+                      <button
+                        className="!w-auto btn mb-4"
+                        onClick={() => {
+                          onFollowClick(drawerProfile.id);
+                        }}
+                        disabled={doesFollowDrawerProfile || isFollowingAction}
+                      >
+                        <LensSvg height={20} className={"pr-3"} />
+                        {doesFollowDrawerProfile ? "Following" : "Follow"}
+                      </button> )}
 
                     {/**
                       <button className="flex gap-x-4 items-center">
@@ -953,6 +974,16 @@ const LiveSpace: FC<Props> = ({
                         <span>Send Direct Message</span>
                       </button>
                       */}
+
+                    {isHost && room && (
+                      <button
+                        className="!w-auto btn"
+                        onClick={() => toggleSpeaker(drawerProfile.peerId)}
+                      >
+                        {room?.speakers?.includes(drawerProfile.peerId)
+                          ? 'Remove Speaker'
+                          : 'Promote to Speaker'}
+                      </button> )}
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import MirrorSvg from "@/assets/svg/mirror.svg";
-import LensSvg from "@/assets/svg/lens.svg";
 
 export default () => {
   const router = useRouter();

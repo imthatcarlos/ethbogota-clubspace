@@ -67,7 +67,7 @@ body {
 }
 
 .grid-container {
-  grid-template-columns: repeat(auto-fill, 90px);
+  grid-template-columns: repeat(auto-fill, 100px);
   @apply border-[0.1px] border-gray-600 p-4 md:p-8 grid place-content-center mx-auto gap-x-4 gap-y-6 mt-10;
 }
 
@@ -93,6 +93,22 @@ body {
   }
   100% {
     box-shadow: 0 0 20px var(--club-red-dark);
+  }
+}
+
+.glowing-profile-speaking {
+  animation: pulse-profile 1s;
+}
+
+@keyframes pulse-profile {
+  0% {
+    box-shadow: 0 0 10px var(--club-red-dark);
+  }
+  50% {
+    box-shadow: 0 0 15px var(--club-red-light);
+  }
+  100% {
+    box-shadow: 0 0 10px var(--club-red-dark);
   }
 }
 
