@@ -668,7 +668,7 @@ const LiveSpace: FC<Props> = ({
             ))} */}
           </div>
           <div className="decent-nft flex flex-col gap-y-3">
-            {!isLoadingFeauredDrop ? <>{DummyDecent()}</> : (
+            {isLoadingFeauredDrop ? <>{DummyDecent()}</> : (
               <>
                 {featuredDrop?.protocol === DROP_PROTOCOL_DECENT && (
                   <FeaturedDecentNFT {...featuredDrop} semGroupIdHex={clubSpaceObject.clubSpaceId} />
