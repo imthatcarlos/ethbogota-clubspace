@@ -622,7 +622,7 @@ const LiveSpace: FC<Props> = ({
                 <ConnectWallet showBalance={false} />
               </div>
             ) : null}
-            {!!myIdentity && audience?.length > 0 ? (
+            {!!myIdentity && audience?.length > 0 && !isEmpty(identities) ? (
               audience?.map((peerId, index) => {
                 return identities[peerId] ? (
                   <LensProfile
