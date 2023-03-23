@@ -121,8 +121,6 @@ export const useLensLogin = (options: UseQueryOptions = {}) => {
       const signature = await signer?.signMessage(challenge?.challenge?.text);
       const result = await authenticate(address, signature);
 
-      console.log(result)
-
       localStorage.setItem("lens_accessToken", result?.authenticate?.accessToken);
       localStorage.setItem("lens_refreshToken", result?.authenticate?.refreshToken);
 

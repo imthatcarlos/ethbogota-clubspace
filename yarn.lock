@@ -1526,10 +1526,10 @@
     "@json-rpc-tools/types" "^1.7.6"
     "@pedrouid/environment" "^1.0.1"
 
-"@madfi/jam-core@^0.5.24":
-  version "0.5.24"
-  resolved "https://registry.yarnpkg.com/@madfi/jam-core/-/jam-core-0.5.24.tgz#feccfd4aa5a2f115537c9c89d8dfa9876f28c45e"
-  integrity sha512-RwUP1me6++mGhUOe8ElzfIl75kZufvHGTp4LiSpGwJo0ji1d5CPwZjzZ230n1RtBIHr9Pgt/aEomWxGsWZ6wwg==
+"@madfi/jam-core@^0.5.28":
+  version "0.5.28"
+  resolved "https://registry.yarnpkg.com/@madfi/jam-core/-/jam-core-0.5.28.tgz#0cc7bf73aed9be30420ded31572f6bd629bbec03"
+  integrity sha512-FJPWDcS/yIYzEG3OHt6D541WUwGr5WawvCPQVUkWEGUQCATOwb16p8o67UC3Aksje0R4HRywtww2jcOVLwCbFw==
   dependencies:
     fast-base64 "^0.1.8"
     mediasoup-client "^3.6.31"

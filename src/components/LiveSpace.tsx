@@ -88,6 +88,9 @@ type Props = {
   setPlayerVolume: () => void;
 };
 
+const MUSIC_VOLUME_WHEN_PAUSED = 0;
+const MUSIC_VOLUME_WHEN_SPEAKING = 0.2;
+
 /**
  * This component takes club space data object and handles any live aspects with streamr
  * - connect to the streamr pub/sub client
@@ -170,7 +173,7 @@ const LiveSpace: FC<Props> = ({
     clubSpaceObject.creatorLensHandle,
     "creatorLensProfile"
   );
-  const { data: featuredDrop } = useGetClubspaceDrop({}, { drop: clubSpaceObject.drop, signer });
+  const { data: featuredDrop, isLoading: isLoadingFeauredDrop } = useGetClubspaceDrop({}, { drop: clubSpaceObject.drop, signer });
   const { data: playlistTracks, isLoading: isLoadingPlaylistTracks } = useGetTracksFromPlaylist(
     {},
     clubSpaceObject.spinampPlaylistId
@@ -249,11 +252,12 @@ const LiveSpace: FC<Props> = ({
 
   useEffect(() => {
     const all = peers.concat([myPeerId]).reverse(); // to get the most recent joined at the top
-    const unique = uniqBy(all, (p) => identities[p]?.handle);
-    const sorted = sortBy(unique, (r) => -identities[r]?.profile?.totalFollowers || 0);
+    const sorted = sortBy(all, (r) => -identities[r]?.profile?.totalFollowers || 0);
+    const allWithSpeakers = room.speakers.concat(sorted); // to get the speakers at the top;
+    const unique = uniqBy(allWithSpeakers, (p) => identities[p]?.handle);
 
-    setAudience(sorted);
-  }, [peers, identities, myPeerId]);
+    setAudience(unique);
+  }, [peers, identities, myPeerId, room]);
 
   useEffect(() => {
     if (iSpeak && !isHost) {
@@ -446,16 +450,17 @@ const LiveSpace: FC<Props> = ({
 
   // HACK: when the room is created from the clubspace-sdk
   useEffect(() => {
-    if (isMounted && inRoom && isHost && !iSpeak) {
-      addSpeaker(clubSpaceObject.clubSpaceId, myPeerId, process.env.NEXT_PUBLIC_CLUBSPACE_API_KEY_1);
+    if (isMounted && inRoom && isHost) {
+      if (!iSpeak) addSpeaker(clubSpaceObject.clubSpaceId, myPeerId, process.env.NEXT_PUBLIC_CLUBSPACE_API_KEY_1);
+      if (!iModerate) addModerator(clubSpaceObject.clubSpaceId, myPeerId, process.env.NEXT_PUBLIC_CLUBSPACE_API_KEY_1);
     }
-  }, [isMounted, inRoom, isHost, myPeerId]);
+  }, [isMounted, inRoom, isHost, myPeerId, iSpeak, iModerate]);
 
   useEffect(() => {
-    if (isHost || forceSoundMuted) return;
+    // if we have our mic on its already lower, or if the player is paused no need to do anything
+    if (!micMuted || forceSoundMuted || playerVolume === MUSIC_VOLUME_WHEN_PAUSED) return;
 
     if (isSomeMicOn) {
-      const MUSIC_VOLUME_WHEN_SPEAKING = 0.2;
       const lowerVolume = Math.min(MUSIC_VOLUME_WHEN_SPEAKING, playerVolume);
       setPreviousVolume(playerVolume);
       setPlayerVolume(lowerVolume);
@@ -476,7 +481,8 @@ const LiveSpace: FC<Props> = ({
       if (forceSoundMuted) return;
 
       if (micMuted) {
-        const MUSIC_VOLUME_WHEN_SPEAKING = 0.2;
+        if (playerVolume === MUSIC_VOLUME_WHEN_SPEAKING) return; // already muted
+
         const lowerVolume = Math.min(MUSIC_VOLUME_WHEN_SPEAKING, playerVolume);
         setPreviousVolume(playerVolume);
         setPlayerVolume(lowerVolume);
@@ -486,7 +492,6 @@ const LiveSpace: FC<Props> = ({
     } else {
       // @TODO: we should not lower the volume + nofif until micOn
       retryMic().then(() => {
-        const MUSIC_VOLUME_WHEN_SPEAKING = 0.2;
         const lowerVolume = Math.min(MUSIC_VOLUME_WHEN_SPEAKING, playerVolume);
         setPreviousVolume(playerVolume);
         setPlayerVolume(lowerVolume);
@@ -663,16 +668,20 @@ const LiveSpace: FC<Props> = ({
             ))} */}
           </div>
           <div className="decent-nft flex flex-col gap-y-3">
-            {featuredDrop?.protocol === DROP_PROTOCOL_DECENT && (
-              <FeaturedDecentNFT {...featuredDrop} semGroupIdHex={clubSpaceObject.clubSpaceId} />
-            )}
-            {featuredDrop?.protocol === DROP_PROTOCOL_SOUND && (
-              <p>
-                <FeaturedSoundNFT {...featuredDrop} semGroupIdHex={clubSpaceObject.clubSpaceId} />
-              </p>
-            )}
-            {clubSpaceObject.pinnedLensPost && (
-              <PinnedLensPost url={clubSpaceObject.pinnedLensPost} small={!!clubSpaceObject.drop} />
+            {!isLoadingFeauredDrop ? <>{DummyDecent()}</> : (
+              <>
+                {featuredDrop?.protocol === DROP_PROTOCOL_DECENT && (
+                  <FeaturedDecentNFT {...featuredDrop} semGroupIdHex={clubSpaceObject.clubSpaceId} />
+                )}
+                {featuredDrop?.protocol === DROP_PROTOCOL_SOUND && (
+                  <p>
+                    <FeaturedSoundNFT {...featuredDrop} semGroupIdHex={clubSpaceObject.clubSpaceId} />
+                  </p>
+                )}
+                {clubSpaceObject.pinnedLensPost && (
+                  <PinnedLensPost url={clubSpaceObject.pinnedLensPost} small={!!clubSpaceObject.drop} />
+                )}
+              </>
             )}
             {creatorLensProfile && (
               <>
