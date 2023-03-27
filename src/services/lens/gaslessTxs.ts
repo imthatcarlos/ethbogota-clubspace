@@ -3,7 +3,8 @@ import { defaultAbiCoder } from "ethers/lib/utils";
 import request, { gql } from "graphql-request";
 import { apiUrls } from "@/constants/apiUrls";
 import omitDeep from "omit-deep";
-import { FREE_COLLECT_MODULE } from "@/lib/consts";
+import { FREE_COLLECT_MODULE, IS_PRODUCTION } from "@/lib/consts";
+import createPostWithSig from "@/services/lens/createPostWithSig";
 
 export const LENS_HUB_NFT_NAME = "Lens Protocol Profiles";
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -57,12 +58,12 @@ export const makePostTx = async (contract, profileId, contentUri) => {
 };
 
 const CREATE_POST_TYPED_DATA = gql`
-  mutation CreatePostTypedData($profileId: ProfileId!, $contentURI: Url!) {
+  mutation CreatePostTypedData($profileId: ProfileId!, $contentURI: Url!, $collectModule: CollectModuleParams!) {
     createPostTypedData(
       request: {
         profileId: $profileId
         contentURI: $contentURI
-        collectModule: { freeCollectModule: { followerOnly: false } }
+        collectModule: $collectModule
         referenceModule: { followerOnlyReferenceModule: false }
       }
     ) {
@@ -154,17 +155,14 @@ export const createTypedData = async (_request, accessToken, document) => {
 
 export const signCreateTypedData = async (_request, signer, accessToken, document) => {
   const result = await createTypedData(_request, accessToken, document);
-  console.log("create post: createPostTypedData", result);
-
   const typedData = result.typedData;
-  console.log("create post: typedData", typedData);
+  // console.log("create post: typedData", typedData);
 
   const signature = await signer._signTypedData(
     omit(typedData.domain, "__typename"),
     omit(typedData.types, "__typename"),
     omit(typedData.value, "__typename")
   );
-  console.log("create post: signature", signature);
 
   return { result, signature };
 };
@@ -182,34 +180,34 @@ export const broadcastRequest = async (_request, accessToken) => {
   return result.broadcast;
 };
 
-export const makePostGasless = async (profileId: string, contentURI: string, signer, accessToken: string) => {
-  contentURI = contentURI.startsWith("ipfs://") ? contentURI : "ipfs://" + contentURI;
+export const makePostGasless = async (
+  profileId: string,
+  contentURI: string,
+  signer,
+  accessToken: string,
+  multirecipientFeeCollectModule?: any
+) => {
+  const collectModule = multirecipientFeeCollectModule
+    ? { multirecipientFeeCollectModule }
+    : { freeCollectModule: { followerOnly: false } };
+
   const createPostRequest = {
     profileId,
-    contentURI,
-    collectModule: {
-      freeCollectModule: { followerOnly: false },
-    },
-    referenceModule: {
-      followerOnlyReferenceModule: false,
-    },
+    contentURI: contentURI.startsWith("ipfs://") ? contentURI : `ipfs://${contentURI}`,
+    collectModule,
   };
 
   const signedResult = await signCreateTypedData(createPostRequest, signer, accessToken, CREATE_POST_TYPED_DATA);
 
-  try {
-    const broadcastResult = await broadcastRequest(
-      {
-        id: [signedResult.result.id],
-        signature: [signedResult.signature],
-      },
-      accessToken
-    );
+  const res = await broadcastRequest(
+    {
+      id: [signedResult.result.id],
+      signature: [signedResult.signature],
+    },
+    accessToken
+  );
 
-    return broadcastResult;
-  } catch (error) {
-    console.log(error);
-  }
+  console.log(res);
 };
 
 export const followProfileGasless = async (profileId: string, signer, accessToken: string) => {

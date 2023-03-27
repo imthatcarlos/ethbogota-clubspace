@@ -11,7 +11,13 @@ import { useJam } from "@/lib/jam-core-react";
 import SetGoodyBag from "@/components/SetGoodyBag";
 import { pinFileToIPFS, pinJson } from "@/services/pinata/pinata";
 import { makePostGasless, publicationBody, ZERO_ADDRESS } from "@/services/lens/gaslessTxs";
-import { LENSHUB_PROXY, ALLOWED_CHAIN_IDS } from "@/lib/consts";
+import {
+  LENSHUB_PROXY,
+  ALLOWED_CHAIN_IDS,
+  TIER_GATED_LENS_COLLECT,
+  CLUBSPACE_SERVICE_FEE_PCT,
+  CLUBSPACE_SERVICE_FEE_RECIPIENT
+} from "@/lib/consts";
 import { LensHubProxy } from "@/services/lens/abi";
 import { launchSpace } from "@/services/jam/core";
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
@@ -24,23 +30,26 @@ import { wait } from "@/utils";
 import { createGroup } from "@/lib/claim-without-semaphore/claims";
 import Copy from "@/assets/svg/copy.svg";
 import CreateLaunchTime from "./CreateLaunchTime";
+import SelectTier from "./SelectTier";
 
 type MultiFormData = {
   lensPost: string;
   pinnedLensPost: string;
   goodyName: string;
-  goodyDesc: string;
   launchDate: Date;
   goodyFiles: File[];
+  collectCurrency: any;
+  collectFee: string;
 };
 
 const INITIAL_DATA: MultiFormData = {
   lensPost: "",
   pinnedLensPost: "",
   goodyName: "",
-  goodyDesc: "",
   launchDate: null,
   goodyFiles: [],
+  collectCurrency: { symbol: '', address: '' },
+  collectFee: '1',
 };
 
 const CreateSpace = ({ isOpen, setIsOpen }) => {
@@ -51,13 +60,14 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
   const [playlist, setPlaylist] = useState<IPlaylist>();
   const [drop, setDrop] = useState<any>();
-  const [lensPost, setLensPost] = useState<any>();
-  const [goody, setGoody] = useState<any>();
+  const [fullLensPost, setFullLensPost] = useState<any>();
   const [goodyContract, setGoodyContract] = useState<any>();
   const [launchDate, setLaunchDate] = useState<Date>();
   const [uploading, setUploading] = useState<boolean>();
   const [shareUrl, setShareUrl] = useState<string>();
   const [isShareOpen, setIsShareOpen] = useState<boolean>(false);
+  const [spaceTier, setSpaceTier] = useState<string>('');
+  const [files, setFiles] = useState<any[]>([]);
 
   const [state, jamApi] = useJam();
   const { data: lensRefreshData } = useLensRefresh();
@@ -78,16 +88,14 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
   const selectPlaylist = (playlist) => {
     setPlaylist(playlist);
-    next();
   };
 
   const selectDrop = (_drop) => {
     setDrop(_drop);
-    next();
   };
 
   const setPostData = (postData) => {
-    setLensPost(postData);
+    setFullLensPost(postData);
   };
 
   const updateFields = (fields: Partial<MultiFormData>) => {
@@ -97,29 +105,36 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
   };
 
   const { step, steps, currenStepIndex, back, next, goTo, isFirstStep, isLastStep } = useMultiStepForm([
-    <SelectPlaylist key="a" selectPlaylist={selectPlaylist} playlist={playlist} />,
+    <SelectTier key="a" setSpaceTier={setSpaceTier} spaceTier={spaceTier} />,
+    <SelectPlaylist key="b" selectPlaylist={selectPlaylist} playlist={playlist} />,
     <SetFeaturedProduct
-      key="b"
+      key="c"
       selectDrop={selectDrop}
       drop={drop}
       {...formMultiFormData}
       updateFields={updateFields}
     />,
     <CreateLensPost
-      key="c"
+      key="d"
       setPostData={setPostData}
       defaultProfile={defaultProfile}
       {...formMultiFormData}
       updateFields={updateFields}
+      spaceTier={spaceTier}
+      fullLensPost={fullLensPost}
+      files={files}
+      setFiles={setFiles}
     />,
-    <CreateLaunchTime key="d" setLaunchDate={setLaunchDate} {...formMultiFormData} updateFields={updateFields} />,
-    <SetGoodyBag
+    <CreateLaunchTime
       key="e"
-      setGoody={setGoody}
+      setLaunchDate={setLaunchDate}
       {...formMultiFormData}
       updateFields={updateFields}
-      goodyContract={goodyContract}
-      setGoodyContract={setGoodyContract}
+    />,
+    <SetGoodyBag
+      key="f"
+      {...formMultiFormData}
+      updateFields={updateFields}
     />,
   ]);
 
@@ -130,9 +145,9 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     submit();
   };
 
-  const uploadToIPFS = async (handle) => {
+  const uploadToIPFS = async (handle, goodyName, goodyFiles) => {
     // pick out files
-    const cover = goody.files.find(
+    const cover = goodyFiles.find(
       (f) => f.path.endsWith(".png") || f.path.endsWith(".gif") || f.path.endsWith(".jpeg") || f.path.endsWith(".jpg")
     );
 
@@ -152,7 +167,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     const metadataResponse = await fetch("/api/ipfs/post", {
       method: "POST",
       body: JSON.stringify({
-        name: goody.name,
+        name: goodyName,
         description,
         image: `ipfs://${_image.IpfsHash}`,
         // animation_url: `ipfs://${_music.IpfsHash}`,
@@ -175,132 +190,160 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
   const submit = async (switched = false) => {
     setUploading(true);
 
-    // if no goody contract set, we're deploying one and need to be on the right network
-    if ((goody || lensPost) && !switched && chain.id !== ALLOWED_CHAIN_IDS[0]) {
-      toast("Switching chains...");
-      try {
-        await switchNetworkAsync(ALLOWED_CHAIN_IDS[0]);
-      } catch (error) {
-        setUploading(false);
+    try {
+      const { goodyName, goodyFiles, collectCurrency, collectFee, pinnedLensPost } = formMultiFormData;
+
+      // if no goody contract set, we're deploying one and need to be on the right network
+      if (((goodyName && goodyFiles?.length) || fullLensPost) && !switched && chain.id !== ALLOWED_CHAIN_IDS[0]) {
+        toast("Switching chains...");
+        try {
+          await switchNetworkAsync(ALLOWED_CHAIN_IDS[0]);
+        } catch (error) {
+          setUploading(false);
+        }
+        return;
+      } else if (switched) {
+        await wait(2000);
       }
-      return;
-    } else if (switched) {
-      await wait(2000);
-    }
 
-    const handle = defaultProfile?.handle || ensData?.handle || address;
+      const handle = defaultProfile?.handle || ensData?.handle || address;
 
-    console.log(handle, playlist, drop, lensPost, goody, goodyContract);
+      // @TODO: delay this request so the audio doesn't start playing automatically?
+      // create space in the backend
+      const { res, clubSpaceId, uuid } = await launchSpace(handle, jamApi);
 
-    // @TODO: delay this request so the audio doesn't start playing automatically?
-    // create space in the backend
-    const { res, clubSpaceId, uuid } = await launchSpace(handle, jamApi);
-
-    if (!res) {
-      toast.error("Error - cannot make a space right now");
-      return;
-    }
-
-    let toastId;
-    let collectionAddress;
-    if (!goody) {
-      collectionAddress = ZERO_ADDRESS;
-    } else {
-      toastId = toast.loading("Creating your Party Favor...");
-      const goodyUri = await uploadToIPFS(handle);
-      console.log("goody uri:", goodyUri);
-      collectionAddress = await createZkEdition({
-        handle,
-        chainId: chain.id,
-        signer,
-        name: goody.name,
-        uri: goodyUri,
-      });
-      console.log("collectionAddress:", collectionAddress);
-      toast.dismiss(toastId);
-
-      if (!collectionAddress) {
-        toast.error('Error - could not create Party Favor');
+      if (!res) {
+        toast.error("Error - cannot make a space right now");
         return;
       }
-    }
 
-    // create lens post
-    let lensPubId = "0";
-    if (lensPost) {
-      const response = await fetch("/api/ipfs/post", {
-        method: "POST",
-        body: JSON.stringify({
-          json: publicationBody(lensPost, [], defaultProfile.handle),
-        }),
-      });
-      const content = { IpfsHash: (await response.json()).ipfsHash };
-
-      toastId = toast.loading("Creating Lens post...", { duration: 10000 });
-      const accessToken = lensLoginData?.authenticate?.accessToken
-        ? lensLoginData?.authenticate?.accessToken
-        : lensRefreshData.accessToken;
-      if (!accessToken) {
-        throw new Error("Error - lens profile not authenticated. This is likely a bug with login/refresh logic");
-      }
-      lensPubId = lensPubCount.add(BigNumber.from("1")).toHexString();
-
-      await makePostGasless(defaultProfile.id, `ipfs://${content.IpfsHash}`, signer, accessToken);
-
-      toast.dismiss(toastId);
-    }
-
-    toast.promise(
-      new Promise(async (resolve, reject) => {
-        // call redis api
-        const spaceData = {
-          creatorAddress: address,
-          creatorLensHandle: defaultProfile.handle,
+      let toastId;
+      let collectionAddress;
+      if (!(goodyName && goodyFiles?.length)) {
+        collectionAddress = ZERO_ADDRESS;
+      } else {
+        toastId = toast.loading("Creating your Party Favor...");
+        const goodyUri = await uploadToIPFS(handle, goodyName, goodyFiles);
+        console.log("goody uri:", goodyUri);
+        collectionAddress = await createZkEdition({
           handle,
-          creatorLensProfileId: defaultProfile.id,
-          spinampPlaylistId: playlist.id,
-          drop,
-          lensPubId,
-          clubSpaceId,
-          uuid,
-          partyFavorContractAddress: collectionAddress,
-          startAt: launchDate,
-          pinnedLensPost: formMultiFormData.pinnedLensPost,
-        };
-        const {
-          data: { url, semGroupIdHex },
-        } = await axios.post(`/api/space/create`, spaceData);
+          chainId: chain.id,
+          signer,
+          name: goodyName,
+          uri: goodyUri,
+        });
+        console.log("collectionAddress:", collectionAddress);
+        toast.dismiss(toastId);
 
-        // call sempahore/create-group
-        if (collectionAddress !== ZERO_ADDRESS) {
-          toastId = toast.loading("Registering your Party Favor...");
-          await createGroup(semGroupIdHex, collectionAddress, lensPubId, defaultProfile.id, signer);
-          toast.dismiss(toastId);
+        if (!collectionAddress) {
+          toast.error('Error - could not create Party Favor');
+          return;
         }
-        // PUSH
-        // await axios.post(`/api/push/send`, { url });
-
-        // HACK: give the radio worker time to finish
-        // @TODO: some status api
-        if (collectionAddress === ZERO_ADDRESS) {
-          await wait(3000);
-        }
-
-        setUploading(false);
-        setShareUrl(url);
-        setIsShareOpen(true);
-        resolve();
-      }),
-      {
-        loading: "Creating your space...",
-        success: "Success!",
-        error: (error) => {
-          console.log(error);
-          setUploading(false);
-          return "Error!";
-        },
       }
-    );
+
+      // create lens post
+      let lensPubId = "0";
+      if (fullLensPost) {
+        console.log(JSON.stringify(publicationBody(fullLensPost, [], defaultProfile.handle), null, 2));
+        const response = await fetch("/api/ipfs/post", {
+          method: "POST",
+          body: JSON.stringify({
+            json: publicationBody(fullLensPost, [], defaultProfile.handle),
+          }),
+        });
+        const content = { IpfsHash: (await response.json()).ipfsHash };
+
+        toastId = toast.loading("Creating Lens post...", { duration: 10000 });
+        const accessToken = lensLoginData?.authenticate?.accessToken
+          ? lensLoginData?.authenticate?.accessToken
+          : lensRefreshData.accessToken;
+        if (!accessToken) {
+          throw new Error("Error - lens profile not authenticated. This is likely a bug with login/refresh logic");
+        }
+        lensPubId = lensPubCount.add(BigNumber.from("1")).toHexString();
+
+        const multirecipientFeeCollectModule = spaceTier === TIER_GATED_LENS_COLLECT
+          ? {
+              amount: { currency: collectCurrency.address, value: collectFee },
+              recipients: [
+                { recipient: address, split: (100 - CLUBSPACE_SERVICE_FEE_PCT) },
+                { recipient: CLUBSPACE_SERVICE_FEE_RECIPIENT, split: CLUBSPACE_SERVICE_FEE_PCT }
+              ],
+              followerOnly: false,
+              referralFee: 0,
+              // endTimestamp:
+            }
+          : undefined;
+
+        console.log(`multirecipientFeeCollectModule: `, multirecipientFeeCollectModule);
+
+        await makePostGasless(
+          defaultProfile.id,
+          `ipfs://${content.IpfsHash}`,
+          signer,
+          accessToken,
+          multirecipientFeeCollectModule
+        );
+
+        toast.dismiss(toastId);
+      }
+
+      toast.promise(
+        new Promise(async (resolve, reject) => {
+          // call redis api
+          const spaceData = {
+            creatorAddress: address,
+            creatorLensHandle: defaultProfile.handle,
+            handle,
+            creatorLensProfileId: defaultProfile.id,
+            spinampPlaylistId: playlist.id,
+            drop,
+            lensPubId,
+            clubSpaceId,
+            uuid,
+            partyFavorContractAddress: collectionAddress,
+            startAt: launchDate,
+            pinnedLensPost,
+          };
+          const {
+            data: { url, semGroupIdHex },
+          } = await axios.post(`/api/space/create`, spaceData);
+
+          // call sempahore/create-group
+          if (collectionAddress !== ZERO_ADDRESS) {
+            toastId = toast.loading("Registering your Party Favor...");
+            await createGroup(semGroupIdHex, collectionAddress, lensPubId, defaultProfile.id, signer);
+            toast.dismiss(toastId);
+          }
+          // PUSH
+          // await axios.post(`/api/push/send`, { url });
+
+          // HACK: give the radio worker time to finish
+          // @TODO: some status api
+          if (collectionAddress === ZERO_ADDRESS) {
+            await wait(3000);
+          }
+
+          setUploading(false);
+          setShareUrl(url);
+          setIsShareOpen(true);
+          resolve();
+        }),
+        {
+          loading: "Creating your space...",
+          success: "Success!",
+          error: (error) => {
+            console.log(error);
+            setUploading(false);
+            return "Error!";
+          },
+        }
+      );
+    } catch (error) {
+      console.log(error);
+      setUploading(false);
+      toast.error('An error has ocurred');
+    }
   };
 
   if (shareUrl) {

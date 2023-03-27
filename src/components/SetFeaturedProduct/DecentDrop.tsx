@@ -37,7 +37,7 @@ export default ({ deployedProducts, selectDrop, protocol }) => {
 
   return (
     <>
-      {deployedProducts && (
+      {deployedProducts?.length > 0 && (
         <>
           <Listbox value={decentProduct} onChange={_setDecentProduct}>
             {({ open }) => (
