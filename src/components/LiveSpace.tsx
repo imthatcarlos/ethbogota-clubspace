@@ -115,7 +115,7 @@ const LiveSpace: FC<Props> = ({
   const { chain } = useNetwork();
   const [
     state,
-    { enterRoom, leaveRoom, setProps, updateInfo, sendReaction, retryMic, addSpeaker, removeSpeaker, retryAudio }
+    { enterRoom, leaveRoom, setProps, updateInfo, sendReaction, retryMic, addSpeaker, removeSpeaker, retryAudio, addModerator }
   ] = useJam();
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
   const [drawerProfile, setDrawerProfile] = useState<any>({});
@@ -984,7 +984,7 @@ const LiveSpace: FC<Props> = ({
                       </button>
                       */}
 
-                    {isHost && room && (
+                    {isHost && room && drawerProfile.peerId !== myPeerId && (
                       <button
                         className="!w-auto btn"
                         onClick={() => toggleSpeaker(drawerProfile.peerId)}

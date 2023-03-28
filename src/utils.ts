@@ -1,5 +1,6 @@
+import toast from "react-hot-toast";
+import { BigNumber, utils, constants, Contract } from "ethers";
 import { apiUrls } from "@/constants/apiUrls";
-import { BigNumber } from "ethers";
 import { APP_NAME } from "./lib/consts";
 
 export const getUrlForImageFromIpfs = (uri: string) => {
@@ -96,3 +97,42 @@ function toDate(argument) {
     return new Date(NaN);
   }
 }
+
+const getDecimals = async (address: string, provider: any) => {
+  const contract = new Contract(address, ["function decimals() external view returns (uint256)"], provider);
+  const decimals = await contract.decimals();
+  return decimals;
+};
+
+/**
+ * Converts token amount into base unit (wei) based on contract decimals
+ * @param amount token amount
+ * @return converted amount
+ */
+const convertDecimals = async (amount: string, address: string, provider: any) => {
+  const decimals = await getDecimals(address, provider);
+  return utils.parseUnits(amount, Number(decimals));
+};
+
+// ERC20 approval
+export const approveToken = async (token: string, amount: string, signer: any, operator?: string) => {
+  const contract = new Contract(
+    token,
+    [
+      "function allowance(address owner, address spender) external view returns (uint256)",
+      "function approve(address spender, uint256 amount) external returns (bool)",
+    ],
+    signer,
+  );
+
+  const user = await signer.getAddress();
+  const allowance = await contract.allowance(user, operator);
+  const decimalAmount = await convertDecimals(amount, token, signer.provider);
+
+  if (allowance.lt(decimalAmount)) {
+    let toastId = toast.loading("Approving tokens");
+    const tx = await contract.approve(operator, constants.MaxUint256);
+    await tx.wait();
+    toast.dismiss(toastId);
+  }
+};

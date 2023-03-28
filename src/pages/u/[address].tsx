@@ -65,13 +65,13 @@ const ClaimsPage = ({ clubSpaceObject }) => {
                 <p className="mb-2">Unique Attendees: {space.numGuests}</p>
                 <p className="mb-2">
                   Promoted Drop:{" "}
-                  <a target="_blank" href={decentUrl(space.decentContract)} className=" text-blue-300">
-                    {space.decentContract.name}
+                  <a target="_blank" href={decentUrl(space.decentContract || space.drop)} className=" text-blue-300">
+                    {space.decentContract?.name || space.drop.name}
                   </a>
                 </p>
                 <p className="mb-2">
                   Total Sales: {utils.formatEther(space.totalSales).toString()}{" "}
-                  {space.decentContract.chainId === 137 ? "MATIC" : "ETH"}
+                  {space.decentContract?.chainId === 137 || space.drop?.chainId ? "MATIC" : "ETH"}
                 </p>
                 {space.totalSalesAmount && <p>{space.totalSalesAmount} purchases</p>}
                 <p className="mb-2">Total Party Favor Claims: {space.totalClaims}</p>

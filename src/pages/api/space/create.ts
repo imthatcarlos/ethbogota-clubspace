@@ -43,6 +43,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       productBannerUrl,
       productBannerIsVideo,
       pinnedLensPost,
+      gated,
     } = req.body;
 
     if (!(creatorAddress && handle && spinampPlaylistId && (drop || pinnedLensPost) && clubSpaceId)) {
@@ -70,6 +71,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       productBannerUrl,
       productBannerIsVideo,
       pinnedLensPost,
+      gated,
     };
     console.log(JSON.stringify(clubSpaceObject, null, 2));
     const spaceRedisKey = `${REDIS_SPACE_PREFIX}/${handle}`;

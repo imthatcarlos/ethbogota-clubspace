@@ -35,17 +35,18 @@ const SelectPlaylist: FC<Props> = ({ selectPlaylist, playlist }) => {
 
   return (
     <MultiStepFormWrapper>
-      <div className="w-full">
-        <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">Select Your Spinamp Playlist or Paste the URL</h2>
-        <br/>
+      <div className="w-full flex flex-col gap-2">
+        <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">2. Set your live music</h2>
+        <p className="mb-2">You can select one of your <a className="underline" href="https://app.spinamp.xyz/" target="_blank">Spinamp</a> playlists or paste the URL to one</p>
+
         {playlists && (
           <>
             <Listbox value={playlist} onChange={selectPlaylist}>
               {({ open }) => (
                 <>
                   <div className="relative mt-1 bg-gray-800 border border-gray-600 rounded-md">
-                    <Listbox.Button className="relative input py-2 pl-3 pr-10 text-left ">
-                      <span className="block truncate">{playlist ? playlist.title : "Select playlist"}</span>
+                    <Listbox.Button className="relative input py-2 pl-3 pr-10 text-left" disabled={!playlists?.length}>
+                      <span className="block truncate">{playlist?.title ? playlist.title : (playlists?.length ? "Select from your Spinamp playlists" : "No playlists")}</span>
                       <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                         <ChevronDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                       </span>
@@ -107,7 +108,7 @@ const SelectPlaylist: FC<Props> = ({ selectPlaylist, playlist }) => {
           type="text"
           id="playlist_link"
           className="input"
-          placeholder="https://"
+          placeholder="Link to a spinamp playlist (https://app.spinamp.xyz/...)"
           onChange={(onPlaylistLinkChanged)}
         />
       </div>

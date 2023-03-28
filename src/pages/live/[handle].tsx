@@ -16,12 +16,15 @@ import useENS from "@/hooks/useENS";
 import { NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
 import { getLiveClubspace } from "@/services/radio";
 import useHasBadge from "@/hooks/useHasBadge";
+import { getAccessToken } from "@/hooks/useLensLogin";
+import useMeetsGatedCondition from "@/hooks/useMeetsGatedCondition";
 import MobileMessage from "@/components/MobileMessage";
 // import { UpcomingItem } from "@/components/UpcomingFeed";
 import Countdown from "@/components/Countdown";
 import { wait } from "@/utils";
 import { ClubSpaceObject } from "@/components/LiveSpace";
 import { SpaceEnded } from "@/components/SpaceEnded";
+import { SpaceGated } from "@/components/SpaceGated";
 
 const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
 const LiveSpace = dynamic(() => import("@/components/LiveSpace"), { ssr: false });
@@ -33,6 +36,11 @@ const LivePageAtHandle: NextPage = ({ clubSpaceObject }: { clubSpaceObject: Club
   } = useRouter();
   const { address, isConnected } = useAccount();
   const { data: profilesResponse, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
+  const {
+    data: meetsGatedCondition,
+    isLoading: isLoadingMeetsGated,
+    refetch: refetchMeetsGatedCondition,
+  } = useMeetsGatedCondition(address, getAccessToken(), clubSpaceObject);
   const { data: ensData, isLoading: isLoadingENS } = useENS(address);
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
   const [loadingDefaultProfile, setLoadingDefaultProfile] = useState(true);
@@ -40,6 +48,7 @@ const LivePageAtHandle: NextPage = ({ clubSpaceObject }: { clubSpaceObject: Club
   const [audioPlayerState, audioPlayerDispatch] = useReducer(playerReducer, playerInitialState);
   const { data: hasBadge, isLoading: isLoadingBadge } = useHasBadge();
   const [ensDone, setEnsDone] = useState(false);
+  const [canEnter, setCanEnter] = useState(); // undefined until we know true/false
 
   useEffect(() => {
     if (!isLoadingProfiles) {
@@ -56,13 +65,31 @@ const LivePageAtHandle: NextPage = ({ clubSpaceObject }: { clubSpaceObject: Club
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoadingENS]);
 
+  useEffect(() => {
+    if (!isLoadingMeetsGated) {
+      setCanEnter(meetsGatedCondition);
+    }
+  }, [isLoadingMeetsGated, meetsGatedCondition]);
+
   if (!clubSpaceObject) {
     return <SpaceEnded handle={handle as string} />;
   }
 
+  if (!getAccessToken() || canEnter === false) {
+    return (
+      <SpaceGated
+        handle={clubSpaceObject.handle}
+        gated={clubSpaceObject.gated}
+        creatorLensProfileId={clubSpaceObject.creatorLensProfileId}
+        lensPubId={clubSpaceObject.lensPubId}
+        refetchMeetsGatedCondition={refetchMeetsGatedCondition}
+      />
+    );
+  }
+
   return (
     <>
-      {isLoadingEntry && clubSpaceObject.queuedTrackIds?.length ? (
+      {isLoadingEntry && clubSpaceObject.queuedTrackIds?.length && canEnter ? (
         <div className="flex-1 min-h-screen">
           <div className="abs-center">
             <p className="animate-move-txt-bg gradient-txt text-4xl">Entering ClubSpace...</p>
@@ -94,7 +121,7 @@ const LivePageAtHandle: NextPage = ({ clubSpaceObject }: { clubSpaceObject: Club
           </div>
         </div>
       ) : null}
-      {!loadingDefaultProfile && ensDone && (!isLoadingBadge || !address) && clubSpaceObject.queuedTrackIds?.length ? (
+      {!loadingDefaultProfile && ensDone && (!isLoadingBadge || !address) && clubSpaceObject.queuedTrackIds?.length && canEnter ? (
         <JamProviderWrapper>
           <PlayerContext.Provider value={audioPlayerState}>
             <DispatchPlayerContext.Provider value={audioPlayerDispatch}>
@@ -142,7 +169,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     console.log(`found space with id: ${clubSpaceObject.clubSpaceId}`);
-    // console.log(clubSpaceObject);
+    console.log(clubSpaceObject);
 
     return { props: { clubSpaceObject } };
   } catch (error) {

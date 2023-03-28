@@ -5,8 +5,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     if (!req.body) return res.status(400).end();
 
-    const ipfsHash = req.body.json
-      ? await addJSON(req.body.json)
+    let json;
+    try {
+      json = JSON.parse(req.body);
+    } catch {}
+
+    const ipfsHash = json?.json
+      ? await addJSON(JSON.stringify(json?.json))
       : await addFile(req.body);
 
     return res.status(200).json({ ipfsHash });

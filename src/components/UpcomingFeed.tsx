@@ -39,6 +39,8 @@ const filterTestSpaces = (space: any) => {
 };
 
 export const UpcomingItem = ({ activity }: { activity: any }) => {
+  if (!activity) return null;
+
   const isVideo = () =>
     activity.productBannerIsVideo ||
     activity.drop?.productBannerIsVideo ||
@@ -88,7 +90,7 @@ export const UpcomingFeed = () => {
       const {
         data: { spaces },
       } = await axios.get(`${env.NEXT_PUBLIC_SPACE_API_URL}/upcoming/all`);
-      setSpaces(spaces.filter((space) => !space.ended && filterTestSpaces(space)));
+      setSpaces(spaces.filter((space) => !space?.ended && filterTestSpaces(space)));
     };
     _fetchAsync();
   }, []);

@@ -45,8 +45,10 @@ body {
 .btn-lens {
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
-  padding-left: 0.25rem;
+  padding-left: 3rem;
   padding-right: 0.25rem;
+  background-color: #ABFE2C !important;
+  color: #00501E !important;
 }
 
 .copy-btn:active {
@@ -56,6 +58,12 @@ body {
 .input,
 .react-datepicker__input-container input {
   @apply block w-full rounded-md bg-gray-800 text-white border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .responsive-container {

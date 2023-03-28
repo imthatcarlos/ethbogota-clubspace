@@ -43,6 +43,7 @@ const _getMetadata = async (sdk: any, contract: any, contractType: string) => {
   }
 
   metadata.isVideo = metadata.image ? VIDEO_EXTENSIONS.includes(last(metadata.image.split('.'))) : false;
+  metadata.animationIsAudio = metadata.animation_url ? ['mp3', 'wav'].includes(last(metadata.animation_url.split('.'))) : false;
 
   if (!metadata.name) {
     metadata.name = metadata?.properties?.name;

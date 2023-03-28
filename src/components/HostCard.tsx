@@ -75,7 +75,7 @@ export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, on
                     {
                       lensLoginData || lensRefreshData
                         ? <button
-                            className="btn"
+                            className="btn btn-lens"
                             onClick={() => {
                               onFollowClick(profile.id);
                             }}
@@ -83,9 +83,7 @@ export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, on
                           >
                             {doesFollowDrawerProfile ? "Following" : "Follow"}
                           </button>
-                        : <button onClick={() => loginWithLens({}, true)} className="btn justify-center items-center">
-                            Login with Lens
-                          </button>
+                        : null
                     }
                   </div>
                 ) : null}

@@ -5,6 +5,7 @@ import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import ClubspaceNeonHeader from "@/assets/svg/clubspace-neon-header.svg";
 import { useRouter } from "next/router";
+import LensLogoIcon from "@/assets/svg/lens-logo-icon.svg";
 
 export const Header = () => {
   const { push, pathname } = useRouter();
@@ -19,7 +20,7 @@ export const Header = () => {
     if (!(lensLoginData || lensRefreshData)) {
       loginWithLens();
     } else {
-      push("/u/" + address);
+      // push("/u/" + address);
     }
   };
 
@@ -62,12 +63,16 @@ export const Header = () => {
           </div>
           {isConnected && (
             <button
+              disabled={(lensLoginData || lensRefreshData) && !profilesResponse?.defaultProfile?.handle}
               onClick={lensButton}
-              className="btn btn-lens justify-center items-center"
+              className="relative btn btn-lens justify-center items-center overflow-hidden"
             >
-              {!(lensLoginData || lensRefreshData)
-                ? "Login with Lens"
-                : profilesResponse?.defaultProfile.handle || "No Lens"}
+              <LensLogoIcon class="absolute -top-1 left-0 w-16 h-16" />
+              <span className="z-10">
+                {!(lensLoginData || lensRefreshData)
+                  ? "Login with Lens"
+                  : profilesResponse?.defaultProfile.handle || "No Lens"}
+              </span>
             </button>
           )}
         </div>
