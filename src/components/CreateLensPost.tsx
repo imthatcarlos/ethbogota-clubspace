@@ -98,8 +98,11 @@ const CreateLensPost = ({
               <div >
                 <input
                   type="number"
+                  pattern="[0-9]*"
+                  inputmode="numeric"
                   className="input"
                   value={collectFee}
+                  onWheelCapture={(e) => { e.target.blur(); e.stopPropagation() } }
                   onChange={(e) => onChange({ collectFee: e.target.value })}
                 />
               </div>

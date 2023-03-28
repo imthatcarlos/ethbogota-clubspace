@@ -126,6 +126,38 @@ const FOLLOW_TYPED_DATA = gql`
   }
 `;
 
+const COLLECT_POST_TYPED_DATA = gql`
+  mutation CreateCollectTypedData($publicationId: InternalPublicationId!) {
+    createCollectTypedData(request: {
+      publicationId: $publicationId
+    }) {
+      id
+      expiresAt
+      typedData {
+        types {
+          CollectWithSig {
+            name
+            type
+          }
+        }
+        domain {
+          name
+          chainId
+          version
+          verifyingContract
+        }
+        value {
+          nonce
+          deadline
+          profileId
+          pubId
+          data
+        }
+      }
+    }
+  }
+`;
+
 const BROADCAST = gql`
   mutation Broadcast($request: BroadcastRequest!) {
     broadcast(request: $request) {
@@ -150,7 +182,7 @@ export const createTypedData = async (_request, accessToken, document) => {
     },
   });
 
-  return result.createPostTypedData || result.createFollowTypedData;
+  return result.createPostTypedData || result.createFollowTypedData || result.createCollectTypedData;
 };
 
 export const signCreateTypedData = async (_request, signer, accessToken, document) => {
@@ -206,8 +238,6 @@ export const makePostGasless = async (
     },
     accessToken
   );
-
-  console.log(res);
 };
 
 export const followProfileGasless = async (profileId: string, signer, accessToken: string) => {
@@ -230,4 +260,22 @@ export const followProfileGasless = async (profileId: string, signer, accessToke
   } catch (error) {
     console.log(error);
   }
+};
+
+export const collectPostGasless = async (publicationId: string, signer, accessToken: string) => {
+  const createPostRequest = {
+    publicationId,
+  };
+
+  const signedResult = await signCreateTypedData(createPostRequest, signer, accessToken, COLLECT_POST_TYPED_DATA);
+
+  const broadcastResult = await broadcastRequest(
+    {
+      id: [signedResult.result.id],
+      signature: [signedResult.signature],
+    },
+    accessToken
+  );
+
+  return broadcastResult;
 };

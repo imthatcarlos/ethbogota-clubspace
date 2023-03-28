@@ -6,8 +6,8 @@ export const SpaceEnded = ({ handle }: { handle: string }) => {
           <main className="sm:flex">
             <div className="sm:ml-6">
               <div className="sm:border-l sm:border-gray-200 sm:pl-6">
-                <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">@{handle} Space Ended</h1>
-                <p className="mt-1 text-base text-gray-500">Thank you for showing up!</p>
+                <h1 className="animate-move-txt-bg gradient-txt text-4xl font-bold tracking-tight sm:text-5xl">ClubSpace Has Ended</h1>
+                <p className="mt-1 text-base text-gray-500">hosted by @{handle}</p>
               </div>
             </div>
           </main>

@@ -161,7 +161,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     const { playlist } = await fetchPlaylistById(playlist.id);
     const tracks = await fetchTracksByIds(playlist.trackIds);
     const tracklist = tracks.map((t, i) => `${i}. ${t.artist.name} - ${t.title}`).join("\n");
-    const description = `ClubSpace hosted by ${handle}\n\n${tracklist}`;
+    const description = `ClubSpace hosted by @${handle}\n\n${tracklist}`;
 
     console.log("uploading metadata");
     const metadataResponse = await fetch("/api/ipfs/post", {
@@ -208,6 +208,11 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
       const handle = defaultProfile?.handle || ensData?.handle || address;
 
+      if (!(playlist && (drop || pinnedLensPost))) {
+        toast.error("Error - missing something in the form. Go back and check your inputs");
+        return;
+      }
+
       // @TODO: delay this request so the audio doesn't start playing automatically?
       // create space in the backend
       const { res, clubSpaceId, uuid } = await launchSpace(handle, jamApi);
@@ -244,11 +249,22 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       // create lens post
       let lensPubId = "0";
       if (fullLensPost) {
-        console.log(JSON.stringify(publicationBody(fullLensPost, [], defaultProfile.handle), null, 2));
+        let attachments: any[] = [];
+        if (files.length > 0) {
+          const cids = await Promise.all(
+            files.map(async (file: any) => ({
+              item: `ipfs://${(await pinFileToIPFS(file)).IpfsHash}`,
+              type: file.type,
+              altTag: "",
+            })),
+          );
+          attachments = attachments.concat(cids);
+        }
+        console.log(JSON.stringify(publicationBody(fullLensPost, attachments, defaultProfile.handle), null, 2));
         const response = await fetch("/api/ipfs/post", {
           method: "POST",
           body: JSON.stringify({
-            json: publicationBody(fullLensPost, [], defaultProfile.handle),
+            json: publicationBody(fullLensPost, attachments, defaultProfile.handle),
           }),
         });
         const content = { IpfsHash: (await response.json()).ipfsHash };
@@ -291,6 +307,9 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       toast.promise(
         new Promise(async (resolve, reject) => {
           // call redis api
+          const gated = spaceTier === TIER_GATED_LENS_COLLECT
+            ? { tier: spaceTier, collectCurrency, collectFee }
+            : undefined;
           const spaceData = {
             creatorAddress: address,
             creatorLensHandle: defaultProfile.handle,
@@ -304,6 +323,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
             partyFavorContractAddress: collectionAddress,
             startAt: launchDate,
             pinnedLensPost,
+            gated,
           };
           const {
             data: { url, semGroupIdHex },

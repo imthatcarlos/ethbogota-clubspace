@@ -45,8 +45,10 @@ body {
 .btn-lens {
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
-  padding-left: 0.25rem;
+  padding-left: 3rem;
   padding-right: 0.25rem;
+  background-color: #ABFE2C !important;
+  color: #00501E !important;
 }
 
 .copy-btn:active {

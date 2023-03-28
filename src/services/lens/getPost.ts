@@ -1,5 +1,6 @@
 import { apiUrls } from "@/constants/apiUrls";
 import request, { gql } from "graphql-request";
+import { getAccessToken } from "@/hooks/useLensLogin";
 
 const GET_POST = gql`
   query Publication($publicationId: InternalPublicationId!) {
@@ -57,6 +58,12 @@ const GET_POST = gql`
     }
   }
 
+  fragment CollectModuleFields on CollectModule {
+    ... on MultirecipientFeeCollectModuleSettings {
+      contractAddress
+    }
+  }
+
   fragment PostFields on Post {
     id
     profile {
@@ -66,6 +73,25 @@ const GET_POST = gql`
       ...MetadataOutputFields
     }
     hidden
+    stats {
+      totalAmountOfCollects
+    }
+    collectModule {
+      ...CollectModuleFields
+    }
+  }
+`;
+
+const HAS_COLLECTED_POST = gql`
+  query Publication($publicationId: InternalPublicationId!) {
+    publication(request: {
+      publicationId: $publicationId
+    }) {
+      ... on Post {
+        id
+        hasCollectedByMe
+      }
+    }
   }
 `;
 
@@ -78,6 +104,24 @@ export const getPost = async (publicationId: string): Promise<any> => {
     });
 
     return publication;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+export const hasCollectedPost = async (publicationId: string): Promise<any> => {
+  try {
+    const { publication } = await request({
+      url: apiUrls.lensAPI,
+      document: HAS_COLLECTED_POST,
+      variables: { publicationId },
+      requestHeaders: {
+        'x-access-token': getAccessToken()
+      }
+    });
+
+    return publication.hasCollectedByMe;
   } catch (error) {
     console.log(error);
   }

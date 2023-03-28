@@ -25,11 +25,17 @@ export default ({ deployedProducts, selectDrop, protocol }) => {
 
   const _setDecentProduct = (data) => {
     setDecentProduct(data);
+
+    // priority to animation url unless we know it's audio
+    const url = data.metadata.animationIsAudio
+      ? data.metadata.image
+      : (data.metadata.animation_url || data.metadata.image)
+
     selectDrop({
       decentContractAddress: data.address,
       decentContractType: data.contractType,
       decentContractChainId: data.chainId,
-      productBannerUrl: getUrlForImageFromIpfs(data.metadata.animation_url || data.metadata.image),
+      productBannerUrl: getUrlForImageFromIpfs(url),
       productBannerIsVideo: data.metadata.isVideo,
       protocol,
     });
