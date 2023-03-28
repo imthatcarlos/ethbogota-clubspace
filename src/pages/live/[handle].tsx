@@ -2,7 +2,7 @@
 import { GetServerSideProps, InferGetServerSidePropsType, NextPage } from "next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useEffect, useState, useReducer } from "react";
+import { useEffect, useState, useReducer, useMemo } from "react";
 import {
   DispatchPlayerContext,
   PlayerContext,
@@ -13,7 +13,7 @@ import {
 import { useAccount } from "wagmi";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import useENS from "@/hooks/useENS";
-import { NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
+import { NEXT_PUBLIC_SITE_URL, TIER_OPEN } from "@/lib/consts";
 import { getLiveClubspace } from "@/services/radio";
 import useHasBadge from "@/hooks/useHasBadge";
 import { getAccessToken } from "@/hooks/useLensLogin";
@@ -48,7 +48,7 @@ const LivePageAtHandle: NextPage = ({ clubSpaceObject }: { clubSpaceObject: Club
   const [audioPlayerState, audioPlayerDispatch] = useReducer(playerReducer, playerInitialState);
   const { data: hasBadge, isLoading: isLoadingBadge } = useHasBadge();
   const [ensDone, setEnsDone] = useState(false);
-  const [canEnter, setCanEnter] = useState(); // undefined until we know true/false
+  const [_canEnter, setCanEnter] = useState(); // undefined until we know true/false
 
   useEffect(() => {
     if (!isLoadingProfiles) {
@@ -71,11 +71,18 @@ const LivePageAtHandle: NextPage = ({ clubSpaceObject }: { clubSpaceObject: Club
     }
   }, [isLoadingMeetsGated, meetsGatedCondition]);
 
+  const canEnter = useMemo(() => {
+    if (!clubSpaceObject.gated || clubSpaceObject.gated === TIER_OPEN) return true; // not gated
+    if (clubSpaceObject.creatorLensProfileId === defaultProfile.id) return true; // is host
+
+    return _canEnter !== false;
+  }, [defaultProfile, clubSpaceObject, _canEnter]);
+
   if (!clubSpaceObject) {
     return <SpaceEnded handle={handle as string} />;
   }
 
-  if (!getAccessToken() || canEnter === false) {
+  if (clubSpaceObject.gated && (!getAccessToken() || canEnter === false)) {
     return (
       <SpaceGated
         handle={clubSpaceObject.handle}
@@ -128,6 +135,7 @@ const LivePageAtHandle: NextPage = ({ clubSpaceObject }: { clubSpaceObject: Club
               <LiveSpace
                 clubSpaceObject={clubSpaceObject}
                 defaultProfile={defaultProfile}
+                isHost={defaultProfile?.id === clubSpaceObject.creatorLensProfileId}
                 isLoadingEntry={isLoadingEntry}
                 setIsLoadingEntry={setIsLoadingEntry}
                 address={address}

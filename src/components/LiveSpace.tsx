@@ -77,6 +77,7 @@ type LensProfileObject = {
 };
 
 type Props = {
+  isHost: boolean;
   clubSpaceObject: ClubSpaceObject;
   defaultProfile?: LensProfileObject;
   address?: string;
@@ -99,6 +100,7 @@ const MUSIC_VOLUME_WHEN_SPEAKING = 0.2;
  * - party
  */
 const LiveSpace: FC<Props> = ({
+  isHost,
   clubSpaceObject,
   defaultProfile,
   address,
@@ -242,13 +244,7 @@ const LiveSpace: FC<Props> = ({
   const myPeerId = useMemo(() => {
     return myInfo.id;
   }, [myIdentity]);
-
-  const isHost = useMemo(() => {
-    if (!isEmpty(defaultProfile) && !isEmpty(creatorLensProfile)) {
-      return defaultProfile.id === creatorLensProfile.id;
-    }
-  }, [defaultProfile, creatorLensProfile]);
-  const micOn = myAudio?.active; // only for the host
+  const micOn = myAudio?.active;
 
   useEffect(() => {
     const all = peers.concat([myPeerId]).reverse(); // to get the most recent joined at the top
