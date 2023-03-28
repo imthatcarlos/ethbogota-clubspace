@@ -27,10 +27,10 @@ export const SpaceGated = ({
   const { data: lensRefreshData } = useLensRefresh();
 
   const requirement = useMemo(() => {
-    if (gated.tier === TIER_GATED_LENS_COLLECT) {
+    if (gated?.tier === TIER_GATED_LENS_COLLECT) {
       return 'To join this space, you must login with Lens and collect the post'
     }
-  }, [gated.tier]);
+  }, [gated]);
 
   const _loginWithLens = async () => {
     await loginWithLens();

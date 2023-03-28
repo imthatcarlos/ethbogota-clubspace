@@ -5,6 +5,7 @@ import { useGetProfilesByHandles } from "@/services/lens/getProfile";
 import { GetServerSideProps } from "next";
 import { Transition } from "@headlessui/react";
 import ClubspaceNeonHeader from "@/assets/svg/clubspace-neon-header.svg";
+import { getUrlForImageFromIpfs } from "@/utils";
 
 import type { IClubSpaceObject, ITrack } from "packages/clubspace-sdk/src";
 import { SVGProps, useEffect, useMemo, useRef, useState } from "react";
@@ -135,20 +136,29 @@ const EmbedSpace: NextPageWithLayout = ({
               </div>
               {/* name - follow */}
               <div className="w-full flex flex-col gap-1">
-                <ClubspaceNeonHeader height={45} width={80} className="place-self-end" />
+                <ClubspaceNeonHeader height={80} width={130} className="place-self-end" />
                 {currentTrack && (
-                  <p className="text-left font-semibold text-2xl">
-                    {currentTrack?.title} - {currentTrack?.artist?.name}
+                  <p className="text-left font-semibold text-4xl">
+                    {currentTrack?.title}
                   </p>
                 )}
                 <a
-                  href={`${LENSTER_URL}/u/${handle}`}
+                  href={currentTrack?.websiteUrl}
                   rel="noopener noreferrer"
                   target="_blank"
-                  className="text-gray-400 text-sm"
+                  className="text-gray-400 text-lg"
                 >
-                  @{handle}
+                  {currentTrack?.artist?.name}
                 </a>
+
+                <div className="mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center">
+                  <img
+                    className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"
+                    src={hostLensData?.[0]?.picture?.uri ? hostLensData?.[0]?.picture?.uri : getUrlForImageFromIpfs(hostLensData?.[0]?.picture?.original?.url)}
+                    alt=""
+                  />
+                  <span>@{hostLensData?.[0]?.handle}</span>
+                </div>
 
                 {/* Checkout live */}
                 <span className="flex flex-col gap-1 mt-1 items-center">
