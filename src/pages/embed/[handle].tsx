@@ -135,26 +135,28 @@ const EmbedSpace: NextPageWithLayout = ({
                 />
               </div>
               {/* name - follow */}
-              <div className="w-full flex flex-col gap-1">
-                <ClubspaceNeonHeader height={80} width={130} className="place-self-end" />
-                {currentTrack && (
-                  <p className="text-left font-semibold text-4xl">
-                    {currentTrack?.title}
-                  </p>
-                )}
-                <a
-                  href={currentTrack?.websiteUrl}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  className="text-gray-400 text-lg"
-                >
-                  {currentTrack?.artist?.name}
-                </a>
+              <div className="w-full h-full flex flex-col gap-1 relative">
+                <ClubspaceNeonHeader height={60} width={130} className="absolute place-self-end z-10 -right-5 -bottom-14" />
+                <div>
+                  {currentTrack && <p className="text-left font-semibold text-5xl">{currentTrack?.title}</p>}
+                  <a
+                    href={currentTrack?.websiteUrl}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    className="text-gray-400 text-xl"
+                  >
+                    {currentTrack?.artist?.name}
+                  </a>
+                </div>
 
-                <div className="mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center">
+                <div className="mx-auto bg-almost-black !text-white p-2 rounded shadow-sm flex gap-2 relative justify-between items-center">
                   <img
                     className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"
-                    src={hostLensData?.[0]?.picture?.uri ? hostLensData?.[0]?.picture?.uri : getUrlForImageFromIpfs(hostLensData?.[0]?.picture?.original?.url)}
+                    src={
+                      hostLensData?.[0]?.picture?.uri
+                        ? hostLensData?.[0]?.picture?.uri
+                        : getUrlForImageFromIpfs(hostLensData?.[0]?.picture?.original?.url)
+                    }
                     alt=""
                   />
                   <span>@{hostLensData?.[0]?.handle}</span>
@@ -189,17 +191,17 @@ const EmbedSpace: NextPageWithLayout = ({
               </button>
               <div className="flex items-center w-full">
                 <VolumeIcon
-                  className="w-12 h-12"
+                  className="min-w-12 h-12"
                   onClick={() => {
                     setShowVolume((oldValue) => !oldValue);
                   }}
                 />
                 <Transition
                   show={showVolume}
-                  enter="transition-transform duration-75"
+                  enter="transition duration-75 ease-in-out"
                   enterFrom="scale-0"
                   enterTo="scale-1"
-                  leave="transition-transform duration-150"
+                  leave="transition duration-150 ease-in-out"
                   leaveFrom="scale-1"
                   leaveTo="scale-0"
                   className="w-full"
@@ -210,7 +212,7 @@ const EmbedSpace: NextPageWithLayout = ({
                     step={1}
                     onValueChange={(volumeArr) => (audioRef.current.audioElement.volume = volumeArr[0] / 100)}
                     aria-label="Volume"
-                    className="w-full h-5"
+                    className="w-1/4 h-5"
                   />
                 </Transition>
               </div>
