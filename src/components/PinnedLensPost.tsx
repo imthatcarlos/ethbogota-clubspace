@@ -56,21 +56,13 @@ const PinnedLensPost = ({ url, small, renderHeader = true, renderCollectButton =
   if (small) {
     return (
       <>
-        <div className="rounded-md w-[17rem] max-h-[7.6rem] bg-black m-auto p-3 drop-shadow-sm">
+        <div className="rounded-md w-[20rem] max-h-[7.6rem] bg-black m-auto p-3 drop-shadow-sm">
           <a href={url} className="" target="_blank" referrerPolicy="no-referrer">
             <div className="flex mb-3">
-              <Image
-                src={getUrlForImageFromIpfs(lensPost?.profile.picture.original.url) ?? "/anon.png"}
-                alt="Profile Picture"
-                height={40}
-                width={40}
-                className="object-cover rounded-full"
-                loading="lazy"
-              />
-              <span className="mt-2 ml-2">{lensPost?.profile.name || lensPost?.profile.handle}</span>
+              <span className="text-gray-500 ml-1">@{lensPost?.profile.handle}</span>
             </div>
-            <p className="mb-2 truncate max-h-[12rem]">{lensPost?.metadata.content}</p>
-            <p className="text-xs text-[#845eee]">Click to view more</p>
+            <p className="mb-2 truncate max-h-[12rem] ">{lensPost?.metadata.content}</p>
+            <p className="text-xs text-[#845eee]">See on Lenster</p>
           </a>
         </div>
       </>
@@ -96,7 +88,7 @@ const PinnedLensPost = ({ url, small, renderHeader = true, renderCollectButton =
               loading="lazy"
             />
             <div className="flex flex-col">
-              <span className="text-white font-bold text-lg">{lensPost?.profile.name || 'Carlos Beltran'}</span>
+              <span className="text-white font-bold text-lg">{lensPost?.profile.name || ''}</span>
               <span className="text-gray-500 text-md mb-2">@{lensPost?.profile.handle}</span>
             </div>
           </div>

@@ -14,8 +14,7 @@ export default (
     async () => {
       if (!clubSpaceObject) return;
       const { creatorLensProfileId, lensPubId, gated } = clubSpaceObject;
-
-      if (gated.tier === TIER_OPEN) return true;
+      if (!gated || gated.tier === TIER_OPEN) return true;
 
       if (gated.tier === TIER_GATED_LENS_COLLECT) {
         const publicationId = `${creatorLensProfileId}-${lensPubId}`;
