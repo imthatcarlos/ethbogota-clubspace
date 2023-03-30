@@ -165,7 +165,7 @@ const EmbedSpace: NextPageWithLayout = ({
                 </div>
 
                 {/* Checkout live */}
-                <div className="flex flex-col gap-1 mt-1 items-center">
+                <div className="flex flex-col gap-1 mt-4 items-center">
                   <span className="text-left w-full">
                     {clubSpaceObject.stats.activeUsersInRoomCount} people connected to the space.
                   </span>
@@ -218,10 +218,10 @@ const EmbedSpace: NextPageWithLayout = ({
                     href={`${NEXT_PUBLIC_SITE_URL}/live/${handle}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline btn py-2 !bg-[#d1157083] max-w-[200px]"
+                    className="inline btn py-2 !bg-[#d1157083] max-w-[130px]"
                   >
                     <span className="whitespace-nowrap flex items-center gap-2 text-white">
-                      Join them <ArrowRight className="w-4 h-4 inline" />
+                      <LiveSignal className="w-6 h-6 inline mr-1" /> JOIN LIVE
                     </span>
                   </a>
                   <ClubspaceNeonHeader height={55} width={100} className="-mt-1 -ml-2" />
@@ -304,20 +304,10 @@ const PauseIcon = (props: SVGProps<SVGSVGElement>) => {
   );
 };
 
-const ArrowRight = (props: SVGProps<SVGSVGElement>) => {
+const LiveSignal = (props: SVGProps<SVGSVGElement>) => {
   return (
-    <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="w-4 h-4" {...props}>
-      <g strokeWidth="0"></g>
-      <g strokeLinecap="round" strokeLinejoin="round"></g>
-      <g>
-        <path
-          stroke="#ffffff"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M2 10h16m0 0l-7-7m7 7l-7 7"
-        ></path>
-      </g>
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="w-4 h-4" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.981 0 13.79M12 12h.008v.007H12V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
     </svg>
   );
 };
