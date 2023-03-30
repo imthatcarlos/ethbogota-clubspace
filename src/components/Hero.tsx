@@ -4,6 +4,7 @@ import { useAccount } from "wagmi";
 import toast from "react-hot-toast";
 import ClubspaceNeon from "@/assets/svg/clubspace-neon.svg";
 import ClubspaceSoftGlow from "@/assets/svg/soft-glow-filter.svg";
+import LensLogoIcon from "@/assets/svg/lens-logo-icon.svg";
 import useIsMounted from "@/hooks/useIsMounted";
 import useHasBadge from "@/hooks/useHasBadge";
 import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
@@ -77,8 +78,11 @@ export const Hero = () => {
           {isConnected ? (
             <>
               {!(lensLoginData || lensRefreshData) ? (
-                <button onClick={() => loginWithLens()} className="btn max-w-[200px] btn justify-center items-center">
-                  Login with Lens
+                <button onClick={loginWithLens} className="relative btn btn-lens max-w-[200px] h-[45px] btn justify-center items-center overflow-hidden">
+                  <LensLogoIcon class="absolute -top-1 left-0 w-16 h-16" />
+                  <span className="z-10">
+                    Login with Lens
+                  </span>
                 </button>
               ) : (
                 <>

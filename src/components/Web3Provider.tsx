@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { IS_PRODUCTION, JSON_RPC_URL_ALCHEMY_MAP } from "@/lib/consts";
 
 export const { chains, provider } = configureChains(
-  IS_PRODUCTION ? [chain.polygon, chain.mainnet, chain.optimism] : [chain.polygon, chain.polygonMumbai, chain.goerli],
+  IS_PRODUCTION ? [chain.polygon, chain.mainnet, chain.optimism] : [chain.polygonMumbai, chain.goerli],
   // IS_PRODUCTION ? [chain.polygon] : [chain.polygonMumbai],
   [jsonRpcProvider({ rpc: (chain) => ({ http: JSON_RPC_URL_ALCHEMY_MAP[chain.id] }) })]
 );

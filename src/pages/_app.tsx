@@ -9,9 +9,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster, ToastBar } from "react-hot-toast";
 import { Analytics } from "@vercel/analytics/react";
-// import { Header } from "@/components/Header";
-// import Footer from "@/components/Footer";
-// import SEO from "../../next-seo.config";
 import type { ReactElement, ReactNode } from "react";
 import type { NextPage } from "next";
 import type { AppProps } from "next/app";
@@ -43,16 +40,16 @@ const HandleSEO = ({ pageProps }) => {
 
   if (clubSpaceObject) {
     return (
-      <>
-        <title>Clubspace | {clubSpaceObject?.creatorLensHandle}</title>
+      <Head>
+        <title>ClubSpace | @{clubSpaceObject?.creatorLensHandle}</title>
         <meta
           name="description"
-          content={`Join @${clubSpaceObject?.creatorLensHandle} at their live listening party now!`}
+          content={`@${clubSpaceObject?.creatorLensHandle} is hosting a live listening party!`}
         ></meta>
-        <meta property="og:title" content={`Clubspace | ${clubSpaceObject?.creatorLensHandle}`}></meta>
+        <meta property="og:title" content={`ClubSpace | ${clubSpaceObject?.creatorLensHandle}`}></meta>
         <meta
           property="og:description"
-          content={`Join @${clubSpaceObject?.creatorLensHandle} at their live listening party now!`}
+          content={`@${clubSpaceObject?.creatorLensHandle} is hosting a live listening party!`}
         ></meta>
         <meta property="og:url" content={`${NEXT_PUBLIC_SITE_URL}/live/${clubSpaceObject?.creatorLensHandle}`}></meta>
         <meta property="og:type" content="website"></meta>
@@ -67,10 +64,10 @@ const HandleSEO = ({ pageProps }) => {
         <meta property="og:site_name" content="ClubSpace"></meta>
         <meta name="twitter:creator" content="@madfiprotocol"></meta>
         <meta name="twitter:card" content="summary_large_image"></meta>
-        <meta name="twitter:title" content={`Clubspace | ${clubSpaceObject?.creatorLensHandle}`}></meta>
+        <meta name="twitter:title" content={`ClubSpace | @${clubSpaceObject?.creatorLensHandle}`}></meta>
         <meta
           name="twitter:description"
-          content={`Join @${clubSpaceObject?.creatorLensHandle} at their live listening party now!`}
+          content={`@${clubSpaceObject?.creatorLensHandle} is hosting a live listening party!`}
         ></meta>
         <meta
           name="twitter:image"
@@ -82,16 +79,16 @@ const HandleSEO = ({ pageProps }) => {
           href={`${NEXT_PUBLIC_SITE_URL}/embed/${clubSpaceObject?.creatorLensHandle}`}
           media="(aspect-ratio: 2/1)"
         ></link>
-      </>
+      </Head>
     );
   }
 
   return (
-    <>
-      <title>Clubspace</title>
-      <meta name="description" content="Promote your music NFTs with a live listening party"></meta>
+    <Head>
+      <title>ClubSpace</title>
+      <meta name="description" content="Promote your NFT drops with a live listening party"></meta>
       <meta property="og:title" content="ClubSpace"></meta>
-      <meta property="og:description" content="Promote your music NFTs with a live listening party"></meta>
+      <meta property="og:description" content="Promote your NFT drops with a live listening party"></meta>
       <meta property="og:url" content={NEXT_PUBLIC_SITE_URL}></meta>
       <meta property="og:type" content="website"></meta>
       <meta
@@ -105,8 +102,8 @@ const HandleSEO = ({ pageProps }) => {
       <meta property="og:site_name" content="ClubSpace"></meta>
       <meta name="twitter:creator" content="@madfiprotocol"></meta>
       <meta name="twitter:card" content="summary_large_image"></meta>
-      <meta name="twitter:title" content="Clubspace"></meta>
-      <meta name="twitter:description" content="Promote your music NFTs with a live listening party"></meta>
+      <meta name="twitter:title" content="ClubSpace"></meta>
+      <meta name="twitter:description" content="Promote your NFT drops with a live listening party"></meta>
       <meta
         name="twitter:image"
         content="https://link.storjshare.io/raw/jwg3vujynjlvbn5gdgm5yjoob7mq/misc%2Fclubspace.png"
@@ -119,7 +116,7 @@ const HandleSEO = ({ pageProps }) => {
           media="(aspect-ratio: 2/1)"
         ></link>
       )}
-    </>
+    </Head>
   );
 };
 
@@ -127,9 +124,7 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
   const getLayout = Component.getLayout ?? ((page) => <CommonLayout>{page}</CommonLayout>);
   return (
     <>
-      <Head>
-        <HandleSEO pageProps={pageProps} />
-      </Head>
+      <HandleSEO pageProps={pageProps} />
       <QueryClientProvider client={queryClient}>
         <Web3Provider>
           <Toaster

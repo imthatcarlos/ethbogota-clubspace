@@ -8,10 +8,8 @@ import { CalendarIcon } from "@heroicons/react/outline";
 const CreateLaunchTime = ({ setLaunchDate, launchDate, updateFields }) => {
   return (
     <MultiStepFormWrapper>
-      <div className="w-full flex flex-col gap-3">
-        <label htmlFor="lauch-time" className="text-md font-bold tracking-tight sm:text-lg md:text-xl">
-          Schedule your space - or skip to launch now
-        </label>
+      <div className="w-full flex flex-col gap-2">
+        <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">5. Schedule your space [OPTIONAL]</h2>
         <DatePicker
           showTimeSelect
           includeDateIntervals={[{ start: subDays(new Date(), 1), end: addDays(new Date(), 7) }]}

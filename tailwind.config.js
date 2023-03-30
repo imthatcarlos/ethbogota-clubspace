@@ -19,6 +19,11 @@ module.exports = {
         "lens-profile-hover": "shadow-[0 0 0 4px #2980b9, 0 0 0 7px #0d293c]",
       },
       keyframes: {
+        shimmer: {
+          "100%": {
+            transform: "translateX(100%)",
+          },
+        },
         "fade-in-from-top": {
           from: {
             opacity: 0,

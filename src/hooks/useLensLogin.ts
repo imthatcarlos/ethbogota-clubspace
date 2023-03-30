@@ -60,8 +60,8 @@ const refresh = (refreshToken: string) => {
   });
 };
 
-const getAccessToken = () => localStorage.getItem("lens_accessToken");
-const getRefreshToken = () => localStorage.getItem("lens_refreshToken");
+export const getAccessToken = () => localStorage.getItem("lens_accessToken");
+export const getRefreshToken = () => localStorage.getItem("lens_refreshToken");
 
 type AuthenticateType = {
   accessToken: string;
