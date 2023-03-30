@@ -103,7 +103,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       return { ...prev, ...fields };
     });
   };
-
+  // @TODO: add step for selecting streaming video or select playlist 
   const { step, steps, currenStepIndex, back, next, goTo, isFirstStep, isLastStep } = useMultiStepForm([
     <SelectTier key="a" setSpaceTier={setSpaceTier} spaceTier={spaceTier} />,
     <SelectPlaylist key="b" selectPlaylist={selectPlaylist} playlist={playlist} />,

@@ -15,6 +15,12 @@ import type { AppProps } from "next/app";
 import CommonLayout from "@/components/Layouts/CommonLayout";
 import Head from "next/head";
 import { NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
+import { LivepeerConfig, createReactClient, studioProvider } from "@livepeer/react";
+import { env } from "@/env.mjs";
+
+const client = createReactClient({
+  provider: studioProvider({ apiKey: env.NEXT_PUBLIC_LIVEPEER_API_KEY }),
+});
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -125,37 +131,39 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
   return (
     <>
       <HandleSEO pageProps={pageProps} />
-      <QueryClientProvider client={queryClient}>
-        <Web3Provider>
-          <Toaster
-            position="bottom-right"
-            toastOptions={{
-              style: {
-                backgroundColor: "#000",
-                color: "white",
-              },
-            }}
-          >
-            {(t) => (
-              <ToastBar toast={t}>
-                {({ icon, message }) => (
-                  <>
-                    {icon}
-                    {message}
-                  </>
-                )}
-              </ToastBar>
+      <LivepeerConfig client={client}>
+        <QueryClientProvider client={queryClient}>
+          <Web3Provider>
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                style: {
+                  backgroundColor: "#000",
+                  color: "white",
+                },
+              }}
+            >
+              {(t) => (
+                <ToastBar toast={t}>
+                  {({ icon, message }) => (
+                    <>
+                      {icon}
+                      {message}
+                    </>
+                  )}
+                </ToastBar>
+              )}
+            </Toaster>
+            {getLayout(
+              <>
+                <Component {...pageProps} />
+                <Analytics />
+              </>
             )}
-          </Toaster>
-          {getLayout(
-            <>
-              <Component {...pageProps} />
-              <Analytics />
-            </>
-          )}
-        </Web3Provider>
-        {/* <ReactQueryDevtools /> */}
-      </QueryClientProvider>
+          </Web3Provider>
+          {/* <ReactQueryDevtools /> */}
+        </QueryClientProvider>
+      </LivepeerConfig>
     </>
   );
 };

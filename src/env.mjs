@@ -14,6 +14,7 @@ const server = z.object({
  */
 const client = z.object({
   NEXT_PUBLIC_SPACE_API_URL: z.string().url(),
+  NEXT_PUBLIC_LIVEPEER_API_KEY: z.string(),
 });
 
 /**
@@ -25,6 +26,7 @@ const client = z.object({
 const processEnv = {
   NODE_ENV: process.env.NODE_ENV,
   NEXT_PUBLIC_SPACE_API_URL: process.env.NEXT_PUBLIC_SPACE_API_URL,
+  NEXT_PUBLIC_LIVEPEER_API_KEY: process.env.NEXT_PUBLIC_LIVEPEER_API_KEY,
 };
 
 // Don't touch the part below
