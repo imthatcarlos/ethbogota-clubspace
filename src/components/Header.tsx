@@ -68,7 +68,7 @@ export const Header = () => {
               className="relative btn btn-lens justify-center items-center overflow-hidden"
             >
               <LensLogoIcon class="absolute -top-1 left-0 w-16 h-16" />
-              <span className="z-10">
+              <span className="z-10 pl-4 pr-4">
                 {!(lensLoginData || lensRefreshData)
                   ? "Login with Lens"
                   : profilesResponse?.defaultProfile.handle || "No Lens"}
