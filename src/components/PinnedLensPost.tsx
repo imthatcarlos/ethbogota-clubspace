@@ -7,6 +7,7 @@ import { getUrlForImageFromIpfs, approveToken } from "@/utils";
 import { getPost } from "@/services/lens/getPost";
 import { collectPostGasless } from "@/services/lens/gaslessTxs";
 import { getAccessToken } from "@/hooks/useLensLogin";
+import { MULTIRECIPIENT_COLLECT_MODULE } from "@/lib/consts";
 
 const PinnedLensPost = ({ url, small, renderHeader = true, renderCollectButton = false, gated, onCollect }) => {
   const { data: signer } = useSigner();
@@ -25,6 +26,9 @@ const PinnedLensPost = ({ url, small, renderHeader = true, renderCollectButton =
   const collect = async () => {
     setIsCollecting(true);
 
+    // HACK: for some reason the address isn't coming back in on polygon...
+    const moduleAddress = lensPost.collectModule.contractAddress || MULTIRECIPIENT_COLLECT_MODULE;
+
     let toastId;
     try {
       toastId = toast.loading('Collecting post...');
@@ -34,7 +38,7 @@ const PinnedLensPost = ({ url, small, renderHeader = true, renderCollectButton =
         gated.collectCurrency.address,
         gated.collectFee,
         signer,
-        lensPost.collectModule.contractAddress
+        moduleAddress
       );
 
       // collect the post by signing and broadcasting

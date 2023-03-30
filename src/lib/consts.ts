@@ -24,6 +24,9 @@ export const VERIFIER_ADDRESS = IS_PRODUCTION
   ? "0xd78722b20b3215975184e50519e5703163f7c7f4"
   : "0xD643ed715d367d63Eec28272c3ED70a755A1Dc70";
 
+// polygon
+export const MULTIRECIPIENT_COLLECT_MODULE = '0xfa9dA21D0A18C7B7dE4566481c1e8952371F880a';
+
 const calculateSum = (arr) => {
   return arr.reduce((total, current) => {
     return total + current;
