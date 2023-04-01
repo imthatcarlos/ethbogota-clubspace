@@ -59,7 +59,7 @@ export default withSentryConfig(
         ignoreDuringBuilds: true,
       },
       images: {
-        domains: ["ipfs.io", "firebasestorage.googleapis.com", "lens.infura-ipfs.io"],
+        domains: ["ipfs.io", "firebasestorage.googleapis.com", "lens.infura-ipfs.io", "statics-mumbai-lens-staging.s3.eu-west-1.amazonaws.com"],
       },
     }
   ),

@@ -9,6 +9,7 @@ import { getUrlForImageFromIpfs } from "@/utils";
 import type { IClubSpaceObject, ITrack } from "packages/clubspace-sdk/src";
 import { SVGProps, useEffect, useMemo, useRef, useState } from "react";
 import { NextPageWithLayout } from "../_app";
+import { pinataGatewayURL } from "@/services/pinata/pinata";
 
 const AUDIO_PLAYER_DEFAULT_PLAYBACK = "html5";
 
@@ -33,7 +34,7 @@ const EmbedSpace: NextPageWithLayout = ({
   const spaceEndedDate = useMemo(() => new Date(clubSpaceObject?.endAt * 1000), [clubSpaceObject?.endAt]);
   const currentTrackImage = useMemo(() => {
     // some tracks don't have avatarUrl
-    return currentTrack?.artist?.profiles?.sound?.avatarUrl;
+    return currentTrack?.lossyArtworkUrl || currentTrack?.artist?.profiles?.sound?.avatarUrl;
   }, [currentTrack]);
 
   const { data: hostLensData, isLoading: loadingLensData } = useGetProfilesByHandles({ enabled: !!handle }, [
@@ -126,9 +127,9 @@ const EmbedSpace: NextPageWithLayout = ({
                   ></div>
                 )}
                 <img
-                  src={currentTrackImage || hostLensData?.[0]?.picture?.uri}
+                  src={currentTrackImage || hostLensData?.[0]?.picture?.uri || pinataGatewayURL(hostLensData?.[0]?.picture?.original.url)}
                   alt={currentTrackImage ? `${currentTrack.title} banner` : `${handle} profile pic`}
-                  className={`object-contain h-full aspect-square rounded self-center ${!imageLoaded && "hidden"}`}
+                  className={`object-contain h-full aspect-square rounded self-center max-h-48 ${!imageLoaded && "hidden"}`}
                   draggable="false"
                   loading="eager"
                   onLoad={() => setImageLoaded(true)}
