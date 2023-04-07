@@ -15,6 +15,8 @@ const PinnedLensPost = ({ url, small, renderHeader = true, renderCollectButton =
   const [lensPubId, setLensPubId] = useState(null);
   const [isCollecting, setIsCollecting] = useState(false);
 
+  console.log(lensPost)
+
   useMemo(async () => {
     const parts = url.split("/");
     const pubId = parts[parts.length - 1];
@@ -63,9 +65,9 @@ const PinnedLensPost = ({ url, small, renderHeader = true, renderCollectButton =
         <div className="rounded-md w-[20rem] max-h-[7.6rem] bg-black m-auto p-3 drop-shadow-sm">
           <a href={url} className="" target="_blank" referrerPolicy="no-referrer">
             <div className="flex mb-3">
-              <span className="text-gray-500 ml-1">@{lensPost?.profile.handle}</span>
+              <span className="text-gray-500 ml-1">@{lensPost?.profile?.handle}</span>
             </div>
-            <p className="mb-2 truncate max-h-[12rem] ">{lensPost?.metadata.content}</p>
+            <p className="mb-2 truncate max-h-[12rem] ">{lensPost?.metadata?.content}</p>
             <p className="text-xs text-[#845eee]">See on Lenster</p>
           </a>
         </div>
