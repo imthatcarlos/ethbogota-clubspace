@@ -42,10 +42,8 @@ const _getMetadata = async (sdk: any, contract: any, contractType: string) => {
     metadata = JSON.parse(atob(uri.substring(29)).replace(/\n/g, ' '));
   }
 
-  // metadata.isVideo = metadata.image ? VIDEO_EXTENSIONS.includes(last(metadata.image?.split('.'))) : false;
-  // metadata.animationIsAudio = metadata.animation_url ? ['mp3', 'wav'].includes(last(metadata.animation_url.split('.'))) : false;
-  metadata.isVideo = false;
-  metadata.image = 'https://ipfs.io/ipfs/bafybeibrh4zei4sx77vdpdezcxa2keqlwe3macaturx7cn5uha3ftecrmq/PianoDayTower5gtt.png'
+  metadata.isVideo = metadata.image ? VIDEO_EXTENSIONS.includes(last(metadata.image?.split('.'))) : false;
+  metadata.animationIsAudio = metadata.animation_url ? ['mp3', 'wav'].includes(last(metadata.animation_url.split('.'))) : false;
 
   if (!metadata.name) {
     metadata.name = metadata?.properties?.name;

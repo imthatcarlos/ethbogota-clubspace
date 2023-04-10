@@ -15,14 +15,15 @@ const PinnedLensPost = ({ url, small, renderHeader = true, renderCollectButton =
   const [lensPubId, setLensPubId] = useState(null);
   const [isCollecting, setIsCollecting] = useState(false);
 
-  console.log(lensPost)
-
   useMemo(async () => {
     const parts = url.split("/");
     const pubId = parts[parts.length - 1];
     const post = await getPost(pubId);
-    setLensPubId(pubId);
-    setLensPost(post);
+
+    if (post?.profile && post?.metadata) {
+      setLensPubId(pubId);
+      setLensPost(post);
+    }
   }, [url]);
 
   const collect = async () => {
@@ -58,6 +59,8 @@ const PinnedLensPost = ({ url, small, renderHeader = true, renderCollectButton =
 
     setIsCollecting(false);
   };
+
+  if (!lensPost) return null;
 
   if (small) {
     return (
