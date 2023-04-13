@@ -72,8 +72,8 @@ const LivePageAtHandle: NextPage = ({ clubSpaceObject }: { clubSpaceObject: Club
   }, [isLoadingMeetsGated, meetsGatedCondition]);
 
   const canEnter = useMemo(() => {
-    if (!clubSpaceObject.gated || clubSpaceObject.gated === TIER_OPEN) return true; // not gated
-    if (clubSpaceObject.creatorLensProfileId === defaultProfile?.id) return true; // is host
+    if (!clubSpaceObject?.gated || clubSpaceObject?.gated === TIER_OPEN) return true; // not gated
+    if (clubSpaceObject?.creatorLensProfileId === defaultProfile?.id) return true; // is host
 
     return _canEnter !== false;
   }, [defaultProfile, clubSpaceObject, _canEnter]);
