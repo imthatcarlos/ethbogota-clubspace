@@ -34,6 +34,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       creatorLensHandle,
       creatorLensProfileId,
       spinampPlaylistId,
+      b2bSpinampPlaylistIds,
       drop,
       lensPubId,
       handle,
@@ -46,7 +47,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       gated,
     } = req.body;
 
-    if (!(creatorAddress && handle && spinampPlaylistId && (drop || pinnedLensPost) && clubSpaceId)) {
+    if (!(creatorAddress && handle && (spinampPlaylistId || b2bSpinampPlaylistIds) && (drop || pinnedLensPost) && clubSpaceId)) {
       return res.status(400).json({ error: "missing a param sonnn" });
     }
 
@@ -60,6 +61,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       creatorLensProfileId,
       lensPubId,
       spinampPlaylistId,
+      b2bSpinampPlaylistIds,
       drop,
       clubSpaceId,
       createdAt,
@@ -77,7 +79,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const spaceRedisKey = `${REDIS_SPACE_PREFIX}/${handle}`;
 
     // stick it in redis
-    const exp = startAt ? startAt - Math.floor(Date.now() / 1000) + REDIS_SPACE_EXP : REDIS_SPACE_EXP;
+    const multiplier = b2bSpinampPlaylistIds?.length || 1;
+    const exp = startAt
+      ? startAt - Math.floor(Date.now() / 1000) + (REDIS_SPACE_EXP * multiplier)
+      : (REDIS_SPACE_EXP * multiplier);
+    clubSpaceObject.exp = exp;
     try {
       console.log("setting redis");
       await redisClient.set(spaceRedisKey, JSON.stringify(clubSpaceObject), "EX", exp);
@@ -104,7 +110,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     // post the playlist id for our api to create the audio stream async;
     // if startAt != undefined, it means this space should be scheduled
-    await startRadio({ clubSpaceId, spinampPlaylistId, spaceRedisKey, startAt });
+    await startRadio({
+      clubSpaceId,
+      spinampPlaylistId: b2bSpinampPlaylistIds ? undefined: spinampPlaylistId, // override just in case both were set
+      b2bSpinampPlaylistIds,
+      spaceRedisKey,
+      startAt
+    });
 
     return res.status(200).json({ url: `${NEXT_PUBLIC_SITE_URL}/live/${handle}`, semGroupIdHex, startAt });
   } catch (e) {

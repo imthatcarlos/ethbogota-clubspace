@@ -59,6 +59,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
   const { switchNetworkAsync } = useSwitchNetwork({ onSuccess: (data) => submit(true) });
 
   const [playlist, setPlaylist] = useState<IPlaylist>();
+  const [playlists, setMultiplePlaylists] = useState<IPlaylist[]>();
   const [drop, setDrop] = useState<any>();
   const [fullLensPost, setFullLensPost] = useState<any>();
   const [goodyContract, setGoodyContract] = useState<any>();
@@ -106,7 +107,12 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
   const { step, steps, currenStepIndex, back, next, goTo, isFirstStep, isLastStep } = useMultiStepForm([
     <SelectTier key="a" setSpaceTier={setSpaceTier} spaceTier={spaceTier} />,
-    <SelectPlaylist key="b" selectPlaylist={selectPlaylist} playlist={playlist} />,
+    <SelectPlaylist
+      key="b"
+      selectPlaylist={selectPlaylist}
+      setMultiplePlaylists={setMultiplePlaylists}
+      playlist={playlist}
+    />,
     <SetFeaturedProduct
       key="c"
       selectDrop={selectDrop}
@@ -208,7 +214,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
       const handle = defaultProfile?.handle || ensData?.handle || address;
 
-      if (!(playlist && (drop || pinnedLensPost))) {
+      if (!((playlist || playlists.length) && (drop || pinnedLensPost))) {
         toast.error("Error - missing something in the form. Go back and check your inputs");
         return;
       }
@@ -316,6 +322,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
             handle,
             creatorLensProfileId: defaultProfile.id,
             spinampPlaylistId: playlist.id,
+            b2bSpinampPlaylistIds: playlists.map(({ id }) => id),
             drop,
             lensPubId,
             clubSpaceId,

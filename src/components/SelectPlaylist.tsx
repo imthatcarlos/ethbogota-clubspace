@@ -11,10 +11,11 @@ import { MultiStepFormWrapper } from "./MultiStepFormWrapper";
 
 type Props = {
   selectPlaylist: (playlist) => void;
+  setMultiplePlaylists: (playlists) => void;
   playlist: IPlaylist;
 };
 
-const SelectPlaylist: FC<Props> = ({ selectPlaylist, playlist }) => {
+const SelectPlaylist: FC<Props> = ({ selectPlaylist, playlist, setMultiplePlaylists }) => {
   const { address } = useAccount();
   const [playlistLink, setPlaylistLink] = useState();
 
@@ -22,14 +23,32 @@ const SelectPlaylist: FC<Props> = ({ selectPlaylist, playlist }) => {
 
   const onPlaylistLinkChanged = async (event) => {
     const val = event.target.value;
-    const playlistId = val.includes("https://") ? last(val.split('/')) : val;
 
-    const playlist = await fetchPlaylistById(playlistId);
+    let playlist;
+    if (val.includes(",")) { // for b2b setlists
+      const links = val.split(",");
+      const playlists = (await Promise.all(links.map(async (link) => {
+        const playlistId = link.includes("https://") ? last(link.split('/')) : link;
+        const playlist = await fetchPlaylistById(playlistId);
 
-    if (!playlist?.playlist) {
-      toast.error('Spinamp playlist not found!');
-    } else {
-      selectPlaylist(playlist.playlist);
+        return playlist?.playlist;
+      }))).filter((p) => p);
+
+      if (!playlists.length) {
+        toast.error('Spinamp playlist not found!');
+      } else {
+        setMultiplePlaylists(playlists);
+      }
+    } else { // single playlist
+      const playlistId = val.includes("https://") ? last(val.split('/')) : val;
+
+      const playlist = await fetchPlaylistById(playlistId);
+
+      if (!playlist?.playlist) {
+        toast.error('Spinamp playlist not found!');
+      } else {
+        selectPlaylist(playlist.playlist);
+      }
     }
   }
 
@@ -37,7 +56,7 @@ const SelectPlaylist: FC<Props> = ({ selectPlaylist, playlist }) => {
     <MultiStepFormWrapper>
       <div className="w-full flex flex-col gap-2">
         <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">2. Set your live music</h2>
-        <p className="mb-2">You can select one of your <a className="underline" href="https://app.spinamp.xyz/" target="_blank">Spinamp</a> playlists or paste the URL to one</p>
+        <p className="mb-2">You can select one of your <a className="underline" href="https://app.spinamp.xyz/" target="_blank">Spinamp</a> playlists or paste the URL to one (comma separated for b2b)</p>
 
         {playlists && (
           <>

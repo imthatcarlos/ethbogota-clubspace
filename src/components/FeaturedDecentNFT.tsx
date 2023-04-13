@@ -43,6 +43,20 @@ export const FeaturedDecentNFT = ({
   const { connector: activeConnector, address: userAddress } = useAccount();
   const { switchNetworkAsync } = useSwitchNetwork({ onSuccess: (data) => onBuyClick(true) });
 
+  // mint an edition with new interface, catch and try the old
+  const _fallbackEditionMint = (contract: Contract, _signer: any, price: BigNumber) => {
+    try {
+      return contract
+        .connect(_signer)
+        .mint(userAddress, 1, { value: price, gasLimit: 150_000 });
+    } catch (error) {
+      const abi = ['function mint(uint256) external payable'];
+      const oldContract = new Contract(contract.address, abi, _signer);
+
+      return oldContract.mint(1, { value: price, gasLimit: 150_000 });
+    }
+  };
+
   const onBuyClick = async (switched = false) => {
     setIsBuying(true);
 
@@ -67,7 +81,7 @@ export const FeaturedDecentNFT = ({
           const tx =
             contractType == CONTRACT_TYPE_CRESCENDO
               ? await contract.connect(_signer).buy(0, { value: price, gasLimit: 150_000 })
-              : await contract.connect(_signer).mint(userAddress, 1, { value: price, gasLimit: 150_000 });
+              : await _fallbackEditionMint(contract, _signer, price);
 
           console.log(`tx: ${tx.hash}`);
           await tx.wait();
