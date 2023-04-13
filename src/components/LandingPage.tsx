@@ -1,3 +1,7 @@
+import Link from "next/link";
+import ClubspaceNeon from "@/assets/svg/clubspace-neon.svg";
+import ClubspaceSoftGlow from "@/assets/svg/soft-glow-filter.svg";
+
 // @TODO: switch to actual images
 const Sequence = [
   {
@@ -53,17 +57,27 @@ export default function LandingPage() {
             </svg>
             <rect width="100%" height="100%" strokeWidth={0} fill="url(#83fd4e5a-9d52-42fc-97b6-718e5d7ee527)" />
           </svg>
-          <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:flex lg:items-center lg:gap-x-10 lg:px-8 lg:py-40">
+          <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:flex lg:items-center lg:gap-x-10 lg:px-8 lg:py-16">
             <div className="mx-auto max-w-2xl lg:mx-0 lg:flex-auto">
-              <h1 className="mt-10 max-w-lg text-4xl font-bold tracking-tight sm:text-9xl">ClubSpace</h1>
-              <p className="mt-2 text-3xl leading-6 text-club-red">Promote your music NFT drops in live spaces</p>
+              <div className="w-full items-center justify-center">
+                <ClubspaceNeon className="min-w-fit svg-logo" />
+                <h2 className="leading-12 uppercase text-6xl tracking-wide w-full font-ownersx text-left text-[37px] landing-page-subtext-shadow">
+                  <span className="block">PROMOTE YOUR NFT DROPS</span>
+                  <span className="block">
+                    WITH A <span className="text-primary italic mix-blend-lighten text-club-red font-extrabold">LIVE</span>{" "}
+                    LISTENING PARTY
+                  </span>
+                </h2>
+              </div>
               <div className="mt-10 flex items-center gap-x-6">
-                <a href="#" className="btn max-w-fit">
-                  Create space
+                <a href="#" className="max-w-fit btn-create-space relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold duration-300 transition-all hover:-translate-y-[2px] hover:text-white">
+                  <span className="z-10">Create a space</span>
                 </a>
-                <a href="#" className="text-sm font-semibold leading-6">
-                  Learn more <span aria-hidden="true">→</span>
-                </a>
+                <Link key={"/about"} href={"/about"} passHref>
+                  <a className="text-sm font-semibold leading-6 pl-6">
+                    Learn more <span aria-hidden="true">→</span>
+                  </a>
+                </Link>
               </div>
             </div>
             <div className="mt-16 sm:mt-24 lg:mt-0 lg:flex-shrink-0 lg:flex-grow">
@@ -89,7 +103,7 @@ export default function LandingPage() {
                   clipPath="url(#2ade4387-9c63-4fc4-b754-10e687a0d332)"
                 >
                   {/* @TODO: switch to actual image */}
-                  <img src="https://tailwindui.com/img/component-images/mobile-app-screenshot.png" alt="" />
+                  <img src="clubspace-mobile.png" alt="" />
                 </foreignObject>
               </svg>
             </div>
@@ -140,9 +154,9 @@ export default function LandingPage() {
         {/* Feature section */}
         <div className="mt-32 sm:mt-56 sm:px-6 lg:px-8">
           <h3 className="text-4xl font-mono text-center uppercase text-white/60">
-            ClubSpace is a web3-based platform that empowers musicians to seamlessly
+            ClubSpace is a web3 platform that empowers creators to
             <span className="mt-4 block text-4xl text-white">
-              promote, monetize, and distribute their music NFTs through live listening experiences
+              promote, distribute, and monetize their NFTs through live listening experiences
             </span>
           </h3>
           <div className="mt-32 mx-auto px-6 lg:px-8 flex items-center gap-48 lg:ml-32 flex-wrap">
@@ -189,7 +203,7 @@ export default function LandingPage() {
                   distribute their music NFTs through live listening experiences
                 </p>
               </div>
-              // @TODO: Replace with actual image 
+              // @TODO: Replace with actual image
               <img
                 src="https://tailwindui.com/img/component-images/dark-project-app-screenshot.png"
                 alt="Product screenshot"
@@ -202,7 +216,7 @@ export default function LandingPage() {
                   {primaryFeatures.map((feature) => (
                     <div key={feature.name} className="relative">
                       <dt className="ml-9 inline-block font-semibold text-white">
-                        <feature.icon className="absolute left-1 top-1 h-5 w-5 text-indigo-500" aria-hidden="true" /> 
+                        <feature.icon className="absolute left-1 top-1 h-5 w-5 text-indigo-500" aria-hidden="true" />
                         {feature.name}
                       </dt>{" "}
                       <dd className="inline">{feature.description}</dd>
@@ -244,7 +258,7 @@ export default function LandingPage() {
               {secondaryFeatures.map((feature) => (
                 <div key={feature.name} className="flex flex-col">
                   <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
-                    <feature.icon className="h-5 w-5 flex-none text-indigo-600" aria-hidden="true" /> 
+                    <feature.icon className="h-5 w-5 flex-none text-indigo-600" aria-hidden="true" />
                     {feature.name}
                   </dt>
                   <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
