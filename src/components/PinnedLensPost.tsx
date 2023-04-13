@@ -9,7 +9,14 @@ import { collectPostGasless } from "@/services/lens/gaslessTxs";
 import { getAccessToken } from "@/hooks/useLensLogin";
 import { MULTIRECIPIENT_COLLECT_MODULE } from "@/lib/consts";
 
-const PinnedLensPost = ({ url, small, renderHeader = true, renderCollectButton = false, gated, onCollect }) => {
+const PinnedLensPost = ({
+  url,
+  small,
+  renderHeader = true,
+  renderCollectButton = false,
+  gated = null,
+  onCollect = () => null,
+}) => {
   const { data: signer } = useSigner();
   const [lensPost, setLensPost] = useState(null);
   const [lensPubId, setLensPubId] = useState(null);
@@ -34,27 +41,22 @@ const PinnedLensPost = ({ url, small, renderHeader = true, renderCollectButton =
 
     let toastId;
     try {
-      toastId = toast.loading('Collecting post...');
+      toastId = toast.loading("Collecting post...");
 
       // if the allowance against the module is less than the fee, approve more
-      await approveToken(
-        gated.collectCurrency.address,
-        gated.collectFee,
-        signer,
-        moduleAddress
-      );
+      await approveToken(gated.collectCurrency.address, gated.collectFee, signer, moduleAddress);
 
       // collect the post by signing and broadcasting
       await collectPostGasless(lensPubId, signer, getAccessToken());
 
       toast.dismiss(toastId);
-      toast.success('Post collected! You can join the ClubSpace when the tx is settled', { duration: 10_000 });
+      toast.success("Post collected! You can join the ClubSpace when the tx is settled", { duration: 10_000 });
 
       onCollect();
     } catch (error) {
       console.log(error);
       toast.dismiss(toastId);
-      toast.error('Error collecting post');
+      toast.error("Error collecting post");
     }
 
     setIsCollecting(false);
@@ -97,11 +99,13 @@ const PinnedLensPost = ({ url, small, renderHeader = true, renderCollectButton =
               loading="lazy"
             />
             <div className="flex flex-col">
-              <span className="text-white font-bold text-lg">{lensPost?.profile.name || ''}</span>
+              <span className="text-white font-bold text-lg">{lensPost?.profile.name || ""}</span>
               <span className="text-gray-500 text-md mb-2">@{lensPost?.profile.handle}</span>
             </div>
           </div>
-          <p className="whitespace-pre-wrap text-white max-h-[10rem] overflow-scroll mb-2 leading-7">{lensPost?.metadata.content}</p>
+          <p className="whitespace-pre-wrap text-white max-h-[10rem] overflow-scroll mb-2 leading-7">
+            {lensPost?.metadata.content}
+          </p>
           <div className={`grid ${lensPost?.metadata.media.length > 1 ? "grid-cols-2" : ""} gap-2`}>
             {lensPost?.metadata.media?.map((media) => (
               <img
@@ -118,9 +122,7 @@ const PinnedLensPost = ({ url, small, renderHeader = true, renderCollectButton =
       <div className="flex justify-center mt-4 mb-4 text-sm gap-x-4">
         <div className="flex gap-x-2">
           <span>
-            <strong>
-              {lensPost?.stats.totalAmountOfCollects}
-            </strong>
+            <strong>{lensPost?.stats.totalAmountOfCollects}</strong>
           </span>
           <span className="text-gray-400">Collected</span>
         </div>

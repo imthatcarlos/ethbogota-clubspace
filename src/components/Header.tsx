@@ -67,7 +67,7 @@ export const Header = () => {
               onClick={lensButton}
               className="relative btn btn-lens justify-center items-center overflow-hidden"
             >
-              <LensLogoIcon class="absolute -top-1 left-0 w-16 h-16" />
+              <LensLogoIcon className="absolute -top-1 left-0 w-16 h-16" />
               <span className="z-10 pl-4 pr-4">
                 {!(lensLoginData || lensRefreshData)
                   ? "Login with Lens"

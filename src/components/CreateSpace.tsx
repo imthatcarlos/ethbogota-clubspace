@@ -164,8 +164,8 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     const _image = await pinFileToIPFS(cover);
 
     // get track list for description
-    const { playlist } = await fetchPlaylistById(playlist.id);
-    const tracks = await fetchTracksByIds(playlist.trackIds);
+    const { playlist: _playlist } = await fetchPlaylistById(playlist.id);
+    const tracks = await fetchTracksByIds(_playlist.trackIds);
     const tracklist = tracks.map((t, i) => `${i}. ${t.artist.name} - ${t.title}`).join("\n");
     const description = `ClubSpace hosted by @${handle}\n\n${tracklist}`;
 

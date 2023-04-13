@@ -88,6 +88,7 @@ const SetFeaturedProduct = ({ selectDrop, drop, pinnedLensPost, updateFields }) 
             <label htmlFor="lens-post" className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">
               Add a pinned Lens Post to your space
             </label>
+            <i className="mb-2">Make sure this is a link to a post and not a mirror!</i>
             <input
               value={pinnedLensPost}
               type="text"

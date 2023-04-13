@@ -102,7 +102,10 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
                   ))}
 
                 {isLoading ? (
-                  <div>Loading...</div>
+                  <>
+                    <div>Loading...</div>
+                    <div>It may take a few minutes for the party favor to index</div>
+                  </>
                 ) : (
                   <div>
                     <p className="text-xl">{deployedZkEdition?.name}</p>
