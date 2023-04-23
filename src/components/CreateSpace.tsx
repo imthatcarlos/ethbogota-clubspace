@@ -214,7 +214,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
       const handle = defaultProfile?.handle || ensData?.handle || address;
 
-      if (!((playlist || playlists.length) && (drop || pinnedLensPost))) {
+      if (!((playlist || playlists?.length) && (drop || pinnedLensPost))) {
         toast.error("Error - missing something in the form. Go back and check your inputs");
         return;
       }
@@ -322,7 +322,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
             handle,
             creatorLensProfileId: defaultProfile.id,
             spinampPlaylistId: playlist.id,
-            b2bSpinampPlaylistIds: playlists.map(({ id }) => id),
+            b2bSpinampPlaylistIds: playlists?.map(({ id }) => id),
             drop,
             lensPubId,
             clubSpaceId,
