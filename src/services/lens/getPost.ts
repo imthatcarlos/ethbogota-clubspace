@@ -9,6 +9,9 @@ const GET_POST = gql`
       ... on Post {
         ...PostFields
       }
+      ... on Mirror {
+        ...MirrorFields
+      }
     }
   }
 
@@ -78,6 +81,34 @@ const GET_POST = gql`
     }
     collectModule {
       ...CollectModuleFields
+    }
+  }
+
+  fragment MirrorBaseFields on Mirror {
+    id
+    profile {
+      ...ProfileFields
+    }
+    stats {
+      totalAmountOfCollects
+    }
+    metadata {
+      ...MetadataOutputFields
+    }
+    createdAt
+    collectModule {
+      ...CollectModuleFields
+    }
+    hidden
+    hasCollectedByMe
+  }
+
+  fragment MirrorFields on Mirror {
+    ...MirrorBaseFields
+    mirrorOf {
+     ... on Post {
+        ...PostFields
+     }
     }
   }
 `;
