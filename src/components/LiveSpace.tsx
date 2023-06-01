@@ -126,6 +126,7 @@ const LiveSpace: FC<Props> = ({
   const [audienceLoaded, setAudienceLoaded] = useState<boolean>(false);
   const [audience, setAudience] = useState(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [userInteracted, setUserInteracted] = useState<boolean>(false);
   const [isHostOpen, setIsHostOpen] = useState<boolean>(false);
   const { data: ensData, isLoading: isLoadingENS } = useENS(address);
   const { switchNetworkAsync } = useSwitchNetwork({ onSuccess: (data) => onFollowClick(true, undefined, true) });
@@ -218,7 +219,6 @@ const LiveSpace: FC<Props> = ({
     audioPlayError,
     isSomeMicOn,
     forceSoundMuted,
-    userInteracted,
   ] = use(state, [
     "reactions",
     "handRaised",
@@ -239,7 +239,6 @@ const LiveSpace: FC<Props> = ({
     "audioPlayError",
     "isSomeMicOn",
     "forceSoundMuted",
-    "userInteracted",
   ]);
 
   const myInfo = myIdentity.info;
@@ -456,22 +455,21 @@ const LiveSpace: FC<Props> = ({
 
   // HACK: when the playlist is empty but we need audio on
   useEffect(() => {
-    if (isMounted && inRoom && clubSpaceObject.emptyPlaylist) {
-      setProps('userInteracted', true);
-      setProps('forceSoundMuted', false);
-    }
-  }, [isMounted, inRoom]);
-
-  // HACK: when the playlist is empty but we need audio on
-  useEffect(() => {
-    if (isMounted && inRoom && clubSpaceObject.emptyPlaylist && userInteracted) {
+    if (userInteracted && audioPlayError) {
       retryAudio();
     }
-  }, [isMounted, inRoom, userInteracted]);
+  }, [userInteracted, audioPlayError]);
+
+  const startListening = () => {
+    setProps('userInteracted', true);
+    setProps('forceSoundMuted', false);
+    setUserInteracted(true);
+  };
 
   useEffect(() => {
     // if we have our mic on its already lower, or if the player is paused no need to do anything
     if (!micMuted || forceSoundMuted || playerVolume === MUSIC_VOLUME_WHEN_PAUSED) return;
+    if (clubSpaceObject.emptyPlaylist) return;
 
     if (isSomeMicOn) {
       const lowerVolume = Math.min(MUSIC_VOLUME_WHEN_SPEAKING, playerVolume);
@@ -492,6 +490,7 @@ const LiveSpace: FC<Props> = ({
       toast(`You are ${micMuted ? "now" : "no longer"} speaking`, { icon });
 
       if (forceSoundMuted) return;
+      if (clubSpaceObject.emptyPlaylist) return;
 
       if (micMuted) {
         if (playerVolume === MUSIC_VOLUME_WHEN_SPEAKING) return; // already muted
@@ -505,9 +504,12 @@ const LiveSpace: FC<Props> = ({
     } else {
       // @TODO: we should not lower the volume + nofif until micOn
       retryMic().then(() => {
-        const lowerVolume = Math.min(MUSIC_VOLUME_WHEN_SPEAKING, playerVolume);
-        setPreviousVolume(playerVolume);
-        setPlayerVolume(lowerVolume);
+        if (!clubSpaceObject.emptyPlaylist) {
+          const lowerVolume = Math.min(MUSIC_VOLUME_WHEN_SPEAKING, playerVolume);
+          setPreviousVolume(playerVolume);
+          setPlayerVolume(lowerVolume);
+        }
+
         setProps("micMuted", false);
         if (audioPlayError) {
           setProps("userInteracted", true);
@@ -635,6 +637,16 @@ const LiveSpace: FC<Props> = ({
                 <ConnectWallet showBalance={false} />
               </div>
             ) : null}
+            {isConnected && !!myIdentity && clubSpaceObject.emptyPlaylist && !userInteracted && (
+              <div className="justify-center md:min-w-[40rem] p-5 z-10 bg-[rgb(30, 30, 36, 0.25)] backdrop-blur-sm items-center">
+                <button
+                  onClick={startListening}
+                  className="btn !w-full mx-auto bg-almost-black border-t-[0.5px] border-t-slate-700 !text-white flex gap-x-1"
+                >
+                  Start Listening
+                </button>
+              </div>
+            )}
             {!!myIdentity && audience?.length > 0 && !isEmpty(identities) ? (
               audience?.map((peerId, index) => {
                 return identities[peerId] ? (
