@@ -35,6 +35,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       creatorLensProfileId,
       spinampPlaylistId,
       b2bSpinampPlaylistIds,
+      emptyPlaylist,
       drop,
       lensPubId,
       handle,
@@ -47,7 +48,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       gated,
     } = req.body;
 
-    if (!(creatorAddress && handle && (spinampPlaylistId || b2bSpinampPlaylistIds) && (drop || pinnedLensPost) && clubSpaceId)) {
+    // if (!(creatorAddress && handle && (spinampPlaylistId || b2bSpinampPlaylistIds) && (drop || pinnedLensPost) && clubSpaceId)) {
+    if (!(creatorAddress && handle && (drop || pinnedLensPost) && clubSpaceId)) {
       return res.status(400).json({ error: "missing a param sonnn" });
     }
 
@@ -60,6 +62,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       creatorLensHandle,
       creatorLensProfileId,
       lensPubId,
+      emptyPlaylist,
       spinampPlaylistId,
       b2bSpinampPlaylistIds,
       drop,
@@ -108,15 +111,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       console.log("ERROR - privy field exists");
     }
 
-    // post the playlist id for our api to create the audio stream async;
-    // if startAt != undefined, it means this space should be scheduled
-    await startRadio({
-      clubSpaceId,
-      spinampPlaylistId: b2bSpinampPlaylistIds ? undefined: spinampPlaylistId, // override just in case both were set
-      b2bSpinampPlaylistIds,
-      spaceRedisKey,
-      startAt
-    });
+    if (!emptyPlaylist) {
+      // post the playlist id for our api to create the audio stream async;
+      // if startAt != undefined, it means this space should be scheduled
+      await startRadio({
+        clubSpaceId,
+        spinampPlaylistId: b2bSpinampPlaylistIds ? undefined: spinampPlaylistId, // override just in case both were set
+        b2bSpinampPlaylistIds,
+        spaceRedisKey,
+        startAt
+      });
+    }
 
     return res.status(200).json({ url: `${NEXT_PUBLIC_SITE_URL}/live/${handle}`, semGroupIdHex, startAt });
   } catch (e) {

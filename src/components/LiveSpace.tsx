@@ -218,6 +218,7 @@ const LiveSpace: FC<Props> = ({
     audioPlayError,
     isSomeMicOn,
     forceSoundMuted,
+    userInteracted,
   ] = use(state, [
     "reactions",
     "handRaised",
@@ -238,6 +239,7 @@ const LiveSpace: FC<Props> = ({
     "audioPlayError",
     "isSomeMicOn",
     "forceSoundMuted",
+    "userInteracted",
   ]);
 
   const myInfo = myIdentity.info;
@@ -412,7 +414,7 @@ const LiveSpace: FC<Props> = ({
       isMounted &&
       (isLoadingEntry || !inRoom) &&
       handle &&
-      clubSpaceObject.streamURL &&
+      (clubSpaceObject.streamURL || clubSpaceObject.emptyPlaylist) &&
       !isEmpty(creatorLensProfile) &&
       (!isEmpty(featuredDrop) || clubSpaceObject.pinnedLensPost)
     ) {
@@ -451,6 +453,21 @@ const LiveSpace: FC<Props> = ({
       if (!iModerate) addModerator(clubSpaceObject.clubSpaceId, myPeerId, process.env.NEXT_PUBLIC_CLUBSPACE_API_KEY_1);
     }
   }, [isMounted, inRoom, isHost, myPeerId, iSpeak, iModerate]);
+
+  // HACK: when the playlist is empty but we need audio on
+  useEffect(() => {
+    if (isMounted && inRoom && clubSpaceObject.emptyPlaylist) {
+      setProps('userInteracted', true);
+      setProps('forceSoundMuted', false);
+    }
+  }, [isMounted, inRoom]);
+
+  // HACK: when the playlist is empty but we need audio on
+  useEffect(() => {
+    if (isMounted && inRoom && clubSpaceObject.emptyPlaylist && userInteracted) {
+      retryAudio();
+    }
+  }, [isMounted, inRoom, userInteracted]);
 
   useEffect(() => {
     // if we have our mic on its already lower, or if the player is paused no need to do anything
@@ -752,7 +769,7 @@ const LiveSpace: FC<Props> = ({
 
         {/* Button group (reactions, share, comment) */}
 
-        {!isLoadingPlaylistTracks && (
+        {!isLoadingPlaylistTracks && !clubSpaceObject.emptyPlaylist && (
           <>
             {playlistTracks?.length && clubSpaceObject.streamURL ? (
               <LiveAudioPlayer

@@ -214,8 +214,10 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
       const handle = defaultProfile?.handle || ensData?.handle || address;
 
-      if (!((playlist || playlists?.length) && (drop || pinnedLensPost))) {
+      // if (!((playlist || playlists?.length) && (drop || pinnedLensPost))) {
+      if (!((drop || pinnedLensPost))) {
         toast.error("Error - missing something in the form. Go back and check your inputs");
+        setUploading(false);
         return;
       }
 
@@ -225,6 +227,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
       if (!res) {
         toast.error("Error - cannot make a space right now");
+        setUploading(false);
         return;
       }
 
@@ -248,6 +251,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
         if (!collectionAddress) {
           toast.error('Error - could not create Party Favor');
+          setUploading(false);
           return;
         }
       }
@@ -321,7 +325,8 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
             creatorLensHandle: defaultProfile.handle,
             handle,
             creatorLensProfileId: defaultProfile.id,
-            spinampPlaylistId: playlist.id,
+            emptyPlaylist: !(playlist?.id || playlists?.length),
+            spinampPlaylistId: playlist?.id,
             b2bSpinampPlaylistIds: playlists?.map(({ id }) => id),
             drop,
             lensPubId,

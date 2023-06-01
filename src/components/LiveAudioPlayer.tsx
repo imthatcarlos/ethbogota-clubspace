@@ -36,7 +36,7 @@ export const LiveAudioPlayer = ({
   const onMetadata = (metadata) => {
     if (metadata.StreamTitle === currentTrack?.id || metadata.StreamTitle === currentTrackId) return; // ignore first event
 
-    if (!metadata || !metadata.StreamTitle) {
+    if ((!metadata || !metadata.StreamTitle) && nextTrack === undefined) {
       toast('The stream has ended - thanks for coming!', { duration: 10000, icon: '🔥' });
       setStreamEnded(true);
       setCurrentTrack(undefined);

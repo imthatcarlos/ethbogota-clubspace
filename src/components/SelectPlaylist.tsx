@@ -55,8 +55,9 @@ const SelectPlaylist: FC<Props> = ({ selectPlaylist, playlist, setMultiplePlayli
   return (
     <MultiStepFormWrapper>
       <div className="w-full flex flex-col gap-2">
-        <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">2. Set your live music</h2>
+        <h2 className="mt-4 text-md font-bold tracking-tight sm:text-lg md:text-xl">2. Set your live music [OPTIONAL]</h2>
         <p className="mb-2">You can select one of your <a className="underline" href="https://app.spinamp.xyz/" target="_blank">Spinamp</a> playlists or paste the URL to one (comma separated for b2b)</p>
+        <p className="mb-2">You can skip this step and leave your space quiet for discussions</p>
 
         {playlists && (
           <>

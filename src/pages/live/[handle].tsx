@@ -96,7 +96,15 @@ const LivePageAtHandle: NextPage = ({ clubSpaceObject }: { clubSpaceObject: Club
 
   return (
     <>
-      {isLoadingEntry && clubSpaceObject.queuedTrackIds?.length && canEnter ? (
+      {isLoadingEntry && !clubSpaceObject.queuedTrackIds?.length && !clubSpaceObject.emptyPlaylist && canEnter ? (
+        <div className="flex-1 min-h-screen">
+          <div className="abs-center">
+            <p className="animate-move-txt-bg gradient-txt text-4xl">This ClubSpace is getting started, refresh in a sec</p>
+            <MobileMessage />
+          </div>
+        </div>
+      ) : null}
+      {isLoadingEntry && (clubSpaceObject.queuedTrackIds?.length || clubSpaceObject.emptyPlaylist) && canEnter ? (
         <div className="flex-1 min-h-screen">
           <div className="abs-center">
             <p className="animate-move-txt-bg gradient-txt text-4xl">Entering ClubSpace...</p>
@@ -128,7 +136,7 @@ const LivePageAtHandle: NextPage = ({ clubSpaceObject }: { clubSpaceObject: Club
           </div>
         </div>
       ) : null}
-      {!loadingDefaultProfile && ensDone && (!isLoadingBadge || !address) && clubSpaceObject.queuedTrackIds?.length && canEnter ? (
+      {!loadingDefaultProfile && ensDone && (!isLoadingBadge || !address) && (clubSpaceObject.queuedTrackIds?.length || clubSpaceObject.emptyPlaylist) && canEnter ? (
         <JamProviderWrapper>
           <PlayerContext.Provider value={audioPlayerState}>
             <DispatchPlayerContext.Provider value={audioPlayerDispatch}>
