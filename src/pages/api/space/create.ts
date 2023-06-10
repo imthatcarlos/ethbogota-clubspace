@@ -46,6 +46,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       productBannerIsVideo,
       pinnedLensPost,
       gated,
+      // @TODO: Handle spaceType
+      spaceType,
     } = req.body;
 
     // if (!(creatorAddress && handle && (spinampPlaylistId || b2bSpinampPlaylistIds) && (drop || pinnedLensPost) && clubSpaceId)) {
@@ -77,6 +79,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       productBannerIsVideo,
       pinnedLensPost,
       gated,
+      spaceType,
     };
     console.log(JSON.stringify(clubSpaceObject, null, 2));
     const spaceRedisKey = `${REDIS_SPACE_PREFIX}/${handle}`;
@@ -84,8 +87,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     // stick it in redis
     const multiplier = b2bSpinampPlaylistIds?.length || 1;
     const exp = startAt
-      ? startAt - Math.floor(Date.now() / 1000) + (REDIS_SPACE_EXP * multiplier)
-      : (REDIS_SPACE_EXP * multiplier);
+      ? startAt - Math.floor(Date.now() / 1000) + REDIS_SPACE_EXP * multiplier
+      : REDIS_SPACE_EXP * multiplier;
     clubSpaceObject.exp = exp;
     try {
       console.log("setting redis");
@@ -116,10 +119,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       // if startAt != undefined, it means this space should be scheduled
       await startRadio({
         clubSpaceId,
-        spinampPlaylistId: b2bSpinampPlaylistIds ? undefined: spinampPlaylistId, // override just in case both were set
+        spinampPlaylistId: b2bSpinampPlaylistIds ? undefined : spinampPlaylistId, // override just in case both were set
         b2bSpinampPlaylistIds,
         spaceRedisKey,
-        startAt
+        startAt,
       });
     }
 
