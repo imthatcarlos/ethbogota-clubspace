@@ -6,6 +6,7 @@ import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
 import ClubspaceNeonHeader from "@/assets/svg/clubspace-neon-header.svg";
 import { useRouter } from "next/router";
 import LensLogoIcon from "@/assets/svg/lens-logo-icon.svg";
+import { Button } from "./Button";
 
 export const Header = () => {
   const { push, pathname } = useRouter();
@@ -14,7 +15,7 @@ export const Header = () => {
   const { data: lensRefreshData } = useLensRefresh();
   const { data: lensLoginData, refetch: loginWithLens } = useLensLogin();
 
-  const isHomePage = pathname === '/';
+  const isHomePage = pathname === "/";
 
   const lensButton = () => {
     if (!(lensLoginData || lensRefreshData)) {
@@ -25,10 +26,10 @@ export const Header = () => {
   };
 
   return (
-    <header className="flex items-center justify-between py-4 px-4 xs:px-8 bg-black relative z-10 border-b-[0.1px] border-b-slate-700">
+    <header className="relative z-10 flex items-center justify-between border-b-[0.1px] border-b-border bg-black py-4 px-4 xs:px-8">
       <div className="logo -ml-16 md:ml-0">
-        <div className="flex gap-x-2 items-center flex-col xs:flex-row">
-          <a href="/" className="realtive group">
+        <div className="flex flex-col items-center gap-x-2 xs:flex-row">
+          <a href="/" className="group relative">
             <ClubspaceNeonHeader height={65} />
           </a>
         </div>
@@ -47,14 +48,12 @@ export const Header = () => {
           </a>
         </div>
       )*/}
-      <div className="connect md:right-5 xs:relative">
-        <div className="md:flex gap-4 justify-center md:min-w-[250px] scale-[0.8] xs:scale-100">
+      <div className="connect xs:relative md:right-5">
+        <div className="scale-[0.8] justify-center gap-4 xs:scale-100 md:flex md:min-w-[250px]">
           {isHomePage && (
-            <div className="mb-2 sm:mb-0 text-center p-2">
+            <div className="mb-2 p-2 text-center sm:mb-0">
               <Link key={"/about"} href={"/about"} passHref>
-                <a className="link link-hover font-medium opacity-70 hover:opacity-100">
-                  ABOUT
-                </a>
+                <a className="link link-hover font-medium opacity-70 hover:opacity-100">ABOUT</a>
               </Link>
             </div>
           )}
@@ -62,18 +61,18 @@ export const Header = () => {
             <ConnectWallet showBalance={false} />
           </div>
           {isConnected && (
-            <button
+            <Button
               disabled={(lensLoginData || lensRefreshData) && !profilesResponse?.defaultProfile?.handle}
               onClick={lensButton}
-              className="relative btn btn-lens justify-center items-center overflow-hidden"
+              className="btn-lens relative items-center justify-center overflow-hidden"
             >
-              <LensLogoIcon className="absolute -top-1 left-0 w-16 h-16" />
+              <LensLogoIcon className="absolute -top-1 left-0 h-16 w-16" />
               <span className="z-10 pl-4 pr-4">
                 {!(lensLoginData || lensRefreshData)
                   ? "Login with Lens"
                   : profilesResponse?.defaultProfile.handle || "No Lens"}
               </span>
-            </button>
+            </Button>
           )}
         </div>
       </div>

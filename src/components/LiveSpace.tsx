@@ -117,7 +117,18 @@ const LiveSpace: FC<Props> = ({
   const { chain } = useNetwork();
   const [
     state,
-    { enterRoom, leaveRoom, setProps, updateInfo, sendReaction, retryMic, addSpeaker, removeSpeaker, retryAudio, addModerator }
+    {
+      enterRoom,
+      leaveRoom,
+      setProps,
+      updateInfo,
+      sendReaction,
+      retryMic,
+      addSpeaker,
+      removeSpeaker,
+      retryAudio,
+      addModerator,
+    },
   ] = useJam();
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
   const [drawerProfile, setDrawerProfile] = useState<any>({});
@@ -176,7 +187,10 @@ const LiveSpace: FC<Props> = ({
     clubSpaceObject.creatorLensHandle,
     "creatorLensProfile"
   );
-  const { data: featuredDrop, isLoading: isLoadingFeauredDrop } = useGetClubspaceDrop({}, { drop: clubSpaceObject.drop, signer });
+  const { data: featuredDrop, isLoading: isLoadingFeauredDrop } = useGetClubspaceDrop(
+    {},
+    { drop: clubSpaceObject.drop, signer }
+  );
   const { data: playlistTracks, isLoading: isLoadingPlaylistTracks } = useGetTracksFromPlaylist(
     {},
     clubSpaceObject.spinampPlaylistId
@@ -381,9 +395,7 @@ const LiveSpace: FC<Props> = ({
     const join = async () => {
       if (!inRoom) {
         await setProps("roomId", clubSpaceObject.clubSpaceId);
-        const avatar = defaultProfile?.picture?.original?.url
-          || defaultProfile?.picture?.uri
-          || ensData?.avatar;
+        const avatar = defaultProfile?.picture?.original?.url || defaultProfile?.picture?.uri || ensData?.avatar;
 
         await updateInfo({
           handle,
@@ -461,8 +473,8 @@ const LiveSpace: FC<Props> = ({
   }, [userInteracted, audioPlayError]);
 
   const startListening = () => {
-    setProps('userInteracted', true);
-    setProps('forceSoundMuted', false);
+    setProps("userInteracted", true);
+    setProps("forceSoundMuted", false);
     setUserInteracted(true);
   };
 
@@ -545,42 +557,42 @@ const LiveSpace: FC<Props> = ({
     () => (
       <SkeletonTheme baseColor="rgb(85,13,69)" highlightColor="#8B8A8C">
         <div>
-          <h2 className="my-4 text-4xl font-bold tracking-tight sm:text-2xl md:text-5xl drop-shadow-sm text-center">
+          <h2 className="my-4 text-center text-4xl font-bold tracking-tight drop-shadow-sm sm:text-2xl md:text-5xl">
             Featured Drop
           </h2>
-          <div className="flex w-full justify-center relative">
-            <div className="max-w-[20rem] min-w-[17rem]">
-              <div className="bg-slate-800 shadow-xl rounded-lg relative">
-                <div className="photo-wrapper p-2 pt-0 overflow-hidden">
+          <div className="relative flex w-full justify-center">
+            <div className="min-w-[17rem] max-w-[20rem]">
+              <div className="relative rounded-lg bg-slate-800 shadow-xl">
+                <div className="photo-wrapper overflow-hidden p-2 pt-0">
                   <Skeleton
                     width={272}
                     height={262}
-                    className="!absolute t-0 left-0 right-0 w-full h-full object-cover opacity-50 rounded-md"
+                    className="t-0 !absolute left-0 right-0 h-full w-full rounded-md object-cover opacity-50"
                   />
                 </div>
 
-                <div className="p-2 pt-4 relative">
-                  <h3 className="text-center text-xl text-gray-300 font-medium leading-8 -mb-2">
+                <div className="relative p-2 pt-4">
+                  <h3 className="-mb-2 text-center text-xl font-medium leading-8 text-gray-300">
                     <Skeleton className="max-w-[75%]" height={14} />
                   </h3>
 
-                  <p className="text-sm text-gray-500 dark:text-white mb-0 p-4 text-center">
+                  <p className="mb-0 p-4 text-center text-sm text-gray-500 dark:text-white">
                     <Skeleton className="max-w-[55%]" height={4} />
                   </p>
 
-                  <div className="text-center text-gray-400 text-sm font-semibold mb-5 -mt-2">
+                  <div className="mb-5 -mt-2 text-center text-sm font-semibold text-gray-400">
                     <p>
                       <Skeleton className="max-w-[55%]" height={4} />
                     </p>
                   </div>
 
-                  <div className="text-center text-gray-400 text-sm font-semibold mb-2 -mt-2">
+                  <div className="mb-2 -mt-2 text-center text-sm font-semibold text-gray-400">
                     <p>
                       <Skeleton className="max-w-[80%]" height={8} />
                     </p>
                   </div>
 
-                  <div className="flex justify-center mb-0 text-sm gap-x-4">
+                  <div className="mb-0 flex justify-center gap-x-4 text-sm">
                     <div className="flex gap-x-2">
                       <span>
                         <strong>
@@ -600,7 +612,7 @@ const LiveSpace: FC<Props> = ({
                     </div>
                   </div>
 
-                  <div className="text-center mb-3 mt-2 px-3">
+                  <div className="mb-3 mt-2 px-3 text-center">
                     <Skeleton className="btn" height={40} />
                   </div>
                 </div>
@@ -609,7 +621,7 @@ const LiveSpace: FC<Props> = ({
           </div>
 
           {/* Buttons */}
-          <div className="flex w-full justify-center relative grid-cols-2 gap-4 mt-2">
+          <div className="relative mt-2 flex w-full grid-cols-2 justify-center gap-4">
             <Skeleton className="btn" height={35} width={95} />
             <Skeleton className="btn" height={45} width={160} />
           </div>
@@ -628,20 +640,20 @@ const LiveSpace: FC<Props> = ({
 
   return (
     <>
-      <div className="relative grow flex flex-col justify-center min-h-screen">
-        <div className="grid-live items-center justify-center px-10 lg:px-14 gap-x-3">
-          <div className="grid-container w-full audience max-h-[30rem] overflow-auto !content-baseline rounded-lg">
+      <div className="relative flex min-h-screen grow flex-col justify-center">
+        <div className="grid-live items-center justify-center gap-x-3 px-10 lg:px-14">
+          <div className="grid-container audience max-h-[30rem] w-full !content-baseline overflow-auto rounded-lg">
             {!isConnected ? (
-              <div className="justify-center md:min-w-[40rem] p-5 z-10 bg-[rgb(30, 30, 36, 0.25)] backdrop-blur-sm items-center">
-                <p className="animate-move-txt-bg gradient-txt text-2xl mb-5">Connect your wallet to join the space</p>
+              <div className="bg-[rgb(30, 30, 36, 0.25)] z-10 items-center justify-center p-5 backdrop-blur-sm md:min-w-[40rem]">
+                <p className="gradient-txt mb-5 animate-move-txt-bg text-2xl">Connect your wallet to join the space</p>
                 <ConnectWallet showBalance={false} />
               </div>
             ) : null}
             {isConnected && !!myIdentity && clubSpaceObject.emptyPlaylist && !userInteracted && (
-              <div className="justify-center md:min-w-[40rem] p-5 z-10 bg-[rgb(30, 30, 36, 0.25)] backdrop-blur-sm items-center">
+              <div className="bg-[rgb(30, 30, 36, 0.25)] z-10 items-center justify-center p-5 backdrop-blur-sm md:min-w-[40rem]">
                 <button
                   onClick={startListening}
-                  className="btn !w-full mx-auto bg-almost-black border-t-[0.5px] border-t-slate-700 !text-white flex gap-x-1"
+                  className="btn mx-auto flex !w-full gap-x-1 border-t-[0.5px] border-t-border bg-almost-black !text-white"
                 >
                   Start Listening
                 </button>
@@ -693,7 +705,9 @@ const LiveSpace: FC<Props> = ({
             ))} */}
           </div>
           <div className="decent-nft flex flex-col gap-y-3">
-            {isLoadingFeauredDrop ? <>{DummyDecent()}</> : (
+            {isLoadingFeauredDrop ? (
+              <>{DummyDecent()}</>
+            ) : (
               <>
                 {featuredDrop?.protocol === DROP_PROTOCOL_DECENT && (
                   <FeaturedDecentNFT {...featuredDrop} semGroupIdHex={clubSpaceObject.clubSpaceId} />
@@ -711,11 +725,11 @@ const LiveSpace: FC<Props> = ({
             {creatorLensProfile && (
               <>
                 {(isHost || iSpeak) && (
-                  <div className="flex flex w-full justify-center relative grid-cols-2 gap-4">
+                  <div className="relative flex flex w-full grid-cols-2 justify-center gap-4">
                     <div>
                       <button
                         onClick={toggleSpeaking}
-                        className="btn !w-full mx-auto bg-almost-black border-t-[0.5px] border-t-slate-700 !text-white flex gap-x-1"
+                        className="btn mx-auto flex !w-full gap-x-1 border-t-[0.5px] border-t-border bg-almost-black !text-white"
                       >
                         <>
                           {micOn && micMuted && (
@@ -743,12 +757,12 @@ const LiveSpace: FC<Props> = ({
                     <div>
                       <button
                         onClick={() => setIsHostOpen(true)}
-                        className={`btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center ${
+                        className={`btn relative mx-auto flex !w-auto items-center justify-between gap-x-2 bg-almost-black !text-white ${
                           isSomeMicOn ? "glowing-border-club" : ""
                         }`}
                       >
                         <img
-                          className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"
+                          className="h-8 w-8 rounded-full outline outline-1 outline-offset-0 outline-gray-50"
                           src={getUrlForImageFromIpfs(creatorLensProfile.picture?.original?.url)}
                           alt=""
                         />
@@ -761,12 +775,12 @@ const LiveSpace: FC<Props> = ({
                 {!isHost && !iSpeak && (
                   <button
                     onClick={() => setIsHostOpen(true)}
-                    className={`btn !w-auto mx-auto bg-almost-black !text-white flex gap-x-2 relative justify-between items-center ${
+                    className={`btn relative mx-auto flex !w-auto items-center justify-between gap-x-2 bg-almost-black !text-white ${
                       isSomeMicOn ? "glowing-border-club" : ""
                     }`}
                   >
                     <img
-                      className="w-8 h-8 rounded-full outline outline-offset-0 outline-1 outline-gray-50"
+                      className="h-8 w-8 rounded-full outline outline-1 outline-offset-0 outline-gray-50"
                       src={getUrlForImageFromIpfs(creatorLensProfile.picture?.original?.url)}
                       alt=""
                     />
@@ -777,7 +791,7 @@ const LiveSpace: FC<Props> = ({
             )}
           </div>
         </div>
-        <div className="bg-live-page-player bg-cover bg-no-repeat blur-[70px] inset-0 absolute z-[-1] lg:max-h-[50vh] max-h-[25vh] "></div>
+        <div className="absolute inset-0 z-[-1] max-h-[25vh] bg-live-page-player bg-cover bg-no-repeat blur-[70px] lg:max-h-[50vh] "></div>
 
         {/* Button group (reactions, share, comment) */}
 
@@ -801,31 +815,31 @@ const LiveSpace: FC<Props> = ({
 
         {/* isHost ? */}
 
-        <div className="flex left-1/2 transform -translate-x-1/2 relative w-[150px] items-baseline -mt-4">
+        <div className="relative left-1/2 -mt-4 flex w-[150px] -translate-x-1/2 transform items-baseline">
           {handle && (
             <Popover
               className={({ open }) =>
                 classNames(
                   open ? "inset-0 z-40 overflow-y-auto" : "",
-                  "mx-auto shadow-sm lg:static bottom-0 lg:overflow-y-visible"
+                  "bottom-0 mx-auto shadow-sm lg:static lg:overflow-y-visible"
                 )
               }
             >
               {({ open }) => {
                 return (
                   <>
-                    <Menu as="div" className="relative flex-shrink-0 mb-32">
-                      <div className="flex mt-10 items-center mx-auto">
+                    <Menu as="div" className="relative mb-32 flex-shrink-0">
+                      <div className="mx-auto mt-10 flex items-center">
                         <Menu.Button
                           title="Use these wisely..."
                           disabled={sendingReaction}
-                          className="text-club-red !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative"
+                          className="relative inline-flex items-center rounded-lg !bg-transparent text-center text-sm text-club-red focus:outline-none"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
                             fill={!sendingReaction ? "currentColor" : "gray"}
-                            className="w-7 h-7"
+                            className="h-7 w-7"
                           >
                             <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
                           </svg>
@@ -843,7 +857,7 @@ const LiveSpace: FC<Props> = ({
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items className="absolute z-10 mt-2 w-48 origin-top-right rounded-md bg-gray-800 p-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none flex gap-4 flex-wrap left-1/2 transform -translate-x-1/2">
+                        <Menu.Items className="absolute left-1/2 z-10 mt-2 flex w-48 origin-top-right -translate-x-1/2 transform flex-wrap gap-4 rounded-md bg-gray-800 p-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                           {reactionsEntries.map(([key, value]) => (
                             <Menu.Item key={key}>
                               {({ active }) => (
@@ -875,7 +889,7 @@ const LiveSpace: FC<Props> = ({
           )}
 
           <button
-            className={`text-white !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative ml-5 ${
+            className={`relative ml-5 inline-flex items-center rounded-lg !bg-transparent text-center text-sm text-white focus:outline-none ${
               lensterPostURL ? "" : "mr-7"
             }`}
             onClick={() => window.open(shareURL, "_blank")}
@@ -886,7 +900,7 @@ const LiveSpace: FC<Props> = ({
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="w-7 h-7"
+              className="h-7 w-7"
             >
               <path
                 strokeLinecap="round"
@@ -901,7 +915,7 @@ const LiveSpace: FC<Props> = ({
           {lensterPostURL && (
             <button
               className={
-                "text-white focus:ring-4 focus:outline-none font-medium rounded-full text-sm py-2 px-6 text-center inline-flex items-center mr-2  focus:ring-indigo-800 !m-0 max-h-[40px]"
+                "!m-0 mr-2 inline-flex max-h-[40px] items-center rounded-full py-2 px-6 text-center text-sm font-medium text-white  focus:outline-none focus:ring-4 focus:ring-indigo-800"
               }
               onClick={() => window.open(lensterPostURL, "_blank")}
             >
@@ -911,7 +925,7 @@ const LiveSpace: FC<Props> = ({
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="w-7 h-7"
+                className="h-7 w-7"
               >
                 <path
                   strokeLinecap="round"
@@ -924,7 +938,7 @@ const LiveSpace: FC<Props> = ({
           {clubSpaceObject.partyFavorContractAddress !== ZERO_ADDRESS && isConnected && (
             <button
               onClick={() => setModalOpen(true)}
-              className="text-white !bg-transparent focus:outline-none rounded-lg text-[32px] text-center inline-flex items-center relative"
+              className="relative inline-flex items-center rounded-lg !bg-transparent text-center text-[32px] text-white focus:outline-none"
             >
               🎁
             </button>
@@ -948,7 +962,7 @@ const LiveSpace: FC<Props> = ({
             <div className="fixed inset-0 bg-black bg-opacity-25" />
           </Transition.Child>
 
-          <div className="fixed bottom-[-20px] left-1/2 transform -translate-x-1/2 w-[375px]">
+          <div className="fixed bottom-[-20px] left-1/2 w-[375px] -translate-x-1/2 transform">
             <div className="flex min-h-full items-center justify-center p-4 text-center">
               <Transition.Child
                 as={Fragment}
@@ -959,40 +973,40 @@ const LiveSpace: FC<Props> = ({
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95 translate-y-[100%]"
               >
-                <Dialog.Panel className="relative w-full max-w-md transform overflow-hidden rounded-tl-[35px] rounded-tr-[35px] bg-black p-6 text-left align-middle shadow-xl transition-all min-h-[20rem] pt-[155px]">
-                  <div className={`absolute top-0 right-0 h-[125px] w-full shimmer`}>
+                <Dialog.Panel className="relative min-h-[20rem] w-full max-w-md transform overflow-hidden rounded-tl-[35px] rounded-tr-[35px] bg-black p-6 pt-[155px] text-left align-middle shadow-xl transition-all">
+                  <div className={`shimmer absolute top-0 right-0 h-[125px] w-full`}>
                     <img
-                      className="absolute t-0 left-0 right-0 w-full h-full object-cover"
+                      className="t-0 absolute left-0 right-0 h-full w-full object-cover"
                       src={drawerProfile?.coverPicture?.original?.url || "/default-cover.jpg"}
                       alt=""
                     />
                     <img
                       src={drawerProfile?.picture?.original?.url || "/anon.png"}
                       alt=""
-                      className={`rounded-full w-12 h-12 aspect-square relative border-black-[4px] top-3/4 left-[5%] outline outline-offset-0 outline-2 ${
+                      className={`border-black-[4px] relative top-3/4 left-[5%] aspect-square h-12 w-12 rounded-full outline outline-2 outline-offset-0 ${
                         drawerProfile?.hasBadge ? "outline-red-600" : "outline-black"
                       }`}
                     />
                   </div>
                   <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <div className="flex flex-col">
                         <div className="mb-[-3px] text-white">
                           <span>{drawerProfile?.name}</span>
                         </div>
                         <div className="text-gray-500">@{drawerProfile?.handle}</div>
                         {drawerProfile?.hasBadge ? (
-                          <span className="text-sm badge-holder mt-1">✔️ ClubSpace Badge Holder</span>
+                          <span className="badge-holder mt-1 text-sm">✔️ ClubSpace Badge Holder</span>
                         ) : null}
                       </div>
                     </div>
                   </Dialog.Title>
                   <div className="mt-2">
-                    <p className="text-sm text-white mb-6">{drawerProfile.bio || <em>No bio provided.</em>}</p>
+                    <p className="mb-6 text-sm text-white">{drawerProfile.bio || <em>No bio provided.</em>}</p>
 
                     {defaultProfile?.id && drawerProfile?.id !== defaultProfile?.id && (
                       <button
-                        className="!w-auto btn mb-4"
+                        className="btn mb-4 !w-auto"
                         onClick={() => {
                           onFollowClick(drawerProfile.id);
                         }}
@@ -1000,7 +1014,8 @@ const LiveSpace: FC<Props> = ({
                       >
                         <LensSvg height={20} className={"pr-3"} />
                         {doesFollowDrawerProfile ? "Following" : "Follow"}
-                      </button> )}
+                      </button>
+                    )}
 
                     {/**
                       <button className="flex gap-x-4 items-center">
@@ -1010,14 +1025,10 @@ const LiveSpace: FC<Props> = ({
                       */}
 
                     {isHost && room && drawerProfile.peerId !== myPeerId && (
-                      <button
-                        className="!w-auto btn"
-                        onClick={() => toggleSpeaker(drawerProfile.peerId)}
-                      >
-                        {room?.speakers?.includes(drawerProfile.peerId)
-                          ? 'Remove Speaker'
-                          : 'Promote to Speaker'}
-                      </button> )}
+                      <button className="btn !w-auto" onClick={() => toggleSpeaker(drawerProfile.peerId)}>
+                        {room?.speakers?.includes(drawerProfile.peerId) ? "Remove Speaker" : "Promote to Speaker"}
+                      </button>
+                    )}
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

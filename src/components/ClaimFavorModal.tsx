@@ -7,6 +7,7 @@ import axios from "axios";
 import { getDeploymentForGroup } from "@/hooks/useGetDeployedZkEditions";
 import { apiUrls } from "@/constants/apiUrls";
 import { NFT_STORAGE_URL } from "@/services/decent/utils";
+import { Button } from "./Button";
 
 const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed = undefined }) => {
   const { data: signer } = useSigner();
@@ -58,7 +59,7 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
   if (!chain?.id) return null;
 
   return (
-    <div className="w-full p-8 flex flex-col gap-3">
+    <div className="flex w-full flex-col gap-3 p-8">
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={closeModal}>
           <Transition.Child
@@ -75,17 +76,17 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
 
           <div className="fixed inset-0 overflow-y-auto">
             <div className="flex min-h-full items-center justify-center p-4 text-center">
-              <Dialog.Panel className="w-full max-w-xl min-h-[300px] transform overflow-hidden rounded-2xl bg-black p-6 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="min-h-[300px] w-full max-w-xl transform overflow-hidden rounded-2xl bg-black p-6 text-left align-middle shadow-xl transition-all">
                 <Dialog.Title
                   as="h3"
-                  className="text-lg font-medium leading-6 text-gray-100 border-b-[1px] border-b-gray-600 pb-3 mb-2"
+                  className="mb-2 border-b-[1px] border-b-gray-600 pb-3 text-lg font-medium leading-6 text-gray-100"
                 >
                   <div>
                     <p className="text-gray-300">Claim Party Favor</p>
                     {loading || isLoading ? (
-                      <p className="text-gray-500 text-sm">Checking...</p>
+                      <p className="text-sm text-gray-500">Checking...</p>
                     ) : (
-                      <p className="text-gray-500 text-sm">
+                      <p className="text-sm text-gray-500">
                         {claimable === FavorStatus.CLAIMABLE
                           ? "Claim your party favor now!"
                           : claimable === FavorStatus.CLAIMED
@@ -111,7 +112,7 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
                     <p className="text-xl">{deployedZkEdition?.name}</p>
                     <img
                       src={`${NFT_STORAGE_URL}/${deployedZkEdition?.image?.substring(7) ?? ""}`}
-                      className="mx-auto max-w-xs my-4 rounded-sm"
+                      className="mx-auto my-4 max-w-xs rounded-sm"
                     />
                     {deployedZkEdition?.description?.split("\n").map((line, i) => {
                       return (
@@ -123,7 +124,7 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
                   </div>
                 )}
 
-                <button disabled={claimable !== FavorStatus.CLAIMABLE || loading} onClick={submit} className="btn mt-4">
+                <Button disabled={claimable !== FavorStatus.CLAIMABLE || loading} onClick={submit} className="mt-4">
                   {isLoading || loading
                     ? "..."
                     : claimable === FavorStatus.CLAIMED
@@ -131,7 +132,7 @@ const ClaimFavorModal = ({ isOpen, setIsOpen, semGroupIdHex, address, isClaimed 
                     : claimable === FavorStatus.NOT_CLAIMABLE
                     ? "Stay in the party to become eligible"
                     : "Claim"}
-                </button>
+                </Button>
               </Dialog.Panel>
             </div>
           </div>

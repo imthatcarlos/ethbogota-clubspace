@@ -37,15 +37,15 @@ const ActivityItem = ({ activity }: { activity: Activity }) => {
   const isVideo = () => drop.isVideo || drop.image.endsWith(".mp4");
 
   return (
-    <div className="p-3 rounded-xl min-w-[240px] border-slate-500 border-[1px]">
+    <div className="min-w-[240px] rounded-xl border-[1px] border-border p-3">
       {!isVideo() ? (
-        <img src={getUrlForImageFromIpfs(drop.image)} width="220" height="220" className="rounded-xl mb-2" />
+        <img src={getUrlForImageFromIpfs(drop.image)} width="220" height="220" className="mb-2 rounded-xl" />
       ) : (
         <video
           src={getUrlForImageFromIpfs(drop.image)}
           width="220"
           height="220"
-          className="rounded-xl mb-2"
+          className="mb-2 rounded-xl"
           autoPlay
           muted
           loop
@@ -74,11 +74,11 @@ const ActivityFeed = () => {
   }, []);
 
   return (
-    <div className="w-full mb-16">
+    <div className="mb-16 w-full">
       {hostedSpaces.length > 0 && (
         <>
-          <h2 className="text-md font-bold tracking-tight text-3xl mt-16 mb-8">Recent Spaces</h2>
-          <div className="flex overflow-auto gap-8">
+          <h2 className="text-md mt-16 mb-8 text-3xl font-bold tracking-tight">Recent Spaces</h2>
+          <div className="flex gap-8 overflow-auto">
             {hostedSpaces
               .map((activity: Activity, i: number) => <ActivityItem key={i} activity={activity} />)
               .filter((a) => a)}

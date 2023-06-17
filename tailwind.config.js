@@ -13,6 +13,7 @@ module.exports = {
         "almost-black": "rgba(0, 0, 0, .8) !important",
         "club-red": "var(--club-red)",
 
+        black: "hsl(var(--black))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -59,6 +60,14 @@ module.exports = {
         "lens-profile-hover": "shadow-[0 0 0 4px #2980b9, 0 0 0 7px #0d293c]",
       },
       keyframes: {
+        "accordion-down": {
+          from: { height: 0 },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: 0 },
+        },
         shimmer: {
           "100%": {
             transform: "translateX(100%)",
@@ -135,6 +144,8 @@ module.exports = {
         },
       },
       animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
         "move-txt-bg": "move-txt-bg 8s linear infinite",
         "fade-in-and-out-up": "fade-in-and-out-up 2s ease-in-out",
         "fade-in-from-top": "fade-in-from-top 0.5s var(--ease-squish-1) forwards calc(var(--_delay) * 100ms)",
@@ -146,6 +157,7 @@ module.exports = {
   },
   plugins: [
     require("@tailwindcss/forms"),
+    require("tailwindcss-animate"),
     plugin(({ matchUtilities, theme }) => {
       matchUtilities(
         {

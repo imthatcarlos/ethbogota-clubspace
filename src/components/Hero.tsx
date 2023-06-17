@@ -12,7 +12,8 @@ import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import { IM_WITH_THE_DJ, GOOGLE_FORM_WAITLIST_URL } from "@/lib/consts";
 import ActivityFeed from "./ActivityFeed";
-import {UpcomingFeed} from "./UpcomingFeed";
+import { UpcomingFeed } from "./UpcomingFeed";
+import { Button } from "@/components/Button";
 
 const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
 const CreateSpace = dynamic(() => import("@/components/CreateSpace"), { ssr: false });
@@ -39,7 +40,7 @@ export const Hero = () => {
   if (!isMounted) return null;
 
   return (
-    <div className="relative overflow-hidden flex-1 min-h-screen">
+    <div className="relative min-h-screen flex-1 overflow-hidden bg-[var(--hero-gradient)]">
       <div className="hidden sm:absolute sm:inset-0 sm:block" aria-hidden="true">
         <svg
           className="absolute bottom-0 right-0 mb-48 translate-x-1/2 transform text-gray-700 lg:top-0 lg:mt-28 lg:mb-0 xl:translate-x-0 xl:transform-none"
@@ -64,13 +65,13 @@ export const Hero = () => {
         </svg>
       </div>
       <section className="w-full">
-        <div className="w-full text-secondary mt-12 sm:mt-32 flex flex-col gap-8 mix-blend-lighten px-16 items-center justify-center">
+        <div className="mt-12 flex w-full flex-col items-center justify-center gap-8 px-16 text-secondary mix-blend-lighten sm:mt-32">
           <ClubspaceSoftGlow />
-          <ClubspaceNeon className="min-w-fit svg-logo" />
-          <h2 className="uppercase text-6xl tracking-wide w-full font-ownersx text-center text-[37px] landing-page-subtext-shadow">
+          <ClubspaceNeon className="svg-logo min-w-fit" />
+          <h2 className="font-ownersx landing-page-subtext-shadow w-full text-center text-6xl text-[37px] uppercase tracking-wide">
             <span className="block">PROMOTE YOUR NFT DROPS</span>
             <span className="block">
-              WITH A <span className="text-primary italic mix-blend-lighten text-club-red font-extrabold">LIVE</span>{" "}
+              WITH A <span className="font-extrabold italic text-primary text-club-red mix-blend-lighten">LIVE</span>{" "}
               LISTENING PARTY
             </span>
           </h2>
@@ -78,26 +79,29 @@ export const Hero = () => {
           {isConnected ? (
             <>
               {!(lensLoginData || lensRefreshData) ? (
-                <button onClick={loginWithLens} className="relative btn btn-lens max-w-[200px] h-[45px] btn justify-center items-center overflow-hidden">
-                  <LensLogoIcon class="absolute -top-1 left-0 w-16 h-16" />
-                  <span className="z-10">
-                    Login with Lens
-                  </span>
-                </button>
+                <Button
+                  onClick={() => loginWithLens()}
+                  className="btn-lens relative items-center justify-center overflow-hidden"
+                >
+                  <LensLogoIcon className="absolute -top-1 left-0 h-16 w-16" />
+                  <span className="z-10 pl-4">Login with Lens</span>
+                </Button>
               ) : (
                 <>
                   {shouldRenderCreate ? (
-                    <button
-                      onClick={() => setModalOpen(true)}
-                      className="btn-create-space relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold duration-300 transition-all hover:-translate-y-[2px] hover:text-white"
-                    >
-                      <span className="z-10">Create a space</span>
-                    </button>
+                    <Button className="font-sf-pro-text" onClick={() => setModalOpen(true)}>
+                      Create a space
+                    </Button>
                   ) : (
+                    // <button
+                    //   className="btn-create-space font-sf-pro-text relative inline-flex w-fit overflow-hidden rounded-md bg-white py-3 px-6 text-xl font-bold capitalize text-black transition-all duration-300 hover:-translate-y-[2px] hover:text-white"
+                    // >
+                    //   <span className="z-10">Create a space</span>
+                    // </button>
                     <>
                       <button
                         disabled
-                        className="relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold"
+                        className="font-sf-pro-text relative inline-flex w-fit overflow-hidden rounded-md bg-white py-3 px-6 text-xl font-bold capitalize text-black"
                       >
                         <span className="z-10">Closed Beta</span>
                       </button>
@@ -107,7 +111,7 @@ export const Hero = () => {
                           href="https://playground.sismo.io/madfi-lens-followers-s01"
                           target="_blank"
                           rel="noreferrer"
-                          className="text-club-red font-extrabold"
+                          className="font-extrabold text-club-red"
                         >
                           Sismo Badge
                         </a>{" "}
@@ -116,7 +120,7 @@ export const Hero = () => {
                           href={GOOGLE_FORM_WAITLIST_URL}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-club-red font-extrabold"
+                          className="font-extrabold text-club-red"
                         >
                           Creator Waitlist
                         </a>

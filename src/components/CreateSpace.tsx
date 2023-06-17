@@ -16,7 +16,7 @@ import {
   ALLOWED_CHAIN_IDS,
   TIER_GATED_LENS_COLLECT,
   CLUBSPACE_SERVICE_FEE_PCT,
-  CLUBSPACE_SERVICE_FEE_RECIPIENT
+  CLUBSPACE_SERVICE_FEE_RECIPIENT,
 } from "@/lib/consts";
 import { LensHubProxy } from "@/services/lens/abi";
 import { launchSpace } from "@/services/jam/core";
@@ -48,8 +48,8 @@ const INITIAL_DATA: MultiFormData = {
   goodyName: "",
   launchDate: null,
   goodyFiles: [],
-  collectCurrency: { symbol: '', address: '' },
-  collectFee: '1',
+  collectCurrency: { symbol: "", address: "" },
+  collectFee: "1",
 };
 
 const CreateSpace = ({ isOpen, setIsOpen }) => {
@@ -67,7 +67,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
   const [uploading, setUploading] = useState<boolean>();
   const [shareUrl, setShareUrl] = useState<string>();
   const [isShareOpen, setIsShareOpen] = useState<boolean>(false);
-  const [spaceTier, setSpaceTier] = useState<string>('');
+  const [spaceTier, setSpaceTier] = useState<string>("");
   const [files, setFiles] = useState<any[]>([]);
 
   const [state, jamApi] = useJam();
@@ -131,17 +131,8 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       files={files}
       setFiles={setFiles}
     />,
-    <CreateLaunchTime
-      key="e"
-      setLaunchDate={setLaunchDate}
-      {...formMultiFormData}
-      updateFields={updateFields}
-    />,
-    <SetGoodyBag
-      key="f"
-      {...formMultiFormData}
-      updateFields={updateFields}
-    />,
+    <CreateLaunchTime key="e" setLaunchDate={setLaunchDate} {...formMultiFormData} updateFields={updateFields} />,
+    <SetGoodyBag key="f" {...formMultiFormData} updateFields={updateFields} />,
   ]);
 
   const handleSubmit = (e: FormEvent) => {
@@ -215,7 +206,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       const handle = defaultProfile?.handle || ensData?.handle || address;
 
       // if (!((playlist || playlists?.length) && (drop || pinnedLensPost))) {
-      if (!((drop || pinnedLensPost))) {
+      if (!(drop || pinnedLensPost)) {
         toast.error("Error - missing something in the form. Go back and check your inputs");
         setUploading(false);
         return;
@@ -250,7 +241,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
         toast.dismiss(toastId);
 
         if (!collectionAddress) {
-          toast.error('Error - could not create Party Favor');
+          toast.error("Error - could not create Party Favor");
           setUploading(false);
           return;
         }
@@ -266,7 +257,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
               item: `ipfs://${(await pinFileToIPFS(file)).IpfsHash}`,
               type: file.type,
               altTag: "",
-            })),
+            }))
           );
           attachments = attachments.concat(cids);
         }
@@ -288,18 +279,19 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
         }
         lensPubId = lensPubCount.add(BigNumber.from("1")).toHexString();
 
-        const multirecipientFeeCollectModule = spaceTier === TIER_GATED_LENS_COLLECT
-          ? {
-              amount: { currency: collectCurrency.address, value: collectFee },
-              recipients: [
-                { recipient: address, split: (100 - CLUBSPACE_SERVICE_FEE_PCT) },
-                { recipient: CLUBSPACE_SERVICE_FEE_RECIPIENT, split: CLUBSPACE_SERVICE_FEE_PCT }
-              ],
-              followerOnly: false,
-              referralFee: 0,
-              // endTimestamp:
-            }
-          : undefined;
+        const multirecipientFeeCollectModule =
+          spaceTier === TIER_GATED_LENS_COLLECT
+            ? {
+                amount: { currency: collectCurrency.address, value: collectFee },
+                recipients: [
+                  { recipient: address, split: 100 - CLUBSPACE_SERVICE_FEE_PCT },
+                  { recipient: CLUBSPACE_SERVICE_FEE_RECIPIENT, split: CLUBSPACE_SERVICE_FEE_PCT },
+                ],
+                followerOnly: false,
+                referralFee: 0,
+                // endTimestamp:
+              }
+            : undefined;
 
         console.log(`multirecipientFeeCollectModule: `, multirecipientFeeCollectModule);
 
@@ -317,9 +309,8 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       toast.promise(
         new Promise(async (resolve, reject) => {
           // call redis api
-          const gated = spaceTier === TIER_GATED_LENS_COLLECT
-            ? { tier: spaceTier, collectCurrency, collectFee }
-            : undefined;
+          const gated =
+            spaceTier === TIER_GATED_LENS_COLLECT ? { tier: spaceTier, collectCurrency, collectFee } : undefined;
           const spaceData = {
             creatorAddress: address,
             creatorLensHandle: defaultProfile.handle,
@@ -374,7 +365,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     } catch (error) {
       console.log(error);
       setUploading(false);
-      toast.error('An error has ocurred');
+      toast.error("An error has ocurred");
     }
   };
 
@@ -405,19 +396,19 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-xl min-h-[300px] transform overflow-hidden rounded-2xl bg-black p-6 text-left align-middle shadow-xl transition-all flex flex-col">
+                <Dialog.Panel className="flex min-h-[300px] w-full max-w-xl transform flex-col overflow-hidden rounded-2xl bg-black p-6 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
                     as="h3"
-                    className="text-lg font-medium leading-6 text-gray-100 border-b-[1px] border-b-gray-600 pb-3"
+                    className="border-b-[1px] border-b-gray-600 pb-3 text-lg font-medium leading-6 text-gray-100"
                   >
-                    Your space is {launchDate ? 'scheduled' : 'live'}!
+                    Your space is {launchDate ? "scheduled" : "live"}!
                   </Dialog.Title>
                   <div className=" items-center justify-center">
-                    <p className="flex mt-3">
-                      <a href={shareUrl} target="_blank" rel="noreferrer" className="underline mr-2">
+                    <p className="mt-3 flex">
+                      <a href={shareUrl} target="_blank" rel="noreferrer" className="mr-2 underline">
                         {shareUrl}
                       </a>
-                      <Copy  onClick={() => navigator.clipboard.writeText(shareUrl)} className="copy-btn w-7 p-1 " />
+                      <Copy onClick={() => navigator.clipboard.writeText(shareUrl)} className="copy-btn w-7 p-1 " />
                     </p>
                     <p className="mt-4">Tips & Tricks for a great time:</p>
                     <ol className="ml-6 list-decimal">
@@ -436,7 +427,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
   }
 
   return (
-    <div className="w-full p-8 flex flex-col gap-3">
+    <div className="flex w-full flex-col gap-3 p-8">
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={closeModal}>
           <Transition.Child
@@ -448,7 +439,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-black bg-opacity-25" />
+            <div className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-all duration-100" />
           </Transition.Child>
 
           <div className="fixed inset-0 overflow-y-auto">
@@ -462,14 +453,14 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-xl min-h-[300px] transform overflow-visible rounded-2xl bg-black p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="min-h-[300px] w-full max-w-xl transform overflow-visible rounded-2xl bg-black p-6 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
                     as="h3"
-                    className="text-lg font-medium leading-6 text-gray-100 border-b-[1px] border-b-gray-600 pb-3"
+                    className="border-b-[1px] border-b-gray-600 pb-3 text-lg font-medium leading-6 text-gray-100"
                   >
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span className="text-gray-300">Create a Space</span>
-                      <span className="text-gray-500 text-sm">
+                      <span className="text-sm text-gray-500">
                         {currenStepIndex + 1} / {steps.length}
                       </span>
                     </div>
@@ -477,7 +468,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
                   <form className="step-form" onSubmit={handleSubmit}>
                     {step}
-                    <div className="mt-4 flex gap-x-2 justify-end absolute bottom-4 left-1/2 transform -translate-x-1/2 right-0">
+                    <div className="absolute bottom-4 left-1/2 right-0 mt-4 flex -translate-x-1/2 transform justify-end gap-x-2">
                       <button
                         disabled={isFirstStep || uploading}
                         type="button"

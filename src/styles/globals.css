@@ -1,5 +1,7 @@
 @import url("./fonts.css");
 @tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   :root {
@@ -8,27 +10,29 @@
         primary: "228 33 1",
         secondary: "236 229 213",
         "dark-grey": "38 38 38", */
-    --b: hsl(0, 0%, 100%);
+    /* --b: hsl(220, 13%, 91%) */
+
+    --black: 0 0% 7%;
 
     --background: 0 0% 8%;
-    --foreground: 42 38, 88%;
+    --foreground: 42 38% 88%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 13% 91%;
+    --muted-foreground: 0 0% 28%;
 
-    --popover: 0 0% 100%;
+    --popover: 0 0% 8%;
     --popover-foreground: 222.2 47.4% 11.2%;
 
-    --card: 0 0% 100%;
+    --card: 0 0% 15%;
     --card-foreground: 222.2 47.4% 11.2%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
 
     --primary: 8 99% 45%;
     --primary-foreground: 0 0 100%;
 
-    --secondary: 210 40% 96.1%;
+    --secondary: 220 13% 91%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
     --accent: 210 40% 96.1%;
@@ -37,7 +41,7 @@
     --destructive: 0 100% 50%;
     --destructive-foreground: 210 40% 98%;
 
-    --ring: 215 20.2% 65.1%;
+    --ring: 0 0% 15%;
 
     --radius: 0.5rem;
   }
@@ -102,11 +106,11 @@
 }
 
 body {
-  background: var(--hero-gradient);
+  /* background: var(--hero-gradient); */
   background-size: cover;
   min-height: 100vh;
   background-attachment: fixed;
-  color: white;
+  /* color: white; */
 }
 
 .btn {
@@ -128,12 +132,12 @@ body {
 }
 
 .copy-btn:active {
-  @apply stroke-black bg-white rounded-full;
+  @apply rounded-full bg-white stroke-black;
 }
 
 .input,
 .react-datepicker__input-container input {
-  @apply block w-full rounded-md bg-gray-800 text-white border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm;
+  @apply flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -147,16 +151,16 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .stage-container {
-  @apply border-[0.1px] border-gray-600 p-4 md:p-8 lg:grid place-content-center gap-x-4 gap-y-6 mt-10 grid-cols-3 mx-8;
+  @apply mx-8 mt-10 grid-cols-3 place-content-center gap-x-4 gap-y-6 border-[0.1px] border-gray-600 p-4 md:p-8 lg:grid;
 }
 
 .grid-container {
   grid-template-columns: repeat(auto-fill, 100px);
-  @apply border-[0.1px] border-gray-600 p-4 md:p-8 grid place-content-center mx-auto gap-x-4 gap-y-6 mt-10;
+  @apply mx-auto mt-10 grid place-content-center gap-x-4 gap-y-6 border-[0.1px] border-gray-600 p-4 md:p-8;
 }
 
 .abs-center {
-  @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+  @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform;
 }
 
 .shimmer {
