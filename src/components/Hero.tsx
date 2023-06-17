@@ -43,7 +43,7 @@ export const Hero = () => {
     <div className="relative min-h-screen flex-1 overflow-hidden bg-[var(--hero-gradient)]">
       <div className="hidden sm:absolute sm:inset-0 sm:block" aria-hidden="true">
         <svg
-          className="absolute bottom-0 right-0 mb-48 translate-x-1/2 transform text-gray-700 lg:top-0 lg:mt-28 lg:mb-0 xl:translate-x-0 xl:transform-none"
+          className="absolute bottom-0 right-0 mb-48 translate-x-1/2 transform text-foreground lg:top-0 lg:mt-28 lg:mb-0 xl:translate-x-0 xl:transform-none"
           width={364}
           height={384}
           viewBox="0 0 364 384"
