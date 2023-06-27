@@ -1,15 +1,4 @@
-import {
-  LiveKitRoom,
-  useToken,
-  VideoConference,
-  formatChatMessageLinks,
-  LocalUserChoices,
-  PreJoin,
-  ParticipantLoop,
-  ParticipantName,
-  useParticipants,
-  useEnsureParticipant,
-} from "@livekit/components-react";
+import { LiveKitRoom, useToken, LocalUserChoices, PreJoin, AudioConference } from "@livekit/components-react";
 import { LogLevel, VideoPresets, RoomOptions } from "livekit-client";
 
 import { DebugMode } from "@/lib/livekit/Debug";
@@ -19,7 +8,7 @@ import { useRouter } from "next/router";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
-export const LiveVideo = ({
+export const LiveDiscussion = ({
   roomName,
   preJoinChoices,
   isHost,
@@ -53,7 +42,7 @@ export const LiveVideo = ({
             onError={(err) => console.log("error while setting up prejoin", err)}
             defaults={{
               username: userIdentity,
-              videoEnabled: true,
+              videoEnabled: false,
               audioEnabled: true,
             }}
             onSubmit={(values) => {
@@ -88,10 +77,10 @@ const ActiveRoom = ({ roomName, userChoices, onLeave, isHost }: ActiveRoomProps)
 
   const roomOptions = useMemo((): RoomOptions => {
     return {
-      videoCaptureDefaults: {
-        deviceId: userChoices.videoDeviceId ?? undefined,
-        resolution: hq === "true" ? VideoPresets.h2160 : VideoPresets.h720,
-      },
+      // videoCaptureDefaults: {
+      //   deviceId: userChoices.videoDeviceId ?? undefined,
+      //   resolution: hq === "true" ? VideoPresets.h2160 : VideoPresets.h720,
+      // },
       publishDefaults: {
         videoSimulcastLayers:
           hq === "true" ? [VideoPresets.h1080, VideoPresets.h720] : [VideoPresets.h540, VideoPresets.h216],
@@ -99,8 +88,6 @@ const ActiveRoom = ({ roomName, userChoices, onLeave, isHost }: ActiveRoomProps)
       audioCaptureDefaults: {
         deviceId: userChoices.audioDeviceId ?? undefined,
       },
-      adaptiveStream: { pixelDensity: "screen" },
-      dynacast: true,
     };
   }, [userChoices, hq]);
 
@@ -111,37 +98,15 @@ const ActiveRoom = ({ roomName, userChoices, onLeave, isHost }: ActiveRoomProps)
           token={token}
           serverUrl={liveKitUrl}
           options={roomOptions}
-          video={userChoices.videoEnabled}
+          video={false}
           audio={userChoices.audioEnabled}
           onDisconnected={onLeave}
         >
-          {/* <VideoParticipantsLoop /> */}
-          <VideoConference chatMessageFormatter={formatChatMessageLinks} />
+          <AudioConference />
           {isHost ? "HOST" : "NOT HOST"}
           <DebugMode logLevel={LogLevel.info} />
         </LiveKitRoom>
       )}
-    </>
-  );
-};
-
-const VideoParticipantsLoop = () => {
-  const participants = useParticipants();
-  return (
-    <ParticipantLoop participants={participants}>
-      <VideoParticipantChild />
-    </ParticipantLoop>
-  );
-};
-
-const VideoParticipantChild = (props) => {
-  const p = useEnsureParticipant(props.participant);
-
-  console.log("participant?", p);
-  // const
-  return (
-    <>
-      <ParticipantName />
     </>
   );
 };

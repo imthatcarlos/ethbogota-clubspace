@@ -17,6 +17,7 @@ export default function CustomRoomConnection() {
 
   const {
     query: { handle },
+    push,
   } = useRouter();
 
   const { address } = useAccount();
@@ -82,14 +83,14 @@ export default function CustomRoomConnection() {
       )}
       {spaceType === "discussion" && (
         <LiveDiscussion
-          preJoinSubmit={preJoinSubmit}
+          // preJoinSubmit={preJoinSubmit}
           roomName={roomName}
-          preJoinChoices={preJoinChoices}
+          // preJoinChoices={preJoinChoices}
           userIdentity={userIdentity}
           isHost={isHost}
         />
       )}
-      {spaceType === "playlist" && <>playlist</>}
+      {spaceType === "playlist" && <>go to old infra</>}
     </>
   );
 }

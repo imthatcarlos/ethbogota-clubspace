@@ -1,112 +1,137 @@
-import { LiveKitRoom, useToken, LocalUserChoices, PreJoin, AudioConference } from "@livekit/components-react";
-import { LogLevel, VideoPresets, RoomOptions } from "livekit-client";
-
-import { DebugMode } from "@/lib/livekit/Debug";
-import React, { useMemo } from "react";
+import {
+  ControlBar,
+  LiveKitRoom,
+  RoomAudioRenderer,
+  RoomName,
+  TrackLoop,
+  TrackMutedIndicator,
+  useIsMuted,
+  useIsSpeaking,
+  useToken,
+  useTrackContext,
+  useTracks,
+} from "@livekit/components-react";
+import { Track } from "livekit-client";
+import { useMemo, useState } from "react";
 import { env } from "@/env.mjs";
-import { useRouter } from "next/router";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
 export const LiveDiscussion = ({
   roomName,
-  preJoinChoices,
   isHost,
   userIdentity,
-  preJoinSubmit,
 }: {
   roomName: string;
-  preJoinChoices: LocalUserChoices | undefined;
   isHost?: boolean;
   userIdentity: string;
-  preJoinSubmit: (value: LocalUserChoices) => void;
 }) => {
-  const router = useRouter();
+  const token = useToken(env.NEXT_PUBLIC_LK_TOKEN_ENDPOINT, roomName, {
+    userInfo: {
+      identity: userIdentity,
+      name: userIdentity,
+    },
+  });
+
+  const [tryToConnect, setTryToConnect] = useState(false);
+  const [connected, setConnected] = useState(false);
+
   return (
-    <div data-lk-theme="default">
-      {roomName && !Array.isArray(roomName) && preJoinChoices ? (
-        <ActiveRoom
-          roomName={roomName}
-          userChoices={preJoinChoices}
-          onLeave={() => {
-            router.push("/");
-          }}
-          isHost={isHost}
-        ></ActiveRoom>
-      ) : (
-        <div style={{ display: "grid", placeItems: "center", height: "100%" }}>
-          {/* {defaultProfile?.handle ? defaultProfile?.handle : "no default...  "}
-          {ensData?.handle ? ensData?.handle : "no ens..."}
-          {address ? address : "no address ..."} */}
-          <PreJoin
-            onError={(err) => console.log("error while setting up prejoin", err)}
-            defaults={{
-              username: userIdentity,
-              videoEnabled: false,
-              audioEnabled: true,
+    <div data-lk-theme="default" className="relative w-full h-screen max-h-screen overflow-hidden">
+      <LiveKitRoom
+        token={token}
+        serverUrl={liveKitUrl}
+        connect={tryToConnect}
+        video={false}
+        audio={true}
+        // simulateParticipants={5}
+        onConnected={() => setConnected(true)}
+        onDisconnected={() => {
+          setTryToConnect(false);
+          setConnected(false);
+        }}
+      >
+        <div className="grid place-content-center h-full">
+          <button
+            className="lk-button"
+            onClick={() => {
+              setTryToConnect(true);
             }}
-            onSubmit={(values) => {
-              preJoinSubmit(values);
-            }}
-          ></PreJoin>
+          >
+            Enter Room
+          </button>
+
+          <div
+            className="w-full max-w-full bottom-0 absolute px-8 h-[80%] p-4 bg-slate-600 transition-all duration-1000 grid grid-rows-[min-content_1fr_min-content]"
+            style={{ bottom: connected ? "0px" : "-100%" }}
+          >
+            <h1>
+              <RoomName />
+            </h1>
+            <Stage />
+            <ControlBar variation="minimal" controls={{ microphone: true, camera: false, screenShare: false }} />
+            <RoomAudioRenderer />
+          </div>
         </div>
-      )}
+      </LiveKitRoom>
     </div>
   );
 };
 
-type ActiveRoomProps = {
-  userChoices: LocalUserChoices;
-  roomName: string;
-  region?: string;
-  onLeave?: () => void;
-  isHost?: boolean;
-};
-const ActiveRoom = ({ roomName, userChoices, onLeave, isHost }: ActiveRoomProps) => {
-  const token = useToken(env.NEXT_PUBLIC_LK_TOKEN_ENDPOINT, roomName, {
-    userInfo: {
-      identity: userChoices.username,
-      name: userChoices.username,
-    },
-  });
-
-  const router = useRouter();
-  const { region, hq } = router.query;
-
-  // const liveKitUrl = useServerUrl(region as string | undefined);
-
-  const roomOptions = useMemo((): RoomOptions => {
-    return {
-      // videoCaptureDefaults: {
-      //   deviceId: userChoices.videoDeviceId ?? undefined,
-      //   resolution: hq === "true" ? VideoPresets.h2160 : VideoPresets.h720,
-      // },
-      publishDefaults: {
-        videoSimulcastLayers:
-          hq === "true" ? [VideoPresets.h1080, VideoPresets.h720] : [VideoPresets.h540, VideoPresets.h216],
-      },
-      audioCaptureDefaults: {
-        deviceId: userChoices.audioDeviceId ?? undefined,
-      },
-    };
-  }, [userChoices, hq]);
-
+const Stage = () => {
+  const tracksReferences = useTracks([Track.Source.Microphone]);
   return (
-    <>
-      {liveKitUrl && (
-        <LiveKitRoom
-          token={token}
-          serverUrl={liveKitUrl}
-          options={roomOptions}
-          video={false}
-          audio={userChoices.audioEnabled}
-          onDisconnected={onLeave}
-        >
-          <AudioConference />
-          {isHost ? "HOST" : "NOT HOST"}
-          <DebugMode logLevel={LogLevel.info} />
-        </LiveKitRoom>
-      )}
-    </>
+    <div className="">
+      <div className="grid grid-cols-8 grid-rows-[auto] w-full h-full justify-center">
+        <TrackLoop tracks={tracksReferences}>
+          <CustomParticipantTile></CustomParticipantTile>
+        </TrackLoop>
+      </div>
+    </div>
   );
 };
+
+const CustomParticipantTile = () => {
+  const { participant, source } = useTrackContext();
+  const isSpeaking = useIsSpeaking(participant);
+  const isMuted = useIsMuted(source);
+
+  const id = useMemo(() => participant.identity, [participant]);
+
+  return (
+    <section className="relative min-w-0" title={participant.name}>
+      <div className="relative w-24 h-24 min-w-0">
+        <div
+          className={`rounded-full border-2 p-0.5 transition-colors duration-1000`}
+          style={{ borderColor: isSpeaking ? "greenyellow" : "transparent" }}
+        >
+          <div className="z-10 grid aspect-square items-center overflow-hidden rounded-full bg-beige transition-all will-change-transform">
+            <img
+              src={`https://avatars.dicebear.com/api/avataaars/${id}.svg?mouth=default,smile,tongue&eyes=default,happy,hearts&eyebrows=default,defaultNatural,flatNatural`}
+              className="fade-in"
+              width={150}
+              height={150}
+              alt={`Avatar of user: ${participant.identity}`}
+            />
+          </div>
+        </div>
+
+        <div
+          style={{ opacity: isMuted ? 1 : 0 }}
+          className="absolute bg-red-500 bottom-[7%] right-[7%] rounded-full transition-opacity duration-200 ease-in-out border-2 border-emerald-600 p-1"
+        >
+          <div className="aspect-square grid place-content-center">
+            <TrackMutedIndicator className="m-1 opacity-100" source={source}></TrackMutedIndicator>
+          </div>
+        </div>
+      </div>
+      {/* find way to control other users sources */}
+      {/* {isHost && (
+        <div>
+          <ControlBar variation="minimal" controls={{ microphone: true, camera: false, screenShare: false }} />
+        </div>
+      )} */}
+    </section>
+  );
+};
+export default LiveDiscussion;
