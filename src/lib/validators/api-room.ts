@@ -11,4 +11,5 @@ export type AddUserRequest = z.infer<typeof addUserReqValidator>;
 
 export const addUserResValidator = z.object({
   token: z.string(),
+  id: z.string(),
 });

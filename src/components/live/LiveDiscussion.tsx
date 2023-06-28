@@ -8,7 +8,6 @@ import {
   RoomName,
   useIsSpeaking,
   useParticipantContext,
-  useParticipantPermissions,
   useParticipants,
   useRoomInfo,
   useToken,
@@ -32,6 +31,7 @@ export const LiveDiscussion = ({
     userInfo: {
       identity: userIdentity,
       name: userIdentity,
+      metadata: isHost ? JSON.stringify({ isHost }) : undefined,
     },
   });
 
