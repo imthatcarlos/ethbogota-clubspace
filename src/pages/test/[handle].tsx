@@ -9,8 +9,11 @@ import useENS from "@/hooks/useENS";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import { LiveVideo } from "@/components/live/LiveVideo";
 import { LiveDiscussion } from "@/components/live/LiveDiscussion";
+import { ConnectWallet } from "@/components/ConnectWallet";
 
 export default function CustomRoomConnection() {
+  const [preJoinChoices, setPreJoinChoices] = useState<LocalUserChoices | undefined>(undefined);
+
   const params = typeof window !== "undefined" ? new URLSearchParams(location.search) : null;
   // video | discussion | playlist
   const spaceType = params?.get("spaceType") ?? "video";
@@ -20,22 +23,29 @@ export default function CustomRoomConnection() {
     push,
   } = useRouter();
 
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const { data: profilesResponse, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
 
   const { data: ensData, isLoading: isLoadingENS } = useENS(address);
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
   const [isHost, setIsHost] = useState(false);
 
-  const { error: signError, signMessage } = useSignMessage();
+  const {
+    data: signResult,
+    error: signError,
+    signMessage,
+  } = useSignMessage({
+    onSuccess: () => {
+      setIsHost(true);
+    },
+  });
 
   const roomName = "c3577427-f8b9-44e3-bb4f-2c8dce0f1462";
+  // const roomName = handle;
   const userIdentity = useMemo(
     () => (defaultProfile?.handle || ensData?.handle || address) ?? "user-identity",
     [defaultProfile, ensData, address]
   );
-
-  const [preJoinChoices, setPreJoinChoices] = useState<LocalUserChoices | undefined>(undefined);
 
   useEffect(() => {
     if (!isLoadingProfiles) {
@@ -44,13 +54,6 @@ export default function CustomRoomConnection() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, isLoadingProfiles]);
-
-  // const token = useToken(env.NEXT_PUBLIC_LK_TOKEN_ENDPOINT, roomName, {
-  //   userInfo: {
-  //     identity: userIdentity,
-  //     name: userIdentity,
-  //   },
-  // });
 
   const preJoinSubmit = (values: LocalUserChoices) => {
     console.log("Joining with: ", values);
@@ -69,6 +72,30 @@ export default function CustomRoomConnection() {
 
     setPreJoinChoices(values);
   };
+
+  // if (!isConnected) {
+  //   return (
+  //     <div>
+  //       <ConnectWallet />
+  //     </div>
+  //   );
+  // }
+
+  if (isConnected && !isLoadingProfiles && defaultProfile && defaultProfile?.handle === handle && !signResult) {
+    const message = `I am the host ${handle}`;
+    return (
+      <div>
+        I see you're the host, please sign this message.
+        <button className="btn" onClick={() => signMessage({ message })}>
+          I'm the host
+        </button>
+      </div>
+    );
+  }
+
+  // if (status !== "connected" && (isLoadingProfiles || isLoadingENS)) {
+  //   return <>loading...</>;
+  // }
 
   return (
     <>
