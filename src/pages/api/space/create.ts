@@ -35,11 +35,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       creatorLensProfileId,
       spinampPlaylistId,
       b2bSpinampPlaylistIds,
-      emptyPlaylist,
+      // emptyPlaylist,
       drop,
       lensPubId,
       handle,
-      clubSpaceId,
+      // clubSpaceId,
       partyFavorContractAddress,
       startAt, // ts UTC
       productBannerUrl,
@@ -51,9 +51,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     } = req.body;
 
     // if (!(creatorAddress && handle && (spinampPlaylistId || b2bSpinampPlaylistIds) && (drop || pinnedLensPost) && clubSpaceId)) {
-    if (!(creatorAddress && handle && (drop || pinnedLensPost) && clubSpaceId)) {
+    if (!(creatorAddress && handle && (drop || pinnedLensPost))) {
       return res.status(400).json({ error: "missing a param sonnn" });
     }
+
+    const createRoomResp = await fetch("/api/room/create");
+    const clubSpaceId = (await createRoomResp.json()).id;
 
     const semGroupIdHex = `0x${clubSpaceId.replace(/-/g, "")}`;
     const createdAt = Math.floor(Date.now() / 1000);
@@ -64,7 +67,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       creatorLensHandle,
       creatorLensProfileId,
       lensPubId,
-      emptyPlaylist,
+      // emptyPlaylist,
       spinampPlaylistId,
       b2bSpinampPlaylistIds,
       drop,
@@ -114,7 +117,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       console.log("ERROR - privy field exists");
     }
 
-    if (!emptyPlaylist) {
+    if (spaceType === "playlist") {
       // post the playlist id for our api to create the audio stream async;
       // if startAt != undefined, it means this space should be scheduled
       await startRadio({

@@ -82,6 +82,7 @@ export const LiveDiscussion = ({
 
 const Stage = ({ isHost }) => {
   const participants = useParticipants();
+
   return (
     <div className="">
       <div className="grid grid-cols-8 grid-rows-[auto] w-full h-full justify-center">
@@ -102,6 +103,7 @@ const CustomParticipantTile = ({ isHost }: { isHost: boolean }) => {
   const isMuted = !participant.isMicrophoneEnabled;
   // useIsMuted(source);
   const room = useRoomInfo();
+
   const participantPermissions = participant.permissions;
 
   const { mutate: muteParticipant } = useMutation({
@@ -128,12 +130,13 @@ const CustomParticipantTile = ({ isHost }: { isHost: boolean }) => {
         <div
           className={classNames(
             `rounded-full border-2 p-0.5 transition-colors duration-1000`,
+            // can have just regular border as we now have access to speaking source to update in real time
             isSpeaking ? "border-tranparent" : "glowing-border-club"
           )}
-          // style={{ borderColor: isSpeaking ? "greenyellow" : "transparent" }}
         >
           <div className="z-10 grid aspect-square items-center overflow-hidden rounded-full bg-beige transition-all will-change-transform">
             <img
+              // @TODO: swap with lens pic
               src={`https://avatars.dicebear.com/api/avataaars/${id}.svg?mouth=default,smile,tongue&eyes=default,happy,hearts&eyebrows=default,defaultNatural,flatNatural`}
               className="fade-in"
               width={150}
@@ -148,20 +151,17 @@ const CustomParticipantTile = ({ isHost }: { isHost: boolean }) => {
           className="absolute bg-red-500 bottom-[7%] right-[7%] rounded-full transition-opacity duration-200 ease-in-out border-2 border-emerald-600 p-1"
         >
           <div className="aspect-square grid place-content-center">
-            {isMuted && "isMuted"}
-            {!participantPermissions?.canPublish && "!canPublish"}
+            {isMuted && "iM"}
+            {!participantPermissions?.canPublish && "!cP"}
             {/* <TrackMutedIndicator className="m-1 opacity-100" source={source}></TrackMutedIndicator> */}
           </div>
         </div>
       </div>
-      {/* find way to control other users sources */}
+      {/* @TODO: only show to not hosts */}
       {isHost && (
-        <button onClick={() => muteParticipant(participant)}>toggle mute</button>
-        // <ControlBar
-        //   key={participant.sid}
-        //   variation="minimal"
-        //   controls={{ microphone: true, camera: false, screenShare: false }}
-        // />
+        <button onClick={() => muteParticipant(participant)}>
+          {participantPermissions?.canPublish ? "🚫 Mute" : "Promote 🎙"}
+        </button>
       )}
     </section>
   );

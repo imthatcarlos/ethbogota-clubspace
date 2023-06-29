@@ -223,13 +223,15 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
       // @TODO: delay this request so the audio doesn't start playing automatically?
       // create space in the backend
-      const { res, clubSpaceId, uuid } = await launchSpace(handle, jamApi);
+      // @TODO: remove jam
+      // const { res, clubSpaceId, uuid } = await launchSpace(handle, jamApi);
 
-      if (!res) {
-        toast.error("Error - cannot make a space right now");
-        setUploading(false);
-        return;
-      }
+      //
+      // if (!res) {
+      //   toast.error("Error - cannot make a space right now");
+      //   setUploading(false);
+      //   return;
+      // }
 
       let toastId;
       let collectionAddress;
@@ -330,8 +332,8 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
             b2bSpinampPlaylistIds: playlists?.map(({ id }) => id),
             drop,
             lensPubId,
-            clubSpaceId,
-            uuid,
+            // clubSpaceId,
+            // uuid,
             partyFavorContractAddress: collectionAddress,
             startAt: launchDate,
             pinnedLensPost,

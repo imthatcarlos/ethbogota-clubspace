@@ -31,7 +31,7 @@ export default async function createRoom(req: NextApiRequest, res: NextApiRespon
       const parsedMeta = JSON.parse(metadata);
       // @FIXME: remove this update request and do it on the first one when
       // it's supported to set the permissions
-      console.log("parsedMeta", parsedMeta);
+      // console.log("parsedMeta", parsedMeta);
       if (parsedMeta && !parsedMeta["isHost"]) {
         const url = `https://livepeer.studio/api/room/${roomName}/user/${id}`;
         const response = await axios.put(
