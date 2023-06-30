@@ -23,7 +23,7 @@ export default function CustomRoomConnection() {
     push,
   } = useRouter();
 
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, status } = useAccount();
   const { data: profilesResponse, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
 
   const { data: ensData, isLoading: isLoadingENS } = useENS(address);
@@ -42,10 +42,7 @@ export default function CustomRoomConnection() {
 
   const roomName = "c3577427-f8b9-44e3-bb4f-2c8dce0f1462";
   // const roomName = handle;
-  const userIdentity = useMemo(
-    () => (defaultProfile?.handle || ensData?.handle || address) ?? "user-identity",
-    [defaultProfile, ensData, address]
-  );
+  const userIdentity = useMemo(() => address ?? "user-identity", [address]);
 
   useEffect(() => {
     if (!isLoadingProfiles) {
@@ -93,9 +90,13 @@ export default function CustomRoomConnection() {
     );
   }
 
-  // if (status !== "connected" && (isLoadingProfiles || isLoadingENS)) {
-  //   return <>loading...</>;
-  // }
+  if (status !== "connected" && (isLoadingProfiles || isLoadingENS)) {
+    return <>loading...</>;
+  }
+
+  if (status === "connected" && userIdentity === "user-identity") {
+    return <>loading...</>;
+  }
 
   return (
     <>

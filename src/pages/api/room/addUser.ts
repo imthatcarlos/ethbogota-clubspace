@@ -10,8 +10,24 @@ export default async function createRoom(req: NextApiRequest, res: NextApiRespon
   try {
     const { roomName, identity, name, metadata } = addUserReqValidator.parse(req.query);
 
+    console.log("called", roomName, identity, name, metadata);
+
+    let canPublish = false;
+    try {
+      // @TODO: validate server side if the user is the host based on clubSpaceObject to send correct metadata
+      // signing works and adds an extra layer of security, but it's also an extra step for the host to join.
+      const parsedMeta = JSON.parse(metadata);
+      if (parsedMeta && parsedMeta["isHost"]) {
+        canPublish = true;
+      }
+    } catch (err) {
+      console.log("failed to parse metadata...", err);
+      canPublish = false;
+    }
+
     const body = {
       name,
+      canPublish,
     };
     const url = `https://livepeer.studio/api/room/${roomName}/user`;
     const response = await axios.post(url, body, {
@@ -26,31 +42,6 @@ export default async function createRoom(req: NextApiRequest, res: NextApiRespon
       identity: identity as string,
       accessToken: token,
     };
-
-    try {
-      const parsedMeta = JSON.parse(metadata);
-      // @FIXME: remove this update request and do it on the first one when
-      // it's supported to set the permissions
-      // console.log("parsedMeta", parsedMeta);
-      if (parsedMeta && !parsedMeta["isHost"]) {
-        const url = `https://livepeer.studio/api/room/${roomName}/user/${id}`;
-        const response = await axios.put(
-          url,
-          {
-            canPublish: false,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${apiKey}`,
-            },
-          }
-        );
-
-        console.log("permissions set");
-      }
-    } catch (err) {
-      console.log("couldn't update permissions", err);
-    }
 
     // {"id":"71d187fe-b74b-4fd9-988d-2f41b4f9a62e"}
     res.status(200).json(result);

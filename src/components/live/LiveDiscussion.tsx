@@ -45,7 +45,7 @@ export const LiveDiscussion = ({
         serverUrl={liveKitUrl}
         connect={tryToConnect}
         video={false}
-        audio={true}
+        audio={isHost}
         // simulateParticipants={5}
         onConnected={() => setConnected(true)}
         onDisconnected={() => {
