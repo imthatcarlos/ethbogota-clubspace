@@ -10,7 +10,7 @@ export default async function createRoom(req: NextApiRequest, res: NextApiRespon
   try {
     const { roomName, identity, name, metadata } = addUserReqValidator.parse(req.query);
 
-    console.log("called", roomName, identity, name, metadata);
+    // console.log("called", roomName, identity, name, metadata);
 
     let canPublish = false;
     try {

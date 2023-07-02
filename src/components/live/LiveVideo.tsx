@@ -130,7 +130,7 @@ export const LiveVideo = ({
   // }, [SESSION_VIEWER_TOKEN_KEY]);
 
   return (
-    <div data-lk-theme="default" className="relative w-full h-screen max-h-screen overflow-hidden">
+    <div data-lk-theme="default" className="w-full h-screen max-h-screen overflow-hidden">
       <LiveKitRoom
         token={token}
         serverUrl={liveKitUrl}
@@ -143,11 +143,12 @@ export const LiveVideo = ({
           setTryToConnect(false);
           setConnected(false);
         }}
+        className="flex flex-1 flex-col"
       >
-        <div className="flex items-center justify-center h-full flex-1">
+        <div className="flex h-full flex-1">
           {!connected ? (
             <button
-              className="btn max-w-fit"
+              className="btn max-w-fit self-center justify-self-center"
               onClick={() => {
                 setTryToConnect(true);
               }}
@@ -155,22 +156,85 @@ export const LiveVideo = ({
               Enter Room
             </button>
           ) : (
-            <div
-              className="w-full bg-slate-600 grid grid-rows-[min-content_1fr_min-content]"
-              // style={{ bottom: connected ? "0px" : "-100%" }}
-            >
-              {/* <h1>
-              <RoomName />
-            </h1> */}
-              <Stage isHost={isHost} />
-              <ControlBar variation="minimal" controls={{ microphone: true, camera: true, screenShare: false }} />
-              <RoomAudioRenderer />
+            <div className="flex flex-1 h-full">
+              <div className="sticky hidden w-80 border-r dark:border-zinc-800 dark:bg-zinc-900 lg:block">
+                <div className="absolute left-0 top-0 bottom-0 flex h-full w-full flex-col gap-2 px-4 py-2">
+                  <Sidebar isHost={isHost} />
+                </div>
+              </div>
+              <div className="flex flex-1 flex-col dark:border-t-zinc-200 dark:bg-black">
+                <Stage isHost={isHost} />
+                <ControlBar variation="minimal" controls={{ microphone: true, camera: true, screenShare: false }} />
+                <RoomAudioRenderer />
+              </div>
               {/* <DebugMode /> */}
             </div>
           )}
         </div>
       </LiveKitRoom>
     </div>
+  );
+};
+
+const Sidebar = ({ isHost }) => {
+  const participants = useParticipants();
+  return (
+    <>
+      <div className="text-lg font-bold">Listening now</div>
+      <ul className="space-y-4 max-w-fit">
+        <ParticipantLoop participants={participants}>
+          <ParticipantList isHost={isHost} />
+        </ParticipantLoop>
+      </ul>
+    </>
+  );
+};
+
+const ParticipantList = ({ isHost }) => {
+  const participant = useParticipantContext();
+  const participantPermissions = participant.permissions;
+
+  const room = useRoomInfo();
+
+  const { mutate: muteParticipant } = useMutation({
+    mutationFn: (participant: Participant) => {
+      return fetch("/api/room/muteParticipant", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          identity: participant.identity,
+          roomName: room.name,
+          canPublish: participant.permissions.canPublish,
+        }),
+      });
+    },
+  });
+
+  return (
+    <li className="flex items-start justify-between max-w-fit">
+      <div className="flex items-center gap-3">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          className="h-8 w-8 rounded-full bg-blue-300"
+          src={`https://api.dicebear.com/5.x/open-peeps/svg?seed=${participant.identity}&size=32&face=smile,cute`}
+          alt={`Avatar of user: ${participant.identity}`}
+        />
+        <div className="flex flex-col max-w-fit">
+          <div className="flex items-center gap-2">
+            <div className="text-sm font-semibold truncate max-w-[15ch]">{participant.name}</div>
+          </div>
+          {isHost && (
+            <button className="w-fit btn p-2" onClick={() => muteParticipant(participant)}>
+              {participantPermissions?.canPublish ? "🚫 Mute" : "Promote 🎙"}
+            </button>
+          )}
+          {/* <div className="text-sm opacity-80">Promote speaker</div> */}
+        </div>
+        {isHost && <div className="text-sm">Host</div>}
+      </div>
+    </li>
   );
 };
 
@@ -204,7 +268,7 @@ const CustomParticipantTile = ({ isHost, track }: { isHost: boolean; track: Trac
         <VideoTrack {...track} />
         <span className="absolute top-0 left-0">{isHost && "host"}</span>
         <span className="absolute bottom-0 left-0">mute</span>
-        <span className="absolute bottom-0 right-0">promote</span>
+        {/* <span className="absolute bottom-0 right-0">promote</span> */}
       </div>
     </section>
   );
