@@ -26,6 +26,7 @@ import type { TrackReferenceOrPlaceholder } from "@livekit/components-core";
 import { useEffect, useMemo, useState } from "react";
 import jwt, { type JwtPayload } from "jwt-decode";
 import { DebugMode } from "@/lib/livekit/Debug";
+import Chat from "../Chat";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
@@ -97,7 +98,7 @@ export const LiveVideo = ({
     };
   }, [userIdentity, isHost]);
 
-  console.log("userInfo", userInfo);
+  // console.log("userInfo", userInfo);
 
   const token = useToken(env.NEXT_PUBLIC_LK_TOKEN_ENDPOINT, roomName, { userInfo });
 
@@ -130,7 +131,7 @@ export const LiveVideo = ({
   // }, [SESSION_VIEWER_TOKEN_KEY]);
 
   return (
-    <div data-lk-theme="default" className="w-full h-screen max-h-screen overflow-hidden">
+    <div data-lk-theme="default" className="w-full h-full min-h-[50%] overflow-hidden">
       <LiveKitRoom
         token={token}
         serverUrl={liveKitUrl}
@@ -166,6 +167,11 @@ export const LiveVideo = ({
                 <Stage isHost={isHost} />
                 <ControlBar variation="minimal" controls={{ microphone: true, camera: true, screenShare: false }} />
                 <RoomAudioRenderer />
+              </div>
+              <div className="sticky hidden w-80 border-l dark:border-zinc-800 dark:bg-zinc-900 md:block">
+                <div className="absolute top-0 bottom-0 right-0 flex h-full w-full flex-col gap-2 p-2">
+                  <Chat viewerName={userIdentity} />
+                </div>
               </div>
               {/* <DebugMode /> */}
             </div>
