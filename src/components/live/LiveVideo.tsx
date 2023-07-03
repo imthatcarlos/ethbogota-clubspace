@@ -27,24 +27,14 @@ import { useEffect, useMemo, useState } from "react";
 import jwt, { type JwtPayload } from "jwt-decode";
 import { DebugMode } from "@/lib/livekit/Debug";
 import Chat from "../Chat";
+import { useAccount } from "wagmi";
+import useENS from "@/hooks/useENS";
+import { useGetProfilesOwned } from "@/services/lens/getProfile";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
-const tokenFetcher = async (tokenEndpoint: string | undefined, roomName: string, options: UseTokenOptions = {}) => {
-  if (tokenEndpoint === undefined) {
-    throw Error("token endpoint needs to be defined");
-  }
-  if (options.userInfo?.identity === undefined) {
-    return;
-  }
-  // log.debug('fetching token');
-  const params = new URLSearchParams({ ...options.userInfo, roomName });
-  const res = await fetch(`${tokenEndpoint}?${params.toString()}`);
-  const { accessToken } = await res.json();
-  return { token: accessToken };
-};
-
-const useCachedToken = () => {};
+// @TODO: only have LiveVideo component here, react perf sucks when you have
+// multiple components in one file D:
 
 export const LiveVideo = ({
   roomName,
@@ -197,10 +187,25 @@ const Sidebar = ({ isHost }) => {
 };
 
 const ParticipantList = ({ isHost }) => {
+  const { address } = useAccount();
+  const { data: ensData } = useENS(address);
+  const { data: profilesResponse } = useGetProfilesOwned({}, address);
   const participant = useParticipantContext();
   const participantPermissions = participant.permissions;
 
   const room = useRoomInfo();
+
+  const displayName = useMemo(() => {
+    if (profilesResponse) {
+      // @ts-ignore
+      return profilesResponse?.defaultProfile;
+    }
+    if (ensData) {
+      return ensData;
+    }
+    return address ?? participant.identity;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address, ensData, profilesResponse]);
 
   const { mutate: muteParticipant } = useMutation({
     mutationFn: (participant: Participant) => {
@@ -218,18 +223,19 @@ const ParticipantList = ({ isHost }) => {
     },
   });
 
+  // @TODO: add loading state?
   return (
     <li className="flex items-start justify-between max-w-fit">
       <div className="flex items-center gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           className="h-8 w-8 rounded-full bg-blue-300"
-          src={`https://api.dicebear.com/5.x/open-peeps/svg?seed=${participant.identity}&size=32&face=smile,cute`}
-          alt={`Avatar of user: ${participant.identity}`}
+          src={`https://api.dicebear.com/5.x/open-peeps/svg?seed=${displayName}&size=32&face=smile,cute`}
+          alt={`Avatar of user: ${displayName}`}
         />
         <div className="flex flex-col max-w-fit">
           <div className="flex items-center gap-2">
-            <div className="text-sm font-semibold truncate max-w-[15ch]">{participant.name}</div>
+            <div className="text-sm font-semibold truncate max-w-[15ch]">{displayName}</div>
           </div>
           {isHost && (
             <button className="w-fit btn p-2" onClick={() => muteParticipant(participant)}>
@@ -252,7 +258,7 @@ const Stage = ({ isHost }) => {
 
   return (
     <div className="">
-      <div className="grid grid-cols-8 grid-rows-[auto] w-full h-full justify-center">
+      <div className="grid grid-cols-8 gap-6 grid-rows-[auto] w-full h-full justify-center">
         <TrackLoop tracks={tracks}>
           <TrackContext.Consumer>
             {/* {(track) => track && <VideoTrack {...track} />} */}
@@ -269,13 +275,13 @@ const Stage = ({ isHost }) => {
 
 const CustomParticipantTile = ({ isHost, track }: { isHost: boolean; track: TrackReferenceOrPlaceholder }) => {
   return (
-    <section className="relative min-w-0" title={track.participant.name}>
-      <div className="relative w-32 h-32 rounded">
+    <section className="relative min-w-0 bg-zinc-600 p-4 rounded w-fit h-fit" title={track.participant.name}>
+      <span className="absolute top-0 left-0">{isHost && "host"}</span>
+      <div className="w-32 h-32 rounded">
         <VideoTrack {...track} />
-        <span className="absolute top-0 left-0">{isHost && "host"}</span>
-        <span className="absolute bottom-0 left-0">mute</span>
         {/* <span className="absolute bottom-0 right-0">promote</span> */}
       </div>
+      <span className="absolute bottom-0 left-0">mute</span>
     </section>
   );
 };

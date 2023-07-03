@@ -10,37 +10,54 @@ import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import { LiveVideo } from "@/components/live/LiveVideo";
 import { LiveDiscussion } from "@/components/live/LiveDiscussion";
 import { ConnectWallet } from "@/components/ConnectWallet";
+import { GetServerSideProps, NextPage } from "next";
+import { getLiveClubspace } from "@/services/radio";
+import { ClubSpaceObject, GateData } from "@/components/LiveSpace";
+import { getAccessToken } from "@/hooks/useLensLogin";
+import useMeetsGatedCondition from "@/hooks/useMeetsGatedCondition";
+import { SpaceGated } from "@/components/SpaceGated";
+import { TIER_OPEN } from "@/lib/consts";
 
-export default function CustomRoomConnection() {
-  const [preJoinChoices, setPreJoinChoices] = useState<LocalUserChoices | undefined>(undefined);
+const LivePageAtHandle: NextPage = ({ clubSpaceObject }: { clubSpaceObject: ClubSpaceObject | undefined }) => {
+  // const [preJoinChoices, setPreJoinChoices] = useState<LocalUserChoices | undefined>(undefined);
 
-  const params = typeof window !== "undefined" ? new URLSearchParams(location.search) : null;
+  // const params = typeof window !== "undefined" ? new URLSearchParams(location.search) : null;
   // video | discussion | playlist
-  const spaceType = params?.get("spaceType") ?? "video";
+  // const spaceType = params?.get("spaceType") ?? "video";
 
   const {
     query: { handle },
     push,
   } = useRouter();
 
-  const { address, isConnected, status } = useAccount();
+  const { address } = useAccount();
   const { data: profilesResponse, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
-
-  const { data: ensData, isLoading: isLoadingENS } = useENS(address);
-  const [defaultProfile, setDefaultProfile] = useState<Profile>();
-  const [isHost, setIsHost] = useState(false);
-
   const {
-    data: signResult,
-    error: signError,
-    signMessage,
-  } = useSignMessage({
-    onSuccess: () => {
-      setIsHost(true);
-    },
-  });
+    data: meetsGatedCondition,
+    isLoading: isLoadingMeetsGated,
+    refetch: refetchMeetsGatedCondition,
+  } = useMeetsGatedCondition(address, getAccessToken(), clubSpaceObject);
+  // const { data: ensData, isLoading: isLoadingENS } = useENS(address);
+  const [defaultProfile, setDefaultProfile] = useState<Profile>();
+  const [loadingDefaultProfile, setLoadingDefaultProfile] = useState(true);
+  const [isHost, setIsHost] = useState(false);
+  const [_canEnter, setCanEnter] = useState();
 
-  const roomName = "c3577427-f8b9-44e3-bb4f-2c8dce0f1462";
+  // const {
+  //   data: signResult,
+  //   error: signError,
+  //   signMessage,
+  // } = useSignMessage({
+  //   onSuccess: () => {
+  //     setIsHost(true);
+  //   },
+  // });
+
+  // @TODO: remove this once space creation has been tested
+  const roomName = useMemo(
+    () => clubSpaceObject.clubSpaceId ?? "c3577427-f8b9-44e3-bb4f-2c8dce0f1462",
+    [clubSpaceObject.clubSpaceId]
+  );
   // const roomName = handle;
   const userIdentity = useMemo(() => address ?? "user-identity", [address]);
 
@@ -48,27 +65,48 @@ export default function CustomRoomConnection() {
     if (!isLoadingProfiles) {
       // @ts-ignore
       setDefaultProfile(profilesResponse ? profilesResponse?.defaultProfile : null);
+      setLoadingDefaultProfile(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, isLoadingProfiles]);
 
-  const preJoinSubmit = (values: LocalUserChoices) => {
-    console.log("Joining with: ", values);
-    // check for host
-    // if(defaultProfile?.id === clubSpaceObject.creatorLensProfileId)
-    if (defaultProfile && defaultProfile?.handle === handle) {
-      const message = `I am the host ${handle}`;
-      signMessage({ message });
-      if (signError) {
-        alert("failed to verify host");
-      } else {
-        // set host or smth in metadata
-        setIsHost(true);
-      }
-    }
+  // const preJoinSubmit = (values: LocalUserChoices) => {
+  //   console.log("Joining with: ", values);
+  //   // check for host
+  //   // if(defaultProfile?.id === clubSpaceObject.creatorLensProfileId)
+  //   if (defaultProfile && defaultProfile?.handle === handle) {
+  //     const message = `I am the host ${handle}`;
+  //     signMessage({ message });
+  //     if (signError) {
+  //       alert("failed to verify host");
+  //     } else {
+  //       // set host or smth in metadata
+  //       setIsHost(true);
+  //     }
+  //   }
 
-    setPreJoinChoices(values);
-  };
+  //   setPreJoinChoices(values);
+  // };
+
+  useEffect(() => {
+    if (!isLoadingMeetsGated) {
+      setCanEnter(meetsGatedCondition);
+    }
+  }, [isLoadingMeetsGated, meetsGatedCondition]);
+
+  const canEnter = useMemo(() => {
+    // check for host first
+    if (clubSpaceObject?.creatorLensProfileId === defaultProfile?.id) {
+      setIsHost(true);
+      return true; // is host
+    }
+    // @FIXME: gated is only an object or undefined, so this validation with TIER_OPEN
+    // doesn't make sense
+    // @see {@link CreateSpace} at 323
+    if (!clubSpaceObject?.gated || clubSpaceObject?.gated === TIER_OPEN) return true; // not gated
+
+    return _canEnter !== false;
+  }, [defaultProfile, clubSpaceObject, _canEnter]);
 
   // if (!isConnected) {
   //   return (
@@ -78,108 +116,100 @@ export default function CustomRoomConnection() {
   //   );
   // }
 
-  if (isConnected && !isLoadingProfiles && defaultProfile && defaultProfile?.handle === handle && !signResult) {
-    const message = `I am the host ${handle}`;
+  // @TODO: remove if we don't need to confirm host with signing
+  // if (isConnected && !isLoadingProfiles && defaultProfile && defaultProfile?.handle === handle) {
+  //   const message = `I am the host ${handle}`;
+  //   return (
+  //     <div>
+  //       I see you're the host, please sign this message.
+  //       <button className="btn" onClick={() => signMessage({ message })}>
+  //         I'm the host
+  //       </button>
+  //     </div>
+  //   );
+  // }
+
+  // if (status !== "connected" && (isLoadingProfiles || isLoadingENS)) {
+  //   return <>loading...</>;
+  // }
+
+  // if (status === "connected" && userIdentity === "user-identity") {
+  //   return <>loading...</>;
+  // }
+
+  if (clubSpaceObject.gated && (!getAccessToken() || canEnter === false)) {
     return (
-      <div>
-        I see you're the host, please sign this message.
-        <button className="btn" onClick={() => signMessage({ message })}>
-          I'm the host
-        </button>
-      </div>
+      <SpaceGated
+        handle={clubSpaceObject.handle}
+        gated={clubSpaceObject.gated as GateData}
+        creatorLensProfileId={clubSpaceObject.creatorLensProfileId}
+        lensPubId={clubSpaceObject.lensPubId}
+        refetchMeetsGatedCondition={refetchMeetsGatedCondition}
+      />
     );
   }
 
-  if (status !== "connected" && (isLoadingProfiles || isLoadingENS)) {
-    return <>loading...</>;
+  if (clubSpaceObject.spaceType === "video") {
+    return (
+      <LiveVideo
+        // preJoinSubmit={preJoinSubmit}
+        roomName={roomName}
+        // preJoinChoices={preJoinChoices}
+        userIdentity={userIdentity}
+        isHost={isHost}
+      />
+    );
   }
 
-  if (status === "connected" && userIdentity === "user-identity") {
-    return <>loading...</>;
+  if (clubSpaceObject.spaceType === "discussion") {
+    return (
+      <LiveDiscussion
+        // preJoinSubmit={preJoinSubmit}
+        roomName={roomName}
+        // preJoinChoices={preJoinChoices}
+        userIdentity={userIdentity}
+        isHost={isHost}
+      />
+    );
   }
 
-  return (
-    <>
-      {spaceType === "video" && (
-        <LiveVideo
-          preJoinSubmit={preJoinSubmit}
-          roomName={roomName}
-          preJoinChoices={preJoinChoices}
-          userIdentity={userIdentity}
-          isHost={isHost}
-        />
-      )}
-      {spaceType === "discussion" && (
-        <LiveDiscussion
-          // preJoinSubmit={preJoinSubmit}
-          roomName={roomName}
-          // preJoinChoices={preJoinChoices}
-          userIdentity={userIdentity}
-          isHost={isHost}
-        />
-      )}
-      {spaceType === "playlist" && <>go to old infra</>}
-    </>
-  );
-}
+  // @TODO: create component from old [handle] page and pass props from here
+  return <>{clubSpaceObject.spaceType === "playlist" && <>go to old infra</>}</>;
+};
 
-// export function Stage() {
-//   const tracks = useTracks([
-//     { source: Track.Source.Camera, withPlaceholder: true },
-//     { source: Track.Source.ScreenShare, withPlaceholder: false },
-//   ]);
-//   return (
-//     <>
-//       <div className="">
-//         <GridLayout tracks={tracks}>
-//           <TrackContext.Consumer>
-//             {(track) =>
-//               track && (
-//                 <div className="my-tile">
-//                   {isTrackReference(track) ? <VideoTrack {...track} /> : <p>Camera placeholder</p>}
-//                   <div className="flex justify-between items-center">
-//                     <div style={{ display: "flex" }}>
-//                       <TrackMutedIndicator source={Track.Source.Microphone}></TrackMutedIndicator>
-//                       <TrackMutedIndicator source={track.source}></TrackMutedIndicator>
-//                     </div>
-//                     {/* Overwrite styles: By passing class names, we can easily overwrite/extend the existing styles. */}
-//                     {/* In addition, we can still specify a style attribute and further customize the styles. */}
-//                     <ParticipantName
-//                       className="text-red-500"
-//                       // style={{ color: 'blue' }}
-//                     />
-//                     {/* Custom components: Here we replace the provided <ConnectionQualityIndicator />  with our own implementation. */}
-//                     <UserDefinedConnectionQualityIndicator />
-//                   </div>
-//                 </div>
-//               )
-//             }
-//           </TrackContext.Consumer>
-//         </GridLayout>
-//       </div>
-//     </>
-//   );
-// }
+export default LivePageAtHandle;
 
-// export function UserDefinedConnectionQualityIndicator(props: HTMLAttributes<HTMLSpanElement>) {
-//   /**
-//    *  We use the same React hook that is used internally to build our own component.
-//    *  By using this hook, we inherit all the state management and logic and can focus on our implementation.
-//    */
-//   const { quality } = useConnectionQualityIndicator();
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const {
+    query: { handle },
+  } = context;
 
-//   function qualityToText(quality: ConnectionQuality): string {
-//     switch (quality) {
-//       case ConnectionQuality.Unknown:
-//         return "No idea";
-//       case ConnectionQuality.Poor:
-//         return "Poor";
-//       case ConnectionQuality.Good:
-//         return "Good";
-//       case ConnectionQuality.Excellent:
-//         return "Excellent";
-//     }
-//   }
+  // should never happen
+  if (!handle || handle === "<no source>")
+    return {
+      notFound: true,
+    };
 
-//   return <span {...props}> {qualityToText(quality)} </span>;
-// }
+  try {
+    const clubSpaceObject = await getLiveClubspace(handle as string);
+    if (!clubSpaceObject) {
+      console.log("SPACE NOT FOUND! MAY HAVE EXPIRED FROM REDIS");
+      return {
+        // we need to have the handle in the _app when there's no space
+        // to provide the correct iframely link
+        props: { handle },
+      };
+    }
+
+    console.log(`found space with id: ${clubSpaceObject.clubSpaceId}`);
+    console.log(clubSpaceObject);
+
+    return { props: { clubSpaceObject } };
+  } catch (error) {
+    console.log(error);
+  }
+
+  return {
+    notFound: true,
+  };
+};
