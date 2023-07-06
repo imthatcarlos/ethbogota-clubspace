@@ -17,6 +17,7 @@ import { getAccessToken } from "@/hooks/useLensLogin";
 import useMeetsGatedCondition from "@/hooks/useMeetsGatedCondition";
 import { SpaceGated } from "@/components/SpaceGated";
 import { TIER_OPEN } from "@/lib/consts";
+import { generateName } from "@/lib/utils/nameGenerator";
 
 const LivePageAtHandle: NextPage = ({ clubSpaceObject }: { clubSpaceObject: ClubSpaceObject | undefined }) => {
   // const [preJoinChoices, setPreJoinChoices] = useState<LocalUserChoices | undefined>(undefined);
@@ -59,7 +60,7 @@ const LivePageAtHandle: NextPage = ({ clubSpaceObject }: { clubSpaceObject: Club
     [clubSpaceObject.clubSpaceId]
   );
   // const roomName = handle;
-  const userIdentity = useMemo(() => address ?? "user-identity", [address]);
+  const userIdentity = useMemo(() => address ?? generateName(), [address]);
 
   useEffect(() => {
     if (!isLoadingProfiles) {

@@ -1,40 +1,20 @@
 import { env } from "@/env.mjs";
 import {
   ControlBar,
-  FocusLayout,
-  FocusLayoutContainer,
-  GridLayout,
   LiveKitRoom,
   ParticipantLoop,
   RoomAudioRenderer,
-  RoomName,
-  TrackContext,
-  TrackLoop,
-  UseTokenOptions,
-  VideoTrack,
-  VideoConference,
-  useIsSpeaking,
-  useParticipantContext,
   useParticipants,
-  useRoomInfo,
   useToken,
-  useTracks,
 } from "@livekit/components-react";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { Participant, Track } from "livekit-client";
-import type { TrackReferenceOrPlaceholder } from "@livekit/components-core";
-import { useEffect, useMemo, useState } from "react";
-import jwt, { type JwtPayload } from "jwt-decode";
-import { DebugMode } from "@/lib/livekit/Debug";
+import { useMemo, useState } from "react";
+// import jwt, { type JwtPayload } from "jwt-decode";
+// import { DebugMode } from "@/lib/livekit/Debug";
 import Chat from "../Chat";
-import { useAccount } from "wagmi";
-import useENS from "@/hooks/useENS";
-import { useGetProfilesOwned } from "@/services/lens/getProfile";
+// import { ParticipantList } from "../videoSpace/ParticipantList";
+import { Stage } from "../videoSpace/Stage";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
-
-// @TODO: only have LiveVideo component here, react perf sucks when you have
-// multiple components in one file D:
 
 export const LiveVideo = ({
   roomName,
@@ -45,40 +25,8 @@ export const LiveVideo = ({
   isHost?: boolean;
   userIdentity: string;
 }) => {
-  // const SESSION_VIEWER_TOKEN_KEY = `${roomName}-${userIdentity}`;
-  // console.log("SESSION_VIEWER_TOKEN_KEY", SESSION_VIEWER_TOKEN_KEY);
-  // const [token, setToken] = useState("");
-  // const [queryEnabled, setQueryEnabled] = useState(false);
-
   const [tryToConnect, setTryToConnect] = useState(false);
   const [connected, setConnected] = useState(false);
-
-  // useQuery({
-  //   queryKey: ["token", SESSION_VIEWER_TOKEN_KEY],
-  //   queryFn: () =>
-  //     tokenFetcher(env.NEXT_PUBLIC_LK_TOKEN_ENDPOINT, roomName, {
-  //       userInfo: {
-  //         identity: userIdentity,
-  //         name: userIdentity,
-  //         metadata: isHost ? JSON.stringify({ isHost }) : undefined,
-  //       },
-  //     }),
-  //   onSuccess: (data) => {
-  //     // const payload: JwtPayload = jwt(data?.token);
-
-  //     // if (payload.jti) {
-  //     //   setViewerName(payload.jti);
-  //     // }
-
-  //     setToken(data?.token);
-  //     sessionStorage.setItem(SESSION_VIEWER_TOKEN_KEY, data?.token);
-  //   },
-  //   enabled: queryEnabled,
-  //   refetchOnMount: false,
-  //   refetchOnWindowFocus: false,
-  //   refetchOnReconnect: false,
-  //   retry: false,
-  // });
 
   const userInfo = useMemo(() => {
     return {
@@ -88,37 +36,7 @@ export const LiveVideo = ({
     };
   }, [userIdentity, isHost]);
 
-  // console.log("userInfo", userInfo);
-
   const token = useToken(env.NEXT_PUBLIC_LK_TOKEN_ENDPOINT, roomName, { userInfo });
-
-  // NOTE: This is a hack to persist the viewer token in the session storage
-  // so that the client doesn't have to create a viewer token every time they
-  // navigate back to the page.
-  // useEffect(() => {
-  //   const sessionToken = sessionStorage.getItem(SESSION_VIEWER_TOKEN_KEY);
-
-  //   if (sessionToken) {
-  //     const payload: JwtPayload = jwt(sessionToken);
-
-  //     if (payload.exp) {
-  //       const expiry = new Date(payload.exp * 1000);
-  //       if (expiry < new Date()) {
-  //         sessionStorage.removeItem(SESSION_VIEWER_TOKEN_KEY);
-  //         setQueryEnabled(true);
-  //         return;
-  //       }
-  //     }
-
-  //     // if (payload.jti) {
-  //     //   setViewerName(payload.jti);
-  //     // }
-
-  //     setToken(sessionToken);
-  //   } else {
-  //     setQueryEnabled(true);
-  //   }
-  // }, [SESSION_VIEWER_TOKEN_KEY]);
 
   return (
     <div data-lk-theme="default" className="w-full h-full min-h-[50%] overflow-hidden">
@@ -148,11 +66,11 @@ export const LiveVideo = ({
             </button>
           ) : (
             <div className="flex flex-1 h-full">
-              <div className="sticky hidden w-80 border-r dark:border-zinc-800 dark:bg-zinc-900 lg:block">
+              {/* <div className="sticky hidden w-80 border-r dark:border-zinc-800 dark:bg-zinc-900 lg:block">
                 <div className="absolute left-0 top-0 bottom-0 flex h-full w-full flex-col gap-2 px-4 py-2">
                   <Sidebar isHost={isHost} />
                 </div>
-              </div>
+              </div> */}
               <div className="flex flex-1 flex-col dark:border-t-zinc-200 dark:bg-black">
                 <Stage isHost={isHost} />
                 <ControlBar variation="minimal" controls={{ microphone: true, camera: true, screenShare: false }} />
@@ -172,119 +90,19 @@ export const LiveVideo = ({
   );
 };
 
-const Sidebar = ({ isHost }) => {
-  const participants = useParticipants();
-  return (
-    <>
-      <div className="text-lg font-bold">Listening now</div>
-      <ul className="space-y-4 max-w-fit">
-        <ParticipantLoop participants={participants}>
-          <ParticipantList isHost={isHost} />
-        </ParticipantLoop>
-      </ul>
-    </>
-  );
-};
-
-const ParticipantList = ({ isHost }) => {
-  const { address } = useAccount();
-  const { data: ensData } = useENS(address);
-  const { data: profilesResponse } = useGetProfilesOwned({}, address);
-  const participant = useParticipantContext();
-  const participantPermissions = participant.permissions;
-
-  const room = useRoomInfo();
-
-  const displayName = useMemo(() => {
-    if (profilesResponse) {
-      // @ts-ignore
-      return profilesResponse?.defaultProfile;
-    }
-    if (ensData) {
-      return ensData;
-    }
-    return address ?? participant.identity;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, ensData, profilesResponse]);
-
-  const { mutate: muteParticipant } = useMutation({
-    mutationFn: (participant: Participant) => {
-      return fetch("/api/room/muteParticipant", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          identity: participant.identity,
-          roomName: room.name,
-          canPublish: participant.permissions.canPublish,
-        }),
-      });
-    },
-  });
-
-  // @TODO: add loading state?
-  return (
-    <li className="flex items-start justify-between max-w-fit">
-      <div className="flex items-center gap-3">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          className="h-8 w-8 rounded-full bg-blue-300"
-          src={`https://api.dicebear.com/5.x/open-peeps/svg?seed=${displayName}&size=32&face=smile,cute`}
-          alt={`Avatar of user: ${displayName}`}
-        />
-        <div className="flex flex-col max-w-fit">
-          <div className="flex items-center gap-2">
-            <div className="text-sm font-semibold truncate max-w-[15ch]">{displayName}</div>
-          </div>
-          {isHost && (
-            <button className="w-fit btn p-2" onClick={() => muteParticipant(participant)}>
-              {participantPermissions?.canPublish ? "🚫 Mute" : "Promote 🎙"}
-            </button>
-          )}
-          {/* <div className="text-sm opacity-80">Promote speaker</div> */}
-        </div>
-        {isHost && <div className="text-sm">Host</div>}
-      </div>
-    </li>
-  );
-};
-
-const Stage = ({ isHost }) => {
-  // const participants = useParticipants();
-  const tracks = useTracks([Track.Source.Camera], { onlySubscribed: true });
-
-  // console.log("tracks", tracks);
-
-  return (
-    <div className="">
-      <div className="grid grid-cols-8 gap-6 grid-rows-[auto] w-full h-full justify-center">
-        <TrackLoop tracks={tracks}>
-          <TrackContext.Consumer>
-            {/* {(track) => track && <VideoTrack {...track} />} */}
-            {(track) => track && <CustomParticipantTile isHost={isHost} track={track} key={track.participant.sid} />}
-          </TrackContext.Consumer>
-        </TrackLoop>
-        {/* <ParticipantLoop participants={participants}>
-          <CustomParticipantTile isHost={isHost}></CustomParticipantTile>
-        </ParticipantLoop> */}
-      </div>
-    </div>
-  );
-};
-
-const CustomParticipantTile = ({ isHost, track }: { isHost: boolean; track: TrackReferenceOrPlaceholder }) => {
-  return (
-    <section className="relative min-w-0 bg-zinc-600 p-4 rounded w-fit h-fit" title={track.participant.name}>
-      <span className="absolute top-0 left-0">{isHost && "host"}</span>
-      <div className="w-32 h-32 rounded">
-        <VideoTrack {...track} />
-        {/* <span className="absolute bottom-0 right-0">promote</span> */}
-      </div>
-      <span className="absolute bottom-0 left-0">mute</span>
-    </section>
-  );
-};
+// const Sidebar = ({ isHost }) => {
+//   const participants = useParticipants();
+//   return (
+//     <>
+//       <div className="text-lg font-bold">Listening now</div>
+//       <ul className="space-y-4 max-w-fit">
+//         <ParticipantLoop participants={participants}>
+//           <ParticipantList isHost={isHost} />
+//         </ParticipantLoop>
+//       </ul>
+//     </>
+//   );
+// };
 
 // const CustomParticipantTile = ({ isHost }: { isHost: boolean }) => {
 //   // const { participant, source } = useTrackContext();
