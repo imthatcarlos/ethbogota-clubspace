@@ -1,18 +1,12 @@
 import { env } from "@/env.mjs";
-import {
-  ControlBar,
-  LiveKitRoom,
-  ParticipantLoop,
-  RoomAudioRenderer,
-  useParticipants,
-  useToken,
-} from "@livekit/components-react";
+import { ControlBar, LiveKitRoom, RoomAudioRenderer, useToken } from "@livekit/components-react";
 import { useMemo, useState } from "react";
 // import jwt, { type JwtPayload } from "jwt-decode";
 // import { DebugMode } from "@/lib/livekit/Debug";
 import Chat from "../Chat";
 // import { ParticipantList } from "../videoSpace/ParticipantList";
 import { Stage } from "../videoSpace/Stage";
+import { ParticipantDialogList } from "../videoSpace/ParticipantDialogList";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
@@ -39,31 +33,33 @@ export const LiveVideo = ({
   const token = useToken(env.NEXT_PUBLIC_LK_TOKEN_ENDPOINT, roomName, { userInfo });
 
   return (
-    <div data-lk-theme="default" className="w-full h-full min-h-[50%] overflow-hidden">
+    <div data-lk-theme="default" className="w-full h-full min-h-[80dvh] overflow-hidden">
       <LiveKitRoom
         token={token}
         serverUrl={liveKitUrl}
         connect={tryToConnect}
         video={isHost}
         audio={isHost}
-        // simulateParticipants={5}
+        // simulateParticipants={2}
         onConnected={() => setConnected(true)}
         onDisconnected={() => {
           setTryToConnect(false);
           setConnected(false);
         }}
-        className="flex flex-1 flex-col"
+        className="flex flex-1 flex-col h-full"
       >
-        <div className="flex h-full flex-1">
+        <div className="flex h-full flex-1 min-h-[80dvh]">
           {!connected ? (
-            <button
-              className="btn max-w-fit self-center justify-self-center"
-              onClick={() => {
-                setTryToConnect(true);
-              }}
-            >
-              Enter Room
-            </button>
+            <div className="w-full flex items-center justify-center">
+              <button
+                className="btn max-w-fit self-center justify-self-center"
+                onClick={() => {
+                  setTryToConnect(true);
+                }}
+              >
+                Enter Room
+              </button>
+            </div>
           ) : (
             <div className="flex flex-1 h-full">
               {/* <div className="sticky hidden w-80 border-r dark:border-zinc-800 dark:bg-zinc-900 lg:block">
@@ -71,9 +67,16 @@ export const LiveVideo = ({
                   <Sidebar isHost={isHost} />
                 </div>
               </div> */}
-              <div className="flex flex-1 flex-col dark:border-t-zinc-200 dark:bg-black">
+              <div className="flex flex-1 flex-col min-h-[80dvh] dark:border-t-zinc-200 dark:bg-black py-4">
                 <Stage isHost={isHost} />
-                <ControlBar variation="minimal" controls={{ microphone: true, camera: true, screenShare: false }} />
+                <div className="flex flex-1 gap-2 w-full items-center justify-center">
+                  <ControlBar
+                    variation="minimal"
+                    controls={{ microphone: true, camera: true, screenShare: false }}
+                    className="border-none gap-2 flex items-center"
+                  />
+                  <ParticipantDialogList isHost={isHost} />
+                </div>
                 <RoomAudioRenderer />
               </div>
               <div className="sticky hidden w-80 border-l dark:border-zinc-800 dark:bg-zinc-900 md:block">
