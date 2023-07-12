@@ -33,7 +33,7 @@ export const LiveVideo = ({
   const token = useToken(env.NEXT_PUBLIC_LK_TOKEN_ENDPOINT, roomName, { userInfo });
 
   return (
-    <div data-lk-theme="default" className="w-full h-full min-h-[80dvh] overflow-hidden">
+    <div data-lk-theme="default" className="w-full h-[100dvh] overflow-hidden">
       <LiveKitRoom
         token={token}
         serverUrl={liveKitUrl}

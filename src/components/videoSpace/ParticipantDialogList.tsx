@@ -18,19 +18,13 @@ export const ParticipantDialogList = ({ isHost }: { isHost: boolean }) => {
       <DialogTrigger>
         <Users size={32} />
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-[90%] sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Participants listening</DialogTitle>
+          <DialogTitle className="mb-4">Participants listening</DialogTitle>
           <DialogDescription className="space-y-4">
             <ParticipantLoop participants={participants}>
               <ParticipantList isHost={isHost} />
             </ParticipantLoop>
-            {/* <ParticipantLoop participants={participants}>
-              <ParticipantList isHost={isHost} />
-            </ParticipantLoop>
-            <ParticipantLoop participants={participants}>
-              <ParticipantList isHost={isHost} />
-            </ParticipantLoop> */}
           </DialogDescription>
         </DialogHeader>
       </DialogContent>

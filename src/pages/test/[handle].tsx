@@ -10,7 +10,7 @@ import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import { LiveVideo } from "@/components/live/LiveVideo";
 import { LiveDiscussion } from "@/components/live/LiveDiscussion";
 import { ConnectWallet } from "@/components/ConnectWallet";
-import { GetServerSideProps, NextPage } from "next";
+import { GetServerSideProps } from "next";
 import { getLiveClubspace } from "@/services/radio";
 import { ClubSpaceObject, GateData } from "@/components/LiveSpace";
 import { getAccessToken } from "@/hooks/useLensLogin";
@@ -18,8 +18,9 @@ import useMeetsGatedCondition from "@/hooks/useMeetsGatedCondition";
 import { SpaceGated } from "@/components/SpaceGated";
 import { TIER_OPEN } from "@/lib/consts";
 import { generateName } from "@/lib/utils/nameGenerator";
+import { NextPageWithLayout } from "../_app";
 
-const LivePageAtHandle: NextPage = () => {
+const LivePageAtHandle: NextPageWithLayout = () => {
   // const [preJoinChoices, setPreJoinChoices] = useState<LocalUserChoices | undefined>(undefined);
 
   const params = typeof window !== "undefined" ? new URLSearchParams(location.search) : null;
@@ -181,8 +182,9 @@ const LivePageAtHandle: NextPage = () => {
   return <>{spaceType === "playlist" && <>go to old infra</>}</>;
 };
 
-export default LivePageAtHandle;
+LivePageAtHandle.getLayout = (page) => <>{page}</>;
 
+export default LivePageAtHandle;
 // export const getServerSideProps: GetServerSideProps = async (context) => {
 //   const {
 //     query: { handle },
