@@ -97,12 +97,24 @@ const Stage = ({ isHost }) => {
 const CustomParticipantTile = ({ isHost }: { isHost: boolean }) => {
   // const { participant, source } = useTrackContext();
   const participant = useParticipantContext();
+  const { metadata, sid } = participant;
+  console.log(`metadata from participant ${sid}\n${metadata}`);
   // const { source } = participant && participant.getTrackByName(Track.Source.Microphone);
 
   const isSpeaking = useIsSpeaking(participant);
-  const isMuted = !participant.isMicrophoneEnabled;
+  // const isMuted = !participant.isMicrophoneEnabled;
   // useIsMuted(source);
   const room = useRoomInfo();
+
+  // @TODO: finish reaction logic
+  // const { message, send, isSending } = useDataChannel();
+  // const strData = JSON.stringify({ reaction: "ok" });
+  // const encoder = new TextEncoder();
+  // const decoder = new TextDecoder();
+
+  // const data = encoder.encode(strData);
+
+  // send(data, { destination})
 
   const participantPermissions = participant.permissions;
 

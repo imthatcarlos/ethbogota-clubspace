@@ -7,6 +7,7 @@ import Chat from "../Chat";
 // import { ParticipantList } from "../videoSpace/ParticipantList";
 import { Stage } from "../videoSpace/Stage";
 import { ParticipantDialogList } from "../videoSpace/ParticipantDialogList";
+import { DefaultLensProfile } from "@/types/lens";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
@@ -14,21 +15,36 @@ export const LiveVideo = ({
   roomName,
   isHost,
   userIdentity,
+  defaultProfile,
 }: {
   roomName: string;
   isHost?: boolean;
   userIdentity: string;
+  defaultProfile: DefaultLensProfile | undefined;
 }) => {
   const [tryToConnect, setTryToConnect] = useState(false);
   const [connected, setConnected] = useState(false);
+
+  const metadata = useMemo(() => {
+    try {
+      let str = JSON.stringify({
+        defaultProfile: defaultProfile ?? undefined,
+        isHost: isHost ?? undefined,
+      });
+      return str;
+    } catch (err) {
+      console.log("failed to stringify metadata");
+      return undefined;
+    }
+  }, [isHost, defaultProfile]);
 
   const userInfo = useMemo(() => {
     return {
       identity: userIdentity,
       name: userIdentity,
-      metadata: isHost ? JSON.stringify({ isHost }) : undefined,
+      metadata,
     };
-  }, [userIdentity, isHost]);
+  }, [userIdentity, metadata]);
 
   const token = useToken(env.NEXT_PUBLIC_LK_TOKEN_ENDPOINT, roomName, { userInfo });
 
@@ -68,14 +84,14 @@ export const LiveVideo = ({
                 </div>
               </div> */}
               <div className="flex flex-1 flex-col min-h-[80dvh] dark:border-t-zinc-200 dark:bg-black py-4">
-                <Stage isHost={isHost} />
+                <Stage />
                 <div className="flex flex-1 gap-2 w-full items-center justify-center">
                   <ControlBar
                     variation="minimal"
                     controls={{ microphone: true, camera: true, screenShare: false }}
                     className="border-none gap-2 flex items-center"
                   />
-                  <ParticipantDialogList isHost={isHost} />
+                  <ParticipantDialogList />
                 </div>
                 <RoomAudioRenderer />
               </div>

@@ -4,47 +4,44 @@ import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import { useParticipantContext, useRoomInfo } from "@livekit/components-react";
 import { useMutation } from "@tanstack/react-query";
 import { Participant } from "livekit-client";
+import { DefaultLensProfile } from "@/types/lens";
+import { getUrlForImageFromIpfs } from "@/utils";
 
-export const ParticipantList = ({ isHost }: { isHost: boolean }) => {
+export const ParticipantList = () => {
   const participant = useParticipantContext();
+  const { defaultProfile, isHost }: { defaultProfile: DefaultLensProfile; isHost: boolean } = JSON.parse(
+    participant.metadata
+  );
   const participantPermissions = participant.permissions;
 
   // when setting up metadata, we add address as identity
+  // but this could be a generated name
   const address = participant.name;
   const { data: ensData } = useENS(address);
-  const { data: profilesResponse } = useGetProfilesOwned({}, address);
   const room = useRoomInfo();
 
   const displayName = useMemo(() => {
-    // @ts-ignore
-    if (profilesResponse && profilesResponse?.defaultProfile) {
-      // @ts-ignore
-      return profilesResponse?.defaultProfile;
+    if (defaultProfile) {
+      return defaultProfile.handle;
     }
     if (ensData && Object.keys(ensData) && ensData?.handle) {
       return ensData.handle;
     }
     return address;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, ensData, profilesResponse]);
+  }, [address, ensData, defaultProfile]);
 
   const avatar = useMemo(() => {
-    if (
-      profilesResponse &&
-      // @ts-ignore
-      profilesResponse?.defaultProfile &&
-      // @ts-ignore
-      profilesResponse?.defaultProfile?.picture?.original?.url
-    ) {
-      // @ts-ignore
-      return profilesResponse?.defaultProfile?.picture?.original?.url;
+    if (defaultProfile) {
+      return getUrlForImageFromIpfs(defaultProfile?.picture?.original?.url) ?? "/anon.png";
     }
     if (Object.keys(ensData) && ensData?.avatar) {
-      return ensData.avatar;
+      return ensData.avatar ?? "/anon.png";
     }
-    return `https://api.dicebear.com/5.x/open-peeps/svg?seed=${address}&size=32&face=smile,cute`;
+    return "/anon.png";
+    // return `https://api.dicebear.com/5.x/open-peeps/svg?seed=${address}&size=32&face=smile,cute`;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, ensData, profilesResponse]);
+  }, [address, ensData, defaultProfile]);
 
   const { mutate: muteParticipant } = useMutation({
     mutationFn: (participant: Participant) => {
@@ -71,7 +68,8 @@ export const ParticipantList = ({ isHost }: { isHost: boolean }) => {
         <div className="flex flex-col max-w-fit">
           <div className="flex items-center gap-2">
             <div className="text-sm font-semibold truncate max-w-[15ch]">
-              {displayName?.["handle"] ? displayName["handle"] : JSON.stringify(displayName)}
+              {/* just in case we stringify it */}
+              {displayName ? displayName : JSON.stringify(displayName)}
             </div>
           </div>
           {isHost && <div className="text-sm">Host</div>}

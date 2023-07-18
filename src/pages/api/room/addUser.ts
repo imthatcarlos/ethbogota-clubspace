@@ -28,6 +28,7 @@ export default async function createRoom(req: NextApiRequest, res: NextApiRespon
     const body = {
       name,
       canPublish,
+      metadata,
     };
     const url = `https://livepeer.studio/api/room/${roomName}/user`;
     const response = await axios.post(url, body, {

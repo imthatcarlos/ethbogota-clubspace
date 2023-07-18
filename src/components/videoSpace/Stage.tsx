@@ -1,8 +1,8 @@
-import { TrackContext, TrackLoop, useTracks, GridLayout } from "@livekit/components-react";
+import { TrackContext, useTracks, GridLayout } from "@livekit/components-react";
 import { Track } from "livekit-client";
 import { ParticipantTile } from "./ParticipantTile";
 
-export const Stage = ({ isHost }: { isHost: boolean }) => {
+export const Stage = () => {
   // const participants = useParticipants();
   const tracks = useTracks([Track.Source.Camera], { onlySubscribed: true });
 

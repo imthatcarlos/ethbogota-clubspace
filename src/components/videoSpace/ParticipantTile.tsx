@@ -1,4 +1,6 @@
 import { cn } from "@/lib/utils/cn";
+import { DefaultLensProfile } from "@/types/lens";
+import { getUrlForImageFromIpfs } from "@/utils";
 import { type TrackReferenceOrPlaceholder, isParticipantSourcePinned } from "@livekit/components-core";
 import {
   AudioTrack,
@@ -75,6 +77,10 @@ export const ParticipantTile = ({
     publication,
   };
 
+  const { metadata, sid } = p;
+
+  const { defaultProfile, isHost }: { defaultProfile: DefaultLensProfile; isHost: boolean } = JSON.parse(metadata);
+
   const { elementProps } = useParticipantTile<HTMLDivElement>({
     participant: trackRef.participant,
     htmlProps,
@@ -124,12 +130,16 @@ export const ParticipantTile = ({
               />
             )}
             <div className="lk-participant-placeholder">
-              <>placeholder</>
+              <img
+                src={defaultProfile ? getUrlForImageFromIpfs(defaultProfile?.picture?.original?.url) : "/anon.png"}
+                alt={defaultProfile ? defaultProfile?.handle : p.identity}
+                className="rounded-full aspect-square w-32 h-32"
+              />
             </div>
             <div className="lk-participant-metadata">
               <div className="lk-participant-metadata-item">
                 <TrackMutedIndicator source={Track.Source.Microphone} show={"muted"}></TrackMutedIndicator>
-                <ParticipantName />
+                <DisplayName defaultProfile={defaultProfile} />
               </div>
               <ConnectionQualityIndicator className="lk-participant-metadata-item" />
             </div>
@@ -139,4 +149,11 @@ export const ParticipantTile = ({
       </ParticipantContextIfNeeded>
     </div>
   );
+};
+
+const DisplayName = ({ defaultProfile }: { defaultProfile: DefaultLensProfile }) => {
+  if (defaultProfile.handle) {
+    return <span className="data-lk-participant-name">{defaultProfile.handle}</span>;
+  }
+  return <ParticipantName />;
 };

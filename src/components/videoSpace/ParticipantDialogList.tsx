@@ -10,7 +10,7 @@ import { useParticipants, ParticipantLoop } from "@livekit/components-react";
 import { Users } from "lucide-react";
 import { ParticipantList } from "./ParticipantList";
 
-export const ParticipantDialogList = ({ isHost }: { isHost: boolean }) => {
+export const ParticipantDialogList = () => {
   const participants = useParticipants();
 
   return (
@@ -23,7 +23,7 @@ export const ParticipantDialogList = ({ isHost }: { isHost: boolean }) => {
           <DialogTitle className="mb-4">Participants listening</DialogTitle>
           <DialogDescription className="space-y-4">
             <ParticipantLoop participants={participants}>
-              <ParticipantList isHost={isHost} />
+              <ParticipantList />
             </ParticipantLoop>
           </DialogDescription>
         </DialogHeader>

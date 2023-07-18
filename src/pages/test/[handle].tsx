@@ -162,6 +162,7 @@ const LivePageAtHandle: NextPageWithLayout = () => {
         // preJoinChoices={preJoinChoices}
         userIdentity={userIdentity}
         isHost={isHost}
+        defaultProfile={defaultProfile}
       />
     );
   }
