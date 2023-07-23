@@ -78,7 +78,7 @@ export const ParticipantList = () => {
       </div>
 
       <div className="justify-self-end flex flex-col items-center">
-        {isHost && (
+        {isHost && participant.name !== address && (
           <button
             className="w-fit rounded-full px-5 py-2 bg-almost-black text-white"
             onClick={() => muteParticipant(participant)}

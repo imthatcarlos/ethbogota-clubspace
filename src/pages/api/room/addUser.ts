@@ -12,7 +12,7 @@ export default async function createRoom(req: NextApiRequest, res: NextApiRespon
 
     // console.log("called", roomName, identity, name, metadata);
 
-    let canPublish = false;
+    let canPublish = true;
     try {
       // @TODO: validate server side if the user is the host based on clubSpaceObject to send correct metadata
       // signing works and adds an extra layer of security, but it's also an extra step for the host to join.
@@ -22,7 +22,7 @@ export default async function createRoom(req: NextApiRequest, res: NextApiRespon
       }
     } catch (err) {
       console.log("failed to parse metadata...", err);
-      canPublish = false;
+      canPublish = true;
     }
 
     const body = {

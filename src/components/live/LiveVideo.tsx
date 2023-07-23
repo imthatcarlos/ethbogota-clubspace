@@ -2,7 +2,7 @@ import { env } from "@/env.mjs";
 import { ControlBar, LiveKitRoom, RoomAudioRenderer, useToken } from "@livekit/components-react";
 import { useMemo, useState } from "react";
 // import jwt, { type JwtPayload } from "jwt-decode";
-// import { DebugMode } from "@/lib/livekit/Debug";
+import { DebugMode } from "@/lib/livekit/Debug";
 import Chat from "../Chat";
 // import { ParticipantList } from "../videoSpace/ParticipantList";
 import { Stage } from "../videoSpace/Stage";
@@ -100,7 +100,7 @@ export const LiveVideo = ({
                   <Chat viewerName={userIdentity} />
                 </div>
               </div>
-              {/* <DebugMode /> */}
+              <DebugMode />
             </div>
           )}
         </div>

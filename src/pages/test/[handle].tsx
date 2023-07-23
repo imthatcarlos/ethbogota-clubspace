@@ -25,7 +25,7 @@ const LivePageAtHandle: NextPageWithLayout = () => {
 
   const params = typeof window !== "undefined" ? new URLSearchParams(location.search) : null;
   // video | discussion | playlist
-  const spaceType = params?.get("spaceType") ?? "video";
+  const spaceType = params?.get("spacetype") ?? "video";
   // const spaceType = clubSpaceObject.spaceType
 
   const {

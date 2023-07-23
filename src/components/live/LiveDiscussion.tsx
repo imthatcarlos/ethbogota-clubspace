@@ -1,5 +1,7 @@
+import { reactionsEntries } from "@/constants/reactions";
 import { env } from "@/env.mjs";
 import { classNames } from "@/lib/utils/classNames";
+import { Menu, Popover, Transition } from "@headlessui/react";
 import {
   ControlBar,
   LiveKitRoom,
@@ -14,7 +16,8 @@ import {
 } from "@livekit/components-react";
 import { useMutation } from "@tanstack/react-query";
 import { Participant } from "livekit-client";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
+import { useAccount } from "wagmi";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
@@ -87,34 +90,33 @@ const Stage = ({ isHost }) => {
     <div className="">
       <div className="grid grid-cols-8 grid-rows-[auto] w-full h-full justify-center">
         <ParticipantLoop participants={participants}>
-          <CustomParticipantTile isHost={isHost}></CustomParticipantTile>
+          <CustomParticipantTile />
         </ParticipantLoop>
       </div>
     </div>
   );
 };
 
-const CustomParticipantTile = ({ isHost }: { isHost: boolean }) => {
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+
+const CustomParticipantTile = () => {
   // const { participant, source } = useTrackContext();
   const participant = useParticipantContext();
+  // @TODO: to create the "request to speak" I think we just need the address
+  // then we can call the getParticipant on the server to livepeer and that has
+  // the metadata, which gives the sid we need to send the message only to the host
   const { metadata, sid } = participant;
-  console.log(`metadata from participant ${sid}\n${metadata}`);
+
+  const { defaultProfile, isHost }: { defaultProfile: DefaultLensProfile; isHost: boolean } = JSON.parse(metadata);
+  // console.log(`metadata from participant ${sid}\n${metadata}`);
   // const { source } = participant && participant.getTrackByName(Track.Source.Microphone);
+  const { address } = useAccount();
 
   const isSpeaking = useIsSpeaking(participant);
-  // const isMuted = !participant.isMicrophoneEnabled;
+  const isMuted = !participant.isMicrophoneEnabled;
   // useIsMuted(source);
   const room = useRoomInfo();
-
-  // @TODO: finish reaction logic
-  // const { message, send, isSending } = useDataChannel();
-  // const strData = JSON.stringify({ reaction: "ok" });
-  // const encoder = new TextEncoder();
-  // const decoder = new TextDecoder();
-
-  // const data = encoder.encode(strData);
-
-  // send(data, { destination})
 
   const participantPermissions = participant.permissions;
 
@@ -134,7 +136,7 @@ const CustomParticipantTile = ({ isHost }: { isHost: boolean }) => {
     },
   });
 
-  const id = useMemo(() => participant.identity, [participant]);
+  // const id = useMemo(() => defaultProfile?.handle ?? participant.identity, [participant]);
 
   return (
     <section className="relative min-w-0" title={participant.name} key={participant.name}>
@@ -148,12 +150,11 @@ const CustomParticipantTile = ({ isHost }: { isHost: boolean }) => {
         >
           <div className="z-10 grid aspect-square items-center overflow-hidden rounded-full bg-beige transition-all will-change-transform">
             <img
-              // @TODO: swap with lens pic
-              src={`https://avatars.dicebear.com/api/avataaars/${id}.svg?mouth=default,smile,tongue&eyes=default,happy,hearts&eyebrows=default,defaultNatural,flatNatural`}
+              src={defaultProfile ? getUrlForImageFromIpfs(defaultProfile?.picture?.original?.url) : "/anon.png"}
+              alt={defaultProfile ? defaultProfile?.handle : participant.identity}
               className="fade-in"
               width={150}
               height={150}
-              alt={`Avatar of user: ${participant.identity}`}
             />
           </div>
         </div>
@@ -169,13 +170,102 @@ const CustomParticipantTile = ({ isHost }: { isHost: boolean }) => {
           </div>
         </div>
       </div>
-      {/* @TODO: only show to not hosts */}
-      {isHost && (
+      {isHost && participant.name !== address && (
         <button onClick={() => muteParticipant(participant)}>
           {participantPermissions?.canPublish ? "🚫 Mute" : "Promote 🎙"}
         </button>
       )}
+      {participant.name === address && <ReactionsDialog />}
     </section>
+  );
+};
+
+import { useDataChannel } from "@livekit/components-react";
+import type { ReceivedDataMessage } from "@livekit/components-core";
+import { DefaultLensProfile } from "@/types/lens";
+import { getUrlForImageFromIpfs } from "@/utils";
+
+const ReactionsDialog = () => {
+  // @TODO: do something with the message to show up
+  // may have to leave hook on parent component to use the message
+  const onMessage = (message: ReceivedDataMessage<"reactions">) => {
+    console.warn(
+      `%cmessage || decoded ${decoder.decode(message?.payload)}`,
+      "🐦;background: lightblue; color: #444; padding: 3px; border-radius: 5px;"
+    );
+  };
+  const { message, send, isSending } = useDataChannel("reactions", onMessage);
+
+  return (
+    <Popover
+      className={({ open }) =>
+        classNames(
+          open ? "inset-0 z-40 overflow-y-auto" : "",
+          "mx-auto shadow-sm lg:static bottom-0 lg:overflow-y-visible"
+        )
+      }
+    >
+      {({ open }) => {
+        return (
+          <>
+            <Menu as="div" className="relative flex-shrink-0 mb-32">
+              <div className="flex mt-10 items-center mx-auto">
+                <Menu.Button
+                  title="Use these wisely..."
+                  // @FIXME: isSending becomes true after sending ONE message
+                  disabled={isSending}
+                  className="text-club-red !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill={!isSending ? "currentColor" : "gray"}
+                    className="w-7 h-7"
+                  >
+                    <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                  </svg>
+
+                  <span className="sr-only">Response icon heart-shape</span>
+                </Menu.Button>
+              </div>
+
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items className="absolute z-10 mt-2 w-48 origin-top-right rounded-md bg-gray-800 p-4 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none flex gap-4 flex-wrap left-1/2 transform -translate-x-1/2">
+                  {reactionsEntries.map(([key, value]) => (
+                    <Menu.Item key={key}>
+                      {({ active }) => (
+                        <button
+                          onClick={() => {
+                            try {
+                              const data = encoder.encode(key);
+                              send(data);
+                            } catch (error) {
+                              console.log(error);
+                            }
+                          }}
+                        >
+                          {value}
+                        </button>
+                      )}
+                    </Menu.Item>
+                  ))}
+                </Menu.Items>
+              </Transition>
+            </Menu>
+
+            <Popover.Panel className="" aria-label="Global"></Popover.Panel>
+          </>
+        );
+      }}
+    </Popover>
   );
 };
 export default LiveDiscussion;
