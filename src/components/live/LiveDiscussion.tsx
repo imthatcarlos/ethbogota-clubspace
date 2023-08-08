@@ -12,8 +12,8 @@ import {
   useToken,
 } from "@livekit/components-react";
 import { useMutation } from "@tanstack/react-query";
-import { Participant } from "livekit-client";
-import { Fragment, useState } from "react";
+import { DataPacket_Kind, Participant } from "livekit-client";
+import { Fragment, useEffect, useState } from "react";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
@@ -98,9 +98,12 @@ const decoder = new TextDecoder();
 
 import { useDataChannel, useParticipantContext, useIsSpeaking, useRoomInfo } from "@livekit/components-react";
 import { useAccount } from "wagmi";
+import { useMemo } from "react";
 
 const CustomParticipantTile = () => {
   // const { participant, source } = useTrackContext();
+  const [localParticipantMessage, setLocalParticipantMessage] = useState<string | undefined>();
+  const [remoteParticipantMessage, setRemoteParticipantMessage] = useState<string | undefined>();
   const participant = useParticipantContext();
   const participants = useParticipants();
   // @TODO: to create the "request to speak" I think we just need the address
@@ -109,15 +112,26 @@ const CustomParticipantTile = () => {
   const { metadata, sid } = participant;
 
   const onMessage = (message: ReceivedDataMessage<"reactions">) => {
+    setRemoteParticipantMessage(decoder.decode(message?.payload));
     console.warn(
       `%cmessage || decoded ${decoder.decode(message?.payload)}`,
       "🐦;background: lightblue; color: #444; padding: 3px; border-radius: 5px;"
     );
   };
-  // @TODO: wait for https://github.com/livepeer/studio/pull/1811
+
+  // @FIXME: for some reason, can't send more than one message
   const { message, send, isSending } = useDataChannel("reactions", onMessage);
 
-  const { defaultProfile, isHost }: { defaultProfile: DefaultLensProfile; isHost: boolean } = JSON.parse(metadata);
+  const { defaultProfile, isHost }: { defaultProfile: DefaultLensProfile; isHost: boolean } = useMemo(() => {
+    if (!!metadata) {
+      try {
+        return JSON.parse(metadata);
+      } catch (err) {
+        console.error("couldn't parse metadata", err);
+      }
+    }
+    return { defaultProfile: {}, isHost: false };
+  }, [metadata]);
   // console.log(`metadata from participant ${sid}\n${metadata}`);
   // const { source } = participant && participant.getTrackByName(Track.Source.Microphone);
   const { address } = useAccount();
@@ -125,25 +139,43 @@ const CustomParticipantTile = () => {
   const isSpeaking = useIsSpeaking(participant);
   const isMuted = !participant.isMicrophoneEnabled;
   // useIsMuted(source);
-  const room = useRoomInfo();
+  // const room = useRoomInfo();
 
   const participantPermissions = participant.permissions;
 
-  const { mutate: muteParticipant } = useMutation({
-    mutationFn: (participant: Participant) => {
-      return fetch("/api/room/muteParticipant", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          identity: participant.identity,
-          roomName: room.name,
-          canPublish: participant.permissions.canPublish,
-        }),
-      });
-    },
-  });
+  const handleMessageSend = async (payload: Uint8Array, options?: DataSendOptions): Promise<void> => {
+    setLocalParticipantMessage(decoder.decode(payload));
+    send(payload, options);
+    return;
+  };
+
+  useEffect(() => {
+    // hack local message
+    let timeout: NodeJS.Timeout;
+    if (localParticipantMessage) {
+      timeout = setTimeout(() => {
+        setLocalParticipantMessage(undefined);
+      }, 2000);
+    }
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [localParticipantMessage]);
+
+  useEffect(() => {
+    // clear remote message
+    let timeout: NodeJS.Timeout;
+    if (remoteParticipantMessage) {
+      timeout = setTimeout(() => {
+        setRemoteParticipantMessage(undefined);
+      }, 2000);
+    }
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [remoteParticipantMessage]);
 
   // const id = useMemo(() => defaultProfile?.handle ?? participant.identity, [participant]);
 
@@ -167,12 +199,18 @@ const CustomParticipantTile = () => {
             />
           </div>
         </div>
-
-        {/* iterate over participants to find the one who sent the message */}
-        {message && participants.find((p) => p?.name === message.from?.name) && (
+        {localParticipantMessage && (
           <div className="absolute bottom-0 right-0">
             <div className="opacity-0 flex items-center justify-center w-6 h-6 text-4xl rounded-full animate-fade-in-and-out-up">
-              {message.payload}
+              l{localParticipantMessage}
+            </div>
+          </div>
+        )}
+        {/* @FIXME: remoteParticipantMessage is being set even for local, may have to iterate all participants here*/}
+        {remoteParticipantMessage && (
+          <div className="absolute bottom-0 right-0">
+            <div className="opacity-0 flex items-center justify-center w-6 h-6 text-4xl rounded-full animate-fade-in-and-out-up">
+              r{remoteParticipantMessage}
             </div>
           </div>
         )}
@@ -181,19 +219,46 @@ const CustomParticipantTile = () => {
           className="absolute bg-red-500 bottom-[7%] right-[7%] rounded-full transition-opacity duration-200 ease-in-out border-2 border-emerald-600 p-1"
         >
           <div className="aspect-square grid place-content-center">
+            {/* @FIXME: add better muted indicator */}
             {isMuted && "iM"}
             {!participantPermissions?.canPublish && "!cP"}
             {/* <TrackMutedIndicator className="m-1 opacity-100" source={source}></TrackMutedIndicator> */}
           </div>
         </div>
       </div>
-      {isHost && participant.name !== address && (
-        <button onClick={() => muteParticipant(participant)}>
-          {participantPermissions?.canPublish ? "🚫 Mute" : "Promote 🎙"}
-        </button>
-      )}
-      {participant.name === address && <ReactionsDialog send={send} isSending={isSending} />}
+      {!isHost && participant.name !== address && <HostSection />}
+      {participant.name === address && <ReactionsDialog send={handleMessageSend} isSending={isSending} />}
     </section>
+  );
+};
+
+const HostSection = () => {
+  const participant = useParticipantContext();
+  const room = useRoomInfo();
+
+  const participantPermissions = participant.permissions;
+
+  const { mutate: muteParticipant } = useMutation({
+    mutationFn: (participant: Participant) => {
+      return fetch("/api/room/muteParticipant", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          identity: participant.identity,
+          roomName: room.name,
+          canPublish: participant.permissions.canPublish,
+        }),
+      });
+    },
+  });
+  return (
+    <>
+      <button onClick={() => muteParticipant(participant)}>
+        {participantPermissions?.canPublish ? "🚫 Mute" : "Promote 🎙"}
+      </button>
+    </>
   );
 };
 
@@ -226,13 +291,14 @@ const ReactionsDialog = ({
                   <Menu.Button
                     title="Use these wisely..."
                     // @FIXME: isSending becomes true after sending ONE message
-                    disabled={isSending}
+                    // disabled={isSending}
                     className="text-club-red !bg-transparent focus:outline-none rounded-lg text-sm text-center inline-flex items-center relative"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
-                      fill={!isSending ? "currentColor" : "gray"}
+                      // @FIXME: isSending becomes true after sending ONE message
+                      // fill={!isSending ? "currentColor" : "gray"}
                       className="w-7 h-7"
                     >
                       <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
@@ -258,8 +324,8 @@ const ReactionsDialog = ({
                           <button
                             onClick={() => {
                               try {
-                                const data = encoder.encode(key);
-                                send(data);
+                                const data = encoder.encode(value);
+                                send(data, { kind: DataPacket_Kind.RELIABLE });
                               } catch (error) {
                                 console.log(error);
                               }
