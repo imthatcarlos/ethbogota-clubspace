@@ -1,3 +1,4 @@
+import { MicOff } from "lucide-react";
 import {
   ArrowRight,
   Check,
@@ -32,6 +33,7 @@ export const Icons = {
   volumeOff: VolumeX,
   maximize: Maximize,
   minimize: Minimize,
+  micOff: MicOff,
   gitHub: (props: LucideProps) => (
     <svg viewBox="0 0 438.549 438.549" {...props}>
       <path

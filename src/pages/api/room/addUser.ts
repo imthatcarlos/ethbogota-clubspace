@@ -22,7 +22,7 @@ export default async function createRoom(req: NextApiRequest, res: NextApiRespon
       }
     } catch (err) {
       console.log("failed to parse metadata...", err);
-      canPublish = true;
+      canPublish = false;
     }
 
     const body = {
