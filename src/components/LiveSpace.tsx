@@ -39,13 +39,24 @@ import {
 import { addToGuestList, logAction, logOverwriteAction } from "@madfi/ts-sdk";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
-import * as mockIdentities from "@/constants/mockIdentities.json";
+// import * as mockIdentities from "@/constants/mockIdentities.json";
 import DirectToClaims from "./DirectToClaims";
 import useENS from "@/hooks/useENS";
 import { FavorStatus, joinGroup } from "@/lib/claim-without-semaphore/claims";
 import axios from "axios";
 import ClaimFavorModal from "./ClaimFavorModal";
 import PinnedLensPost from "./PinnedLensPost";
+
+export type GateData = {
+  tier: string;
+  collectCurrency: {
+    address: string;
+    symbol: string;
+  };
+  collectFee: string;
+};
+
+export type SpaceType = "video" | "discussion" | "playlist";
 
 export type ClubSpaceObject = {
   clubSpaceId: string;
@@ -63,6 +74,9 @@ export type ClubSpaceObject = {
   queuedTrackIds: [string];
   partyFavorContractAddress: string;
   pinnedLensPost?: string;
+  gated: GateData | string | undefined;
+  handle: string | undefined;
+  spaceType: SpaceType;
 };
 
 type LensProfileObject = {
@@ -117,7 +131,18 @@ const LiveSpace: FC<Props> = ({
   const { chain } = useNetwork();
   const [
     state,
-    { enterRoom, leaveRoom, setProps, updateInfo, sendReaction, retryMic, addSpeaker, removeSpeaker, retryAudio, addModerator }
+    {
+      enterRoom,
+      leaveRoom,
+      setProps,
+      updateInfo,
+      sendReaction,
+      retryMic,
+      addSpeaker,
+      removeSpeaker,
+      retryAudio,
+      addModerator,
+    },
   ] = useJam();
   const [currentReaction, setCurrentReaction] = useState<{ type: string; handle: string; reactionUnicode: string }[]>();
   const [drawerProfile, setDrawerProfile] = useState<any>({});
@@ -176,7 +201,10 @@ const LiveSpace: FC<Props> = ({
     clubSpaceObject.creatorLensHandle,
     "creatorLensProfile"
   );
-  const { data: featuredDrop, isLoading: isLoadingFeauredDrop } = useGetClubspaceDrop({}, { drop: clubSpaceObject.drop, signer });
+  const { data: featuredDrop, isLoading: isLoadingFeauredDrop } = useGetClubspaceDrop(
+    {},
+    { drop: clubSpaceObject.drop, signer }
+  );
   const { data: playlistTracks, isLoading: isLoadingPlaylistTracks } = useGetTracksFromPlaylist(
     {},
     clubSpaceObject.spinampPlaylistId
@@ -381,9 +409,7 @@ const LiveSpace: FC<Props> = ({
     const join = async () => {
       if (!inRoom) {
         await setProps("roomId", clubSpaceObject.clubSpaceId);
-        const avatar = defaultProfile?.picture?.original?.url
-          || defaultProfile?.picture?.uri
-          || ensData?.avatar;
+        const avatar = defaultProfile?.picture?.original?.url || defaultProfile?.picture?.uri || ensData?.avatar;
 
         await updateInfo({
           handle,
@@ -461,8 +487,8 @@ const LiveSpace: FC<Props> = ({
   }, [userInteracted, audioPlayError]);
 
   const startListening = () => {
-    setProps('userInteracted', true);
-    setProps('forceSoundMuted', false);
+    setProps("userInteracted", true);
+    setProps("forceSoundMuted", false);
     setUserInteracted(true);
   };
 
@@ -693,7 +719,9 @@ const LiveSpace: FC<Props> = ({
             ))} */}
           </div>
           <div className="decent-nft flex flex-col gap-y-3">
-            {isLoadingFeauredDrop ? <>{DummyDecent()}</> : (
+            {isLoadingFeauredDrop ? (
+              <>{DummyDecent()}</>
+            ) : (
               <>
                 {featuredDrop?.protocol === DROP_PROTOCOL_DECENT && (
                   <FeaturedDecentNFT {...featuredDrop} semGroupIdHex={clubSpaceObject.clubSpaceId} />
@@ -1000,7 +1028,8 @@ const LiveSpace: FC<Props> = ({
                       >
                         <LensSvg height={20} className={"pr-3"} />
                         {doesFollowDrawerProfile ? "Following" : "Follow"}
-                      </button> )}
+                      </button>
+                    )}
 
                     {/**
                       <button className="flex gap-x-4 items-center">
@@ -1010,14 +1039,10 @@ const LiveSpace: FC<Props> = ({
                       */}
 
                     {isHost && room && drawerProfile.peerId !== myPeerId && (
-                      <button
-                        className="!w-auto btn"
-                        onClick={() => toggleSpeaker(drawerProfile.peerId)}
-                      >
-                        {room?.speakers?.includes(drawerProfile.peerId)
-                          ? 'Remove Speaker'
-                          : 'Promote to Speaker'}
-                      </button> )}
+                      <button className="!w-auto btn" onClick={() => toggleSpeaker(drawerProfile.peerId)}>
+                        {room?.speakers?.includes(drawerProfile.peerId) ? "Remove Speaker" : "Promote to Speaker"}
+                      </button>
+                    )}
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

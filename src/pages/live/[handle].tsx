@@ -25,11 +25,14 @@ import { wait } from "@/utils";
 import { ClubSpaceObject } from "@/components/LiveSpace";
 import { SpaceEnded } from "@/components/SpaceEnded";
 import { SpaceGated } from "@/components/SpaceGated";
+import { LiveVideo } from "@/components/live/LiveVideo";
+import { generateName } from "@/lib/utils/nameGenerator";
+import { NextPageWithLayout } from "../_app";
 
 const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
 const LiveSpace = dynamic(() => import("@/components/LiveSpace"), { ssr: false });
 
-const LivePageAtHandle: NextPage = ({ clubSpaceObject }: { clubSpaceObject: ClubSpaceObject | undefined }) => {
+const LivePageAtHandle: NextPageWithLayout = ({ clubSpaceObject }: { clubSpaceObject: ClubSpaceObject | undefined }) => {
   const {
     query: { handle },
     reload,
@@ -49,6 +52,8 @@ const LivePageAtHandle: NextPage = ({ clubSpaceObject }: { clubSpaceObject: Club
   const { data: hasBadge, isLoading: isLoadingBadge } = useHasBadge();
   const [ensDone, setEnsDone] = useState(false);
   const [_canEnter, setCanEnter] = useState(); // undefined until we know true/false
+
+  const userIdentity = useMemo(() => address ?? generateName(), [address]);
 
   useEffect(() => {
     if (!isLoadingProfiles) {
@@ -91,6 +96,21 @@ const LivePageAtHandle: NextPage = ({ clubSpaceObject }: { clubSpaceObject: Club
         lensPubId={clubSpaceObject.lensPubId}
         refetchMeetsGatedCondition={refetchMeetsGatedCondition}
       />
+    );
+  }
+
+  if (clubSpaceObject.spaceType === 'video') {
+    return (
+      <div className="relative grow flex flex-col justify-center min-h-screen">
+        <LiveVideo
+          // preJoinSubmit={preJoinSubmit}
+          roomName={clubSpaceObject.clubSpaceId}
+          // preJoinChoices={preJoinChoices}
+          userIdentity={userIdentity}
+          isHost={defaultProfile?.id === clubSpaceObject.creatorLensProfileId}
+          defaultProfile={defaultProfile}
+        />
+      </div>
     );
   }
 

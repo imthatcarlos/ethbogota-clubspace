@@ -35,23 +35,28 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       creatorLensProfileId,
       spinampPlaylistId,
       b2bSpinampPlaylistIds,
-      emptyPlaylist,
+      // emptyPlaylist,
       drop,
       lensPubId,
       handle,
-      clubSpaceId,
+      // clubSpaceId,
       partyFavorContractAddress,
       startAt, // ts UTC
       productBannerUrl,
       productBannerIsVideo,
       pinnedLensPost,
       gated,
+      // @TODO: Handle spaceType
+      spaceType,
     } = req.body;
 
     // if (!(creatorAddress && handle && (spinampPlaylistId || b2bSpinampPlaylistIds) && (drop || pinnedLensPost) && clubSpaceId)) {
-    if (!(creatorAddress && handle && (drop || pinnedLensPost) && clubSpaceId)) {
+    if (!(creatorAddress && handle && (drop || pinnedLensPost))) {
       return res.status(400).json({ error: "missing a param sonnn" });
     }
+
+    const createRoomResp = await fetch(`${NEXT_PUBLIC_SITE_URL}/api/room/create`);
+    const clubSpaceId = (await createRoomResp.json()).id;
 
     const semGroupIdHex = `0x${clubSpaceId.replace(/-/g, "")}`;
     const createdAt = Math.floor(Date.now() / 1000);
@@ -62,7 +67,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       creatorLensHandle,
       creatorLensProfileId,
       lensPubId,
-      emptyPlaylist,
+      // emptyPlaylist,
       spinampPlaylistId,
       b2bSpinampPlaylistIds,
       drop,
@@ -77,6 +82,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       productBannerIsVideo,
       pinnedLensPost,
       gated,
+      spaceType,
     };
     console.log(JSON.stringify(clubSpaceObject, null, 2));
     const spaceRedisKey = `${REDIS_SPACE_PREFIX}/${handle}`;
@@ -84,8 +90,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     // stick it in redis
     const multiplier = b2bSpinampPlaylistIds?.length || 1;
     const exp = startAt
-      ? startAt - Math.floor(Date.now() / 1000) + (REDIS_SPACE_EXP * multiplier)
-      : (REDIS_SPACE_EXP * multiplier);
+      ? startAt - Math.floor(Date.now() / 1000) + REDIS_SPACE_EXP * multiplier
+      : REDIS_SPACE_EXP * multiplier;
     clubSpaceObject.exp = exp;
     try {
       console.log("setting redis");
@@ -111,19 +117,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       console.log("ERROR - privy field exists");
     }
 
-    if (!emptyPlaylist) {
+    if (spaceType === "playlist") {
       // post the playlist id for our api to create the audio stream async;
       // if startAt != undefined, it means this space should be scheduled
       await startRadio({
         clubSpaceId,
-        spinampPlaylistId: b2bSpinampPlaylistIds ? undefined: spinampPlaylistId, // override just in case both were set
+        spinampPlaylistId: b2bSpinampPlaylistIds ? undefined : spinampPlaylistId, // override just in case both were set
         b2bSpinampPlaylistIds,
         spaceRedisKey,
-        startAt
+        startAt,
       });
     }
 
-    return res.status(200).json({ url: `${NEXT_PUBLIC_SITE_URL}/live/${handle}`, semGroupIdHex, startAt });
+    const url = spaceType === 'video' || spaceType === 'discussion'
+      ? `${NEXT_PUBLIC_SITE_URL}/livepeer/${handle}`
+      : `${NEXT_PUBLIC_SITE_URL}/live/${handle}`;
+
+    return res.status(200).json({ url, semGroupIdHex, startAt });
   } catch (e) {
     console.log(e);
     return res.status(500).json({});

@@ -16,7 +16,7 @@ import {
   ALLOWED_CHAIN_IDS,
   TIER_GATED_LENS_COLLECT,
   CLUBSPACE_SERVICE_FEE_PCT,
-  CLUBSPACE_SERVICE_FEE_RECIPIENT
+  CLUBSPACE_SERVICE_FEE_RECIPIENT,
 } from "@/lib/consts";
 import { LensHubProxy } from "@/services/lens/abi";
 import { launchSpace } from "@/services/jam/core";
@@ -31,9 +31,11 @@ import { createGroup } from "@/lib/claim-without-semaphore/claims";
 import Copy from "@/assets/svg/copy.svg";
 import CreateLaunchTime from "./CreateLaunchTime";
 import SelectTier from "./SelectTier";
+import { SelectSpaceType } from "./CreateSpace/SelectSpaceType";
 
 type MultiFormData = {
   lensPost: string;
+  spaceType: string;
   pinnedLensPost: string;
   goodyName: string;
   launchDate: Date;
@@ -44,12 +46,13 @@ type MultiFormData = {
 
 const INITIAL_DATA: MultiFormData = {
   lensPost: "",
+  spaceType: "",
   pinnedLensPost: "",
   goodyName: "",
   launchDate: null,
   goodyFiles: [],
-  collectCurrency: { symbol: '', address: '' },
-  collectFee: '1',
+  collectCurrency: { symbol: "", address: "" },
+  collectFee: "1",
 };
 
 const CreateSpace = ({ isOpen, setIsOpen }) => {
@@ -67,7 +70,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
   const [uploading, setUploading] = useState<boolean>();
   const [shareUrl, setShareUrl] = useState<string>();
   const [isShareOpen, setIsShareOpen] = useState<boolean>(false);
-  const [spaceTier, setSpaceTier] = useState<string>('');
+  const [spaceTier, setSpaceTier] = useState<string>("");
   const [files, setFiles] = useState<any[]>([]);
 
   const [state, jamApi] = useJam();
@@ -107,21 +110,26 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
   const { step, steps, currenStepIndex, back, next, goTo, isFirstStep, isLastStep } = useMultiStepForm([
     <SelectTier key="a" setSpaceTier={setSpaceTier} spaceTier={spaceTier} />,
-    <SelectPlaylist
+    <SelectSpaceType
+      spaceType={formMultiFormData.spaceType}
+      setSpaceType={(value: string) => updateFields({ spaceType: value })}
       key="b"
+    />,
+    <SelectPlaylist
+      key="c"
       selectPlaylist={selectPlaylist}
       setMultiplePlaylists={setMultiplePlaylists}
       playlist={playlist}
     />,
     <SetFeaturedProduct
-      key="c"
+      key="d"
       selectDrop={selectDrop}
       drop={drop}
       {...formMultiFormData}
       updateFields={updateFields}
     />,
     <CreateLensPost
-      key="d"
+      key="e"
       setPostData={setPostData}
       defaultProfile={defaultProfile}
       {...formMultiFormData}
@@ -131,17 +139,8 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       files={files}
       setFiles={setFiles}
     />,
-    <CreateLaunchTime
-      key="e"
-      setLaunchDate={setLaunchDate}
-      {...formMultiFormData}
-      updateFields={updateFields}
-    />,
-    <SetGoodyBag
-      key="f"
-      {...formMultiFormData}
-      updateFields={updateFields}
-    />,
+    <CreateLaunchTime key="f" setLaunchDate={setLaunchDate} {...formMultiFormData} updateFields={updateFields} />,
+    <SetGoodyBag key="g" {...formMultiFormData} updateFields={updateFields} />,
   ]);
 
   const handleSubmit = (e: FormEvent) => {
@@ -197,7 +196,8 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     setUploading(true);
 
     try {
-      const { goodyName, goodyFiles, collectCurrency, collectFee, pinnedLensPost } = formMultiFormData;
+      // @TODO: Handle spaceType
+      const { goodyName, goodyFiles, collectCurrency, collectFee, pinnedLensPost, spaceType } = formMultiFormData;
 
       // if no goody contract set, we're deploying one and need to be on the right network
       if (((goodyName && goodyFiles?.length) || fullLensPost) && !switched && chain.id !== ALLOWED_CHAIN_IDS[0]) {
@@ -215,7 +215,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       const handle = defaultProfile?.handle || ensData?.handle || address;
 
       // if (!((playlist || playlists?.length) && (drop || pinnedLensPost))) {
-      if (!((drop || pinnedLensPost))) {
+      if (!(drop || pinnedLensPost)) {
         toast.error("Error - missing something in the form. Go back and check your inputs");
         setUploading(false);
         return;
@@ -223,13 +223,15 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
 
       // @TODO: delay this request so the audio doesn't start playing automatically?
       // create space in the backend
-      const { res, clubSpaceId, uuid } = await launchSpace(handle, jamApi);
+      // @TODO: remove jam
+      // const { res, clubSpaceId, uuid } = await launchSpace(handle, jamApi);
 
-      if (!res) {
-        toast.error("Error - cannot make a space right now");
-        setUploading(false);
-        return;
-      }
+      //
+      // if (!res) {
+      //   toast.error("Error - cannot make a space right now");
+      //   setUploading(false);
+      //   return;
+      // }
 
       let toastId;
       let collectionAddress;
@@ -250,7 +252,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
         toast.dismiss(toastId);
 
         if (!collectionAddress) {
-          toast.error('Error - could not create Party Favor');
+          toast.error("Error - could not create Party Favor");
           setUploading(false);
           return;
         }
@@ -266,7 +268,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
               item: `ipfs://${(await pinFileToIPFS(file)).IpfsHash}`,
               type: file.type,
               altTag: "",
-            })),
+            }))
           );
           attachments = attachments.concat(cids);
         }
@@ -288,18 +290,19 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
         }
         lensPubId = lensPubCount.add(BigNumber.from("1")).toHexString();
 
-        const multirecipientFeeCollectModule = spaceTier === TIER_GATED_LENS_COLLECT
-          ? {
-              amount: { currency: collectCurrency.address, value: collectFee },
-              recipients: [
-                { recipient: address, split: (100 - CLUBSPACE_SERVICE_FEE_PCT) },
-                { recipient: CLUBSPACE_SERVICE_FEE_RECIPIENT, split: CLUBSPACE_SERVICE_FEE_PCT }
-              ],
-              followerOnly: false,
-              referralFee: 0,
-              // endTimestamp:
-            }
-          : undefined;
+        const multirecipientFeeCollectModule =
+          spaceTier === TIER_GATED_LENS_COLLECT
+            ? {
+                amount: { currency: collectCurrency.address, value: collectFee },
+                recipients: [
+                  { recipient: address, split: 100 - CLUBSPACE_SERVICE_FEE_PCT },
+                  { recipient: CLUBSPACE_SERVICE_FEE_RECIPIENT, split: CLUBSPACE_SERVICE_FEE_PCT },
+                ],
+                followerOnly: false,
+                referralFee: 0,
+                // endTimestamp:
+              }
+            : undefined;
 
         console.log(`multirecipientFeeCollectModule: `, multirecipientFeeCollectModule);
 
@@ -315,11 +318,10 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
       }
 
       toast.promise(
-        new Promise(async (resolve, reject) => {
+        new Promise<void>(async (resolve, reject) => {
           // call redis api
-          const gated = spaceTier === TIER_GATED_LENS_COLLECT
-            ? { tier: spaceTier, collectCurrency, collectFee }
-            : undefined;
+          const gated =
+            spaceTier === TIER_GATED_LENS_COLLECT ? { tier: spaceTier, collectCurrency, collectFee } : undefined;
           const spaceData = {
             creatorAddress: address,
             creatorLensHandle: defaultProfile.handle,
@@ -330,12 +332,13 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
             b2bSpinampPlaylistIds: playlists?.map(({ id }) => id),
             drop,
             lensPubId,
-            clubSpaceId,
-            uuid,
+            // clubSpaceId,
+            // uuid,
             partyFavorContractAddress: collectionAddress,
             startAt: launchDate,
             pinnedLensPost,
             gated,
+            spaceType,
           };
           const {
             data: { url, semGroupIdHex },
@@ -374,7 +377,7 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
     } catch (error) {
       console.log(error);
       setUploading(false);
-      toast.error('An error has ocurred');
+      toast.error("An error has ocurred");
     }
   };
 
@@ -410,14 +413,14 @@ const CreateSpace = ({ isOpen, setIsOpen }) => {
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-100 border-b-[1px] border-b-gray-600 pb-3"
                   >
-                    Your space is {launchDate ? 'scheduled' : 'live'}!
+                    Your space is {launchDate ? "scheduled" : "live"}!
                   </Dialog.Title>
                   <div className=" items-center justify-center">
                     <p className="flex mt-3">
                       <a href={shareUrl} target="_blank" rel="noreferrer" className="underline mr-2">
                         {shareUrl}
                       </a>
-                      <Copy  onClick={() => navigator.clipboard.writeText(shareUrl)} className="copy-btn w-7 p-1 " />
+                      <Copy onClick={() => navigator.clipboard.writeText(shareUrl)} className="copy-btn w-7 p-1 " />
                     </p>
                     <p className="mt-4">Tips & Tricks for a great time:</p>
                     <ol className="ml-6 list-decimal">

@@ -6,6 +6,7 @@ import { z } from "zod";
  */
 const server = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]),
+  LIVEPEER_API_KEY: z.string(),
 });
 
 /**
@@ -14,6 +15,8 @@ const server = z.object({
  */
 const client = z.object({
   NEXT_PUBLIC_SPACE_API_URL: z.string().url(),
+  NEXT_PUBLIC_LIVEPEER_URL: z.string(),
+  NEXT_PUBLIC_LK_TOKEN_ENDPOINT: z.string(),
 });
 
 /**
@@ -25,6 +28,9 @@ const client = z.object({
 const processEnv = {
   NODE_ENV: process.env.NODE_ENV,
   NEXT_PUBLIC_SPACE_API_URL: process.env.NEXT_PUBLIC_SPACE_API_URL,
+  LIVEPEER_API_KEY: process.env.LIVEPEER_API_KEY,
+  NEXT_PUBLIC_LIVEPEER_URL: process.env.NEXT_PUBLIC_LIVEPEER_URL,
+  NEXT_PUBLIC_LK_TOKEN_ENDPOINT: process.env.NEXT_PUBLIC_LK_TOKEN_ENDPOINT,
 };
 
 // Don't touch the part below
