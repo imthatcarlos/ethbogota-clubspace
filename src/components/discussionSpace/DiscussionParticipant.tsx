@@ -46,6 +46,7 @@ export const DiscussionParticipant  = () => {
   const { defaultProfile, isHost }: { defaultProfile: DefaultLensProfile; isHost: boolean } = useMemo(() => {
     if (!!metadata) {
       try {
+        console.log(metadata)
         return JSON.parse(metadata);
       } catch (err) {
         console.error("couldn't parse metadata", err);
@@ -98,10 +99,10 @@ export const DiscussionParticipant  = () => {
     };
   }, [remoteParticipantMessage]);
 
-  // const id = useMemo(() => defaultProfile?.handle ?? participant.identity, [participant]);
+  const name = useMemo(() => defaultProfile?.handle ? `@${defaultProfile?.handle}` : participant.identity, [defaultProfile, participant]);
 
   return (
-    <section className="relative min-w-0" title={participant.name} key={participant.name}>
+    <section className="relative min-w-0" title={name} key={name}>
       <div className="relative w-24 h-24 min-w-0">
         <div
           className={classNames(

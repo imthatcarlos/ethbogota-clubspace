@@ -7,6 +7,7 @@ import Chat from "../Chat";
 // import { ParticipantList } from "../videoSpace/ParticipantList";
 import { Stage } from "../videoSpace/Stage";
 import { ParticipantDialogList } from "../videoSpace/ParticipantDialogList";
+import { PinnedPromotionDialog } from "../videoSpace/PinnedPromotionDialog";
 import { DefaultLensProfile } from "@/types/lens";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
@@ -16,11 +17,13 @@ export const LiveVideo = ({
   isHost,
   userIdentity,
   defaultProfile,
+  clubSpaceObject,
 }: {
   roomName: string;
   isHost?: boolean;
   userIdentity: string;
   defaultProfile: DefaultLensProfile | undefined;
+  clubSpaceObject: any;
 }) => {
   const [tryToConnect, setTryToConnect] = useState(false);
   const [connected, setConnected] = useState(false);
@@ -92,6 +95,7 @@ export const LiveVideo = ({
                     className="border-none gap-2 flex items-center"
                   />
                   <ParticipantDialogList />
+                  <PinnedPromotionDialog clubSpaceObject={clubSpaceObject} />
                 </div>
                 <RoomAudioRenderer />
               </div>

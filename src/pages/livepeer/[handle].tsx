@@ -23,10 +23,8 @@ import { NextPageWithLayout } from "../_app";
 const LivePageAtHandle: NextPageWithLayout = ({ clubSpaceObject }: { clubSpaceObject: ClubSpaceObject | undefined }) => {
   // const [preJoinChoices, setPreJoinChoices] = useState<LocalUserChoices | undefined>(undefined);
 
-  const params = typeof window !== "undefined" ? new URLSearchParams(location.search) : null;
   // video | discussion | playlist
-  const spaceType = params?.get("spacetype") ?? "video";
-  // const spaceType = clubSpaceObject.spaceType
+  const spaceType = clubSpaceObject.spaceType
 
   const {
     query: { handle },
@@ -111,22 +109,9 @@ const LivePageAtHandle: NextPageWithLayout = ({ clubSpaceObject }: { clubSpaceOb
 
   if (!isConnected) {
     return (
-      <div>
-        <ConnectWallet />
-      </div>
-    );
-  }
-
-  // @TODO: remove if we don't need to confirm host with signing
-  if (isConnected && !isLoadingProfiles && defaultProfile && defaultProfile?.handle === handle && !signResult) {
-    const message = `I am the host ${handle}`;
-    return (
-      <div className="flex items-center min-h-[80dvh] flex-col justify-center">
-        <div className="max-w-fit">
-          I see you're the host, please sign this message.
-          <button className="btn" onClick={() => signMessage({ message })}>
-            I'm the host
-          </button>
+      <div className="flex-1 min-h-screen">
+        <div className="abs-center">
+          <ConnectWallet />
         </div>
       </div>
     );
@@ -161,6 +146,7 @@ const LivePageAtHandle: NextPageWithLayout = ({ clubSpaceObject }: { clubSpaceOb
         userIdentity={userIdentity}
         isHost={isHost}
         defaultProfile={defaultProfile}
+        clubSpaceObject={clubSpaceObject}
       />
     );
   }
@@ -173,6 +159,8 @@ const LivePageAtHandle: NextPageWithLayout = ({ clubSpaceObject }: { clubSpaceOb
         // preJoinChoices={preJoinChoices}
         userIdentity={userIdentity}
         isHost={isHost}
+        defaultProfile={defaultProfile}
+        clubSpaceObject={clubSpaceObject}
       />
     );
   }

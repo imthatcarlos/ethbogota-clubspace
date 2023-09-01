@@ -16,11 +16,11 @@ export const ParticipantDialogList = () => {
   return (
     <Dialog>
       <DialogTrigger>
-        <Users size={32} />
+        <Users size={24} className="ml-2 mr-2"/>
       </DialogTrigger>
       <DialogContent className="max-w-[90%] sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="mb-4">Participants listening</DialogTitle>
+          <DialogTitle className="mb-4">Participants</DialogTitle>
           <DialogDescription className="space-y-4">
             <ParticipantLoop participants={participants}>
               <ParticipantList />
