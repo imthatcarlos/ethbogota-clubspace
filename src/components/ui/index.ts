@@ -1,4 +1,4 @@
 export * from "./Button";
 export * from "./Icons";
-export * from "./TextArea";
+export * from "./Textarea";
 export * from "./Dialog";
