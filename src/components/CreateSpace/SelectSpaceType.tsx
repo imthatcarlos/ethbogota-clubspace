@@ -20,15 +20,17 @@ const spaceTypes = [
     icons: [<MicrophoneIcon key="1" width={iconsSize} height={iconsSize} />],
     value: "discussion",
   },
-  {
-    id: 3,
-    label: "Discussion + Playlist",
-    icons: [
-      <MicrophoneIcon key="1" width={iconsSize} height={iconsSize} />,
-      <VolumeUpIcon key="2" width={iconsSize} height={iconsSize} />,
-    ],
-    value: "playlist",
-  },
+  // NOT ENABLING TILL WE HAVE GOOD UI FOR IT
+  // {
+  //   id: 3,
+  //   label: "Discussion + Playlist",
+  //   icons: [
+  //     <MicrophoneIcon key="1" width={iconsSize} height={iconsSize} />,
+  //     <VolumeUpIcon key="2" width={iconsSize} height={iconsSize} />,
+  //   ],
+  //   value: "playlist",
+  //   disabled: true
+  // },
 ];
 
 export const SelectSpaceType = ({

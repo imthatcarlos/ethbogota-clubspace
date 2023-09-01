@@ -55,7 +55,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       return res.status(400).json({ error: "missing a param sonnn" });
     }
 
-    const createRoomResp = await fetch("/api/room/create");
+    const createRoomResp = await fetch(`${NEXT_PUBLIC_SITE_URL}/api/room/create`);
     const clubSpaceId = (await createRoomResp.json()).id;
 
     const semGroupIdHex = `0x${clubSpaceId.replace(/-/g, "")}`;
@@ -129,7 +129,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       });
     }
 
-    return res.status(200).json({ url: `${NEXT_PUBLIC_SITE_URL}/live/${handle}`, semGroupIdHex, startAt });
+    const url = spaceType === 'video' || spaceType === 'discussion'
+      ? `${NEXT_PUBLIC_SITE_URL}/livepeer/${handle}`
+      : `${NEXT_PUBLIC_SITE_URL}/live/${handle}`;
+
+    return res.status(200).json({ url, semGroupIdHex, startAt });
   } catch (e) {
     console.log(e);
     return res.status(500).json({});
