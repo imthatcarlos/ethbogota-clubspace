@@ -6,11 +6,8 @@ import ClubspaceNeon from "@/assets/svg/clubspace-neon.svg";
 import ClubspaceSoftGlow from "@/assets/svg/soft-glow-filter.svg";
 import LensLogoIcon from "@/assets/svg/lens-logo-icon.svg";
 import useIsMounted from "@/hooks/useIsMounted";
-import useHasBadge from "@/hooks/useHasBadge";
 import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
-import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import { ConnectWallet } from "@/components/ConnectWallet";
-import { IM_WITH_THE_DJ, GOOGLE_FORM_WAITLIST_URL } from "@/lib/consts";
 import ActivityFeed from "./ActivityFeed";
 import {UpcomingFeed} from "./UpcomingFeed";
 
@@ -23,18 +20,6 @@ export const Hero = () => {
   const { isConnected, address } = useAccount();
   const { data: lensLoginData, refetch: loginWithLens } = useLensLogin();
   const { data: lensRefreshData } = useLensRefresh();
-  const { data: profilesResponse } = useGetProfilesOwned({}, address);
-  const { data: hasBadge, isLoading: isLoadingBadge } = useHasBadge();
-
-  useEffect(() => {
-    if (!isLoadingBadge && isMounted && isConnected) {
-      toast("ClubSpace is currently in open beta. Handle with care. Stay hydrated.", { duration: 10000, icon: "🚧" });
-    }
-  }, [isLoadingBadge, isMounted, isConnected]);
-
-  // NO LONGER IN CLOSED BETA
-  // const shouldRenderCreate = !isLoadingBadge && (hasBadge || IM_WITH_THE_DJ.includes(address));
-  const shouldRenderCreate = true;
 
   if (!isMounted) return null;
 
@@ -85,45 +70,12 @@ export const Hero = () => {
                   </span>
                 </button>
               ) : (
-                <>
-                  {shouldRenderCreate ? (
-                    <button
-                      onClick={() => setModalOpen(true)}
-                      className="btn-create-space relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold duration-300 transition-all hover:-translate-y-[2px] hover:text-white"
-                    >
-                      <span className="z-10">Create a space</span>
-                    </button>
-                  ) : (
-                    <>
-                      <button
-                        disabled
-                        className="relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold"
-                      >
-                        <span className="z-10">Closed Beta</span>
-                      </button>
-                      <span className="z-10">
-                        Get access with our{" "}
-                        <a
-                          href="https://playground.sismo.io/madfi-lens-followers-s01"
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-club-red font-extrabold"
-                        >
-                          Sismo Badge
-                        </a>{" "}
-                        or get on the{" "}
-                        <a
-                          href={GOOGLE_FORM_WAITLIST_URL}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-club-red font-extrabold"
-                        >
-                          Creator Waitlist
-                        </a>
-                      </span>
-                    </>
-                  )}
-                </>
+                <button
+                  onClick={() => setModalOpen(true)}
+                  className="btn-create-space relative overflow-hidden inline-flex capitalize w-fit font-sf-pro-text bg-white text-black text-xl py-3 px-6 rounded-md font-bold duration-300 transition-all hover:-translate-y-[2px] hover:text-white"
+                >
+                  <span className="z-10">Create a space</span>
+                </button>
               )}
             </>
           ) : (

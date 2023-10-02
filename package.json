@@ -19,7 +19,6 @@
     "@madfi/ts-sdk": "^0.2.0-alpha.4",
     "@madfi/ux-components": "^1.0.20",
     "@pinata/sdk": "^1.1.26",
-    "@privy-io/privy-node": "^0.0.2",
     "@pushprotocol/restapi": "^0.1.1",
     "@radix-ui/react-dialog": "^1.0.4",
     "@radix-ui/react-slider": "^1.1.1",
