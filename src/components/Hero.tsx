@@ -11,9 +11,6 @@ import { ConnectWallet } from "@/components/ConnectWallet";
 import ActivityFeed from "./ActivityFeed";
 import {UpcomingFeed} from "./UpcomingFeed";
 
-const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
-const CreateSpace = dynamic(() => import("@/components/CreateSpace"), { ssr: false });
-
 export const Hero = () => {
   const isMounted = useIsMounted();
   let [modalOpen, setModalOpen] = useState(false);
@@ -83,11 +80,6 @@ export const Hero = () => {
           )}
           <UpcomingFeed />
           <ActivityFeed />
-        </div>
-        <div className="w-full">
-          <JamProviderWrapper>
-            <CreateSpace isOpen={modalOpen} setIsOpen={setModalOpen} />
-          </JamProviderWrapper>
         </div>
       </section>
     </div>

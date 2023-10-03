@@ -18,9 +18,6 @@ export const CONTRACT_TYPE_EDITION = 'DCNT721A';
 export const CONTRACT_TYPE_ZK_EDITION = 'ZKEdition';
 export const CONTRACT_TYPES_FOR_FEATURED = [CONTRACT_TYPE_EDITION, CONTRACT_TYPE_CRESCENDO];
 
-export const DEFAULT_PARTY_FAVOR = '0xb2d816eca2b50d48bd632f74ef7cdbc2123f6c79'; // polygon
-export const ZK_EDITION_CHAIN_ID = IS_PRODUCTION ? 137 : 80001; // for our semaphore contract
-
 export const VIDEO_EXTENSIONS = [
 	'3g2',
 	'3gp',

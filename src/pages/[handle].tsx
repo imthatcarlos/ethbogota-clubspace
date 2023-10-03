@@ -18,7 +18,7 @@ import useMeetsGatedCondition from "@/hooks/useMeetsGatedCondition";
 import { SpaceGated } from "@/components/SpaceGated";
 import { TIER_OPEN } from "@/lib/consts";
 import { generateName } from "@/lib/utils/nameGenerator";
-import { NextPageWithLayout } from "../_app";
+import { NextPageWithLayout } from "./_app";
 
 const LivePageAtHandle: NextPageWithLayout = ({ clubSpaceObject }: { clubSpaceObject: ClubSpaceObject | undefined }) => {
   // const [preJoinChoices, setPreJoinChoices] = useState<LocalUserChoices | undefined>(undefined);
