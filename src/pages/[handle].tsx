@@ -11,20 +11,20 @@ import { LiveVideo } from "@/components/live/LiveVideo";
 import { LiveDiscussion } from "@/components/live/LiveDiscussion";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import { GetServerSideProps } from "next";
-import { getLiveClubspace } from "@/services/radio";
+import redisClient from "@/lib/utils/redisClient";
 import { ClubSpaceObject, GateData } from "@/components/LiveSpace";
 import { getAccessToken } from "@/hooks/useLensLogin";
 import useMeetsGatedCondition from "@/hooks/useMeetsGatedCondition";
 import { SpaceGated } from "@/components/SpaceGated";
-import { TIER_OPEN } from "@/lib/consts";
+import { TIER_OPEN, REDIS_SPACE_PREFIX } from "@/lib/consts";
 import { generateName } from "@/lib/utils/nameGenerator";
-import { NextPageWithLayout } from "../_app";
+import { NextPageWithLayout } from "./_app";
 
-const LivePageAtHandle: NextPageWithLayout = ({ clubSpaceObject }: { clubSpaceObject: ClubSpaceObject | undefined }) => {
+const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: ClubSpaceObject | undefined }) => {
   // const [preJoinChoices, setPreJoinChoices] = useState<LocalUserChoices | undefined>(undefined);
 
   // video | discussion | playlist
-  const spaceType = clubSpaceObject.spaceType
+  const spaceType = space.spaceType
 
   const {
     query: { handle },
@@ -37,7 +37,7 @@ const LivePageAtHandle: NextPageWithLayout = ({ clubSpaceObject }: { clubSpaceOb
   //   data: meetsGatedCondition,
   //   isLoading: isLoadingMeetsGated,
   //   refetch: refetchMeetsGatedCondition,
-  // } = useMeetsGatedCondition(address, getAccessToken(), clubSpaceObject);
+  // } = useMeetsGatedCondition(address, getAccessToken(), space);
   // const { data: ensData, isLoading: isLoadingENS } = useENS(address);
   const [defaultProfile, setDefaultProfile] = useState<Profile>();
   const [loadingDefaultProfile, setLoadingDefaultProfile] = useState(true);
@@ -55,8 +55,8 @@ const LivePageAtHandle: NextPageWithLayout = ({ clubSpaceObject }: { clubSpaceOb
   });
 
   const roomName = useMemo(
-    () => clubSpaceObject?.clubSpaceId,
-    [clubSpaceObject]
+    () => space?.roomId,
+    [space]
   );
   const userIdentity = useMemo(() => address ?? generateName(), [address]);
 
@@ -72,7 +72,7 @@ const LivePageAtHandle: NextPageWithLayout = ({ clubSpaceObject }: { clubSpaceOb
   // const preJoinSubmit = (values: LocalUserChoices) => {
   //   console.log("Joining with: ", values);
   //   // check for host
-  //   // if(defaultProfile?.id === clubSpaceObject.creatorLensProfileId)
+  //   // if(defaultProfile?.id === space.creatorLensProfileId)
   //   if (defaultProfile && defaultProfile?.handle === handle) {
   //     const message = `I am the host ${handle}`;
   //     signMessage({ message });
@@ -95,22 +95,23 @@ const LivePageAtHandle: NextPageWithLayout = ({ clubSpaceObject }: { clubSpaceOb
 
   // const canEnter = useMemo(() => {
   //   // check for host first
-  //   if (clubSpaceObject?.creatorLensProfileId === defaultProfile?.id) {
+  //   if (space?.creatorLensProfileId === defaultProfile?.id) {
   //     setIsHost(true);
   //     return true; // is host
   //   }
   //   // @FIXME: gated is only an object or undefined, so this validation with TIER_OPEN
   //   // doesn't make sense
   //   // @see {@link CreateSpace} at 323
-  //   if (!clubSpaceObject?.gated || clubSpaceObject?.gated === TIER_OPEN) return true; // not gated
+  //   if (!space?.gated || space?.gated === TIER_OPEN) return true; // not gated
 
   //   return _canEnter !== false;
-  // }, [defaultProfile, clubSpaceObject, _canEnter]);
+  // }, [defaultProfile, space, _canEnter]);
 
   if (!isConnected) {
     return (
       <div className="flex-1 min-h-screen">
-        <div className="abs-center">
+        <div className="abs-center items-center">
+          <p className="animate-move-txt-bg gradient-txt text-4xl mb-4">Connect your wallet to join</p>
           <ConnectWallet />
         </div>
       </div>
@@ -125,13 +126,13 @@ const LivePageAtHandle: NextPageWithLayout = ({ clubSpaceObject }: { clubSpaceOb
   //   return <>loading...</>;
   // }
 
-  // if (clubSpaceObject.gated && (!getAccessToken() || canEnter === false)) {
+  // if (space.gated && (!getAccessToken() || canEnter === false)) {
   //   return (
   //     <SpaceGated
-  //       handle={clubSpaceObject.handle}
-  //       gated={clubSpaceObject.gated as GateData}
-  //       creatorLensProfileId={clubSpaceObject.creatorLensProfileId}
-  //       lensPubId={clubSpaceObject.lensPubId}
+  //       handle={space.handle}
+  //       gated={space.gated as GateData}
+  //       creatorLensProfileId={space.creatorLensProfileId}
+  //       lensPubId={space.lensPubId}
   //       refetchMeetsGatedCondition={refetchMeetsGatedCondition}
   //     />
   //   );
@@ -146,7 +147,7 @@ const LivePageAtHandle: NextPageWithLayout = ({ clubSpaceObject }: { clubSpaceOb
         userIdentity={userIdentity}
         isHost={isHost}
         defaultProfile={defaultProfile}
-        clubSpaceObject={clubSpaceObject}
+        space={space}
       />
     );
   }
@@ -160,7 +161,7 @@ const LivePageAtHandle: NextPageWithLayout = ({ clubSpaceObject }: { clubSpaceOb
         userIdentity={userIdentity}
         isHost={isHost}
         defaultProfile={defaultProfile}
-        clubSpaceObject={clubSpaceObject}
+        space={space}
       />
     );
   }
@@ -185,20 +186,23 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
 
   try {
-    const clubSpaceObject = await getLiveClubspace(handle as string);
-    if (!clubSpaceObject) {
+    let space = await redisClient.get(`${REDIS_SPACE_PREFIX}/${handle}`);
+
+    if (!space) {
       console.log("SPACE NOT FOUND! MAY HAVE EXPIRED FROM REDIS");
       return {
         // we need to have the handle in the _app when there's no space
         // to provide the correct iframely link
         props: { handle },
       };
+    } else {
+      space = JSON.parse(space);
     }
 
-    console.log(`found space with id: ${clubSpaceObject.clubSpaceId}`);
-    console.log(clubSpaceObject);
+    console.log(`found space with roomId: ${space.roomId}`);
+    console.log(JSON.stringify(space, null, 2));
 
-    return { props: { clubSpaceObject } };
+    return { props: { space } };
   } catch (error) {
     console.log(error);
   }

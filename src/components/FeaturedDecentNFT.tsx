@@ -3,10 +3,9 @@ import { Contract, BigNumber, utils } from "ethers";
 import { useNetwork, useSigner, useSwitchNetwork, useAccount } from "wagmi";
 import toast from "react-hot-toast";
 import { unescape } from "lodash/string";
-import { fieldNamePrivy, getUrlForImageFromIpfs, wait } from "@/utils";
+import { getUrlForImageFromIpfs, wait } from "@/utils";
 import { CONTRACT_TYPE_CRESCENDO, CONTRACT_TYPE_EDITION } from "@/services/decent/utils";
 import { CURRENCY_MAP, CHAIN_NAME_MAP } from "@/lib/consts";
-import { logAction } from "@madfi/ts-sdk";
 
 const MAX_DESCRIPTION_LENGTH = 250;
 
@@ -75,8 +74,6 @@ export const FeaturedDecentNFT = ({
     toast.promise(
       new Promise(async (resolve, reject) => {
         try {
-          logAction(userAddress, fieldNamePrivy(semGroupIdHex), { action: "buy_drop", address: contract.address });
-
           const _signer = await activeConnector.getSigner();
           const tx =
             contractType == CONTRACT_TYPE_CRESCENDO

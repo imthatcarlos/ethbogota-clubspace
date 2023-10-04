@@ -29,7 +29,6 @@ import { LiveVideo } from "@/components/live/LiveVideo";
 import { generateName } from "@/lib/utils/nameGenerator";
 import { NextPageWithLayout } from "../_app";
 
-const JamProviderWrapper = dynamic(() => import("@/components/JamProviderWrapper"), { ssr: false });
 const LiveSpace = dynamic(() => import("@/components/LiveSpace"), { ssr: false });
 
 const LivePageAtHandle: NextPageWithLayout = ({ clubSpaceObject }: { clubSpaceObject: ClubSpaceObject | undefined }) => {
@@ -157,24 +156,22 @@ const LivePageAtHandle: NextPageWithLayout = ({ clubSpaceObject }: { clubSpaceOb
         </div>
       ) : null}
       {!loadingDefaultProfile && ensDone && (!isLoadingBadge || !address) && (clubSpaceObject.queuedTrackIds?.length || clubSpaceObject.emptyPlaylist) && canEnter ? (
-        <JamProviderWrapper>
-          <PlayerContext.Provider value={audioPlayerState}>
-            <DispatchPlayerContext.Provider value={audioPlayerDispatch}>
-              <LiveSpace
-                clubSpaceObject={clubSpaceObject}
-                defaultProfile={defaultProfile}
-                isHost={defaultProfile?.id === clubSpaceObject.creatorLensProfileId}
-                isLoadingEntry={isLoadingEntry}
-                setIsLoadingEntry={setIsLoadingEntry}
-                address={address}
-                handle={defaultProfile?.handle || ensData?.handle || address}
-                hasBadge={hasBadge}
-                playerVolume={audioPlayerState.audioVolume}
-                setPlayerVolume={(volume: number) => audioPlayerDispatch(setAudioVolumeAction(volume))}
-              />
-            </DispatchPlayerContext.Provider>
-          </PlayerContext.Provider>
-        </JamProviderWrapper>
+        <PlayerContext.Provider value={audioPlayerState}>
+          <DispatchPlayerContext.Provider value={audioPlayerDispatch}>
+            <LiveSpace
+              clubSpaceObject={clubSpaceObject}
+              defaultProfile={defaultProfile}
+              isHost={defaultProfile?.id === clubSpaceObject.creatorLensProfileId}
+              isLoadingEntry={isLoadingEntry}
+              setIsLoadingEntry={setIsLoadingEntry}
+              address={address}
+              handle={defaultProfile?.handle || ensData?.handle || address}
+              hasBadge={hasBadge}
+              playerVolume={audioPlayerState.audioVolume}
+              setPlayerVolume={(volume: number) => audioPlayerDispatch(setAudioVolumeAction(volume))}
+            />
+          </DispatchPlayerContext.Provider>
+        </PlayerContext.Provider>
       ) : null}
     </>
   );

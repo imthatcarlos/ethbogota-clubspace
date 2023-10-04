@@ -20,11 +20,11 @@ import {
   DROP_PROTOCOL_SOUND,
 } from "@/lib/consts";
 
-export const PinnedPromotionDialog = ({ clubSpaceObject }) => {
+export const PinnedPromotionDialog = ({ space }) => {
   const { data: signer } = useSigner();
   const { data: featuredDrop, isLoading: isLoadingFeauredDrop } = useGetClubspaceDrop(
     {},
-    { drop: clubSpaceObject.drop, signer }
+    { drop: space.drop, signer }
   );
 
   const DummyDecent = useCallback(
@@ -110,7 +110,7 @@ export const PinnedPromotionDialog = ({ clubSpaceObject }) => {
       <DialogTrigger>
         <ShoppingBag size={24} className="ml-2 mr-2" />
       </DialogTrigger>
-      <DialogContent className="max-w-[90%] sm:max-w-lg overflow-auto max-h-screen">
+      <DialogContent className="sm:max-w-lg md:max-w-xl max-h-screen">
         <DialogHeader>
           <DialogDescription className="space-y-4">
             {isLoadingFeauredDrop ? (
@@ -118,15 +118,15 @@ export const PinnedPromotionDialog = ({ clubSpaceObject }) => {
             ) : (
               <>
                 {featuredDrop?.protocol === DROP_PROTOCOL_DECENT && (
-                  <FeaturedDecentNFT {...featuredDrop} semGroupIdHex={clubSpaceObject.clubSpaceId} />
+                  <FeaturedDecentNFT {...featuredDrop} semGroupIdHex={space.clubSpaceId} />
                 )}
                 {featuredDrop?.protocol === DROP_PROTOCOL_SOUND && (
                   <p>
-                    <FeaturedSoundNFT {...featuredDrop} semGroupIdHex={clubSpaceObject.clubSpaceId} />
+                    <FeaturedSoundNFT {...featuredDrop} semGroupIdHex={space.clubSpaceId} />
                   </p>
                 )}
-                {clubSpaceObject.pinnedLensPost && (
-                  <PinnedLensPost url={clubSpaceObject.pinnedLensPost} small={!!clubSpaceObject.drop} />
+                {space.pinnedLensPost && (
+                  <PinnedLensPost url={space.pinnedLensPost} small={!!space.drop} />
                 )}
               </>
             )}

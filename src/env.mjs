@@ -7,6 +7,8 @@ import { z } from "zod";
 const server = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]),
   LIVEPEER_API_KEY: z.string(),
+  SPACE_API_BEARER: z.string(),
+  MADFI_API_KEY: z.string(),
 });
 
 /**
@@ -31,6 +33,8 @@ const processEnv = {
   LIVEPEER_API_KEY: process.env.LIVEPEER_API_KEY,
   NEXT_PUBLIC_LIVEPEER_URL: process.env.NEXT_PUBLIC_LIVEPEER_URL,
   NEXT_PUBLIC_LK_TOKEN_ENDPOINT: process.env.NEXT_PUBLIC_LK_TOKEN_ENDPOINT,
+  SPACE_API_BEARER: process.env.SPACE_API_BEARER,
+  MADFI_API_KEY: process.env.MADFI_API_KEY,
 };
 
 // Don't touch the part below

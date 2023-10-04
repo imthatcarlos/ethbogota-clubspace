@@ -13,8 +13,8 @@ export default function NotFound() {
                 <p className="mt-1 text-base text-gray-500">Please check the URL in the address bar and try again.</p>
               </div>
               <div className="mt-10 flex space-x-3 sm:border-l sm:border-transparent sm:pl-6">
-                <NextLink href="/" passHref>
-                  <a className="btn">Go back home</a>
+                <NextLink href="/" passHref className="btn">
+                  Go back home
                 </NextLink>
               </div>
             </div>

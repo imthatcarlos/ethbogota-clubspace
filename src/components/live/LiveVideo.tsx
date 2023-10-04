@@ -1,6 +1,6 @@
 import { env } from "@/env.mjs";
 import { ControlBar, LiveKitRoom, RoomAudioRenderer, useToken } from "@livekit/components-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 // import jwt, { type JwtPayload } from "jwt-decode";
 import { DebugMode } from "@/lib/livekit/Debug";
 import Chat from "../Chat";
@@ -9,6 +9,7 @@ import { Stage } from "../videoSpace/Stage";
 import { ParticipantDialogList } from "../videoSpace/ParticipantDialogList";
 import { PinnedPromotionDialog } from "../videoSpace/PinnedPromotionDialog";
 import { DefaultLensProfile } from "@/types/lens";
+import useIsMounted from "@/hooks/useIsMounted";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
@@ -17,16 +18,23 @@ export const LiveVideo = ({
   isHost,
   userIdentity,
   defaultProfile,
-  clubSpaceObject,
+  space,
 }: {
   roomName: string;
   isHost?: boolean;
   userIdentity: string;
   defaultProfile: DefaultLensProfile | undefined;
-  clubSpaceObject: any;
+  space: any;
 }) => {
+  const isMounted = useIsMounted();
   const [tryToConnect, setTryToConnect] = useState(false);
   const [connected, setConnected] = useState(false);
+
+  useEffect(() => {
+    if (isMounted) {
+      setTryToConnect(true);
+    }
+  }, [isMounted]);
 
   const metadata = useMemo(() => {
     try {
@@ -68,45 +76,32 @@ export const LiveVideo = ({
         className="flex flex-1 flex-col h-full"
       >
         <div className="flex h-full flex-1 min-h-[80dvh]">
-          {!connected ? (
-            <div className="w-full flex items-center justify-center">
-              <button
-                className="btn max-w-fit self-center justify-self-center"
-                onClick={() => {
-                  setTryToConnect(true);
-                }}
-              >
-                Enter Room
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-1 h-full">
-              {/* <div className="sticky hidden w-80 border-r dark:border-zinc-800 dark:bg-zinc-900 lg:block">
+          <div className="flex flex-1 h-full">
+            {/* <div className="sticky hidden w-80 border-r dark:border-zinc-800 dark:bg-zinc-900 lg:block">
                 <div className="absolute left-0 top-0 bottom-0 flex h-full w-full flex-col gap-2 px-4 py-2">
                   <Sidebar isHost={isHost} />
                 </div>
               </div> */}
-              <div className="flex flex-1 flex-col min-h-[80dvh] dark:border-t-zinc-200 dark:bg-black py-4">
-                <Stage />
-                <div className="flex flex-1 gap-2 w-full items-center justify-center">
-                  <ControlBar
-                    variation="minimal"
-                    controls={{ microphone: true, camera: true, screenShare: false }}
-                    className="border-none gap-2 flex items-center"
-                  />
-                  <ParticipantDialogList />
-                  <PinnedPromotionDialog clubSpaceObject={clubSpaceObject} />
-                </div>
-                <RoomAudioRenderer />
+            <div className="flex flex-1 flex-col min-h-[80dvh] dark:border-t-zinc-200 dark:bg-black py-4">
+              <Stage />
+              <div className="flex flex-1 gap-2 w-full items-center justify-center">
+                <ControlBar
+                  variation="minimal"
+                  controls={{ microphone: true, camera: true, screenShare: false }}
+                  className="border-none gap-2 flex items-center"
+                />
+                <ParticipantDialogList />
+                <PinnedPromotionDialog space={space} />
               </div>
-              <div className="sticky hidden w-80 border-l dark:border-zinc-800 dark:bg-zinc-900 md:block">
-                <div className="absolute top-0 bottom-0 right-0 flex h-full w-full flex-col gap-2 p-2">
-                  <Chat viewerName={userIdentity} />
-                </div>
-              </div>
-              <DebugMode />
+              <RoomAudioRenderer />
             </div>
-          )}
+            <div className="sticky hidden w-80 border-l dark:border-zinc-800 dark:bg-zinc-900 md:block">
+              <div className="absolute top-0 bottom-0 right-0 flex h-full w-full flex-col gap-2 p-2">
+                <Chat viewerName={userIdentity} />
+              </div>
+            </div>
+            <DebugMode />
+          </div>
         </div>
       </LiveKitRoom>
     </div>

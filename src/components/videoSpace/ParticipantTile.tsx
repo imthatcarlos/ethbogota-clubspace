@@ -79,7 +79,7 @@ export const ParticipantTile = ({
 
   const { metadata, sid } = p;
 
-  const { defaultProfile, isHost }: { defaultProfile: DefaultLensProfile; isHost: boolean } = JSON.parse(metadata);
+  const { defaultProfile, isHost }: { defaultProfile?: DefaultLensProfile; isHost: boolean } = JSON.parse(metadata);
 
   const { elementProps } = useParticipantTile<HTMLDivElement>({
     participant: trackRef.participant,
@@ -152,7 +152,7 @@ export const ParticipantTile = ({
 };
 
 const DisplayName = ({ defaultProfile }: { defaultProfile: DefaultLensProfile }) => {
-  if (defaultProfile.handle) {
+  if (defaultProfile?.handle) {
     return <span className="data-lk-participant-name">{defaultProfile.handle}</span>;
   }
   return <ParticipantName />;

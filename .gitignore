@@ -35,8 +35,3 @@ yarn-error.log*
 
 # npm
 .npmrc
-# Sentry
-.sentryclirc
-
-# Sentry
-next.config.original.js

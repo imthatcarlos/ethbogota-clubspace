@@ -5,8 +5,6 @@ import { MintSchedule } from '@soundxyz/sdk/types';
 import { SoundClient } from '@soundxyz/sdk';
 import toast from "react-hot-toast";
 import { unescape } from "lodash/string";
-import { logAction } from "@madfi/ts-sdk";
-import { fieldNamePrivy, wait } from "@/utils";
 import { CURRENCY_MAP, CHAIN_NAME_MAP } from "@/lib/consts";
 
 const MAX_DESCRIPTION_LENGTH = 250;
@@ -76,8 +74,6 @@ export const FeaturedSoundNFT = ({
     toast.promise(
       new Promise(async (resolve, reject) => {
         try {
-          logAction(userAddress, fieldNamePrivy(semGroupIdHex), { action: "buy_drop", address: contractAddress });
-
           const _signer = switched ? await activeConnector.getSigner() : signer;
           const client = SoundClient({ signer: _signer });
 

@@ -7,7 +7,6 @@ import toast from "react-hot-toast";
 // import { getUrlForImageFromIpfs } from "@/utils";
 import useIsMounted from "@/hooks/useIsMounted";
 import theme from "@/constants/audioPlayerTheme";
-import { useJam } from "@/lib/jam-core-react";
 
 interface Props {
   streamURL: string;
@@ -27,7 +26,7 @@ export const LiveAudioPlayer = ({
   updateTimeSpent,
 }: Props) => {
   const isMounted = useIsMounted();
-  const [_, { setProps, retryAudio }] = useJam();
+  // const [_, { setProps, retryAudio }] = useJam();
   const [currentTrack, setCurrentTrack] = useState<ITrack | undefined>();
   const [nextTrack, setNextTrack] = useState<ITrack | undefined>();
   const [streamEnded, setStreamEnded] = useState<boolean>(false);
@@ -75,19 +74,19 @@ export const LiveAudioPlayer = ({
     }
   }, [isMounted]);
 
-  // use first press of `play` to enable audio player for host mic
-  const onPlay = () => {
-    if (jamAudioPlayError) {
-      setProps('userInteracted', true);
-      retryAudio();
-    }
-    setProps('forceSoundMuted', false);
-  };
+  // // use first press of `play` to enable audio player for host mic
+  // const onPlay = () => {
+  //   if (jamAudioPlayError) {
+  //     setProps('userInteracted', true);
+  //     retryAudio();
+  //   }
+  //   setProps('forceSoundMuted', false);
+  // };
 
-  // stop receiving audio
-  const onPause = () => {
-    setProps('forceSoundMuted', true);
-  };
+  // // stop receiving audio
+  // const onPause = () => {
+  //   setProps('forceSoundMuted', true);
+  // };
 
   if (streamEnded) return null;
 
@@ -111,8 +110,8 @@ export const LiveAudioPlayer = ({
       options={{ playbackMethod: 'html5' }}
       // @ts-expect-error
       callbackOnMetadata={onMetadata}
-      callbackOnPlay={onPlay}
-      callbackOnPause={onPause}
+      callbackOnPlay={() => {}}
+      callbackOnPause={() => {}}
       // @ts-expect-error
       theme={theme}
     />
