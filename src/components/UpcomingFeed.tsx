@@ -5,7 +5,7 @@ import Bell from "@/assets/svg/bell.svg";
 import Live from "@/assets/svg/live.svg";
 import { subscribeNotifications } from "@/services/push/clientSide";
 import { NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import { env } from "@/env.mjs";
 
 function timeUntil(timeStamp) {
@@ -61,7 +61,10 @@ export const UpcomingItem = ({ activity }: { activity: any }) => {
               height="220"
               className="rounded-xl mb-2"
               loading="lazy"
-            />
+              style={{
+                maxWidth: "100%",
+                height: "auto"
+              }} />
           ) : (
             <video
               src={activity.drop.productBannerUrl || getUrlForImageFromIpfs(activity.productBannerUrl)}
