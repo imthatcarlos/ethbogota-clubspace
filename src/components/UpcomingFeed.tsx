@@ -5,7 +5,7 @@ import Bell from "@/assets/svg/bell.svg";
 import Live from "@/assets/svg/live.svg";
 import { subscribeNotifications } from "@/services/push/clientSide";
 import { NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { env } from "@/env.mjs";
 
 function timeUntil(timeStamp) {
