@@ -51,10 +51,14 @@ export const Header = () => {
         <div className="md:flex gap-4 justify-center md:min-w-[250px] scale-[0.8] xs:scale-100">
           {isHomePage && (
             <div className="mb-2 sm:mb-0 text-center p-2">
-              <Link key={"/about"} href={"/about"} passHref>
-                <a className="link link-hover font-medium opacity-70 hover:opacity-100">
+              <Link
+                key={"/about"}
+                href={"/about"}
+                passHref
+                className="link link-hover font-medium opacity-70 hover:opacity-100">
+                
                   ABOUT
-                </a>
+                
               </Link>
             </div>
           )}
