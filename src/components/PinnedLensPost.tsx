@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react";
-import { utils } from "ethers";
-import Image from "next/image";
 import toast from "react-hot-toast";
 import { useSigner } from "wagmi";
-import { getUrlForImageFromIpfs, approveToken } from "@/utils";
+import { Publication, Theme } from "@lens-protocol/widgets-react";
+import { approveToken, parsePublicationLink } from "@/utils";
 import { getPost } from "@/services/lens/getPost";
 import { collectPostGasless } from "@/services/lens/gaslessTxs";
 import { getAccessToken } from "@/hooks/useLensLogin";
@@ -87,38 +86,10 @@ const PinnedLensPost = ({
           Pinned Lens Post
         </h2>
       )}
-      <div className="rounded-md max-w-[30rem] bg-black m-auto p-6 space-y-6">
-        <a href={url} className="" target="_blank" referrerPolicy="no-referrer">
-          <div className="flex items-center space-x-4 mb-4">
-            <Image
-              src={getUrlForImageFromIpfs(lensPost?.profile.picture.original.url) ?? "/anon.png"}
-              alt="Profile Picture"
-              height={40}
-              width={40}
-              className="object-cover rounded-full"
-              loading="lazy"
-            />
-            <div className="flex flex-col">
-              <span className="text-white font-bold text-lg">{lensPost?.profile.name || ""}</span>
-              <span className="text-gray-500 text-md mb-2">@{lensPost?.profile.handle}</span>
-            </div>
-          </div>
-          <p className="whitespace-pre-wrap text-white max-h-[10rem] overflow-scroll mb-2 leading-7">
-            {lensPost?.metadata.content}
-          </p>
-          <div className={`grid ${lensPost?.metadata.media.length > 1 ? "grid-cols-2" : ""} gap-2`}>
-            {lensPost?.metadata.media?.map((media) => (
-              <img
-                src={getUrlForImageFromIpfs(media.original.url) ?? "/anon.png"}
-                alt="Media"
-                key={media.original.url}
-                className={`object-cover rounded-sm w-full ${lensPost?.metadata.media.length > 1 ? "h-20" : "h-full"}`}
-                loading="lazy"
-              />
-            ))}
-          </div>
-        </a>
-      </div>
+      <Publication
+        publicationId={parsePublicationLink(url)}
+        theme={Theme.dark}
+      />
       <div className="flex justify-center mt-4 mb-4 text-sm gap-x-4">
         <div className="flex gap-x-2">
           <span>
@@ -127,7 +98,7 @@ const PinnedLensPost = ({
           <span className="text-gray-400">Collected</span>
         </div>
 
-        {gated && (
+        {(gated || renderCollectButton) && (
           <div className="flex gap-x-2">
             <span>
               <strong>{gated.collectFee}</strong>
@@ -136,7 +107,7 @@ const PinnedLensPost = ({
           </div>
         )}
       </div>
-      {gated ? (
+      {(gated || renderCollectButton) ? (
         <div className="text-center my-3 px-3 w-60 mx-auto">
           <button className="!w-full btn" onClick={collect} disabled={isCollecting}>
             {parseFloat(gated.collectFee) === 0 ? "Free Collect" : "Collect"}{" "}

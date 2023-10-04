@@ -18,13 +18,13 @@ export const LiveDiscussion = ({
   roomName,
   isHost,
   userIdentity,
-  clubSpaceObject,
+  space,
   defaultProfile,
 }: {
   roomName: string;
   isHost?: boolean;
   userIdentity: string;
-  clubSpaceObject: any;
+  space: any;
   defaultProfile: DefaultLensProfile | undefined;
 }) => {
   const metadata = useMemo(() => {
@@ -81,12 +81,12 @@ export const LiveDiscussion = ({
             style={{ bottom: connected ? "0px" : "-100%" }}
           >
             <h1 className="mb-4">
-              {`Space hosted by @${clubSpaceObject.handle}`}
+              {`Space hosted by @${space.handle}`}
             </h1>
             <Stage />
             <div className="flex flex-1 gap-2 w-full items-center justify-center">
               <ControlBar variation="minimal" controls={{ microphone: true, camera: false, screenShare: false }} />
-              <PinnedPromotionDialog clubSpaceObject={clubSpaceObject} />
+              <PinnedPromotionDialog space={space} />
             </div>
             <RoomAudioRenderer />
           </div>

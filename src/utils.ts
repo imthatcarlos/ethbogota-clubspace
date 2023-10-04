@@ -38,6 +38,11 @@ export const kFormatter = (num) => {
   return Math.sign(num)*Math.abs(num);
 };
 
+export const parsePublicationLink = (link: string) => {
+  const parts = link.split("/");
+  return parts[parts.length - 1];
+};
+
 /** Calendar related date math functions */
 
 export function addDays(dirtyDate, dirtyAmount) {

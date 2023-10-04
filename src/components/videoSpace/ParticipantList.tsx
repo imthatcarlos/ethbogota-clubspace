@@ -35,7 +35,7 @@ export const ParticipantList = () => {
     if (defaultProfile) {
       return getUrlForImageFromIpfs(defaultProfile?.picture?.original?.url) ?? "/anon.png";
     }
-    if (Object.keys(ensData) && ensData?.avatar) {
+    if (ensData && Object.keys(ensData) && ensData?.avatar) {
       return ensData.avatar ?? "/anon.png";
     }
     return "/anon.png";
