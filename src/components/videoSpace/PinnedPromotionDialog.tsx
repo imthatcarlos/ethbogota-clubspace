@@ -110,7 +110,7 @@ export const PinnedPromotionDialog = ({ space }) => {
       <DialogTrigger>
         <ShoppingBag size={24} className="ml-2 mr-2" />
       </DialogTrigger>
-      <DialogContent className="max-w-[90%] sm:max-w-lg overflow-auto max-h-screen">
+      <DialogContent className="sm:max-w-lg md:max-w-xl max-h-screen">
         <DialogHeader>
           <DialogDescription className="space-y-4">
             {isLoadingFeauredDrop ? (

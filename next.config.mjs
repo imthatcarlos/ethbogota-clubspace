@@ -32,7 +32,6 @@ export default withPlugins(
   {
     reactStrictMode: true,
     swcMinify: true,
-    webpack5: true,
     transpilePackages: ["@lens-protocol"],
     webpack: (config) => {
       config.resolve.fallback = { fs: false };

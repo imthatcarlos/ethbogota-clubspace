@@ -22,8 +22,9 @@ const PinnedLensPost = ({
   const [isCollecting, setIsCollecting] = useState(false);
 
   useMemo(async () => {
-    const parts = url.split("/");
-    const pubId = parts[parts.length - 1];
+    if (url.includes("DA")) return; // da posts are not collectable
+
+    const pubId = parsePublicationLink(url);
     const post = await getPost(pubId);
 
     if (post?.profile && post?.metadata) {
@@ -61,9 +62,7 @@ const PinnedLensPost = ({
     setIsCollecting(false);
   };
 
-  if (!lensPost) return null;
-
-  if (small) {
+  if (small && lensPost) {
     return (
       <>
         <div className="rounded-md w-[20rem] max-h-[7.6rem] bg-black m-auto p-3 drop-shadow-sm">
@@ -82,38 +81,44 @@ const PinnedLensPost = ({
   return (
     <>
       {renderHeader && (
-        <h2 className="my-4 text-4xl font-bold tracking-tight sm:text-2xl md:text-5xl drop-shadow-sm text-center drop-shadow-sm">
+        <h2 className="my-4 text-3xl font-bold tracking-tight sm:text-2xl md:text-4xl drop-shadow-sm text-center drop-shadow-sm">
           Pinned Lens Post
         </h2>
       )}
-      <Publication
-        publicationId={parsePublicationLink(url)}
-        theme={Theme.dark}
-      />
       <div className="flex justify-center mt-4 mb-4 text-sm gap-x-4">
-        <div className="flex gap-x-2">
-          <span>
-            <strong>{lensPost?.stats.totalAmountOfCollects}</strong>
-          </span>
-          <span className="text-gray-400">Collected</span>
-        </div>
-
-        {(gated || renderCollectButton) && (
-          <div className="flex gap-x-2">
-            <span>
-              <strong>{gated.collectFee}</strong>
-            </span>
-            <span className="text-gray-400">{gated.collectCurrency.symbol}</span>
-          </div>
-        )}
+        <Publication
+          publicationId={parsePublicationLink(url)}
+          theme={Theme.dark}
+        />
       </div>
-      {(gated || renderCollectButton) ? (
-        <div className="text-center my-3 px-3 w-60 mx-auto">
-          <button className="!w-full btn" onClick={collect} disabled={isCollecting}>
-            {parseFloat(gated.collectFee) === 0 ? "Free Collect" : "Collect"}{" "}
-          </button>
-        </div>
-      ) : null}
+      {lensPost && (
+        <>
+          <div className="flex justify-center mt-4 mb-4 text-sm gap-x-4">
+            <div className="flex gap-x-2">
+              <span>
+                <strong>{lensPost?.stats.totalAmountOfCollects}</strong>
+              </span>
+              <span className="text-gray-400">Collected</span>
+            </div>
+
+            {(gated || renderCollectButton) && (
+              <div className="flex gap-x-2">
+                <span>
+                  <strong>{gated.collectFee}</strong>
+                </span>
+                <span className="text-gray-400">{gated.collectCurrency.symbol}</span>
+              </div>
+            )}
+          </div>
+          {(gated || renderCollectButton) ? (
+            <div className="text-center my-3 px-3 w-60 mx-auto">
+              <button className="!w-full btn" onClick={collect} disabled={isCollecting}>
+                {parseFloat(gated.collectFee) === 0 ? "Free Collect" : "Collect"}{" "}
+              </button>
+            </div>
+          ) : null}
+        </>
+      )}
     </>
   );
 };
