@@ -5,7 +5,7 @@ import { useParticipantContext, useRoomInfo } from "@livekit/components-react";
 import { useMutation } from "@tanstack/react-query";
 import { Participant } from "livekit-client";
 import { DefaultLensProfile } from "@/types/lens";
-import { getUrlForImageFromIpfs } from "@/utils";
+import getLensPictureURL from "@/lib/utils/getLensPictureURL";
 
 export const ParticipantList = () => {
   const participant = useParticipantContext();
@@ -33,7 +33,7 @@ export const ParticipantList = () => {
 
   const avatar = useMemo(() => {
     if (defaultProfile) {
-      return getUrlForImageFromIpfs(defaultProfile?.picture?.original?.url) ?? "/anon.png";
+      return defaultProfile?.picture ? getLensPictureURL(defaultProfile) : "/anon.png";
     }
     if (ensData && Object.keys(ensData) && ensData?.avatar) {
       return ensData.avatar ?? "/anon.png";

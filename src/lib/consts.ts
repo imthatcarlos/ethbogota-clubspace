@@ -3,7 +3,7 @@ import { env } from "@/env.mjs";
 export const IS_PRODUCTION = process.env.NEXT_PUBLIC_IS_PRODUCTION === "true";
 export const APP_NAME = "MadFi";
 
-export const REDIS_SPACE_PREFIX = "space";
+export const REDIS_SPACE_PREFIX = "space_v2";
 export const REDIS_STREAM_PREFIX = "stream";
 
 // [seconds] 2hr exp for spaces; once the key is gone, the space has ended

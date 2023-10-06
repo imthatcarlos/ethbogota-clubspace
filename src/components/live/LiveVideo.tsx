@@ -18,12 +18,14 @@ export const LiveVideo = ({
   isHost,
   userIdentity,
   defaultProfile,
+  ensData,
   space,
 }: {
   roomName: string;
   isHost?: boolean;
   userIdentity: string;
-  defaultProfile: DefaultLensProfile | undefined;
+  defaultProfile?: DefaultLensProfile;
+  ensData?: any;
   space: any;
 }) => {
   const isMounted = useIsMounted();
@@ -40,6 +42,7 @@ export const LiveVideo = ({
     try {
       let str = JSON.stringify({
         defaultProfile: defaultProfile ?? undefined,
+        ensData: ensData ?? undefined,
         isHost: isHost ?? undefined,
       });
       return str;
@@ -47,7 +50,7 @@ export const LiveVideo = ({
       console.log("failed to stringify metadata");
       return undefined;
     }
-  }, [isHost, defaultProfile]);
+  }, [isHost]);
 
   const userInfo = useMemo(() => {
     return {
@@ -85,11 +88,14 @@ export const LiveVideo = ({
             <div className="flex flex-1 flex-col min-h-[80dvh] dark:border-t-zinc-200 dark:bg-black py-4">
               <Stage />
               <div className="flex flex-1 gap-2 w-full items-center justify-center">
-                <ControlBar
-                  variation="minimal"
-                  controls={{ microphone: true, camera: true, screenShare: false }}
-                  className="border-none gap-2 flex items-center"
-                />
+                {/** TODO: isHost || canPublish once its working */}
+                {isHost && (
+                  <ControlBar
+                    variation="minimal"
+                    controls={{ microphone: true, camera: true, screenShare: true }}
+                    className="border-none gap-2 flex items-center"
+                  />
+                )}
                 <ParticipantDialogList />
                 <PinnedPromotionDialog space={space} />
               </div>
