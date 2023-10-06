@@ -6,7 +6,7 @@ import { TokenResult } from "@/lib/livekit/types";
 
 const apiKey = env.LIVEPEER_API_KEY;
 
-export default async function createRoom(req: NextApiRequest, res: NextApiResponse) {
+export default async function addUser(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { roomName, identity, name, metadata } = addUserReqValidator.parse(req.query);
 

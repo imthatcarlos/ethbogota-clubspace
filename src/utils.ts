@@ -3,6 +3,16 @@ import { BigNumber, utils, constants, Contract } from "ethers";
 import { apiUrls } from "@/constants/apiUrls";
 import { APP_NAME } from "./lib/consts";
 
+const _hash = (uriOrHash: string) => {
+  return typeof uriOrHash === "string" && uriOrHash.startsWith("ipfs://")
+    ? uriOrHash.split("ipfs://")[1]
+    : uriOrHash;
+};
+
+export const defaultGatewayURL = (uriOrHash: string) => `${apiUrls.ipfs}/${_hash(uriOrHash)}`;
+
+export const lensGatewayURL = (uriOrHash: string) => `${apiUrls.lensGateway}/${_hash(uriOrHash)}`;
+
 export const getUrlForImageFromIpfs = (uri: string) => {
   if (!uri) return;
   const hash = uri.split("ipfs://")[1];

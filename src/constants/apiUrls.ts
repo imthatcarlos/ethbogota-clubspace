@@ -5,4 +5,5 @@ export const apiUrls = {
   pinataGateway: "https://madfinance.mypinata.cloud/ipfs",
   ipfs: "https://ipfs.io/ipfs",
   soundxyz: "https://api.sound.xyz/graphql",
+  lensGateway: "https://lens.infura-ipfs.io/ipfs",
 };

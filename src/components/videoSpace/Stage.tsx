@@ -4,7 +4,7 @@ import { ParticipantTile } from "./ParticipantTile";
 
 export const Stage = () => {
   // const participants = useParticipants();
-  const tracks = useTracks([Track.Source.Camera], { onlySubscribed: true });
+  const tracks = useTracks([Track.Source.Camera, Track.Source.ScreenShare], { onlySubscribed: true });
 
   return (
     <GridLayout tracks={tracks}>

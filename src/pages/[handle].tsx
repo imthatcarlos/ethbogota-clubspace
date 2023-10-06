@@ -2,17 +2,18 @@ import { LocalUserChoices } from "@livekit/components-react";
 
 import React, { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/router";
-import { useAccount } from "wagmi";
+import { useAccount, useSignMessage } from "wagmi";
 import "@livekit/components-styles";
-import { useSignMessage } from "wagmi";
 import useENS from "@/hooks/useENS";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
+import { utils } from "ethers";
 import { LiveVideo } from "@/components/live/LiveVideo";
 import { LiveDiscussion } from "@/components/live/LiveDiscussion";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import { GetServerSideProps } from "next";
 import redisClient from "@/lib/utils/redisClient";
 import { ClubSpaceObject, GateData } from "@/components/LiveSpace";
+import { SpaceEnded } from "@/components/SpaceEnded";
 import { getAccessToken } from "@/hooks/useLensLogin";
 import useMeetsGatedCondition from "@/hooks/useMeetsGatedCondition";
 import { SpaceGated } from "@/components/SpaceGated";
@@ -22,9 +23,6 @@ import { NextPageWithLayout } from "./_app";
 
 const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: ClubSpaceObject | undefined }) => {
   // const [preJoinChoices, setPreJoinChoices] = useState<LocalUserChoices | undefined>(undefined);
-
-  // video | discussion | playlist
-  const spaceType = space.spaceType
 
   const {
     query: { handle },
@@ -38,21 +36,30 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: ClubSpaceObjec
   //   isLoading: isLoadingMeetsGated,
   //   refetch: refetchMeetsGatedCondition,
   // } = useMeetsGatedCondition(address, getAccessToken(), space);
-  // const { data: ensData, isLoading: isLoadingENS } = useENS(address);
-  const [defaultProfile, setDefaultProfile] = useState<Profile>();
+  const { data: ensData, isLoading: isLoadingENS } = useENS(address);
+  const [defaultProfile, setDefaultProfile] = useState();
   const [loadingDefaultProfile, setLoadingDefaultProfile] = useState(true);
   const [isHost, setIsHost] = useState(false);
   const [_canEnter, setCanEnter] = useState();
 
-  const {
-    data: signResult,
-    error: signError,
-    signMessage,
-  } = useSignMessage({
-    onSuccess: () => {
-      setIsHost(true);
-    },
-  });
+  useEffect(() => {
+    if (space && isConnected) {
+      if (utils.getAddress(address) == utils.getAddress(space.creatorAddress)) {
+        setIsHost(true);
+      }
+    }
+  }, [isConnected, address, space]);
+
+  // IF WE WANT BETTER SECURITY
+  // const {
+  //   data: signResult,
+  //   error: signError,
+  //   signMessage,
+  // } = useSignMessage({
+  //   onSuccess: () => {
+  //     setIsHost(true);
+  //   },
+  // });
 
   const roomName = useMemo(
     () => space?.roomId,
@@ -61,13 +68,21 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: ClubSpaceObjec
   const userIdentity = useMemo(() => address ?? generateName(), [address]);
 
   useEffect(() => {
-    if (!isLoadingProfiles) {
+    if (!(isLoadingProfiles || isLoadingENS)) {
       // @ts-ignore
-      setDefaultProfile(profilesResponse ? profilesResponse?.defaultProfile : null);
+      const defaultProfile = profilesResponse ? profilesResponse?.defaultProfile : null;
+      if (defaultProfile) {
+        // the bare minimum
+        setDefaultProfile({
+          id: defaultProfile.id,
+          picture: defaultProfile.picture,
+          handle: defaultProfile.handle,
+        });
+      }
       setLoadingDefaultProfile(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, isLoadingProfiles]);
+  }, [address, isLoadingProfiles, isLoadingENS]);
 
   // const preJoinSubmit = (values: LocalUserChoices) => {
   //   console.log("Joining with: ", values);
@@ -107,6 +122,10 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: ClubSpaceObjec
   //   return _canEnter !== false;
   // }, [defaultProfile, space, _canEnter]);
 
+  if (!space) {
+    return <SpaceEnded handle={handle as string} />;
+  }
+
   if (!isConnected) {
     return (
       <div className="flex-1 min-h-screen">
@@ -118,9 +137,13 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: ClubSpaceObjec
     );
   }
 
-  // if (status !== "connected" && (isLoadingProfiles || isLoadingENS)) {
-  //   return <>loading...</>;
-  // }
+  if (isConnected && loadingDefaultProfile) {
+    return (<div className="flex-1 min-h-screen">
+      <div className="abs-center items-center">
+        <p className="animate-move-txt-bg gradient-txt text-4xl mb-4">Joining...</p>
+      </div>
+    </div>)
+  }
 
   // if (status === "connected" && userIdentity === "user-identity") {
   //   return <>loading...</>;
@@ -138,7 +161,7 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: ClubSpaceObjec
   //   );
   // }
 
-  if (spaceType === "video") {
+  if (space.spaceType === "video") {
     return (
       <LiveVideo
         // preJoinSubmit={preJoinSubmit}
@@ -147,12 +170,13 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: ClubSpaceObjec
         userIdentity={userIdentity}
         isHost={isHost}
         defaultProfile={defaultProfile}
+        ensData={ensData}
         space={space}
       />
     );
   }
 
-  if (spaceType === "discussion") {
+  if (space.spaceType === "discussion") {
     return (
       <LiveDiscussion
         // preJoinSubmit={preJoinSubmit}
@@ -167,7 +191,7 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: ClubSpaceObjec
   }
 
   // @TODO: create component from old [handle] page and pass props from here
-  return <>{spaceType === "playlist" && <>go to old infra</>}</>;
+  return <>{space.spaceType === "playlist" && <>go to old infra</>}</>;
 };
 
 LivePageAtHandle.getLayout = (page) => <>{page}</>;
