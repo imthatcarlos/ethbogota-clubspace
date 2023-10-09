@@ -1,17 +1,37 @@
 import { env } from "@/env.mjs";
-import { ControlBar, LiveKitRoom, RoomAudioRenderer, useToken } from "@livekit/components-react";
-import { useMemo, useState, useEffect } from "react";
+import {
+  ControlBar,
+  LiveKitRoom,
+  ParticipantLoop,
+  RoomAudioRenderer,
+  useParticipantContext,
+  useParticipants,
+  useToken,
+} from "@livekit/components-react";
+import { useEffect, useMemo, useState } from "react";
 // import jwt, { type JwtPayload } from "jwt-decode";
 import { DebugMode } from "@/lib/livekit/Debug";
 import Chat from "../Chat";
 // import { ParticipantList } from "../videoSpace/ParticipantList";
-import { Stage } from "../videoSpace/Stage";
+import useIsMounted from "@/hooks/useIsMounted";
+import { DefaultLensProfile } from "@/types/lens";
 import { ParticipantDialogList } from "../videoSpace/ParticipantDialogList";
 import { PinnedPromotionDialog } from "../videoSpace/PinnedPromotionDialog";
-import { DefaultLensProfile } from "@/types/lens";
-import useIsMounted from "@/hooks/useIsMounted";
+import { Stage } from "../videoSpace/Stage";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
+
+// @TODO: saving this for later
+/**
+ * 
+ * {
+    "creatorAddress": "0x7F0408bc8Dfe90C09072D8ccF3a1C544737BcDB6",
+    "handle": "madfinance.lens",
+    "creatorLensHandle": "madfinance.lens",
+    "pinnedLensPost": "https://hey.xyz/posts/0x01a6-0x01a2",
+    "spaceType": "video"
+}
+ */
 
 export const LiveVideo = ({
   roomName,
@@ -89,13 +109,7 @@ export const LiveVideo = ({
               <Stage />
               <div className="flex flex-1 gap-2 w-full items-center justify-center">
                 {/** TODO: isHost || canPublish once its working */}
-                {isHost && (
-                  <ControlBar
-                    variation="minimal"
-                    controls={{ microphone: true, camera: true, screenShare: true }}
-                    className="border-none gap-2 flex items-center"
-                  />
-                )}
+                <ParticipantList />
                 <ParticipantDialogList />
                 <PinnedPromotionDialog space={space} />
               </div>
@@ -112,6 +126,32 @@ export const LiveVideo = ({
       </LiveKitRoom>
     </div>
   );
+};
+
+const ParticipantList = () => {
+  const participants = useParticipants();
+
+  return (
+    <ParticipantLoop participants={participants}>
+      <ParticipantControls />
+    </ParticipantLoop>
+  );
+};
+
+const ParticipantControls = () => {
+  const participant = useParticipantContext();
+  const permissions = participant.permissions;
+
+  if (permissions.canPublish) {
+    return (
+      <ControlBar
+        variation="minimal"
+        controls={{ microphone: true, camera: true, screenShare: true }}
+        className="border-none gap-2 flex items-center"
+      />
+    );
+  }
+  return null;
 };
 
 // const Sidebar = ({ isHost }) => {
