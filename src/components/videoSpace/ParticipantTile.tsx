@@ -18,7 +18,7 @@ import {
 } from "@livekit/components-react";
 import { Track } from "livekit-client";
 import { ScreenShareIcon } from "lucide-react";
-import { useCallback } from "react";
+import { ReactNode, useCallback } from "react";
 
 export const CustomParticipantTile = ({ isHost, track }: { isHost: boolean; track: TrackReferenceOrPlaceholder }) => {
   return (
@@ -69,7 +69,7 @@ export const ParticipantTile = ({
   publication,
   disableSpeakingIndicator,
   ...htmlProps
-}: ParticipantTileProps) => {
+}: ParticipantTileProps): ReactNode => {
   const p = useEnsureParticipant(participant);
   const trackRef: TrackReferenceOrPlaceholder = useMaybeTrackContext() ?? {
     participant: p,

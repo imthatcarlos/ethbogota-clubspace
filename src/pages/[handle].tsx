@@ -12,7 +12,7 @@ import { LiveDiscussion } from "@/components/live/LiveDiscussion";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import { GetServerSideProps } from "next";
 import redisClient from "@/lib/utils/redisClient";
-import { ClubSpaceObject, GateData } from "@/components/LiveSpace";
+// import { ClubSpaceObject, GateData } from "@/components/LiveSpace";
 import { SpaceEnded } from "@/components/SpaceEnded";
 import { getAccessToken } from "@/hooks/useLensLogin";
 import useMeetsGatedCondition from "@/hooks/useMeetsGatedCondition";
@@ -21,7 +21,7 @@ import { TIER_OPEN, REDIS_SPACE_PREFIX } from "@/lib/consts";
 import { generateName } from "@/lib/utils/nameGenerator";
 import { NextPageWithLayout } from "./_app";
 
-const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: ClubSpaceObject | undefined }) => {
+const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefined }) => {
   // const [preJoinChoices, setPreJoinChoices] = useState<LocalUserChoices | undefined>(undefined);
 
   const {

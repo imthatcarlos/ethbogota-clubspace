@@ -6,6 +6,7 @@ import { SoundClient } from '@soundxyz/sdk';
 import toast from "react-hot-toast";
 import { unescape } from "lodash/string";
 import { CURRENCY_MAP, CHAIN_NAME_MAP } from "@/lib/consts";
+import { wait } from "@/utils";
 
 const MAX_DESCRIPTION_LENGTH = 250;
 
@@ -72,7 +73,7 @@ export const FeaturedSoundNFT = ({
     }
 
     toast.promise(
-      new Promise(async (resolve, reject) => {
+      new Promise<void>(async (resolve, reject) => {
         try {
           const _signer = switched ? await activeConnector.getSigner() : signer;
           const client = SoundClient({ signer: _signer });
@@ -144,7 +145,6 @@ export const FeaturedSoundNFT = ({
                   <video
                     className="absolute t-0 left-0 right-0 w-full h-full object-cover opacity-50 rounded-md"
                     src={animatedCoverImage}
-                    alt=""
                     autoPlay
                     muted
                     loop

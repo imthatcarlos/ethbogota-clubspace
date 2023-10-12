@@ -1,4 +1,4 @@
-import { TrackContext, useTracks, GridLayout } from "@livekit/components-react";
+import { useTracks, GridLayout } from "@livekit/components-react";
 import { Track } from "livekit-client";
 import { ParticipantTile } from "./ParticipantTile";
 
@@ -8,10 +8,8 @@ export const Stage = () => {
 
   return (
     <GridLayout tracks={tracks}>
-      <TrackContext.Consumer>
-        {/* {(track) => track && <VideoTrack {...track} />} */}
-        {(track) => track && <ParticipantTile {...track} key={track.participant.sid} />}
-      </TrackContext.Consumer>
+      <ParticipantTile />
+      {/* {(track) => track && <VideoTrack {...track} />} */}
     </GridLayout>
   );
 };
