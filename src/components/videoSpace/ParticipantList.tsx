@@ -1,14 +1,15 @@
 import { useMemo } from "react";
 import useENS from "@/hooks/useENS";
-import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import { useParticipantContext, useRoomInfo } from "@livekit/components-react";
 import { useMutation } from "@tanstack/react-query";
 import { Participant } from "livekit-client";
 import { DefaultLensProfile } from "@/types/lens";
 import getLensPictureURL from "@/lib/utils/getLensPictureURL";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 export const ParticipantList = () => {
   const participant = useParticipantContext();
+  const [canPromoteParticipant, setCanPromoteParticipant] = useLocalStorage("canPromoteParticipant", true);
   const { defaultProfile, isHost }: { defaultProfile: DefaultLensProfile; isHost: boolean } = JSON.parse(
     participant.metadata
   );
@@ -59,6 +60,11 @@ export const ParticipantList = () => {
     },
   });
 
+  const handlePromoteParticipant = (participant: Participant) => {
+    muteParticipant(participant);
+    setCanPromoteParticipant(!canPromoteParticipant);
+  };
+
   // @TODO: add loading state?
   return (
     <li className="flex items-start justify-between w-full">
@@ -78,12 +84,20 @@ export const ParticipantList = () => {
       </div>
 
       <div className="justify-self-end flex flex-col items-center">
-        {isHost && participant.name !== address && (
+        {isHost && participant.name !== address && canPromoteParticipant && (
           <button
             className="w-fit rounded-full px-5 py-2 bg-almost-black text-white"
-            onClick={() => muteParticipant(participant)}
+            onClick={() => handlePromoteParticipant(participant)}
           >
-            {participantPermissions?.canPublish ? "🚫 Mute" : "Promote 🎙"}
+            Promote 🎙
+          </button>
+        )}
+        {isHost && participant.name !== address && !canPromoteParticipant && participantPermissions?.canPublish && (
+          <button
+            className="w-fit rounded-full px-5 py-2 bg-almost-black text-white"
+            onClick={() => handlePromoteParticipant(participant)}
+          >
+            🚫 Mute
           </button>
         )}
       </div>
