@@ -57,7 +57,7 @@ export default function Chat({ viewerName }: Props) {
                   )}
                 >
                   <img
-                    className="h-4 w-4 rounded-full"
+                    className="h-4 w-4 rounded-full select-none pointer-events-none"
                     src={avatar}
                     alt={`Avatar of user ${displayName}`}
                   />
