@@ -1,5 +1,6 @@
 @import url("./fonts.css");
 
+/** THEME **/
 :root {
   --ease-squish-1: cubic-bezier(0.5, -0.1, 0.1, 1.5);
   --clamped-container-width: clamp(350px, 75%, 800px);
@@ -14,6 +15,18 @@
   --inset-bottom: 0%;
   --inset-left: 0;
   --decent-nft-min-h: 25.25rem;
+
+  --background: 0 0% 8%;
+  --foreground: 0 0% 15%;
+  
+  --primary: 8 99% 45%;
+}
+
+.dark {
+  --background: 0 0% 8%;
+  --foreground: 0 0% 15%;
+
+  --primary: 8 99% 45%;
 }
 
 @keyframes shimmer {
@@ -47,8 +60,8 @@ body {
   padding-bottom: 0.25rem;
   padding-left: 3rem;
   padding-right: 0.25rem;
-  background-color: #ABFE2C !important;
-  color: #00501E !important;
+  background-color: #abfe2c !important;
+  color: #00501e !important;
 }
 
 .copy-btn:active {

@@ -17,49 +17,8 @@ import {
   useParticipantTile,
 } from "@livekit/components-react";
 import { Track } from "livekit-client";
-import { ScreenShareIcon } from "lucide-react";
 import { ReactNode, useCallback } from "react";
-
-export const CustomParticipantTile = ({ isHost, track }: { isHost: boolean; track: TrackReferenceOrPlaceholder }) => {
-  return (
-    <section
-      className={cn("relative min-w-0 bg-red-800 p-1 rounded w-fit h-fit col-start-2", {
-        "col-span-full place-self-center col-start-1": isHost,
-      })}
-      title={track.participant.name}
-    >
-      {/* <span className="absolute top-0 left-0">{isHost && "host"}</span> */}
-      {isHost ? (
-        <div className="w-full h-full rounded">
-          <VideoTrack {...track} />
-          {/* <span className="absolute bottom-0 right-0">promote</span> */}
-        </div>
-      ) : (
-        <div className="w-32 h-32 rounded">
-          <VideoTrack {...track} className="rounded" />
-          {/* <span className="absolute bottom-0 right-0">promote</span> */}
-        </div>
-      )}
-      {/* <span className="absolute bottom-0 left-0">mute</span> */}
-    </section>
-  );
-};
-
-export const MockedCustomParticipantTile = ({ isHost }: { isHost: boolean }) => {
-  return (
-    <section
-      className={cn("relative min-w-0 bg-red-800 p-1 rounded w-fit h-fit", {
-        "col-span-full place-self-center": isHost,
-      })}
-    >
-      {isHost ? (
-        <div className="w-full min-w-[60dvw] h-full min-h-[60dvh] rounded bg-black"></div>
-      ) : (
-        <div className="w-32 h-32 rounded bg-black"></div>
-      )}
-    </section>
-  );
-};
+import styles from "./videoSpace.module.css";
 
 export const ParticipantTile = ({
   participant,
@@ -108,18 +67,31 @@ export const ParticipantTile = ({
   );
 
   return (
-    <div style={{ position: "relative" }} {...elementProps}>
+    <div
+      {...elementProps}
+      className={cn("rounded-2xl flex flex-col gap-1 overflow-hidden relative", styles.participantTile)}
+    >
       <ParticipantContextIfNeeded participant={trackRef.participant}>
         {children ?? (
           <>
-            {trackRef.publication?.kind === "video" ||
-            trackRef.source === Track.Source.Camera ||
-            trackRef.source === Track.Source.ScreenShare ? (
+            {trackRef.source === Track.Source.ScreenShare && (
+              <div className="absolute top-0 left-0 p-1 z-0">
+                <VideoTrack
+                  participant={trackRef.participant}
+                  source={trackRef.source}
+                  publication={trackRef.publication}
+                  onSubscriptionStatusChanged={handleSubscribe}
+                  className="rounded-2xl"
+                />
+              </div>
+            )}
+            {trackRef.publication?.kind === "video" || trackRef.source === Track.Source.Camera ? (
               <VideoTrack
                 participant={trackRef.participant}
                 source={trackRef.source}
                 publication={trackRef.publication}
                 onSubscriptionStatusChanged={handleSubscribe}
+                className="rounded-2xl w-full h-full"
               />
             ) : (
               <AudioTrack
@@ -129,19 +101,19 @@ export const ParticipantTile = ({
                 onSubscriptionStatusChanged={handleSubscribe}
               />
             )}
-            <div className="lk-participant-placeholder">
+            <div className="absolute inset-0 flex items-center justify-center bg-foreground pointer-events-none rounded-2xl opacity-0">
               <img
                 src={defaultProfile ? getUrlForImageFromIpfs(defaultProfile?.picture?.original?.url) : "/anon.png"}
                 alt={defaultProfile ? defaultProfile?.handle : p.identity}
                 className="rounded-full aspect-square w-32 h-32"
               />
             </div>
-            <div className="lk-participant-metadata">
-              <div className="lk-participant-metadata-item">
+            <div className="absolute flex flex-row items-center justify-between gap-2 leading-none bottom-1 inset-x-1">
+              <div className="flex items-center p-1">
                 <TrackMutedIndicator source={Track.Source.Microphone} show={"muted"}></TrackMutedIndicator>
                 <DisplayName defaultProfile={defaultProfile} />
               </div>
-              <ConnectionQualityIndicator className="lk-participant-metadata-item" />
+              {/* <ConnectionQualityIndicator className="lk-participant-metadata-item" /> */}
             </div>
           </>
         )}
@@ -153,7 +125,9 @@ export const ParticipantTile = ({
 
 const DisplayName = ({ defaultProfile }: { defaultProfile: DefaultLensProfile }) => {
   if (defaultProfile?.handle) {
-    return <span className="data-lk-participant-name">{defaultProfile.handle}</span>;
+    return (
+      <span className="text-white first-letter:uppercase text-xl font-bold select-none">{defaultProfile.handle}</span>
+    );
   }
   return <ParticipantName />;
 };
