@@ -14,6 +14,7 @@ import { GetServerSideProps } from "next";
 import redisClient from "@/lib/utils/redisClient";
 // import { ClubSpaceObject, GateData } from "@/components/LiveSpace";
 import { SpaceEnded } from "@/components/SpaceEnded";
+import Countdown from "@/components/Countdown";
 import { getAccessToken } from "@/hooks/useLensLogin";
 import useMeetsGatedCondition from "@/hooks/useMeetsGatedCondition";
 import { SpaceGated } from "@/components/SpaceGated";
@@ -21,16 +22,18 @@ import { TIER_OPEN, REDIS_SPACE_PREFIX } from "@/lib/consts";
 import { generateName } from "@/lib/utils/nameGenerator";
 import { NextPageWithLayout } from "./_app";
 
+const USE_V1_PROFILE = true;
+
 const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefined }) => {
   // const [preJoinChoices, setPreJoinChoices] = useState<LocalUserChoices | undefined>(undefined);
 
   const {
     query: { handle },
-    push,
+    reload,
   } = useRouter();
 
   const { isConnected, address } = useAccount();
-  const { data: profilesResponse, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
+  const { data: profilesOwned, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address, USE_V1_PROFILE);
   // const {
   //   data: meetsGatedCondition,
   //   isLoading: isLoadingMeetsGated,
@@ -70,13 +73,13 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
   useEffect(() => {
     if (!(isLoadingProfiles || isLoadingENS)) {
       // @ts-ignore
-      const defaultProfile = profilesResponse ? profilesResponse?.defaultProfile : null;
+      const defaultProfile = profilesOwned ? profilesOwned?.defaultProfile : null;
       if (defaultProfile) {
         // the bare minimum
         setDefaultProfile({
           id: defaultProfile.id,
-          picture: defaultProfile.picture,
-          handle: defaultProfile.handle,
+          picture: defaultProfile.picture, // v2: ?
+          handle: defaultProfile.handle, // v2: defaultProfile.handle.localName
         });
       }
       setLoadingDefaultProfile(false);
@@ -124,6 +127,23 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
 
   if (!space) {
     return <SpaceEnded handle={handle as string} />;
+  }
+
+  if (space?.startAt && space?.startAt > (Date.now() / 1000)) {
+    return (
+      <div className="flex-1 min-h-screen">
+        <div className="abs-center">
+          <div className="w-full justify-center">
+            <h1 className="animate-move-txt-bg gradient-txt text-4xl font-bold tracking-tight sm:text-5xl">Space starting soon</h1>
+            <p className="mt-1 text-base text-gray-500">hosted by @{space.handle}</p>
+            <Countdown
+              date={new Date(space.startAt * 1000)}
+              onComplete={reload}
+            />
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (!isConnected) {

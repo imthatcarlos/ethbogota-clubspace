@@ -159,9 +159,9 @@ const COLLECT_POST_TYPED_DATA = gql`
 `;
 
 const BROADCAST = gql`
-  mutation Broadcast($request: BroadcastRequest!) {
-    broadcast(request: $request) {
-      ... on RelayerResult {
+  mutation broadcastOnchain($request: BroadcastRequest!) {
+    broadcastOnchain(request: $request) {
+      ... on RelaySuccess {
         txHash
         txId
       }
@@ -201,7 +201,7 @@ export const signCreateTypedData = async (_request, signer, accessToken, documen
 
 export const broadcastRequest = async (_request, accessToken) => {
   const result = await request({
-    url: apiUrls.lensAPI,
+    url: apiUrls.lensAPIv2,
     document: BROADCAST,
     variables: { request: _request },
     requestHeaders: {

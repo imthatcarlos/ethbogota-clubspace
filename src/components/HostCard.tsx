@@ -2,7 +2,7 @@ import React from "react";
 import { useAccount } from "wagmi";
 import { Profile } from "@/services/lens/getProfile";
 import { getUrlForImageFromIpfs } from "@/utils";
-import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
+import { useIsAuthenticated } from "@/hooks/useLensLogin";
 
 interface HostProps {
   profile: Profile;
@@ -16,8 +16,7 @@ interface HostProps {
 
 export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, onFollowClick, isHost, loginWithLens, isFollowingAction }: HostProps) => {
   const { isConnected } = useAccount();
-  const { data: lensRefreshData } = useLensRefresh();
-  const { data: lensLoginData } = useLensLogin();
+  const { data: isAuthenticated } = useIsAuthenticated();
 
   const coverPic = profile.coverPicture?.original?.url
     ? getUrlForImageFromIpfs(profile.coverPicture?.original?.url)
@@ -73,7 +72,7 @@ export const HostCard = ({ profile, drawerProfileId, doesFollowDrawerProfile, on
                 {!isHost && isConnected ? (
                   <div className="text-center my-3 px-3">
                     {
-                      lensLoginData || lensRefreshData
+                      isAuthenticated
                         ? <button
                             className="btn btn-lens"
                             onClick={() => {
