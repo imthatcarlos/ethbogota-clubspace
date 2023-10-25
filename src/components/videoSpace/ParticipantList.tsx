@@ -83,7 +83,7 @@ export const ParticipantList = ({
       </div>
 
       <div className="justify-self-end flex flex-col items-center">
-        {isHost && participant.name !== address && !participantPermissions?.canPublish && canPromoteParticipant && (
+        {isHost && ( // && participant.name !== address && !participantPermissions?.canPublish && canPromoteParticipant && (
           <button
             className="w-fit rounded-full px-5 py-2 bg-almost-black text-white"
             onClick={() => handlePromotionConfirmation(handlePromoteParticipant, participant)}
@@ -91,7 +91,7 @@ export const ParticipantList = ({
             Promote 🎙
           </button>
         )}
-        {isHost && participant.name !== address && !canPromoteParticipant && participantPermissions?.canPublish && (
+        {isHost && ( // && participant.name !== address && !canPromoteParticipant && participantPermissions?.canPublish && (
           <button
             className="w-fit rounded-full px-5 py-2 bg-almost-black text-white"
             onClick={() => handlePromotionConfirmation(handlePromoteParticipant, participant)}
