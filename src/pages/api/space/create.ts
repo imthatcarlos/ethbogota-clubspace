@@ -84,7 +84,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const createdAt = Math.floor(Date.now() / 1000);
     const endAt = createdAt + REDIS_SPACE_EXP;
 
-    console.log(`creatorLensHandle: ${creatorLensHandle}`);
+    // TODO: remove after v2
     const hackedForV2 = creatorLensHandle.includes(".test")
       ? `${creatorLensHandle.split(".")[0]}.lens`
       : creatorLensHandle;
