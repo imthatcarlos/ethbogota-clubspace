@@ -81,7 +81,7 @@ export default function Chat({ viewerName }: Props) {
           onKeyDown={onEnter}
           placeholder="Type a message..."
         />
-        <Button disabled={message.trim().length === 0} onClick={onSend} className="bg-primary">
+        <Button disabled={message.trim().length === 0} onClick={onSend} className="bg-primary focus-visible:ring-primary">
           <div className="flex items-center gap-2">
             <Icons.send className="h-4 w-4" />
           </div>

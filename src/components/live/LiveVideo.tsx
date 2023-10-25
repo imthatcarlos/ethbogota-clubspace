@@ -7,6 +7,7 @@ import Chat from "../Chat";
 import useIsMounted from "@/hooks/useIsMounted";
 import { DefaultLensProfile } from "@/types/lens";
 import { Stage } from "../videoSpace/Stage";
+import { HostInfo } from "../videoSpace/HostInfo";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
@@ -75,6 +76,10 @@ export const LiveVideo = ({
             <div className="flex-1">
               <div className="relative">
                 <Stage space={space} />
+              </div>
+              {/* margin to account negative margin on buttons inside stage*/}
+              <div className="w-full mt-16">
+                <HostInfo space={space} />
               </div>
               <RoomAudioRenderer />
             </div>
