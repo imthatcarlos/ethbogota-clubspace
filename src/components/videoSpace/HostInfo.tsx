@@ -8,7 +8,7 @@ function useAvatarAndDisplayName(address: string) {
   const { data: ensData } = useENS(address);
   const { data: profilesResponse, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
 
-  const [defaultProfile, setDefaultProfile] = useState<{ id: string; picture: string; handle: string } | undefined>();
+  const [defaultProfile, setDefaultProfile] = useState<{ id: string; picture: string; handle: string } | null>(null);
 
   const avatar: string = useMemo(
     () => (defaultProfile?.picture ? getLensPictureURL(defaultProfile) : "/anon.png"),
@@ -29,12 +29,12 @@ function useAvatarAndDisplayName(address: string) {
   useEffect(() => {
     if (!isLoadingProfiles) {
       // @ts-ignore
-      const defaultProfile = profilesResponse ? profilesResponse?.defaultProfile : null;
-      if (defaultProfile) {
+      const _defaultProfile = profilesResponse ? profilesResponse?.defaultProfile : null;
+      if (_defaultProfile) {
         setDefaultProfile({
-          id: defaultProfile?.id,
-          picture: defaultProfile.picture,
-          handle: defaultProfile.handle,
+          id: _defaultProfile?.id,
+          picture: _defaultProfile.picture,
+          handle: _defaultProfile.handle,
         });
       }
     }

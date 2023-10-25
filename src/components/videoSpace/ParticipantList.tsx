@@ -7,7 +7,11 @@ import { DefaultLensProfile } from "@/types/lens";
 import getLensPictureURL from "@/lib/utils/getLensPictureURL";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 
-export const ParticipantList = () => {
+export const ParticipantList = ({
+  handlePromotionConfirmation,
+}: {
+  handlePromotionConfirmation: (callback?: any, args?: any) => void;
+}) => {
   const participant = useParticipantContext();
   const [canPromoteParticipant, setCanPromoteParticipant] = useLocalStorage("canPromoteParticipant", true);
   const { defaultProfile, isHost }: { defaultProfile: DefaultLensProfile; isHost: boolean } = JSON.parse(
@@ -81,7 +85,7 @@ export const ParticipantList = () => {
         {isHost && participant.name !== address && !participantPermissions?.canPublish && canPromoteParticipant && (
           <button
             className="w-fit rounded-full px-5 py-2 bg-almost-black text-white"
-            onClick={() => handlePromoteParticipant(participant)}
+            onClick={() => handlePromotionConfirmation(handlePromoteParticipant, participant)}
           >
             Promote 🎙
           </button>
@@ -89,7 +93,7 @@ export const ParticipantList = () => {
         {isHost && participant.name !== address && !canPromoteParticipant && participantPermissions?.canPublish && (
           <button
             className="w-fit rounded-full px-5 py-2 bg-almost-black text-white"
-            onClick={() => handlePromoteParticipant(participant)}
+            onClick={() => handlePromotionConfirmation(handlePromoteParticipant, participant)}
           >
             🚫 Mute
           </button>
