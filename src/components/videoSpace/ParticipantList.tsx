@@ -59,7 +59,7 @@ export const ParticipantList = ({
         body: JSON.stringify({
           identity: participant.identity,
           roomName: room.name,
-          canPublish: participant.permissions.canPublish,
+          canPublish: participant.permissions?.canPublish,
         }),
       });
     },

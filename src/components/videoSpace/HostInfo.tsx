@@ -11,12 +11,12 @@ export function getPictureToDisplay(picture: any) {
 }
 
 export const HostInfo = ({ space }: { space: any }) => {
-  const avatar = getPictureToDisplay(space.creatorAvatar);
+  // const avatar = getPictureToDisplay(space.creatorAvatar);
 
   return (
     <div className="flex items-center justify-between gap-2">
       <div className="text-xs font-semibold whitespace-nowrap inline-flex gap-1">
-        <img className="h-20 w-20 rounded-full select-none pointer-events-none" src={avatar} alt="avatar" />
+        <img className="h-20 w-20 rounded-full select-none pointer-events-none" src={space.creatorAvatar} alt="avatar" />
         <div className="flex flex-col gap-4">
           <span className="font-light text-lg pl-4">{space.creatorLensHandle || space.handle}</span>
           {/* @TODO: how do I get the space name? And do we even have it */}

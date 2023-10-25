@@ -55,7 +55,7 @@ export const Stage = ({ space }: { space: any }) => {
 
       <div className="-mt-16 flex items-center justify-center z-30 flex-1 gap-2">
         <ParticipantLoop participants={participants}>
-          <ParticipantControls screenShareParticipant={screenShareParticipant} />
+          <ParticipantControls screenShareParticipant={screenShareParticipant} creatorAddress={space.creatorAddress} />
         </ParticipantLoop>
 
         <ParticipantDialogList />
@@ -71,14 +71,16 @@ export const Stage = ({ space }: { space: any }) => {
 
 const ParticipantControls = ({
   screenShareParticipant,
+  creatorAddress,
 }: {
   screenShareParticipant: LocalParticipant | RemoteParticipant;
+  creatorAddress: string;
 }) => {
   const { address } = useAccount();
   const participant = useParticipantContext();
   const permissions = participant.permissions;
 
-  if (permissions && permissions.canPublish && participant.identity === address) {
+  if (permissions && permissions.canPublish) { // && participant.identity === creatorAddress) {
     return (
       <CustomControls
         controls={{
