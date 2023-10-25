@@ -184,7 +184,7 @@ const PinnedLensPost = ({
       </div>
       <div className="flex justify-center mt-4 mb-4 text-sm gap-x-4 pb-8">
         <div className="absolute right-8 bottom-2">
-          <LivePoints creatorAddress={lensPost?.profile?.ownedBy} isAuthenticated={isAuthenticated} />
+          <LivePoints creatorAddress={lensPost?.profile?.ownedBy?.address.toLowerCase()} isAuthenticated={isAuthenticated} />
         </div>
       </div>
       {lensPost && (
