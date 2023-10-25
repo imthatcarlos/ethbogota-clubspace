@@ -8,22 +8,10 @@ const apiKey = env.LIVEPEER_API_KEY;
 
 export default async function addUser(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { roomName, identity, name, metadata } = addUserReqValidator.parse(req.query);
-
-    // console.log("called", roomName, identity, name, metadata);
+    const { roomName, identity, name, metadata, creatorAddress } = addUserReqValidator.parse(req.query);
 
     let canPublish = false;
-    try {
-      // @TODO: validate server side if the user is the host based on clubSpaceObject to send correct metadata
-      // signing works and adds an extra layer of security, but it's also an extra step for the host to join.
-      const parsedMeta = JSON.parse(metadata);
-      if (parsedMeta && parsedMeta["isHost"]) {
-        canPublish = true;
-      }
-    } catch (err) {
-      console.log("failed to parse metadata...", err);
-      canPublish = false;
-    }
+    if (creatorAddress === identity) canPublish = true;
 
     const body = {
       name,

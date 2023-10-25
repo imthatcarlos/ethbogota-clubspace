@@ -5,6 +5,7 @@ export const addUserReqValidator = z.object({
   name: z.string(),
   roomName: z.string().uuid(),
   metadata: z.string().optional(),
+  creatorAddress: z.string().optional(),
 });
 
 export type AddUserRequest = z.infer<typeof addUserReqValidator>;

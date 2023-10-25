@@ -31,6 +31,9 @@ export const ParticipantDialogList = () => {
     [participants]
   );
 
+  // filter out host from list to avoid fetching things on the ParticipantList 
+  let participantsWithoutHost = participants.filter((p) => p.identity !== host?.identity);
+
   const address = host?.name;
   const { data: ensData } = useENS(address);
   const { defaultProfile }: { defaultProfile: DefaultLensProfile; isHost: boolean } = useMemo(() => {
@@ -72,7 +75,7 @@ export const ParticipantDialogList = () => {
         </DialogHeader>
         <h2 className="text-3xl font-semibold">Invite to stage</h2>
         <DialogDescription className="space-y-6 max-h-60 overflow-auto">
-          <ParticipantLoop participants={participants}>
+          <ParticipantLoop participants={participantsWithoutHost}>
             <ParticipantList />
           </ParticipantLoop>
         </DialogDescription>

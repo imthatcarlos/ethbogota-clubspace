@@ -65,8 +65,9 @@ export const LiveVideo = ({
       identity: userIdentity,
       name: userIdentity,
       metadata,
+      creatorAddress: space.creatorAddress
     };
-  }, [userIdentity, metadata]);
+  }, [userIdentity, metadata, space]);
 
   const token = useToken(env.NEXT_PUBLIC_LK_TOKEN_ENDPOINT, roomName, { userInfo });
 
@@ -102,7 +103,6 @@ export const LiveVideo = ({
                 <Stage />
                 <div className="-mt-16 flex items-center justify-center z-30 flex-1 gap-2">
                   <ParticipantList />
-                  {/* @TODO: need to fix z-index */}
                   <ParticipantDialogList />
                   <PinnedPromotionDialog space={space} />
                 </div>
