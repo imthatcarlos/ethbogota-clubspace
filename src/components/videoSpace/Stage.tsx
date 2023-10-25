@@ -15,6 +15,7 @@ import { ParticipantTileWithScreenShare } from "./ParticipantTileWithScreenShare
 import { CustomControls } from "./CustomControls";
 import { ParticipantDialogList } from "./ParticipantDialogList";
 import { PinnedPromotionDialog } from "./PinnedPromotionDialog";
+import { useAccount } from "wagmi";
 
 export const Stage = ({ space }: { space: any }) => {
   // const participants = useParticipants();
@@ -38,12 +39,18 @@ export const Stage = ({ space }: { space: any }) => {
           !hasScreenShare && styles.stage
         )}
       >
-        <TrackLoop tracks={tracks}>
-          <TrackContext.Consumer>
-            {/* {(track) => track && <VideoTrack {...track} />} */}
-            {(track) => (track && !hasScreenShare ? <ParticipantTile /> : <ParticipantTileWithScreenShare />)}
-          </TrackContext.Consumer>
-        </TrackLoop>
+        {tracks.length > 0 ? (
+          <TrackLoop tracks={tracks}>
+            <TrackContext.Consumer>
+              {/* {(track) => track && <VideoTrack {...track} />} */}
+              {(track) => (track && !hasScreenShare ? <ParticipantTile /> : <ParticipantTileWithScreenShare />)}
+            </TrackContext.Consumer>
+          </TrackLoop>
+        ) : (
+          <div className="flex items-center justify-center">
+            <h1 className="text-4xl text-center">Nothing to see here...</h1>
+          </div>
+        )}
       </div>
 
       <div className="-mt-16 flex items-center justify-center z-30 flex-1 gap-2">
@@ -67,10 +74,11 @@ const ParticipantControls = ({
 }: {
   screenShareParticipant: LocalParticipant | RemoteParticipant;
 }) => {
+  const { address } = useAccount();
   const participant = useParticipantContext();
   const permissions = participant.permissions;
 
-  if (permissions && permissions.canPublish) {
+  if (permissions && permissions.canPublish && participant.identity === address) {
     return (
       <CustomControls
         controls={{

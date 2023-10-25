@@ -6,46 +6,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/Dialog";
-import { useParticipants, ParticipantLoop } from "@livekit/components-react";
+import { useParticipants, ParticipantLoop, useParticipantContext } from "@livekit/components-react";
 import { Users } from "lucide-react";
 import { ParticipantList } from "./ParticipantList";
 import { useEffect, useMemo, useState } from "react";
 import { DefaultLensProfile } from "@/types/lens";
 import getLensPictureURL from "@/lib/utils/getLensPictureURL";
-import { LocalParticipant, Participant, RemoteParticipant } from "livekit-client";
+import { Participant } from "livekit-client";
 import { Button } from "../ui";
-
-function useHostInfo(address: string, host: RemoteParticipant | LocalParticipant) {
-  const { defaultProfile, ensData }: { defaultProfile: DefaultLensProfile; ensData: any; isHost: boolean } =
-    useMemo(() => {
-      if (host?.metadata) {
-        try {
-          return JSON.parse(host?.metadata);
-        } catch (_) {
-          return { defaultProfile: undefined, ensData: undefined, isHost: false };
-        }
-      }
-      return { defaultProfile: undefined, ensData: undefined, isHost: false };
-    }, [host?.metadata]);
-
-  const avatar: string = useMemo(
-    () => (defaultProfile?.picture ? getLensPictureURL(defaultProfile) : "/anon.png"),
-    [defaultProfile]
-  );
-
-  const displayName: string = useMemo(() => {
-    if (defaultProfile) {
-      return defaultProfile.handle;
-    }
-    if (ensData && Object.keys(ensData) && ensData?.handle) {
-      return ensData.handle;
-    }
-    return address;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, ensData, defaultProfile]);
-
-  return { displayName, avatar };
-}
+import { useAccount } from "wagmi";
 
 // @TODO: place it on a more reusable place
 function useMetadataInfo(participant: Participant) {
@@ -74,6 +43,7 @@ export const ParticipantDialogList = () => {
   const [callbackAction, setCallbackAction] = useState<(args?: any) => void>(undefined);
   const [callbackArgs, setCallbackArgs] = useState<Participant | undefined>(undefined);
 
+  const { address: userAddress } = useAccount();
   const participants = useParticipants();
 
   const host = useMemo(
@@ -90,12 +60,11 @@ export const ParticipantDialogList = () => {
     [participants]
   );
 
-  const address = host?.name;
-  const { displayName, avatar } = useHostInfo(address, host);
   const participantFromAction = useMetadataInfo(callbackArgs);
 
   // filter out host from list to avoid fetching things on the ParticipantList
-  let participantsWithoutHost = participants.filter((p) => p.identity !== host?.identity);
+  let stageParticipants = participants.filter((p) => p.permissions.canPublish);
+  let regularParticipants = participants.filter((p) => !p.permissions.canPublish);
 
   const handlePromotionConfirmation = (callback?: () => void, args?: any) => {
     setCallbackAction(callback);
@@ -112,16 +81,18 @@ export const ParticipantDialogList = () => {
         {!showConfirmation && (
           <>
             <DialogHeader className="mb-4">
-              <DialogTitle className="mb-4">Stage</DialogTitle>
-              <div className="flex gap-3">
-                <img className="h-12 w-12 rounded-full" src={avatar} alt={`Avatar of user ${displayName}`} />
-
-                <div className="font-bold truncate max-w-[15ch]">{displayName}</div>
-              </div>
+              <DialogTitle className="mb-4">{stageParticipants.length > 0 ? "Stage" : "Stage is empty"}</DialogTitle>
+              {stageParticipants.length > 0 ? (
+                <ParticipantLoop participants={stageParticipants}>
+                  <StageParticipant />
+                </ParticipantLoop>
+              ) : null}
             </DialogHeader>
-            <h2 className="text-3xl font-semibold">Invite to stage</h2>
+            <h2 className="text-3xl font-semibold">
+              {host?.identity === userAddress ? "Invite to stage" : "Online now"}
+            </h2>
             <DialogDescription className="space-y-6 max-h-60 overflow-auto">
-              <ParticipantLoop participants={participants}>
+              <ParticipantLoop participants={regularParticipants}>
                 <ParticipantList handlePromotionConfirmation={handlePromotionConfirmation} />
               </ParticipantLoop>
             </DialogDescription>
@@ -154,5 +125,18 @@ export const ParticipantDialogList = () => {
         )}
       </DialogContent>
     </Dialog>
+  );
+};
+
+const StageParticipant = () => {
+  const participant = useParticipantContext();
+  const { displayName, avatar } = useMetadataInfo(participant);
+
+  return (
+    <div className="flex gap-3">
+      <img className="h-12 w-12 rounded-full" src={avatar} alt={`Avatar of user ${displayName}`} />
+
+      <div className="font-bold truncate max-w-[15ch]">{displayName}</div>
+    </div>
   );
 };

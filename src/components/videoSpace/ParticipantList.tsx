@@ -14,8 +14,9 @@ export const ParticipantList = ({
 }) => {
   const participant = useParticipantContext();
   const [canPromoteParticipant, setCanPromoteParticipant] = useLocalStorage("canPromoteParticipant", true);
-  const { defaultProfile, isHost }: { defaultProfile: DefaultLensProfile; isHost: boolean } = JSON.parse(
-    participant.metadata
+  const { defaultProfile, isHost }: { defaultProfile: DefaultLensProfile; isHost: boolean } = useMemo(
+    () => JSON.parse(participant.metadata ?? "{}"),
+    [participant]
   );
   const participantPermissions = participant.permissions;
 

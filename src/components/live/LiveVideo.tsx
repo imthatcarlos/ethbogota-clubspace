@@ -71,7 +71,7 @@ export const LiveVideo = ({
           setConnected(false);
         }}
       >
-        <div className="flex max-w-[80%] mx-auto items-center w-full h-[80%]">
+        <div className="flex max-w-[80%] mx-auto items-center w-full h-full min-[1921px]:h-[80%]">
           <div className="flex gap-9">
             <div className="flex-1">
               <div className="relative">
