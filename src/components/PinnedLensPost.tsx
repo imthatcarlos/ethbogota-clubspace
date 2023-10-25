@@ -11,6 +11,7 @@ import { MULTIRECIPIENT_COLLECT_MODULE, REWARD_ENGAGEMENT_ACTION_MODULE, LENS_CH
 import { useIsAuthenticated, useLensLogin, useAuthenticatedProfileId } from "@/hooks/useLensLogin";
 import getPublicationRewarded from "@/services/madfi/getPublicationRewarded";
 import { getPublicationActionParams } from "@/services/madfi/rewardEngagementAction";
+import { useIsProfileManager } from '@/services/lens/profileManagers';
 import processAct from "@/services/lens/act";
 import { LivePoints } from "./live/LivePoints";
 
@@ -25,10 +26,11 @@ const PinnedLensPost = ({
 }) => {
   const { data: signer } = useSigner();
   const { chain } = useNetwork();
-  const { data: isAuthenticated } = useIsAuthenticated();
+  const { data: isAuthenticated, refetch: fetchIsAuthenticated } = useIsAuthenticated();
   const { refetch: loginWithLens } = useLensLogin();
   const { data: authenticatedProfileId } = useAuthenticatedProfileId();
   const { switchNetworkAsync } = useSwitchNetwork({ onSuccess: (data) => onActButtonClick(true) });
+  const { data: isProfileManager } = useIsProfileManager(authenticatedProfileId, REWARD_ENGAGEMENT_ACTION_MODULE);
 
   const [lensPost, setLensPost] = useState(null);
   const [lensPubId, setLensPubId] = useState(null);
@@ -38,9 +40,6 @@ const PinnedLensPost = ({
   useMemo(async () => {
     const pubId = parsePublicationLink(url);
     const post = await getPost(pubId);
-
-    console.log("------");
-    console.log(post);
 
     if ((post?.profile || post?.by) && post?.metadata) {
       if (post?.by) post.profile = post.by; // HACK
@@ -54,7 +53,6 @@ const PinnedLensPost = ({
     if (!(profileIdHex && pubIdHex)) return;
 
     const pub = await getPublicationRewarded(profileIdHex, pubIdHex);
-    console.log(pub);
     setPubRewarded(pub);
   }, [url]);
 
@@ -69,9 +67,10 @@ const PinnedLensPost = ({
 
     if (!actionModule) return null;
     if (!isAuthenticated) return "Sign-in with Lens";
+    if (!isProfileManager) return "Must enable rewards";
 
     return `${pubRewarded.actionType} for ${pubRewarded.rewardUnits} MADx`;
-  }, [isAuthenticated, lensPost, pubRewarded, chain]);
+  }, [isAuthenticated, lensPost, pubRewarded, isProfileManager]);
 
   const collect = async () => {
     setIsCollecting(true);
@@ -113,7 +112,15 @@ const PinnedLensPost = ({
       await wait(1000);
     }
 
-    if (!isAuthenticated) return await loginWithLens();
+    if (!isAuthenticated) {
+      await loginWithLens();
+      fetchIsAuthenticated();
+      return;
+    }
+
+    if (!isProfileManager) {
+     return;
+    }
 
     let loadingMessage: string;
     if (pubRewarded.actionType === "MIRROR") loadingMessage = "Mirroring";
@@ -131,7 +138,7 @@ const PinnedLensPost = ({
 
       await processAct(signer, params);
 
-      toast.success(`Done! You just got ${pubRewarded.rewardUnits} MADx`, { duration: 10_000, id: toastId });
+      toast.success(`Done! You just got ${pubRewarded.rewardUnits} MADx`, { duration: 5_000, id: toastId });
     } catch (error) {
       console.log(error);
       toast.dismiss(toastId);
@@ -159,7 +166,7 @@ const PinnedLensPost = ({
     <>
       {renderHeader && (
         <h2 className="my-4 text-3xl font-bold tracking-tight sm:text-2xl md:text-4xl drop-shadow-sm text-center drop-shadow-sm">
-          Pinned Lens Post
+          Promoted Publication
         </h2>
       )}
       <div className="flex justify-center mt-4 mb-4 text-sm gap-x-4">
@@ -175,8 +182,10 @@ const PinnedLensPost = ({
           />
         )}
       </div>
-      <div className="fixed right-4 bottom-2 text-sm gap-x-4">
-        <LivePoints creatorAddress={creatorAddress} />
+      <div className="flex justify-center mt-4 mb-4 text-sm gap-x-4 pb-8">
+        <div className="absolute right-8 bottom-2">
+          <LivePoints creatorAddress={creatorAddress} isAuthenticated={isAuthenticated} />
+        </div>
       </div>
       {lensPost && (
         <>

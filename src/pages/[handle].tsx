@@ -21,6 +21,8 @@ import { TIER_OPEN, REDIS_SPACE_PREFIX } from "@/lib/consts";
 import { generateName } from "@/lib/utils/nameGenerator";
 import { NextPageWithLayout } from "./_app";
 
+const USE_V1_PROFILE = true;
+
 const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefined }) => {
   // const [preJoinChoices, setPreJoinChoices] = useState<LocalUserChoices | undefined>(undefined);
 
@@ -30,7 +32,7 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
   } = useRouter();
 
   const { isConnected, address } = useAccount();
-  const { data: profilesOwned, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
+  const { data: profilesOwned, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address, USE_V1_PROFILE);
   // const {
   //   data: meetsGatedCondition,
   //   isLoading: isLoadingMeetsGated,
@@ -75,8 +77,8 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
         // the bare minimum
         setDefaultProfile({
           id: defaultProfile.id,
-          picture: defaultProfile.picture,
-          handle: defaultProfile.handle.localName,
+          picture: defaultProfile.picture, // v2: ?
+          handle: defaultProfile.handle, // v2: defaultProfile.handle.localName
         });
       }
       setLoadingDefaultProfile(false);

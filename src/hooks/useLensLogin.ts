@@ -8,6 +8,20 @@ export const getAccessToken = async () => {
   return accessTokenResult.unwrap();
 };
 
+export const useAuthenticatedAccessToken = () => {
+  const result = useQuery(
+    ["lens-authenticated-access-token"],
+    async () => {
+      return await getAccessToken();
+    },
+    {
+      enabled: true,
+    }
+  );
+
+  return result;
+}
+
 export const useAuthenticatedProfileId = () => {
   const result = useQuery(
     ["lens-authenticated-profileId"],
