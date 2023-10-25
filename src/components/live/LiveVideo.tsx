@@ -1,23 +1,12 @@
 import { env } from "@/env.mjs";
-import {
-  ControlBar,
-  LiveKitRoom,
-  ParticipantLoop,
-  RoomAudioRenderer,
-  useParticipantContext,
-  useParticipants,
-  useToken,
-} from "@livekit/components-react";
+import { LiveKitRoom, RoomAudioRenderer, useToken } from "@livekit/components-react";
 import { useEffect, useMemo, useState } from "react";
 // import jwt, { type JwtPayload } from "jwt-decode";
 import Chat from "../Chat";
 // import { ParticipantList } from "../videoSpace/ParticipantList";
 import useIsMounted from "@/hooks/useIsMounted";
 import { DefaultLensProfile } from "@/types/lens";
-import { ParticipantDialogList } from "../videoSpace/ParticipantDialogList";
-import { PinnedPromotionDialog } from "../videoSpace/PinnedPromotionDialog";
 import { Stage } from "../videoSpace/Stage";
-import { CustomControls } from "../videoSpace/CustomControls";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
@@ -82,25 +71,10 @@ export const LiveVideo = ({
         }}
       >
         <div className="flex max-w-[80%] mx-auto items-center w-full h-[80%]">
-          {/* <div className="sticky hidden w-80 border-r dark:border-zinc-800 dark:bg-zinc-900 lg:block">
-                <div className="absolute left-0 top-0 bottom-0 flex h-full w-full flex-col gap-2 px-4 py-2">
-                  <Sidebar isHost={isHost} />
-                </div>
-              </div> */}
-          {/* {!connected && (
-            <button className="btn" onClick={() => window.location.reload()}>
-              Connect
-            </button>
-          )} */}
           <div className="flex gap-9">
             <div className="flex-1">
               <div className="relative">
-                <Stage />
-                <div className="-mt-16 flex items-center justify-center z-30 flex-1 gap-2">
-                  <ParticipantList />
-                  <ParticipantDialogList />
-                  <PinnedPromotionDialog space={space} />
-                </div>
+                <Stage space={space} />
               </div>
               <RoomAudioRenderer />
             </div>
@@ -114,31 +88,6 @@ export const LiveVideo = ({
       </LiveKitRoom>
     </div>
   );
-};
-
-const ParticipantList = () => {
-  const participants = useParticipants();
-
-  return (
-    <ParticipantLoop participants={participants}>
-      <ParticipantControls />
-    </ParticipantLoop>
-  );
-};
-
-const ParticipantControls = () => {
-  const participant = useParticipantContext();
-  const permissions = participant.permissions;
-
-  if (permissions && permissions.canPublish) {
-    return (
-      <CustomControls
-        controls={{ microphone: true, camera: true, screenShare: true }}
-        className="border-none gap-2 flex items-center z-30"
-      />
-    );
-  }
-  return null;
 };
 
 export default LiveVideo;

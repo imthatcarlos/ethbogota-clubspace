@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Track } from "livekit-client";
+import { LocalParticipant, RemoteParticipant, Track } from "livekit-client";
 import {
   MediaDeviceMenu,
   StartAudio,
