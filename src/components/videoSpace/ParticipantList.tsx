@@ -64,9 +64,10 @@ export const ParticipantList = () => {
     muteParticipant(participant);
     setCanPromoteParticipant(!canPromoteParticipant);
   };
-  // if (isHost) {
-  //   return null;
-  // }
+  
+  if (isHost) {
+    return null;
+  }
 
   // @TODO: add loading state?
   return (

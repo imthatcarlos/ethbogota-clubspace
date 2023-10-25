@@ -12,7 +12,7 @@ export default async function addUser(req: NextApiRequest, res: NextApiResponse)
 
     // console.log("called", roomName, identity, name, metadata);
 
-    let canPublish = true;
+    let canPublish = false;
     try {
       // @TODO: validate server side if the user is the host based on clubSpaceObject to send correct metadata
       // signing works and adds an extra layer of security, but it's also an extra step for the host to join.
