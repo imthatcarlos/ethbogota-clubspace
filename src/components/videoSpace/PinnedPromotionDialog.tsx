@@ -126,7 +126,11 @@ export const PinnedPromotionDialog = ({ space }) => {
                   </p>
                 )}
                 {space.pinnedLensPost && (
-                  <PinnedLensPost url={space.pinnedLensPost} small={!!space.drop} />
+                    <PinnedLensPost
+                      url={space.pinnedLensPost}
+                      small={!!space.drop}
+                      creatorAddress={space.creatorAddress}
+                    />
                 )}
               </>
             )}

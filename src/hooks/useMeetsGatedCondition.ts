@@ -1,6 +1,6 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { TIER_OPEN, TIER_GATED_LENS_COLLECT } from "@/lib/consts";
-import { useLensRefresh } from "@/hooks/useLensLogin";
+import { useIsAuthenticated } from "@/hooks/useLensLogin";
 import { hasCollectedPost } from "@/services/lens/getPost";
 
 export default (

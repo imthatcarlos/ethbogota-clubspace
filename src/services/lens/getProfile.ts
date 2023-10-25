@@ -2,6 +2,7 @@ import { apiUrls } from "@/constants/apiUrls";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { BigNumber } from "ethers";
 import request, { gql } from "graphql-request";
+import lensClient from "./client";
 
 export type Profile = {
   id: string;
@@ -15,87 +16,22 @@ export type Profile = {
       url: string;
     };
   };
-  handle: string;
+  handle: {
+    localName: string;
+    suggestedFormatted: {
+      full: string;
+      localName: string;
+    }
+  };
   coverPicture: string | null;
   ownedBy: string;
   stats: {
-    totalFollowers: number;
-    totalFollowing: number;
+    followers: number;
+    following: number;
   };
   followModule: string | null;
   lensHandle: string | null;
 };
-
-const GET_PROFILE_BY_HANDLE = gql`
-  query ($handle: Handle!) {
-    profiles(request: { handles: [$handle], limit: 1 }) {
-      items {
-        id
-        name
-        bio
-        metadata
-        isDefault
-        picture {
-          ... on NftImage {
-            contractAddress
-            tokenId
-            uri
-            verified
-          }
-          ... on MediaSet {
-            original {
-              url
-              mimeType
-            }
-          }
-          __typename
-        }
-        handle
-        coverPicture {
-          ... on NftImage {
-            contractAddress
-            tokenId
-            uri
-            verified
-          }
-          ... on MediaSet {
-            original {
-              url
-              mimeType
-            }
-          }
-          __typename
-        }
-        ownedBy
-        stats {
-          totalFollowers
-          totalFollowing
-        }
-        followModule {
-          ... on FeeFollowModuleSettings {
-            type
-            amount {
-              asset {
-                symbol
-                name
-                decimals
-                address
-              }
-              value
-            }
-            recipient
-          }
-          ... on ProfileFollowModuleSettings {
-            type
-          }
-          ... on RevertFollowModuleSettings {
-            type
-          }
-        }
-      }
-    }
-  }
-`;
 
 const GET_PROFILES_OWNED = gql`
   query ($ownedBy: EthereumAddress!) {
@@ -238,11 +174,9 @@ export const useGetProfileByHandle = (options: UseQueryOptions = {}, handle: str
 
 export const getProfilesOwned = async (ownedBy: string): Promise<Profile[]> => {
   try {
-    const { profiles } = await request({
-      url: apiUrls.lensAPI,
-      document: GET_PROFILES_OWNED,
-      variables: { ownedBy },
-    });
+    const profiles = await lensClient.profile.fetchAll({
+      where: { ownedBy: [ownedBy] },
+    })
 
     return profiles?.items as unknown as Profile[];
   } catch (error) {
@@ -250,13 +184,29 @@ export const getProfilesOwned = async (ownedBy: string): Promise<Profile[]> => {
   }
 };
 
-export const useGetProfilesOwned = (options: UseQueryOptions = {}, ownedBy: string) => {
-  const result = useQuery<Profile[]>(
-    ["profiles", ownedBy],
+export const getProfilesOwnedDeprecated = async (ownedBy: string): Promise<any[]> => {
+  try {
+    const { profiles } = await request({
+      url: "https://api.lens.dev", // let's use mainnet data for display purposes
+      document: GET_PROFILES_OWNED,
+      variables: { ownedBy },
+    });
+
+    return profiles?.items as unknown as any[];
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const useGetProfilesOwned = (options: UseQueryOptions = {}, ownedBy: string, useV1?: boolean) => {
+  const result = useQuery(
+    [`owned-profiles-${useV1 ? '-v1' : ''}`],
     async () => {
       if (!ownedBy) return {};
 
-      const profiles = await getProfilesOwned(ownedBy);
+      const profiles = useV1
+        ? await getProfilesOwnedDeprecated(ownedBy)
+        : await getProfilesOwned(ownedBy);
 
       return {
         profiles,
