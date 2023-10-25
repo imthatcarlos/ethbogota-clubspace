@@ -1,6 +1,7 @@
 import { apiUrls } from "@/constants/apiUrls";
 import request, { gql } from "graphql-request";
 import { getAccessToken } from "@/hooks/useLensLogin";
+import lensClient from './client';
 
 const GET_POST = gql`
   query Publication($publicationId: InternalPublicationId!) {
@@ -128,18 +129,11 @@ const HAS_COLLECTED_POST = gql`
 
 export const getPost = async (publicationId: string): Promise<any> => {
   try {
-    const { publication } = await request({
-      url: apiUrls.lensAPI,
-      document: GET_POST,
-      variables: { publicationId },
-    });
-
-    return publication;
+    return await lensClient.publication.fetch({ forId: publicationId });
   } catch (error) {
     console.log(error);
   }
 };
-
 
 export const hasCollectedPost = async (publicationId: string): Promise<any> => {
   try {
@@ -148,7 +142,7 @@ export const hasCollectedPost = async (publicationId: string): Promise<any> => {
       document: HAS_COLLECTED_POST,
       variables: { publicationId },
       requestHeaders: {
-        'x-access-token': getAccessToken()
+        'x-access-token': await getAccessToken()
       }
     });
 

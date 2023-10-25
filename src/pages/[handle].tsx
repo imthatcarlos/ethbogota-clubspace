@@ -30,7 +30,7 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
   } = useRouter();
 
   const { isConnected, address } = useAccount();
-  const { data: profilesResponse, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
+  const { data: profilesOwned, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
   // const {
   //   data: meetsGatedCondition,
   //   isLoading: isLoadingMeetsGated,
@@ -70,13 +70,13 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
   useEffect(() => {
     if (!(isLoadingProfiles || isLoadingENS)) {
       // @ts-ignore
-      const defaultProfile = profilesResponse ? profilesResponse?.defaultProfile : null;
+      const defaultProfile = profilesOwned ? profilesOwned?.defaultProfile : null;
       if (defaultProfile) {
         // the bare minimum
         setDefaultProfile({
           id: defaultProfile.id,
           picture: defaultProfile.picture,
-          handle: defaultProfile.handle,
+          handle: defaultProfile.handle.localName,
         });
       }
       setLoadingDefaultProfile(false);

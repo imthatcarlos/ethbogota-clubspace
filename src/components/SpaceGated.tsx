@@ -3,7 +3,7 @@ import { useAccount } from "wagmi";
 import LensLogoIcon from "@/assets/svg/lens-logo-icon.svg";
 import { ConnectWallet } from "./ConnectWallet";
 import PinnedLensPost from "./PinnedLensPost";
-import { useLensLogin, useLensRefresh } from "@/hooks/useLensLogin";
+import { useLensLogin, useIsAuthenticated } from "@/hooks/useLensLogin";
 import { TIER_OPEN, TIER_GATED_LENS_COLLECT, LENSTER_URL } from "@/lib/consts";
 import { GateData } from "./LiveSpace";
 
@@ -22,7 +22,7 @@ export const SpaceGated = ({
 }) => {
   const { isConnected } = useAccount();
   const { data: lensLoginData, refetch: loginWithLens } = useLensLogin();
-  const { data: lensRefreshData } = useLensRefresh();
+  const { data: isAuthenticated } = useIsAuthenticated();
 
   const requirement = useMemo(() => {
     if (gated?.tier === TIER_GATED_LENS_COLLECT) {
@@ -55,7 +55,7 @@ export const SpaceGated = ({
           <div className="md:items-center md:justify-center mt-8">
             {!isConnected && <ConnectWallet showBalance={false} />}
 
-            {isConnected && !(lensLoginData || lensRefreshData) && (
+            {isConnected && !(isAuthenticated) && (
               <div className="w-60 mx-auto">
                 <button
                   onClick={_loginWithLens}
@@ -67,7 +67,7 @@ export const SpaceGated = ({
               </div>
             )}
 
-            {isConnected && (lensLoginData || lensRefreshData) && (
+            {isConnected && isAuthenticated && (
               <>
                 <PinnedLensPost
                   url={`${LENSTER_URL}/posts/${creatorLensProfileId}-${lensPubId}`}

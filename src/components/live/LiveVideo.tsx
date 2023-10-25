@@ -23,7 +23,7 @@ const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
 // @TODO: saving this for later
 /**
- * 
+ *
  * {
     "creatorAddress": "0x7F0408bc8Dfe90C09072D8ccF3a1C544737BcDB6",
     "handle": "madfinance.lens",
@@ -120,7 +120,7 @@ export const LiveVideo = ({
                 <Chat viewerName={userIdentity} />
               </div>
             </div>
-            <DebugMode />
+            {/** <DebugMode /> */}
           </div>
         </div>
       </LiveKitRoom>
@@ -142,7 +142,7 @@ const ParticipantControls = () => {
   const participant = useParticipantContext();
   const permissions = participant.permissions;
 
-  if (permissions.canPublish) {
+  if (permissions?.canPublish) {
     return (
       <ControlBar
         variation="minimal"

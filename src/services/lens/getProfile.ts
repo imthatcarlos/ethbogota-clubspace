@@ -2,6 +2,7 @@ import { apiUrls } from "@/constants/apiUrls";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { BigNumber } from "ethers";
 import request, { gql } from "graphql-request";
+import lensClient from "./client";
 
 export type Profile = {
   id: string;
@@ -15,12 +16,18 @@ export type Profile = {
       url: string;
     };
   };
-  handle: string;
+  handle: {
+    localName: string;
+    suggestedFormatted: {
+      full: string;
+      localName: string;
+    }
+  };
   coverPicture: string | null;
   ownedBy: string;
   stats: {
-    totalFollowers: number;
-    totalFollowing: number;
+    followers: number;
+    following: number;
   };
   followModule: string | null;
   lensHandle: string | null;
@@ -238,11 +245,9 @@ export const useGetProfileByHandle = (options: UseQueryOptions = {}, handle: str
 
 export const getProfilesOwned = async (ownedBy: string): Promise<Profile[]> => {
   try {
-    const { profiles } = await request({
-      url: apiUrls.lensAPI,
-      document: GET_PROFILES_OWNED,
-      variables: { ownedBy },
-    });
+    const profiles = await lensClient.profile.fetchAll({
+      where: { ownedBy: [ownedBy] },
+    })
 
     return profiles?.items as unknown as Profile[];
   } catch (error) {
