@@ -2,8 +2,9 @@ import { useCallback, useMemo, useState, type KeyboardEvent } from "react";
 import { Button, Icons, Textarea } from "./ui";
 
 import { cn } from "@/lib/utils/cn";
-import { useChat } from "@livekit/components-react";
 import { DefaultLensProfile } from "@/types/lens";
+import { useChat } from "@livekit/components-react";
+import getLensPictureURL from "@/lib/utils/getLensPictureURL";
 
 type Props = {
   viewerName: string;
@@ -37,48 +38,55 @@ export default function Chat({ viewerName }: Props) {
   }, [message, send]);
 
   return (
-    <>
-      <div className="flex min-h-0 flex-1 flex-col-reverse overflow-y-auto">
+    <div className="flex min-h-full flex-col space-between bg-foreground rounded-2xl px-3 py-4">
+      <div className="flex min-h-0 flex-1 flex-col-reverse overflow-y-auto pb-4">
         {reverseMessages.map((message) => {
           // assuming users have signed in with lens
           const { defaultProfile }: { defaultProfile: DefaultLensProfile } = JSON.parse(message.from?.metadata);
           const displayName = defaultProfile ? defaultProfile.handle : message.from?.name;
+
+          const avatar = defaultProfile?.picture ? getLensPictureURL(defaultProfile) : "/anon.png";
+
           return (
             <div key={message.timestamp} className="flex items-center gap-2 p-2">
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <div className={cn("text-xs font-semibold", viewerName === message.from?.name && "text-blue-500")}>
-                    {displayName}
-                    {viewerName === message.from?.name && " (you)"}
-                  </div>
-                  <div className="text-xs text-gray-500">{new Date(message.timestamp).toLocaleTimeString()}</div>
+              <div className="flex items-center gap-2">
+                <div
+                  className={cn(
+                    "text-xs font-semibold whitespace-nowrap inline-flex items-center gap-1",
+                    viewerName === message.from?.name && "text-primary"
+                  )}
+                >
+                  <img
+                    className="h-4 w-4 rounded-full select-none pointer-events-none"
+                    src={avatar}
+                    alt={`Avatar of user ${displayName}`}
+                  />
+                  {displayName}
+                  {viewerName === message.from?.name && " (you)"}:
                 </div>
+                {/* <div className="text-xs text-gray-500">{new Date(message.timestamp).toLocaleTimeString()}</div> */}
                 <div className="text-sm">{message.message}</div>
               </div>
             </div>
           );
         })}
       </div>
-      <div className="flex w-full gap-2">
+      <div className="flex w-full gap-2 self-end">
         <Textarea
           value={message}
-          className="border-box h-10 dark:bg-zinc-900"
+          className="border-box h-10 border-[#e0e0e0] placeholder:text-[#8d8d8d]"
           onChange={(e) => {
             setMessage(e.target.value);
           }}
           onKeyDown={onEnter}
           placeholder="Type a message..."
         />
-        <Button
-          disabled={message.trim().length === 0}
-          onClick={onSend}
-          className="bg-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600"
-        >
+        <Button disabled={message.trim().length === 0} onClick={onSend} className="bg-primary focus-visible:ring-primary">
           <div className="flex items-center gap-2">
             <Icons.send className="h-4 w-4" />
           </div>
         </Button>
       </div>
-    </>
+    </div>
   );
 }

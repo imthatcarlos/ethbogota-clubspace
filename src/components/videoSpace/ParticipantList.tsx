@@ -7,7 +7,11 @@ import { DefaultLensProfile } from "@/types/lens";
 import getLensPictureURL from "@/lib/utils/getLensPictureURL";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 
-export const ParticipantList = () => {
+export const ParticipantList = ({
+  handlePromotionConfirmation,
+}: {
+  handlePromotionConfirmation: (callback?: any, args?: any) => void;
+}) => {
   const participant = useParticipantContext();
   const [canPromoteParticipant, setCanPromoteParticipant] = useLocalStorage("canPromoteParticipant", true);
   const { defaultProfile, isHost }: { defaultProfile: DefaultLensProfile; isHost: boolean } = JSON.parse(
@@ -68,26 +72,20 @@ export const ParticipantList = () => {
   // @TODO: add loading state?
   return (
     <li className="flex items-start justify-between w-full">
-      <div className="flex items-center gap-3 flex-1">
+      <div className="flex gap-3 flex-1">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="h-8 w-8 rounded-full bg-blue-300" src={avatar} alt={`Avatar of user ${displayName}`} />
-        <div className="flex flex-col max-w-fit">
-          <div className="flex items-center gap-2">
-            <div className="text-sm font-semibold truncate max-w-[15ch]">
-              {/* just in case we stringify it */}
-              {displayName ? displayName : JSON.stringify(displayName)}
-            </div>
-          </div>
-          {isHost && <div className="text-sm">Host</div>}
-          {/* <div className="text-sm opacity-80">Promote speaker</div> */}
+        <img className="h-12 w-12 rounded-full" src={avatar} alt={`Avatar of user ${displayName}`} />
+        <div className="font-bold truncate max-w-[15ch] text-base">
+          {/* just in case we stringify it */}
+          {displayName ? displayName : JSON.stringify(displayName)}
         </div>
       </div>
 
       <div className="justify-self-end flex flex-col items-center">
-        {isHost && participant.name !== address && canPromoteParticipant && (
+        {isHost && participant.name !== address && !participantPermissions?.canPublish && canPromoteParticipant && (
           <button
             className="w-fit rounded-full px-5 py-2 bg-almost-black text-white"
-            onClick={() => handlePromoteParticipant(participant)}
+            onClick={() => handlePromotionConfirmation(handlePromoteParticipant, participant)}
           >
             Promote 🎙
           </button>
@@ -95,7 +93,7 @@ export const ParticipantList = () => {
         {isHost && participant.name !== address && !canPromoteParticipant && participantPermissions?.canPublish && (
           <button
             className="w-fit rounded-full px-5 py-2 bg-almost-black text-white"
-            onClick={() => handlePromoteParticipant(participant)}
+            onClick={() => handlePromotionConfirmation(handlePromoteParticipant, participant)}
           >
             🚫 Mute
           </button>

@@ -11,6 +11,9 @@ module.exports = {
       colors: {
         "almost-black": "rgba(0, 0, 0, .8) !important",
         "club-red": "var(--club-red)",
+        "background": "hsl(var(--background))",
+        "foreground": "hsl(var(--foreground))",
+        "primary": "hsl(var(--primary))",
       },
       backgroundImage: {
         "live-page-player": "url('/lil_buddy_low_res.png')",
