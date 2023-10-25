@@ -23,14 +23,12 @@ const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
 export const LiveVideo = ({
   roomName,
-  isHost,
   userIdentity,
   defaultProfile,
   ensData,
   space,
 }: {
   roomName: string;
-  isHost?: boolean;
   userIdentity: string;
   defaultProfile?: DefaultLensProfile;
   ensData?: any;
@@ -51,21 +49,20 @@ export const LiveVideo = ({
       let str = JSON.stringify({
         defaultProfile: defaultProfile ?? undefined,
         ensData: ensData ?? undefined,
-        isHost: isHost ?? undefined,
       });
       return str;
     } catch (err) {
       console.log("failed to stringify metadata");
       return undefined;
     }
-  }, [isHost]);
+  }, [defaultProfile, ensData]);
 
   const userInfo = useMemo(() => {
     return {
       identity: userIdentity,
       name: userIdentity,
       metadata,
-      creatorAddress: space.creatorAddress
+      creatorAddress: space.creatorAddress,
     };
   }, [userIdentity, metadata, space]);
 
@@ -77,8 +74,6 @@ export const LiveVideo = ({
         token={token}
         serverUrl={liveKitUrl}
         connect={tryToConnect}
-        video={isHost}
-        audio={isHost}
         // simulateParticipants={2}
         onConnected={() => setConnected(true)}
         onDisconnected={() => {

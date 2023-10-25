@@ -13,10 +13,21 @@ export default async function addUser(req: NextApiRequest, res: NextApiResponse)
     let canPublish = false;
     if (creatorAddress === identity) canPublish = true;
 
+    let metadataWithHost;
+    try {
+      metadataWithHost = JSON.parse(metadata);
+      // only add host to metadata on the server
+      metadataWithHost.isHost = canPublish;
+
+      metadataWithHost = JSON.stringify(metadataWithHost);
+    } catch (err) {
+      metadataWithHost = metadata;
+    }
+
     const body = {
       name,
       canPublish,
-      metadata,
+      metadata: metadataWithHost,
     };
     const url = `https://livepeer.studio/api/room/${roomName}/user`;
     const response = await axios.post(url, body, {
