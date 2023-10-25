@@ -3,10 +3,12 @@ import getLensPictureURL from "@/lib/utils/getLensPictureURL";
 import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import { useEffect, useMemo, useState } from "react";
 
+const USE_V1_PROFILE = true;
+
 // @TODO: move this to a place and reuse whenever
 function useAvatarAndDisplayName(address: string) {
   const { data: ensData } = useENS(address);
-  const { data: profilesResponse, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
+  const { data: profilesResponse, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address, USE_V1_PROFILE);
 
   const [defaultProfile, setDefaultProfile] = useState<{ id: string; picture: string; handle: string } | null>(null);
 
@@ -54,13 +56,13 @@ export const HostInfo = ({ space }: { space: any }) => {
       <div className="text-xs font-semibold whitespace-nowrap inline-flex gap-1">
         <img className="h-20 w-20 rounded-full select-none pointer-events-none" src={avatar} alt="avatar" />
         <div className="flex flex-col gap-4">
-          <span className="font-bold text-xl">{displayName}</span>
-          {/* @TODO: how do I get the space name? And do we even have it∑ */}
-          <span>Space name</span>
+          <span className="font-light text-xl pl-4">{displayName}</span>
+          {/* @TODO: how do I get the space name? And do we even have it */}
+          <span className="font-bold text-md pl-4">Testing MadFi Spaces</span>
         </div>
       </div>
       <div>
-        other info here
+        {/** other info here */}
       </div>
     </div>
   );

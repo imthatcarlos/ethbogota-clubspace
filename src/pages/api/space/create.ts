@@ -88,6 +88,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       ? `${creatorLensHandle.split(".")[0]}.lens`
       : creatorLensHandle;
 
+    const handleHackedForV2 = handle.includes(".test")
+      ? `${handle.split(".")[0]}.lens`
+      : handle;
+
     const spaceObject = {
       creatorAddress: getAddress(creatorAddress),
       creatorLensHandle: hackedForV2,
@@ -107,7 +111,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       exp: startAt ? startAt - createdAt + REDIS_SPACE_EXP : REDIS_SPACE_EXP
     };
 
-    const spaceRedisKey = `${REDIS_SPACE_PREFIX}/${handle}`;
+    const spaceRedisKey = `${REDIS_SPACE_PREFIX}/${handleHackedForV2}`;
 
     try {
       console.log(`setting in redis [${spaceRedisKey}] with exp at ${endAt}`);
@@ -134,7 +138,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       headers: { 'x-api-key': MADFI_API_KEY },
     });
 
-    return res.status(200).json({ url: `${NEXT_PUBLIC_SITE_URL}/${handle}`, startAt });
+    return res.status(200).json({ url: `${NEXT_PUBLIC_SITE_URL}/${handleHackedForV2}`, startAt });
   } catch (e) {
     console.log(e);
 
