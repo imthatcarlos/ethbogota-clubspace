@@ -63,8 +63,8 @@ export const ParticipantDialogList = () => {
   const participantFromAction = useMetadataInfo(callbackArgs);
 
   // filter out host from list to avoid fetching things on the ParticipantList
-  let stageParticipants = participants.filter((p) => p.permissions.canPublish);
-  let regularParticipants = participants.filter((p) => !p.permissions.canPublish);
+  let stageParticipants = participants.filter((p) => p.permissions?.canPublish);
+  let regularParticipants = participants.filter((p) => !p.permissions?.canPublish);
 
   const handlePromotionConfirmation = (callback?: () => void, args?: any) => {
     setCallbackAction(callback);
