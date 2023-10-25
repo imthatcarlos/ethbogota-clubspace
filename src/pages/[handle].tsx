@@ -14,6 +14,7 @@ import { GetServerSideProps } from "next";
 import redisClient from "@/lib/utils/redisClient";
 // import { ClubSpaceObject, GateData } from "@/components/LiveSpace";
 import { SpaceEnded } from "@/components/SpaceEnded";
+import Countdown from "@/components/Countdown";
 import { getAccessToken } from "@/hooks/useLensLogin";
 import useMeetsGatedCondition from "@/hooks/useMeetsGatedCondition";
 import { SpaceGated } from "@/components/SpaceGated";
@@ -28,7 +29,7 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
 
   const {
     query: { handle },
-    push,
+    reload,
   } = useRouter();
 
   const { isConnected, address } = useAccount();
@@ -126,6 +127,23 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
 
   if (!space) {
     return <SpaceEnded handle={handle as string} />;
+  }
+
+  if (space?.startAt && space?.startAt > (Date.now() / 1000)) {
+    return (
+      <div className="flex-1 min-h-screen">
+        <div className="abs-center">
+          <div className="w-full justify-center">
+            <h1 className="animate-move-txt-bg gradient-txt text-4xl font-bold tracking-tight sm:text-5xl">Space starting soon</h1>
+            <p className="mt-1 text-base text-gray-500">hosted by @{space.handle}</p>
+            <Countdown
+              date={new Date(space.startAt * 1000)}
+              onComplete={reload}
+            />
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (!isConnected) {
