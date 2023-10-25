@@ -12,19 +12,21 @@ import { ParticipantList } from "./ParticipantList";
 import { useEffect, useMemo, useState } from "react";
 import { DefaultLensProfile } from "@/types/lens";
 import getLensPictureURL from "@/lib/utils/getLensPictureURL";
-import useENS from "@/hooks/useENS";
 import { LocalParticipant, Participant, RemoteParticipant } from "livekit-client";
 import { Button } from "../ui";
-import { useGetProfilesOwned } from "@/services/lens/getProfile";
 
 function useHostInfo(address: string, host: RemoteParticipant | LocalParticipant) {
-  const { data: ensData } = useENS(address);
-  const { defaultProfile }: { defaultProfile: DefaultLensProfile; isHost: boolean } = useMemo(() => {
-    if (host?.metadata) {
-      return JSON.parse(host?.metadata);
-    }
-    return { defaultProfile: undefined, isHost: false };
-  }, [host?.metadata]);
+  const { defaultProfile, ensData }: { defaultProfile: DefaultLensProfile; ensData: any; isHost: boolean } =
+    useMemo(() => {
+      if (host?.metadata) {
+        try {
+          return JSON.parse(host?.metadata);
+        } catch (_) {
+          return { defaultProfile: undefined, ensData: undefined, isHost: false };
+        }
+      }
+      return { defaultProfile: undefined, ensData: undefined, isHost: false };
+    }, [host?.metadata]);
 
   const avatar: string = useMemo(
     () => (defaultProfile?.picture ? getLensPictureURL(defaultProfile) : "/anon.png"),
@@ -45,44 +47,24 @@ function useHostInfo(address: string, host: RemoteParticipant | LocalParticipant
   return { displayName, avatar };
 }
 
-// @TODO: move this to a place and reuse whenever
-function useAvatarAndDisplayName(address: string) {
-  console.log("address", address);
-  const { data: ensData } = useENS(address);
-  const { data: profilesResponse, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address);
-
-  const [defaultProfile, setDefaultProfile] = useState<{ id: string; picture: string; handle: string } | null>(null);
-
-  const avatar: string = useMemo(
-    () => (defaultProfile?.picture ? getLensPictureURL(defaultProfile) : "/anon.png"),
-    [defaultProfile]
-  );
-
-  const displayName: string = useMemo(() => {
-    if (defaultProfile) {
-      return defaultProfile?.handle;
-    }
-    if (ensData && Object.keys(ensData) && ensData?.handle) {
-      return ensData.handle;
-    }
-    return address;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, ensData, defaultProfile]);
+// @TODO: place it on a more reusable place
+function useMetadataInfo(participant: Participant) {
+  const [avatar, setAvatar] = useState<string | undefined>(undefined);
+  const [displayName, setDisplayName] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    if (!isLoadingProfiles) {
-      // @ts-ignore
-      const _defaultProfile = profilesResponse ? profilesResponse?.defaultProfile : null;
-      if (_defaultProfile) {
-        setDefaultProfile({
-          id: _defaultProfile?.id,
-          picture: _defaultProfile.picture,
-          handle: _defaultProfile.handle,
-        });
+    if (participant) {
+      try {
+        const { metadata } = participant;
+        const { defaultProfile, ensData }: { defaultProfile: DefaultLensProfile; ensData: any } = JSON.parse(metadata);
+
+        setAvatar(defaultProfile?.picture ? getLensPictureURL(defaultProfile) : "/anon.png");
+        setDisplayName(defaultProfile?.handle ?? ensData?.handle ?? participant.name);
+      } catch (err) {
+        console.log("Failed to parse metadata");
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, isLoadingProfiles]);
+  }, [participant]);
 
   return { avatar, displayName };
 }
@@ -110,7 +92,7 @@ export const ParticipantDialogList = () => {
 
   const address = host?.name;
   const { displayName, avatar } = useHostInfo(address, host);
-  const participantFromAction = useAvatarAndDisplayName(callbackArgs.name);
+  const participantFromAction = useMetadataInfo(callbackArgs);
 
   // filter out host from list to avoid fetching things on the ParticipantList
   let participantsWithoutHost = participants.filter((p) => p.identity !== host?.identity);
@@ -139,7 +121,7 @@ export const ParticipantDialogList = () => {
             </DialogHeader>
             <h2 className="text-3xl font-semibold">Invite to stage</h2>
             <DialogDescription className="space-y-6 max-h-60 overflow-auto">
-              <ParticipantLoop participants={participantsWithoutHost}>
+              <ParticipantLoop participants={participants}>
                 <ParticipantList handlePromotionConfirmation={handlePromotionConfirmation} />
               </ParticipantLoop>
             </DialogDescription>
@@ -163,9 +145,7 @@ export const ParticipantDialogList = () => {
               )}
             </div>
             <div className="flex items-center justify-end gap-4">
-              <Button onClick={() => callbackAction(callbackArgs)}>
-                Yes
-              </Button>
+              <Button onClick={() => callbackAction(callbackArgs)}>Yes</Button>
               <Button variant="secondary" onClick={() => setShowConfirmation(false)}>
                 No
               </Button>
