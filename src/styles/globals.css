@@ -16,17 +16,17 @@
   --inset-left: 0;
   --decent-nft-min-h: 25.25rem;
 
-  --background: 0 0% 8%;
-  --foreground: 0 0% 15%;
+  --background: 0, 0%, 8%;
+  --foreground: 0, 0%, 15%;
   
-  --primary: 8 99% 45%;
+  --primary: 8, 99%, 45%;
 }
 
 .dark {
-  --background: 0 0% 8%;
-  --foreground: 0 0% 15%;
+  --background: 0, 0%, 8%;
+  --foreground: 0, 0%, 15%;
 
-  --primary: 8 99% 45%;
+  --primary: 8, 99%, 45%;
 }
 
 @keyframes shimmer {

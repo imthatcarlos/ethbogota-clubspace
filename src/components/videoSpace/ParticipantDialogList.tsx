@@ -15,7 +15,7 @@ export const ParticipantDialogList = () => {
 
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger className="z-30 bg-background rounded-lg p-2 hover:bg-foreground">
         <Users size={24} className="ml-2 mr-2"/>
       </DialogTrigger>
       <DialogContent className="max-w-[90%] sm:max-w-lg">

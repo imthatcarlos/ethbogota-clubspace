@@ -10,7 +10,6 @@ import {
 } from "@livekit/components-react";
 import { useEffect, useMemo, useState } from "react";
 // import jwt, { type JwtPayload } from "jwt-decode";
-import { DebugMode } from "@/lib/livekit/Debug";
 import Chat from "../Chat";
 // import { ParticipantList } from "../videoSpace/ParticipantList";
 import useIsMounted from "@/hooks/useIsMounted";
@@ -18,6 +17,7 @@ import { DefaultLensProfile } from "@/types/lens";
 import { ParticipantDialogList } from "../videoSpace/ParticipantDialogList";
 import { PinnedPromotionDialog } from "../videoSpace/PinnedPromotionDialog";
 import { Stage } from "../videoSpace/Stage";
+import { CustomControls } from "../videoSpace/CustomControls";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
@@ -91,13 +91,21 @@ export const LiveVideo = ({
                   <Sidebar isHost={isHost} />
                 </div>
               </div> */}
+          {/* {!connected && (
+            <button className="btn" onClick={() => window.location.reload()}>
+              Connect
+            </button>
+          )} */}
           <div className="flex gap-9">
             <div className="flex-1">
-              <Stage />
-              <div className="flex flex-1 gap-2 w-full items-center justify-center">
-                <ParticipantList />
-                <ParticipantDialogList />
-                <PinnedPromotionDialog space={space} />
+              <div className="relative">
+                <Stage />
+                <div className="-mt-16 flex items-center justify-center z-30 flex-1 gap-2">
+                  <ParticipantList />
+                  {/* @TODO: need to fix z-index */}
+                  <ParticipantDialogList />
+                  <PinnedPromotionDialog space={space} />
+                </div>
               </div>
               <RoomAudioRenderer />
             </div>
@@ -106,7 +114,7 @@ export const LiveVideo = ({
               <Chat viewerName={userIdentity} />
             </div>
           </div>
-          <DebugMode />
+          {/* <DebugMode /> */}
         </div>
       </LiveKitRoom>
     </div>
@@ -129,10 +137,9 @@ const ParticipantControls = () => {
 
   if (permissions && permissions.canPublish) {
     return (
-      <ControlBar
-        variation="minimal"
+      <CustomControls
         controls={{ microphone: true, camera: true, screenShare: true }}
-        className="border-none gap-2 flex items-center"
+        className="border-none gap-2 flex items-center z-30"
       />
     );
   }
