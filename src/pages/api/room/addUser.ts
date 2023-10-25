@@ -8,27 +8,26 @@ const apiKey = env.LIVEPEER_API_KEY;
 
 export default async function addUser(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { roomName, identity, name, metadata } = addUserReqValidator.parse(req.query);
+    const { roomName, identity, name, metadata, creatorAddress } = addUserReqValidator.parse(req.query);
 
-    // console.log("called", roomName, identity, name, metadata);
+    let canPublish = false;
+    if (creatorAddress === identity) canPublish = true;
 
-    let canPublish = true;
+    let metadataWithHost;
     try {
-      // @TODO: validate server side if the user is the host based on clubSpaceObject to send correct metadata
-      // signing works and adds an extra layer of security, but it's also an extra step for the host to join.
-      const parsedMeta = JSON.parse(metadata);
-      if (parsedMeta && parsedMeta["isHost"]) {
-        canPublish = true;
-      }
+      metadataWithHost = JSON.parse(metadata);
+      // only add host to metadata on the server
+      metadataWithHost.isHost = canPublish;
+
+      metadataWithHost = JSON.stringify(metadataWithHost);
     } catch (err) {
-      console.log("failed to parse metadata...", err);
-      canPublish = false;
+      metadataWithHost = metadata;
     }
 
     const body = {
       name,
       canPublish,
-      metadata,
+      metadata: metadataWithHost,
     };
     const url = `https://livepeer.studio/api/room/${roomName}/user`;
     const response = await axios.post(url, body, {

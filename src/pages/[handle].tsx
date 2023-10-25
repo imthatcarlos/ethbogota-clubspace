@@ -1,12 +1,9 @@
-import { LocalUserChoices } from "@livekit/components-react";
-
 import React, { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/router";
-import { useAccount, useSignMessage } from "wagmi";
+import { useAccount } from "wagmi";
 import "@livekit/components-styles";
 import useENS from "@/hooks/useENS";
-import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
-import { utils } from "ethers";
+import { useGetProfilesOwned } from "@/services/lens/getProfile";
 import { LiveVideo } from "@/components/live/LiveVideo";
 import { LiveDiscussion } from "@/components/live/LiveDiscussion";
 import { ConnectWallet } from "@/components/ConnectWallet";
@@ -42,16 +39,7 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
   const { data: ensData, isLoading: isLoadingENS } = useENS(address);
   const [defaultProfile, setDefaultProfile] = useState();
   const [loadingDefaultProfile, setLoadingDefaultProfile] = useState(true);
-  const [isHost, setIsHost] = useState(false);
   const [_canEnter, setCanEnter] = useState();
-
-  useEffect(() => {
-    if (space && isConnected) {
-      if (utils.getAddress(address) == utils.getAddress(space.creatorAddress)) {
-        setIsHost(true);
-      }
-    }
-  }, [isConnected, address, space]);
 
   // IF WE WANT BETTER SECURITY
   // const {
@@ -64,10 +52,7 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
   //   },
   // });
 
-  const roomName = useMemo(
-    () => space?.roomId,
-    [space]
-  );
+  const roomName = useMemo(() => space?.roomId, [space]);
   const userIdentity = useMemo(() => address ?? generateName(), [address]);
 
   useEffect(() => {
@@ -77,7 +62,8 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
       if (defaultProfile) {
         // the bare minimum
         setDefaultProfile({
-          id: defaultProfile.id,
+          // @ts-ignore
+          id: defaultProfile?.id,
           picture: defaultProfile.picture, // v2: ?
           handle: defaultProfile.handle, // v2: defaultProfile.handle.localName
         });
@@ -158,11 +144,13 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
   }
 
   if (isConnected && loadingDefaultProfile) {
-    return (<div className="flex-1 min-h-screen">
-      <div className="abs-center items-center">
-        <p className="animate-move-txt-bg gradient-txt text-4xl mb-4">Joining...</p>
+    return (
+      <div className="flex-1 min-h-screen">
+        <div className="abs-center items-center">
+          <p className="animate-move-txt-bg gradient-txt text-4xl mb-4">Joining...</p>
+        </div>
       </div>
-    </div>)
+    );
   }
 
   // if (status === "connected" && userIdentity === "user-identity") {
@@ -188,7 +176,6 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
         roomName={roomName}
         // preJoinChoices={preJoinChoices}
         userIdentity={userIdentity}
-        isHost={isHost}
         defaultProfile={defaultProfile}
         ensData={ensData}
         space={space}
@@ -203,7 +190,6 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
         roomName={roomName}
         // preJoinChoices={preJoinChoices}
         userIdentity={userIdentity}
-        isHost={isHost}
         defaultProfile={defaultProfile}
         space={space}
       />

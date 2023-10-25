@@ -13,6 +13,11 @@ import {
   Volume2,
   VolumeX,
   Zap,
+  Mic,
+  Monitor,
+  MonitorOff,
+  Video,
+  VideoOff,
   type Icon as LucideIcon,
   type LucideProps,
 } from "lucide-react";
@@ -33,7 +38,12 @@ export const Icons = {
   volumeOff: VolumeX,
   maximize: Maximize,
   minimize: Minimize,
+  mic: Mic,
   micOff: MicOff,
+  screenShare: Monitor,
+  screenShareOff: MonitorOff,
+  video: Video,
+  videoOff: VideoOff,
   gitHub: (props: LucideProps) => (
     <svg viewBox="0 0 438.549 438.549" {...props}>
       <path
