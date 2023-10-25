@@ -101,7 +101,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       roomId,
       createdAt,
       endAt,
-      handle,
+      handle: handleHackedForV2,
       startAt,
       productBannerUrl,
       productBannerIsVideo,
