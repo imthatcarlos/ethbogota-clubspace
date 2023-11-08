@@ -92,7 +92,7 @@ const ParticipantControls = ({
   //   }
   // }, [metadata]);
 
-  console.log(`User ${address} with canPublish = ${permissions?.canPublish}`);
+  // console.log(`User ${address} with canPublish = ${permissions?.canPublish}`);
 
   if (permissions && permissions.canPublish) {
     // && participant.identity === creatorAddress) {
