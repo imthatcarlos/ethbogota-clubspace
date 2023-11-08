@@ -36,7 +36,7 @@ export default async function addUser(req: NextApiRequest, res: NextApiResponse)
       },
     });
     // token, id and joinURL
-    const { token, id } = addUserResValidator.parse(await response.data);
+    const { token } = addUserResValidator.parse(await response.data);
 
     const result: TokenResult = {
       identity: identity as string,

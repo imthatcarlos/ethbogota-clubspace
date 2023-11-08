@@ -80,7 +80,22 @@ const ParticipantControls = ({
   const participant = useParticipantContext();
   const permissions = participant.permissions;
 
-  if (permissions && permissions.canPublish) { // && participant.identity === creatorAddress) {
+  // const metadata = participant.metadata;
+  // const metadataAddress = useMemo(() => {
+  //   try {
+  //     const parsed = JSON.parse(metadata);
+  //     console.log("parsed", parsed);
+  //     return parsed?.isHost;
+  //   } catch (err) {
+  //     console.log("failed to parse host metadata, setting to false");
+  //     return false;
+  //   }
+  // }, [metadata]);
+
+  console.log(`User ${address} with canPublish = ${permissions?.canPublish}`);
+
+  if (permissions && permissions.canPublish) {
+    // && participant.identity === creatorAddress) {
     return (
       <CustomControls
         controls={{
