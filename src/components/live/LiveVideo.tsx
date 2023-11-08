@@ -8,6 +8,7 @@ import useIsMounted from "@/hooks/useIsMounted";
 import { DefaultLensProfile } from "@/types/lens";
 import { Stage } from "../videoSpace/Stage";
 import { HostInfo } from "../videoSpace/HostInfo";
+import { useAccount } from "wagmi";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
@@ -24,6 +25,7 @@ export const LiveVideo = ({
   ensData?: any;
   space: any;
 }) => {
+  const { address } = useAccount();
   const isMounted = useIsMounted();
   const [tryToConnect, setTryToConnect] = useState(false);
   const [connected, setConnected] = useState(false);
@@ -39,13 +41,14 @@ export const LiveVideo = ({
       let str = JSON.stringify({
         defaultProfile: defaultProfile ?? undefined,
         ensData: ensData ?? undefined,
+        address
       });
       return str;
     } catch (err) {
       console.log("failed to stringify metadata");
       return undefined;
     }
-  }, [defaultProfile, ensData]);
+  }, [defaultProfile, ensData, address]);
 
   const userInfo = useMemo(() => {
     return {
