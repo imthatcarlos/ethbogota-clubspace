@@ -1,8 +1,7 @@
 import * as React from "react";
-import { LocalParticipant, RemoteParticipant, Track } from "livekit-client";
+import { Track } from "livekit-client";
 import {
   MediaDeviceMenu,
-  StartAudio,
   useLocalParticipantPermissions,
   TrackToggleProps,
   useTrackToggle,
@@ -120,7 +119,7 @@ export function CustomControls({ controls, ...props }: ControlBarProps) {
         {showIcon && <LeaveIcon />}
         </DisconnectButton>
       )} */}
-        <StartAudio label="Start Audio" className="" />
+        {/* <StartAudio label="Start Audio" className="" /> */}
       </div>
     </>
   );

@@ -68,6 +68,7 @@ export const LiveVideo = ({
         token={token}
         serverUrl={liveKitUrl}
         connect={tryToConnect}
+        audio={true}
         // simulateParticipants={2}
         onConnected={() => setConnected(true)}
         onDisconnected={() => {
