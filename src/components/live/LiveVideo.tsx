@@ -10,6 +10,7 @@ import { Stage } from "../videoSpace/Stage";
 import { HostInfo } from "../videoSpace/HostInfo";
 import { useAccount } from "wagmi";
 import { Footer } from "../MadfiFooter";
+import PinnedLensPost from "../PinnedLensPost";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
@@ -89,7 +90,8 @@ export const LiveVideo = ({
               <RoomAudioRenderer />
             </div>
 
-            <div className="w-full max-w-sm">
+            <div className="w-full max-w-sm bg-foreground rounded-2xl pt-4 max-h-[80%]">
+              <PinnedLensPost small={true} url={space.pinnedLensPost} />
               <Chat viewerName={userIdentity} />
             </div>
           </div>

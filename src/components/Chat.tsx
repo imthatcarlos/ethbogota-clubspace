@@ -38,7 +38,7 @@ export default function Chat({ viewerName }: Props) {
   }, [message, send]);
 
   return (
-    <div className="flex min-h-full flex-col space-between bg-foreground rounded-2xl px-3 py-4 w-full">
+    <div className="flex h-[85%] max-h-[827px] overflow-y-auto flex-col space-between bg-foreground rounded-2xl px-3 py-4 w-full">
       <div className="flex min-h-0 flex-1 flex-col-reverse overflow-y-auto pb-4">
         {reverseMessages.map((message) => {
           // assuming users have signed in with lens

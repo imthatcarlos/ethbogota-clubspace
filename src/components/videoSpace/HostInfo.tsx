@@ -33,9 +33,8 @@ export const HostInfo = ({ space }: { space: any }) => {
         </div>
       </div>
       <div>
-      <ParticipantDialogList />
+        <ParticipantDialogList />
       </div>
     </div>
   );
 };
-

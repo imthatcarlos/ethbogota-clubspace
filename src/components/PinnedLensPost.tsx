@@ -22,7 +22,6 @@ const PinnedLensPost = ({
   renderCollectButton = false,
   gated = null,
   onCollect = () => null,
-  creatorAddress,
 }) => {
   const { data: signer } = useSigner();
   const { chain } = useNetwork();
