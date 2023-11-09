@@ -15,6 +15,7 @@ import getLensPictureURL from "@/lib/utils/getLensPictureURL";
 import { Participant } from "livekit-client";
 import { Button } from "../ui";
 import { useAccount } from "wagmi";
+import Image from "next/image";
 
 // @TODO: place it on a more reusable place
 function useMetadataInfo(participant: Participant) {
@@ -75,7 +76,10 @@ export const ParticipantDialogList = () => {
   return (
     <Dialog>
       <DialogTrigger className="z-30 bg-background rounded-lg p-2 py-[0.62rem] hover:bg-foreground">
-        <Users size={24} className="ml-2 mr-2" />
+        <div className="space-y-2">
+          <span>See who&apos;s here</span>
+          <ProfilePicList participants={participants.slice(0, 5)} />
+        </div>
       </DialogTrigger>
       <DialogContent className="max-w-[90%] sm:max-w-lg border-none">
         {!showConfirmation && (
@@ -137,6 +141,32 @@ const StageParticipant = () => {
       <img className="h-12 w-12 rounded-full" src={avatar} alt={`Avatar of user ${displayName}`} />
 
       <div className="font-bold truncate max-w-[15ch]">{displayName}</div>
+    </div>
+  );
+};
+
+const ProfilePic = ({ participant }: { participant: Participant }) => {
+  const { avatar, displayName } = useMetadataInfo(participant);
+
+  return (
+    <Image
+      key={participant.sid}
+      className="inline-block h-8 w-8 rounded-full ring-2 ring-foreground"
+      src={avatar}
+      alt={`profile of ${displayName}`}
+      height={32}
+      width={32}
+      quality={50}
+    />
+  );
+};
+
+const ProfilePicList = ({ participants }: { participants: Array<Participant> }) => {
+  return (
+    <div className="flex -space-x-2 gap-4">
+      {participants.map((participant) => (
+        <ProfilePic participant={participant} key={participant.sid} />
+      ))}
     </div>
   );
 };

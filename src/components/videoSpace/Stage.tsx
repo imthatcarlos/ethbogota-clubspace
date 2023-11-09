@@ -58,7 +58,7 @@ export const Stage = ({ space }: { space: any }) => {
           <ParticipantControls screenShareParticipant={screenShareParticipant} creatorAddress={space.creatorAddress} />
         </ParticipantLoop>
 
-        <ParticipantDialogList />
+        {/* <ParticipantDialogList /> */}
         <PinnedPromotionDialog space={space} />
       </div>
     </>
