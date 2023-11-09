@@ -38,7 +38,7 @@ export default function Chat({ viewerName }: Props) {
   }, [message, send]);
 
   return (
-    <div className="flex min-h-full flex-col space-between bg-foreground rounded-2xl px-3 py-4">
+    <div className="flex min-h-full flex-col space-between bg-foreground rounded-2xl px-3 py-4 w-full">
       <div className="flex min-h-0 flex-1 flex-col-reverse overflow-y-auto pb-4">
         {reverseMessages.map((message) => {
           // assuming users have signed in with lens
@@ -48,11 +48,11 @@ export default function Chat({ viewerName }: Props) {
           const avatar = defaultProfile?.picture ? getLensPictureURL(defaultProfile) : "/anon.png";
 
           return (
-            <div key={message.timestamp} className="flex items-center gap-2 p-2">
-              <div className="flex items-center gap-2">
+            <div key={message.timestamp} className="flex gap-2 p-2 hover:bg-background hover:transition-colors rounded-md">
+              <div className="flex gap-2">
                 <div
                   className={cn(
-                    "text-xs font-semibold whitespace-nowrap inline-flex items-center gap-1",
+                    "text-xs font-semibold whitespace-nowrap inline-flex gap-1",
                     viewerName === message.from?.name && "text-primary"
                   )}
                 >
@@ -65,7 +65,7 @@ export default function Chat({ viewerName }: Props) {
                   {viewerName === message.from?.name && " (you)"}:
                 </div>
                 {/* <div className="text-xs text-gray-500">{new Date(message.timestamp).toLocaleTimeString()}</div> */}
-                <div className="text-sm">{message.message}</div>
+                <div className="text-sm [text-wrap:balance]">{message.message}</div>
               </div>
             </div>
           );

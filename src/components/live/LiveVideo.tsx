@@ -76,8 +76,8 @@ export const LiveVideo = ({
           setConnected(false);
         }}
       >
-        <div className="flex max-w-[80%] mx-auto items-center w-full h-full min-[1921px]:h-[80%]">
-          <div className="flex gap-9 mt-[5dvh]">
+        <div className="flex max-w-[85%] mx-auto items-center w-full h-full min-[1921px]:h-[80%]">
+          <div className="flex gap-9 mt-[5dvh] flex-1">
             <div className="flex-1">
               <div className="relative">
                 <Stage space={space} />
@@ -89,7 +89,7 @@ export const LiveVideo = ({
               <RoomAudioRenderer />
             </div>
 
-            <div className="w-80">
+            <div className="w-full max-w-sm">
               <Chat viewerName={userIdentity} />
             </div>
           </div>
