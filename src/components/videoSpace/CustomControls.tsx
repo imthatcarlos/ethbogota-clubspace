@@ -114,11 +114,6 @@ export function CustomControls({ controls, ...props }: ControlBarProps) {
             className="!rounded-lg"
           ></TrackToggle>
         )}
-        {/* {visibleControls.leave && (
-        <DisconnectButton>
-        {showIcon && <LeaveIcon />}
-        </DisconnectButton>
-      )} */}
         {/* <StartAudio label="Start Audio" className="" /> */}
       </div>
     </>

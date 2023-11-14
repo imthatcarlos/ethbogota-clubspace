@@ -13,9 +13,18 @@ import { cn } from "@/lib/utils/cn";
 import { useMemo } from "react";
 import { ParticipantTileWithScreenShare } from "./ParticipantTileWithScreenShare";
 import { CustomControls } from "./CustomControls";
-import { ParticipantDialogList } from "./ParticipantDialogList";
+// import { ParticipantDialogList } from "./ParticipantDialogList";
 import { PinnedPromotionDialog } from "./PinnedPromotionDialog";
-import { useAccount } from "wagmi";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  Icons,
+} from "../ui";
 
 export const Stage = ({ space }: { space: any }) => {
   // const participants = useParticipants();
@@ -55,7 +64,7 @@ export const Stage = ({ space }: { space: any }) => {
 
       <div className="-mt-16 flex items-center justify-center z-30 flex-1 gap-2">
         <ParticipantLoop participants={participants}>
-          <ParticipantControls screenShareParticipant={screenShareParticipant} creatorAddress={space.creatorAddress} />
+          <ParticipantControls screenShareParticipant={screenShareParticipant} space={space} />
         </ParticipantLoop>
 
         {/* <ParticipantDialogList /> */}
@@ -71,41 +80,88 @@ export const Stage = ({ space }: { space: any }) => {
 
 const ParticipantControls = ({
   screenShareParticipant,
-  creatorAddress,
+  space,
 }: {
   screenShareParticipant: LocalParticipant | RemoteParticipant;
-  creatorAddress: string;
+  space: any;
 }) => {
-  const { address } = useAccount();
   const participant = useParticipantContext();
   const permissions = participant.permissions;
+  const isHost = useIsHost(participant.metadata);
 
-  // const metadata = participant.metadata;
-  // const metadataAddress = useMemo(() => {
-  //   try {
-  //     const parsed = JSON.parse(metadata);
-  //     console.log("parsed", parsed);
-  //     return parsed?.isHost;
-  //   } catch (err) {
-  //     console.log("failed to parse host metadata, setting to false");
-  //     return false;
-  //   }
-  // }, [metadata]);
-
-  // console.log(`User ${address} with canPublish = ${permissions?.canPublish}`);
-
-  if (permissions && permissions.canPublish) {
-    // && participant.identity === creatorAddress) {
+  if (permissions && permissions.canPublish && isHost) {
     return (
-      <CustomControls
-        controls={{
-          microphone: true,
-          camera: true,
-          screenShare: screenShareParticipant ? participant?.identity === screenShareParticipant?.identity : true,
-        }}
-        className="border-none gap-2 flex items-center z-30"
-      />
+      <>
+        <CustomControls
+          controls={{
+            microphone: true,
+            camera: true,
+            screenShare: screenShareParticipant ? participant?.identity === screenShareParticipant?.identity : true,
+          }}
+          className="border-none gap-2 flex items-center z-30"
+        />
+        <EndStreamButton space={space} />
+
+        {/* <div className="bg-background flex items-center rounded-lg">
+          <button onClick={() => {}}></></button>
+        </div> */}
+      </>
     );
   }
   return null;
+};
+
+const EndStreamButton = ({ space }: { space: any }) => {
+  const handleEndStream = async () => {
+    try {
+      const res = await fetch("/api/stream/end", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(space),
+      });
+
+      if (res.status === 200) {
+        // window.location.reaload();
+      }
+    } catch (err) {
+      console.error("failed to end stream", err);
+    }
+  };
+
+  return (
+    <Dialog>
+      <DialogTrigger className="z-30 bg-background rounded-lg p-2 py-[0.62rem] hover:bg-foreground">
+        <>
+          <span className="sr-only">End stream</span>
+          <Icons.endStream className="w-6 h-6" />
+        </>
+      </DialogTrigger>
+      <DialogContent className="max-w-[90%] sm:max-w-lg border-none">
+        <>
+          <DialogHeader className="mb-4">
+            <DialogTitle className="mb-4">This will end the stream</DialogTitle>
+          </DialogHeader>
+          <DialogDescription className="">
+            <p>Are you sure you want to continue?</p>
+            <Button onClick={handleEndStream}>End stream</Button>
+          </DialogDescription>
+        </>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const useIsHost = (metadata: string) => {
+  const isHost = useMemo(() => {
+    try {
+      const parsed = JSON.parse(metadata);
+      return parsed?.isHost;
+    } catch (err) {
+      console.log("failed to parse host metadata, setting to false");
+      return false;
+    }
+  }, [metadata]);
+  return isHost;
 };
