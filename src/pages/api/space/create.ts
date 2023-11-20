@@ -104,7 +104,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       exp: startAt ? startAt - createdAt + REDIS_SPACE_EXP : REDIS_SPACE_EXP
     };
 
-    const spaceRedisKey = `${REDIS_SPACE_PREFIX}/${handleHackedForV2}`;
+    const spaceRedisKey = `${REDIS_SPACE_PREFIX}/${handle}`;
 
     try {
       console.log(`setting in redis [${spaceRedisKey}] with exp at ${endAt}`);
