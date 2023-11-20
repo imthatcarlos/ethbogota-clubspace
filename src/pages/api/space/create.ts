@@ -84,18 +84,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const createdAt = Math.floor(Date.now() / 1000);
     const endAt = createdAt + REDIS_SPACE_EXP;
 
-    // TODO: remove after v2
-    const hackedForV2 = creatorLensHandle.includes(".test")
-      ? `${creatorLensHandle.split(".")[0]}.lens`
-      : creatorLensHandle;
-
-    const handleHackedForV2 = handle.includes(".test")
-      ? `${handle.split(".")[0]}.lens`
-      : handle;
-
     const spaceObject = {
       creatorAddress: getAddress(creatorAddress),
-      creatorLensHandle: hackedForV2,
+      creatorLensHandle,
       creatorLensProfileId,
       creatorAvatar,
       lensPubId,
@@ -103,7 +94,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       roomId,
       createdAt,
       endAt,
-      handle: handleHackedForV2,
+      handle,
       startAt,
       productBannerUrl,
       productBannerIsVideo,

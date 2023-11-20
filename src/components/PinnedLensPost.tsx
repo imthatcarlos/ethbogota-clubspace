@@ -56,7 +56,6 @@ const PinnedLensPost = ({
     setPubRewarded(pub);
   }, [url]);
 
-  // TODO: handle delegated executor logic
   const actButtonCTA = useMemo(() => {
     if (!(lensPost && pubRewarded)) return null;
 
