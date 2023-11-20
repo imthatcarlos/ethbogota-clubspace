@@ -131,7 +131,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       headers: { 'x-api-key': MADFI_API_KEY },
     });
 
-    return res.status(200).json({ url: `${NEXT_PUBLIC_SITE_URL}/${handleHackedForV2}`, startAt });
+    return res.status(200).json({ url: `${NEXT_PUBLIC_SITE_URL}/${handle}`, startAt });
   } catch (e) {
     console.log(e);
 
