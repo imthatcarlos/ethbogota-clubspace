@@ -49,7 +49,7 @@ export default function Chat({ viewerName }: Props) {
 
           return (
             <div key={message.timestamp} className="flex items-center gap-2 p-2">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col items-center gap-2">
                 <div
                   className={cn(
                     "text-xs font-semibold whitespace-nowrap inline-flex items-center gap-1",
@@ -57,15 +57,17 @@ export default function Chat({ viewerName }: Props) {
                   )}
                 >
                   <img
-                    className="h-4 w-4 rounded-full select-none pointer-events-none"
+                    className="h-5 w-5 rounded-full select-none pointer-events-none -ml-2 mr-1"
                     src={avatar}
                     alt={`Avatar of user ${displayName}`}
                   />
                   {displayName}
                   {viewerName === message.from?.name && " (you)"}:
+                  <div className="text-xs text-gray-500">
+                    {new Intl.DateTimeFormat('default', { hour: '2-digit', minute: '2-digit' }).format(new Date(message.timestamp))}
+                  </div>
                 </div>
-                {/* <div className="text-xs text-gray-500">{new Date(message.timestamp).toLocaleTimeString()}</div> */}
-                <div className="text-sm">{message.message}</div>
+                <div className="text-sm ml-auto">{message.message}</div>
               </div>
             </div>
           );

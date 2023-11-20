@@ -1,7 +1,7 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { useAccount, useSigner } from "wagmi";
 import { useGetProfilesOwned } from "@/services/lens/getProfile";
-import lensClient from "@/services/lens/client";
+import { lensClient } from "@/services/lens/client";
 
 export const getAccessToken = async () => {
   const accessTokenResult = await lensClient.authentication.getAccessToken();

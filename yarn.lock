@@ -1464,13 +1464,13 @@
     fastfile "0.0.19"
     ffjavascript "^0.2.48"
 
-"@imthatcarlos/widgets-react@^0.0.37":
-  version "0.0.37"
-  resolved "https://npm.pkg.github.com/download/@imthatcarlos/widgets-react/0.0.37/8d3ccdc156b210b664a20fda5b8f6ce67326bdb0#8d3ccdc156b210b664a20fda5b8f6ce67326bdb0"
-  integrity sha512-xDYwAGeNulffDWTA/4dlXGBBH2UN6zgh7gZlGr9e/z5i1Ol1d4goIhO88PqEaNeVelX3BDhHe6mMKJrym97klg==
+"@imthatcarlos/widgets-react@^0.0.40":
+  version "0.0.40"
+  resolved "https://npm.pkg.github.com/download/@imthatcarlos/widgets-react/0.0.40/0f7cd84789e5b017947467266131b23d8e7965c1#0f7cd84789e5b017947467266131b23d8e7965c1"
+  integrity sha512-BAZCA2Dvq1WJ2Njb8qiZpgmKFncgveeFFJnQDMhE1/qZih4hk/5XDQi/+YwjgD6vg6pwqYaaVkVeqepK7S6dzA==
   dependencies:
     "@emotion/css" "^11.10.5"
-    "@lens-protocol/client" "^2.0.0-alpha.15"
+    "@lens-protocol/client" "^2.0.0-alpha.19"
     "@types/react" "^18.0.28"
     date-fns "^2.29.3"
     ethers "^5.7.2"
@@ -1478,7 +1478,25 @@
     react-markdown "^8.0.6"
     react-player "^2.12.0"
     rehype-raw "^6.1.1"
-    typescript "^4.9.5"
+    typescript "^5.2.2"
+    urql "^3.0.3"
+
+"@imthatcarlos/widgets-react@^0.0.41":
+  version "0.0.41"
+  resolved "https://npm.pkg.github.com/download/@imthatcarlos/widgets-react/0.0.41/8c7c075e0aabe2d6f1ca2f0f7843bf6c7e6811e0#8c7c075e0aabe2d6f1ca2f0f7843bf6c7e6811e0"
+  integrity sha512-ZWMTZ2RSINkN7enrAQA43M5EBnFkTFQtQBzyiZXYc7GL1Y/3hmqR7QnFi9kct5vE5CTPj0vhLft/r6z8VpH6iw==
+  dependencies:
+    "@emotion/css" "^11.10.5"
+    "@imthatcarlos/widgets-react" "^0.0.40"
+    "@lens-protocol/client" "^2.0.0-alpha.19"
+    "@types/react" "^18.0.28"
+    date-fns "^2.29.3"
+    ethers "^5.7.2"
+    graphql "^16.6.0"
+    react-markdown "^8.0.6"
+    react-player "^2.12.0"
+    rehype-raw "^6.1.1"
+    typescript "^5.2.2"
     urql "^3.0.3"
 
 "@ioredis/commands@^1.1.1":
@@ -1543,10 +1561,10 @@
     "@json-rpc-tools/types" "^1.7.6"
     "@pedrouid/environment" "^1.0.1"
 
-"@lens-protocol/client@^2.0.0-alpha.15":
-  version "2.0.0-alpha.15"
-  resolved "https://registry.yarnpkg.com/@lens-protocol/client/-/client-2.0.0-alpha.15.tgz#b4ca54dbec9c369c13e8d72bcda71566bd692712"
-  integrity sha512-abGpdvkrbe+GOh+wpbzwmLuZDeOCLY30NXzq9Dwhrl60R6RPSYzSfy8F04ow/ZtdMW638YOiNsiCDbqS0YQc7w==
+"@lens-protocol/client@^2.0.0-alpha.19", "@lens-protocol/client@^2.0.0-alpha.21":
+  version "2.0.0-alpha.21"
+  resolved "https://registry.yarnpkg.com/@lens-protocol/client/-/client-2.0.0-alpha.21.tgz#3f73e34406c48737578dca364bd4a24d515bed22"
+  integrity sha512-adoRZN+o/e53KxlhzbnKH9CLmetOUrLe3D2vq4A3NF0vAZkzVtzFOXVx9GVtmz6URd9pJUJGg3P08UknWjcYfw==
   dependencies:
     "@ethersproject/address" "^5.7.0"
     "@ethersproject/bignumber" "^5.7.0"
@@ -1554,9 +1572,9 @@
     "@ethersproject/hash" "^5.7.0"
     "@ethersproject/providers" "^5.7.2"
     "@ethersproject/wallet" "^5.7.0"
-    "@lens-protocol/gated-content" "0.3.3-alpha.10"
-    "@lens-protocol/shared-kernel" "0.11.0-alpha.5"
-    "@lens-protocol/storage" "0.7.5-alpha.3"
+    "@lens-protocol/gated-content" "0.3.3-alpha.15"
+    "@lens-protocol/shared-kernel" "0.11.0-alpha.8"
+    "@lens-protocol/storage" "0.7.5-alpha.6"
     graphql "^16.7.1"
     graphql-request "^6.1.0"
     graphql-tag "^2.12.6"
@@ -1564,13 +1582,13 @@
     tslib "^2.6.2"
     zod "^3.22.0"
 
-"@lens-protocol/gated-content@0.3.3-alpha.10":
-  version "0.3.3-alpha.10"
-  resolved "https://registry.yarnpkg.com/@lens-protocol/gated-content/-/gated-content-0.3.3-alpha.10.tgz#d0e66779fa7fd3145324dd7f840d0ca65b896974"
-  integrity sha512-wqtC4aGw66hd1N1jNfWVHcTiuxsHFF3MGW62M2MjO0IoPFGnYX8UGVxcdX0P/cMfif4OSSfxmAk4VbBJED32Hg==
+"@lens-protocol/gated-content@0.3.3-alpha.15":
+  version "0.3.3-alpha.15"
+  resolved "https://registry.yarnpkg.com/@lens-protocol/gated-content/-/gated-content-0.3.3-alpha.15.tgz#90537ef8be3aa0a0b41566b123d3a29e391619d0"
+  integrity sha512-CZLWNZEner+2WfIdyEqZ2tBnvPNaAljnXMgjgej65IPtLX9aFlK4DIZ4iveGewDCrXIsFMbTgHoFUic+79Ie5g==
   dependencies:
-    "@lens-protocol/shared-kernel" "0.11.0-alpha.5"
-    "@lens-protocol/storage" "0.7.5-alpha.3"
+    "@lens-protocol/shared-kernel" "0.11.0-alpha.8"
+    "@lens-protocol/storage" "0.7.5-alpha.6"
     "@lit-protocol/constants" "2.1.62"
     "@lit-protocol/crypto" "2.1.62"
     "@lit-protocol/encryption" "2.1.62"
@@ -1580,22 +1598,21 @@
     traverse "^0.6.7"
     tslib "^2.6.2"
 
-"@lens-protocol/shared-kernel@0.11.0-alpha.5":
-  version "0.11.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@lens-protocol/shared-kernel/-/shared-kernel-0.11.0-alpha.5.tgz#6a37a914e482216e89ba799aa465a712276c7889"
-  integrity sha512-X/oALIxBvzLIMIjbgp7Vdq9PI7UxxS9gQkNi57wUUkmoV8mkj4XfkZT6zC7rF7JnPMJoB40h6X98YzdUCIiPnA==
+"@lens-protocol/shared-kernel@0.11.0-alpha.8":
+  version "0.11.0-alpha.8"
+  resolved "https://registry.yarnpkg.com/@lens-protocol/shared-kernel/-/shared-kernel-0.11.0-alpha.8.tgz#dca7deffbdb1eac9c2ce504485298b81dcdb7ba6"
+  integrity sha512-/hL8ChEc8QimdMrOVSzZO9qWBB5aYsUYUBBwU8ac4+N+OrxO90tcyesTQHN+8Ks4CDb/ZDZiBMs/dNWnn0uybw==
   dependencies:
     decimal.js "^10.4.3"
     lodash "^4.17.21"
     tslib "^2.6.2"
-    uuid "^9.0.0"
 
-"@lens-protocol/storage@0.7.5-alpha.3":
-  version "0.7.5-alpha.3"
-  resolved "https://registry.yarnpkg.com/@lens-protocol/storage/-/storage-0.7.5-alpha.3.tgz#be865caabceba229cec83a695fed3ea5e8c8c7de"
-  integrity sha512-Nyw3lltWInnG36oWHw9Cr8vKiWaLPXfD9P8Kw8777aUuGlxUjjDFBo5WrGdgaapoGPr994CQanmrjd52KSIGvw==
+"@lens-protocol/storage@0.7.5-alpha.6":
+  version "0.7.5-alpha.6"
+  resolved "https://registry.yarnpkg.com/@lens-protocol/storage/-/storage-0.7.5-alpha.6.tgz#2c356c9a81904830cf4b5213dd1dc7c0fc7d5ac7"
+  integrity sha512-abWddiHZBOVxRcLrdNxJ3atD4g/bGCsMs0T31FHc4yYxwj38cOoBqTT01wRfcgCmuq8Tg+2dA2GlKKu2eeO8kA==
   dependencies:
-    "@lens-protocol/shared-kernel" "0.11.0-alpha.5"
+    "@lens-protocol/shared-kernel" "0.11.0-alpha.8"
     tslib "^2.6.2"
     zod "^3.22.0"
 
@@ -9126,10 +9143,15 @@ typedarray-to-buffer@3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typescript@^4.6.4, typescript@^4.9.5:
+typescript@^4.6.4:
   version "4.9.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
   integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
+
+typescript@^5.2.2:
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.3.2.tgz#00d1c7c1c46928c5845c1ee8d0cc2791031d4c43"
+  integrity sha512-6l+RyNy7oAHDfxC4FzSJcz9vnjTKxrLpDG5M2Vu4SHRVNg6xzqZp6LYSR9zjqQTu8DU/f5xwxUdADOkbrIX2gQ==
 
 uint8arrays@^3.0.0, uint8arrays@^3.1.0:
   version "3.1.1"

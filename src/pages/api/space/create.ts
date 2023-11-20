@@ -71,6 +71,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       pinnedLensPost,
       gated,
       spaceType,
+      roomName,
     } = req.body;
 
     if (!(creatorAddress && handle)) {
@@ -85,6 +86,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const endAt = createdAt + REDIS_SPACE_EXP;
 
     const spaceObject = {
+      roomName,
       creatorAddress: getAddress(creatorAddress),
       creatorLensHandle,
       creatorLensProfileId,

@@ -230,7 +230,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     console.log(`found space with roomId: ${space.roomId}`);
-    console.log(JSON.stringify(space, null, 2));
+    // console.log(JSON.stringify(space, null, 2));
 
     return { props: { space } };
   } catch (error) {

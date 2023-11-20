@@ -201,7 +201,7 @@ export const signCreateTypedData = async (_request, signer, accessToken, documen
 
 export const broadcastRequest = async (_request, accessToken) => {
   const result = await request({
-    url: apiUrls.lensAPIv2,
+    url: apiUrls.lensAPI,
     document: BROADCAST,
     variables: { request: _request },
     requestHeaders: {

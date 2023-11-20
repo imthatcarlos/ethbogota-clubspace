@@ -89,7 +89,7 @@ export const ParticipantDialogList = () => {
               ) : null}
             </DialogHeader>
             <h2 className="text-3xl font-semibold">
-              {host?.identity === userAddress ? "Invite to stage" : "Online now"}
+              Participants
             </h2>
             <DialogDescription className="space-y-6 max-h-60 overflow-auto">
               <ParticipantLoop participants={regularParticipants}>

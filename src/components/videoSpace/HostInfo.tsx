@@ -17,10 +17,9 @@ export const HostInfo = ({ space }: { space: any }) => {
     <div className="flex items-center justify-between gap-2">
       <div className="text-xs font-semibold whitespace-nowrap inline-flex gap-1">
         <img className="h-20 w-20 rounded-full select-none pointer-events-none" src={space.creatorAvatar} alt="avatar" />
-        <div className="flex flex-col gap-4">
-          <span className="font-light text-lg pl-4">{space.creatorLensHandle || space.handle}</span>
-          {/* @TODO: how do I get the space name? And do we even have it */}
-          <span className="font-bold text-xl pl-4">Testing MadFi Spaces</span>
+        <div className="flex flex-col gap-2">
+          <span className="font-light text-lg pl-4">{space.creatorLensHandle ? `@${space.creatorLensHandle}` : space.handle}</span>
+          <span className="font-bold text-xl pl-4">{space.roomName || 'Livestream on MadFi'}</span>
         </div>
       </div>
       <div>{/** other info here */}</div>

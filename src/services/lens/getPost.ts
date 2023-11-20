@@ -1,7 +1,7 @@
 import { apiUrls } from "@/constants/apiUrls";
 import request, { gql } from "graphql-request";
 import { getAccessToken } from "@/hooks/useLensLogin";
-import lensClient from './client';
+import { lensClient } from './client';
 
 const GET_POST = gql`
   query Publication($publicationId: InternalPublicationId!) {

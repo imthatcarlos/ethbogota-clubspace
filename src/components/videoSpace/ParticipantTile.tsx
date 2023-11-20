@@ -126,7 +126,7 @@ export const ParticipantTile = ({
 const DisplayName = ({ defaultProfile }: { defaultProfile: DefaultLensProfile }) => {
   if (defaultProfile?.handle) {
     return (
-      <span className="text-white first-letter:uppercase text-xl font-bold select-none">{defaultProfile.handle}</span>
+      <span className="text-white text-xl font-bold select-none">{defaultProfile.handle}</span>
     );
   }
   return <ParticipantName />;

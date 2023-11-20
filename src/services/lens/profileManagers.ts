@@ -58,7 +58,7 @@ export const enableProfileManagerGasless = async (signer: any, contractAddress: 
   if (!accessToken) throw new Error('Must sign-in with Lens');
 
   const { createChangeProfileManagersTypedData } = await request({
-    url: apiUrls.lensAPIv2,
+    url: apiUrls.lensAPI,
     document: MUTATE_CHANGE_PROFILE_MANAGER,
     variables: { request: { changeManagers: { address: contractAddress, action: 'ADD' } } },
     requestHeaders: { "x-access-token": accessToken },
@@ -78,7 +78,7 @@ export const enableProfileManagerGasless = async (signer: any, contractAddress: 
 export const getProfileManagers = async (profileId: string) => {
   try {
     const { profileManagers } = await request({
-      url: apiUrls.lensAPIv2,
+      url: apiUrls.lensAPI,
       document: GET_PROFILE_MANAGERS,
       variables: { profileId },
     });

@@ -2,7 +2,7 @@ import { apiUrls } from "@/constants/apiUrls";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { BigNumber } from "ethers";
 import request, { gql } from "graphql-request";
-import lensClient from "./client";
+import { lensClient } from "./client";
 
 export type Profile = {
   id: string;

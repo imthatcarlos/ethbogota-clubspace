@@ -36,47 +36,46 @@ type AppPropsWithLayout = AppProps & {
 // getServerSideProps | other next function in route -> _app -> Route Component
 // Fix for SEO, see: https://github.com/vercel/next.js/issues/35172
 const HandleSEO = ({ pageProps }) => {
-  const { handle, clubSpaceObject } = pageProps;
+  const { handle, space } = pageProps;
 
-  if (clubSpaceObject) {
+  if (space) {
     return (
       <Head>
-        <title>ClubSpace | @{clubSpaceObject?.creatorLensHandle}</title>
+        <title>MadFi Live | @{space?.creatorLensHandle}</title>
         <meta
           name="description"
-          content={`@${clubSpaceObject?.creatorLensHandle} is hosting a live listening party!`}
+          content={`@${space?.creatorLensHandle} is hosting a livestream!`}
         ></meta>
-        <meta property="og:title" content={`ClubSpace | ${clubSpaceObject?.creatorLensHandle}`}></meta>
+        <meta property="og:title" content={`MadFi | ${space?.creatorLensHandle}`}></meta>
         <meta
           property="og:description"
-          content={`@${clubSpaceObject?.creatorLensHandle} is hosting a live listening party!`}
+          content={`@${space?.creatorLensHandle} is hosting a livestream!`}
         ></meta>
-        <meta property="og:url" content={`${NEXT_PUBLIC_SITE_URL}/live/${clubSpaceObject?.creatorLensHandle}`}></meta>
+        <meta property="og:url" content={`${NEXT_PUBLIC_SITE_URL}/${space?.creatorLensHandle}`}></meta>
         <meta property="og:type" content="website"></meta>
         <meta
           property="og:image"
-          content="https://link.storjshare.io/raw/jwg3vujynjlvbn5gdgm5yjoob7mq/misc%2Fclubspace.png"
+          content="https://link.storjshare.io/raw/jvnvg6pove7qyyfbyo5hqggdis6a/misc%2Fmadfi-banner.jpeg"
         ></meta>
-        <meta property="og:image:alt" content="clubspace.png"></meta>
         <meta property="og:image:width" content="1200"></meta>
         <meta property="og:image:height" content="630"></meta>
         <meta property="og:locale" content="en_IE"></meta>
-        <meta property="og:site_name" content="ClubSpace"></meta>
+        <meta property="og:site_name" content="MadFi"></meta>
         <meta name="twitter:creator" content="@madfiprotocol"></meta>
         <meta name="twitter:card" content="summary_large_image"></meta>
-        <meta name="twitter:title" content={`ClubSpace | @${clubSpaceObject?.creatorLensHandle}`}></meta>
+        <meta name="twitter:title" content={`MadFi Live | @${space?.creatorLensHandle}`}></meta>
         <meta
           name="twitter:description"
-          content={`@${clubSpaceObject?.creatorLensHandle} is hosting a live listening party!`}
+          content={`@${space?.creatorLensHandle} is hosting a livestream!`}
         ></meta>
         <meta
           name="twitter:image"
-          content="https://link.storjshare.io/raw/jwg3vujynjlvbn5gdgm5yjoob7mq/misc%2Fclubspace.png"
+          content="https://link.storjshare.io/raw/jvnvg6pove7qyyfbyo5hqggdis6a/misc%2Fmadfi-banner.jpeg"
         ></meta>
         <link
           rel="iframely player audio"
           type="text/html"
-          href={`${NEXT_PUBLIC_SITE_URL}/embed/${clubSpaceObject?.creatorLensHandle}`}
+          href={`${NEXT_PUBLIC_SITE_URL}/embed/${space?.creatorLensHandle}`}
           media="(aspect-ratio: 2/1)"
         ></link>
       </Head>
@@ -85,28 +84,27 @@ const HandleSEO = ({ pageProps }) => {
 
   return (
     <Head>
-      <title>ClubSpace</title>
-      <meta name="description" content="Promote your NFT drops with a live listening party"></meta>
-      <meta property="og:title" content="ClubSpace"></meta>
-      <meta property="og:description" content="Promote your NFT drops with a live listening party"></meta>
+      <title>MadFi Live</title>
+      <meta name="description" content="Host your next livestream on MadFi with onchain loyalty, sponsorships, and more."></meta>
+      <meta property="og:title" content="MadFi"></meta>
+      <meta property="og:description" content="Host your next livestream on MadFi with onchain loyalty, sponsorships, and more."></meta>
       <meta property="og:url" content={NEXT_PUBLIC_SITE_URL}></meta>
       <meta property="og:type" content="website"></meta>
       <meta
         property="og:image"
-        content="https://link.storjshare.io/raw/jwg3vujynjlvbn5gdgm5yjoob7mq/misc%2Fclubspace.png"
+        content="https://link.storjshare.io/raw/jvnvg6pove7qyyfbyo5hqggdis6a/misc%2Fmadfi-banner.jpeg"
       ></meta>
-      <meta property="og:image:alt" content="clubspace.png"></meta>
       <meta property="og:image:width" content="1200"></meta>
       <meta property="og:image:height" content="630"></meta>
       <meta property="og:locale" content="en_IE"></meta>
-      <meta property="og:site_name" content="ClubSpace"></meta>
+      <meta property="og:site_name" content="MadFi"></meta>
       <meta name="twitter:creator" content="@madfiprotocol"></meta>
       <meta name="twitter:card" content="summary_large_image"></meta>
-      <meta name="twitter:title" content="ClubSpace"></meta>
-      <meta name="twitter:description" content="Promote your NFT drops with a live listening party"></meta>
+      <meta name="twitter:title" content="MadFi Live"></meta>
+      <meta name="twitter:description" content="Host your next livestream on MadFi with onchain loyalty, sponsorships, and more."></meta>
       <meta
         name="twitter:image"
-        content="https://link.storjshare.io/raw/jwg3vujynjlvbn5gdgm5yjoob7mq/misc%2Fclubspace.png"
+        content="https://link.storjshare.io/raw/jvnvg6pove7qyyfbyo5hqggdis6a/misc%2Fmadfi-banner.jpeg"
       ></meta>
       {handle && (
         <link

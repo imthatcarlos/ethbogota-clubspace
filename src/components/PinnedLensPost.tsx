@@ -1,18 +1,25 @@
 import { useMemo, useState } from "react";
+import { useRouter } from "next/router";
 import toast from "react-hot-toast";
-import { useNetwork, useSigner, useSwitchNetwork, useAccount } from "wagmi";
+import { useNetwork, useSigner, useSwitchNetwork } from "wagmi";
 // import { Publication, Theme } from "@lens-protocol/widgets-react";
 import { Publication, Theme } from "@imthatcarlos/widgets-react";
 import { approveToken, parsePublicationLink, wait } from "@/utils";
 import { getPost } from "@/services/lens/getPost";
 import { collectPostGasless } from "@/services/lens/gaslessTxs";
 import { getAccessToken } from "@/hooks/useLensLogin";
-import { MULTIRECIPIENT_COLLECT_MODULE, REWARD_ENGAGEMENT_ACTION_MODULE, LENS_CHAIN_ID } from "@/lib/consts";
+import {
+  MULTIRECIPIENT_COLLECT_MODULE,
+  REWARD_ENGAGEMENT_ACTION_MODULE,
+  LENS_CHAIN_ID,
+  MADFI_SITE_URL
+} from "@/lib/consts";
 import { useIsAuthenticated, useLensLogin, useAuthenticatedProfileId } from "@/hooks/useLensLogin";
 import getPublicationRewarded from "@/services/madfi/getPublicationRewarded";
 import { getPublicationActionParams } from "@/services/madfi/rewardEngagementAction";
 import { useIsProfileManager } from '@/services/lens/profileManagers';
 import processAct from "@/services/lens/act";
+import { LENS_ENVIRONMENT } from "@/services/lens/client";
 import { LivePoints } from "./live/LivePoints";
 
 const PinnedLensPost = ({
@@ -24,6 +31,7 @@ const PinnedLensPost = ({
   onCollect = () => null,
   creatorAddress,
 }) => {
+  const router = useRouter();
   const { data: signer } = useSigner();
   const { chain } = useNetwork();
   const { data: isAuthenticated, refetch: fetchIsAuthenticated } = useIsAuthenticated();
@@ -55,6 +63,10 @@ const PinnedLensPost = ({
     const pub = await getPublicationRewarded(profileIdHex, pubIdHex);
     setPubRewarded(pub);
   }, [url]);
+
+  const goToPublicationPage = () => {
+    window.open(`${MADFI_SITE_URL}/posts/${lensPubId}`, '_blank');
+  }
 
   const actButtonCTA = useMemo(() => {
     if (!(lensPost && pubRewarded)) return null;
@@ -145,6 +157,15 @@ const PinnedLensPost = ({
     }
   };
 
+  const onShareButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    navigator.clipboard.writeText(`${MADFI_SITE_URL}/posts/${lensPubId}`);
+
+    toast("Link copied to clipboard", { position: "bottom-center", icon: "🔗", duration: 2000 });
+  };
+
   if (small && lensPost) {
     return (
       <>
@@ -172,12 +193,13 @@ const PinnedLensPost = ({
         {lensPost && (
           <Publication
             publicationData={lensPost}
-            publicationId={parsePublicationLink(url)}
+            publicationId={lensPubId}
             theme={Theme.dark}
-            environment="DEVELOPMENT"
-            onClick={() => {}}
-            renderActButtonWithCTA={actButtonCTA}
-            onActButtonClick={() => onActButtonClick(false)}
+            environment={LENS_ENVIRONMENT}
+            onClick={goToPublicationPage}
+            onShareButtonClick={onShareButtonClick}
+            // renderActButtonWithCTA={actButtonCTA}
+            // onActButtonClick={() => onActButtonClick(false)}
           />
         )}
       </div>

@@ -1,7 +1,6 @@
-import { LensClient, development } from "@lens-protocol/client";
+import { LensClient, development, production } from "@lens-protocol/client";
 import { IS_PRODUCTION } from '@/lib/consts';
 
-// TODO: update for production after v2
-const lensClient = new LensClient({ environment: IS_PRODUCTION ? null : development });
+export const LENS_ENVIRONMENT = IS_PRODUCTION ? production : development;
 
-export default lensClient;
+export const lensClient = new LensClient({ environment: LENS_ENVIRONMENT });
