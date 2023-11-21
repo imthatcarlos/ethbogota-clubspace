@@ -13,7 +13,7 @@ type Props = {
 export default function Chat({ viewerName }: Props) {
   const { chatMessages: messages, send } = useChat();
 
-  const reverseMessages = useMemo(() => messages.sort((a, b) => b.timestamp - a.timestamp), [messages]);
+  const reverseMessages = useMemo(() => messages.sort((a, b) => a.timestamp - b.timestamp), [messages]);
 
   const [message, setMessage] = useState("");
 
@@ -37,19 +37,28 @@ export default function Chat({ viewerName }: Props) {
     }
   }, [message, send]);
 
+  const getAvatar = ({ defaultProfile, ensData }) => {
+    if (defaultProfile?.metadata) {
+      return getLensPictureURL(defaultProfile);
+    }
+    if (ensData && Object.keys(ensData) && ensData?.avatar) {
+      return ensData.avatar;
+    }
+    return "/anon.png";
+  };
+
   return (
-    <div className="flex h-[85%] max-h-[827px] overflow-y-auto flex-col space-between bg-foreground rounded-2xl px-3 py-4 w-full">
-      <div className="flex min-h-0 flex-1 flex-col-reverse overflow-y-auto pb-4">
+    <div className="relative h-[85%] max-h-[827px] bg-foreground rounded-2xl px-3 py-4 w-full">
+      <div className="absolute top-4 bottom-14 overflow-y-auto pb-4 right-0 left-0 p-2">
         {reverseMessages.map((message) => {
           // assuming users have signed in with lens
-          const { defaultProfile }: { defaultProfile: DefaultLensProfile } = JSON.parse(message.from?.metadata);
-          const displayName = defaultProfile ? defaultProfile.handle : message.from?.name;
-
-          const avatar = defaultProfile?.picture ? getLensPictureURL(defaultProfile) : "/anon.png";
+          const { defaultProfile, ensData }: { defaultProfile: DefaultLensProfile, ensData: any } = JSON.parse(message.from?.metadata);
+          const displayName = defaultProfile ? `@${defaultProfile?.handle?.localName}` : message.from?.name;
+          const avatar = getAvatar({ defaultProfile, ensData });
 
           return (
-            <div key={message.timestamp} className="flex gap-2 p-2 hover:bg-background hover:transition-colors rounded-md">
-              <div className="flex gap-2">
+            <div key={message.timestamp} className="flex flex-col p-2 hover:bg-background hover:transition-colors rounded-md">
+              <div className="flex justify-between items-center gap-2 p-2">
                 <div
                   className={cn(
                     "text-xs font-semibold whitespace-nowrap inline-flex gap-1",
@@ -57,7 +66,7 @@ export default function Chat({ viewerName }: Props) {
                   )}
                 >
                   <img
-                    className="h-5 w-5 rounded-full select-none pointer-events-none -ml-2 mr-1"
+                    className="h-6 w-6 rounded-full select-none pointer-events-none -ml-2 -mt-2 mr-1"
                     src={avatar}
                     alt={`Avatar of user ${displayName}`}
                   />
@@ -67,13 +76,13 @@ export default function Chat({ viewerName }: Props) {
                     {new Intl.DateTimeFormat('default', { hour: '2-digit', minute: '2-digit' }).format(new Date(message.timestamp))}
                   </div>
                 </div>
-                <div className="text-sm ml-auto [text-wrap:balance]">{message.message}</div>
               </div>
+              <div className="text-sm ml-auto">{message.message}</div>
             </div>
           );
         })}
       </div>
-      <div className="flex w-full gap-2 self-end">
+      <div className="absolute bottom-0 left-0 right-0 flex w-full gap-2 p-2">
         <Textarea
           value={message}
           className="border-box h-10 border-[#e0e0e0] placeholder:text-[#8d8d8d]"

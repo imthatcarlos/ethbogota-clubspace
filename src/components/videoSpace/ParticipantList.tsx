@@ -18,7 +18,7 @@ export const ParticipantList = ({}: {}) => {
 
   const displayName = useMemo(() => {
     if (defaultProfile) {
-      return defaultProfile.handle;
+      return defaultProfile?.metadata?.displayName || `@${defaultProfile?.handle.localName}`;
     }
     if (ensData && Object.keys(ensData) && ensData?.handle) {
       return ensData.handle;

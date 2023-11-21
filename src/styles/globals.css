@@ -18,7 +18,7 @@
 
   --background: 0, 0%, 8%;
   --foreground: 0, 0%, 15%;
-  
+
   --primary: 8 99% 45%;
 }
 
@@ -277,4 +277,11 @@ button[disabled]:hover {
   .grid-profile {
     grid-template-columns: auto;
   }
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

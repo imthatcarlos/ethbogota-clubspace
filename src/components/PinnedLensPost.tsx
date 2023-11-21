@@ -29,6 +29,8 @@ const PinnedLensPost = ({
   renderCollectButton = false,
   gated = null,
   onCollect = () => null,
+  onClick = () => null,
+  pubData,
 }) => {
   const router = useRouter();
   const { data: signer } = useSigner();
@@ -46,14 +48,19 @@ const PinnedLensPost = ({
 
   useMemo(async () => {
     const pubId = parsePublicationLink(url);
-    const post = await getPost(pubId);
+    setLensPubId(pubId);
 
-    if ((post?.profile || post?.by) && post?.metadata) {
-      if (post?.by) post.profile = post.by; // HACK
-      setLensPubId(pubId);
-      setLensPost(post);
+    if (pubData) {
+      setLensPost(pubData);
+    } else {
+      const post = await getPost(pubId);
+
+      if ((post?.profile || post?.by) && post?.metadata) {
+        if (post?.by) post.profile = post.by; // HACK
+        setLensPost(post);
+      }
     }
-  }, [url]);
+  }, [url, pubData]);
 
   useMemo(async () => {
     const [profileIdHex, pubIdHex] = parsePublicationLink(url).split("-");
@@ -168,14 +175,12 @@ const PinnedLensPost = ({
   if (small && lensPost) {
     return (
       <>
-        <div className="rounded-md w-[20rem] max-h-[7.6rem] bg-black m-auto p-3 drop-shadow-sm">
-          <a href={url} className="" target="_blank" referrerPolicy="no-referrer">
-            <div className="flex mb-3">
-              <span className="text-gray-500 ml-1">@{lensPost?.profile?.handle}</span>
-            </div>
-            <p className="mb-2 truncate max-h-[12rem] ">{lensPost?.metadata?.content}</p>
-            <p className="text-xs text-[#845eee]">See on Lenster</p>
-          </a>
+        <div onClick={onClick} className="rounded-t-2xl w-[20rem] max-h-[7.6rem] bg-black m-auto p-4 -mt-4 drop-shadow-sm cursor-pointer">
+          <div className="flex mb-3">
+            <span className="text-gray-500">Sponsored Post by @{lensPost?.profile?.handle.localName}</span>
+          </div>
+          <p className="mb-2 truncate max-h-[2.5rem] pb-1 overflow-hidden line-clamp-2">{lensPost?.metadata?.content}</p>
+          <p className="text-xs text-[#845eee] absolute right-4 bottom-2">See more</p>
         </div>
       </>
     );
@@ -185,10 +190,10 @@ const PinnedLensPost = ({
     <>
       {renderHeader && (
         <h2 className="my-4 text-3xl font-bold tracking-tight sm:text-2xl md:text-4xl drop-shadow-sm text-center drop-shadow-sm">
-          Promoted Publication
+          Sponsored Post
         </h2>
       )}
-      <div className="flex justify-center mt-4 mb-4 text-sm gap-x-4">
+      <div className="flex justify-center pt-8 mb-4 text-sm gap-x-4">
         {lensPost && (
           <Publication
             publicationData={lensPost}
@@ -203,9 +208,10 @@ const PinnedLensPost = ({
         )}
       </div>
       <div className="flex justify-center mt-4 mb-4 text-sm gap-x-4 pb-8">
-        <div className="absolute right-8 bottom-2">
+        {/** NOT SHOWING THIS TILL WE KNOW THE CRETAOR HAS A MAD SBT BADGE */}
+        {/* <div className="absolute right-8 bottom-2">
           <LivePoints creatorAddress={lensPost?.profile?.ownedBy?.address.toLowerCase()} isAuthenticated={isAuthenticated} />
-        </div>
+        </div> */}
       </div>
       {lensPost && (
         <>

@@ -63,9 +63,9 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
         // the bare minimum
         setDefaultProfile({
           // @ts-ignore
-          id: defaultProfile?.id,
-          picture: defaultProfile.picture, // v2: ?
-          handle: defaultProfile.handle, // v2: defaultProfile.handle.localName
+          id: defaultProfile.id,
+          metadata: defaultProfile.metadata,
+          handle: defaultProfile.handle,
         });
       }
       setLoadingDefaultProfile(false);

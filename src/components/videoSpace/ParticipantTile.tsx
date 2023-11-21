@@ -19,6 +19,7 @@ import {
 import { Track } from "livekit-client";
 import { ReactNode, useCallback } from "react";
 import styles from "./videoSpace.module.css";
+import getLensPictureURL from "@/lib/utils/getLensPictureURL";
 
 export const ParticipantTile = ({
   participant,
@@ -38,7 +39,7 @@ export const ParticipantTile = ({
 
   const { metadata, sid } = p;
 
-  const { defaultProfile, isHost }: { defaultProfile?: DefaultLensProfile; isHost: boolean } = JSON.parse(metadata);
+  const { defaultProfile, isHost, ensData }: { defaultProfile?: DefaultLensProfile; isHost: boolean, ensData: any } = JSON.parse(metadata);
 
   const { elementProps } = useParticipantTile<HTMLDivElement>({
     participant: trackRef.participant,
@@ -103,15 +104,15 @@ export const ParticipantTile = ({
             )}
             <div className="absolute inset-0 flex items-center justify-center bg-foreground pointer-events-none rounded-2xl opacity-0">
               <img
-                src={defaultProfile ? getUrlForImageFromIpfs(defaultProfile?.picture?.original?.url) : "/anon.png"}
-                alt={defaultProfile ? defaultProfile?.handle : p.identity}
+                src={defaultProfile?.metadata ? getLensPictureURL(defaultProfile) : (ensData?.avatar || "./anon.png")}
+                alt={defaultProfile?.handle ? defaultProfile?.handle.localName : (ensData?.avatar || p.identity)}
                 className="rounded-full aspect-square w-32 h-32"
               />
             </div>
             <div className="absolute flex flex-row items-center justify-between gap-2 leading-none bottom-1 inset-x-1">
               <div className="flex items-center p-1">
                 <TrackMutedIndicator source={Track.Source.Microphone} show={"muted"}></TrackMutedIndicator>
-                <DisplayName defaultProfile={defaultProfile} />
+                <DisplayName defaultProfile={defaultProfile} ensData={ensData} />
               </div>
               {/* <ConnectionQualityIndicator className="lk-participant-metadata-item" /> */}
             </div>
@@ -123,10 +124,15 @@ export const ParticipantTile = ({
   );
 };
 
-const DisplayName = ({ defaultProfile }: { defaultProfile: DefaultLensProfile }) => {
+const DisplayName = ({ defaultProfile, ensData }: { defaultProfile?: DefaultLensProfile, ensData?: any }) => {
   if (defaultProfile?.handle) {
     return (
-      <span className="text-white text-xl font-bold select-none">{defaultProfile.handle}</span>
+      <span className="text-white text-xl font-bold select-none">@{defaultProfile.handle.localName}</span>
+    );
+  }
+  if (ensData?.handle) {
+    return (
+      <span className="text-white text-xl font-bold select-none">{ensData.handle}</span>
     );
   }
   return <ParticipantName />;

@@ -10,7 +10,7 @@ import { Stage } from "../videoSpace/Stage";
 import { HostInfo } from "../videoSpace/HostInfo";
 import { useAccount } from "wagmi";
 import { Footer } from "../MadfiFooter";
-import PinnedLensPost from "../PinnedLensPost";
+import SponsoredPost from "../videoSpace/SponsoredPost";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
@@ -77,7 +77,7 @@ export const LiveVideo = ({
           setConnected(false);
         }}
       >
-        <div className="flex max-w-[85%] mx-auto items-center w-full h-full min-[1921px]:h-[80%]">
+        <div className="flex max-w-[85%] mx-auto items-center w-full h-full min-[1921px]:h-[80%] mb-24">
           <div className="flex gap-9 mt-[5dvh] flex-1">
             <div className="flex-1">
               <div className="relative">
@@ -91,7 +91,7 @@ export const LiveVideo = ({
             </div>
 
             <div className="w-full max-w-sm bg-foreground rounded-2xl pt-4 max-h-[80%]">
-              <PinnedLensPost small={true} url={space.pinnedLensPost} />
+              <SponsoredPost space={space} />
               <Chat viewerName={userIdentity} />
             </div>
           </div>

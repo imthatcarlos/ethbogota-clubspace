@@ -6,6 +6,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/Dialog";
+import { Icons } from "@/components/ui";
 import { useParticipants, ParticipantLoop, useParticipantContext } from "@livekit/components-react";
 import { ParticipantList } from "./ParticipantList";
 import { useEffect, useMemo, useState } from "react";
@@ -19,6 +20,7 @@ import Image from "next/image";
 function useMetadataInfo(participant: Participant) {
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
   const [displayName, setDisplayName] = useState<string | undefined>(undefined);
+  const [handle, setHandle] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (participant) {
@@ -26,15 +28,16 @@ function useMetadataInfo(participant: Participant) {
         const { metadata } = participant;
         const { defaultProfile, ensData }: { defaultProfile: DefaultLensProfile; ensData: any } = JSON.parse(metadata);
 
-        setAvatar(defaultProfile?.picture ? getLensPictureURL(defaultProfile) : "/anon.png");
-        setDisplayName(defaultProfile?.handle ?? ensData?.handle ?? participant.name);
+        setAvatar(defaultProfile?.metadata ? getLensPictureURL(defaultProfile) : "/anon.png");
+        setDisplayName(defaultProfile?.metadata?.displayName ?? defaultProfile?.handle?.localName ?? ensData?.handle ?? participant.name);
+        setHandle(defaultProfile?.handle?.localName ? `@${defaultProfile?.handle?.localName}` : '');
       } catch (err) {
         console.log("Failed to parse metadata");
       }
     }
   }, [participant]);
 
-  return { avatar, displayName };
+  return { avatar, displayName, handle };
 }
 
 export const ParticipantDialogList = () => {
@@ -62,8 +65,11 @@ export const ParticipantDialogList = () => {
   return (
     <Dialog>
       <DialogTrigger className="z-30 bg-background rounded-lg p-2 py-[0.62rem] hover:bg-foreground">
-        <div className="space-y-2">
-          <span>See who&apos;s here</span>
+        <div className="flex flex-row gap-x-6">
+          <div className="flex flex-row items-center">
+            <Icons.eye className="m-1 mr-2 opacity-100 w-4 h-4" />
+            <span>{participants.length}</span>
+          </div>
           <ProfilePicList participants={participants.slice(0, 5)} />
         </div>
       </DialogTrigger>
@@ -93,13 +99,16 @@ export const ParticipantDialogList = () => {
 
 const StageParticipant = () => {
   const participant = useParticipantContext();
-  const { displayName, avatar } = useMetadataInfo(participant);
+  const { displayName, avatar, handle } = useMetadataInfo(participant);
 
   return (
     <div className="flex gap-3">
       <img className="h-12 w-12 rounded-full" src={avatar} alt={`Avatar of user ${displayName}`} />
 
-      <div className="font-bold truncate max-w-[15ch]">{displayName}</div>
+      <div className="flex flex-col">
+        {handle && <div className="font-light truncate max-w-[15ch] text-gray-400 text-sm">{handle}</div>}
+        <div className="font-bold truncate max-w-[15ch]">{displayName}</div>
+      </div>
     </div>
   );
 };
@@ -108,23 +117,24 @@ const ProfilePic = ({ participant }: { participant: Participant }) => {
   const { avatar, displayName } = useMetadataInfo(participant);
 
   return (
-    <Image
+    <img
       key={participant.sid}
       className="inline-block h-8 w-8 rounded-full ring-2 ring-foreground"
       src={avatar}
       alt={`profile of ${displayName}`}
       height={32}
       width={32}
-      quality={50}
     />
   );
 };
 
 const ProfilePicList = ({ participants }: { participants: Array<Participant> }) => {
   return (
-    <div className="flex -space-x-2 gap-4">
-      {participants.map((participant) => (
-        <ProfilePic participant={participant} key={participant.sid} />
+    <div className="flex -space-x-1">
+      {participants.map((participant, index) => (
+        <div style={{ zIndex: participants.length - index }} className="relative">
+          <ProfilePic participant={participant} key={participant.sid} />
+        </div>
       ))}
     </div>
   );

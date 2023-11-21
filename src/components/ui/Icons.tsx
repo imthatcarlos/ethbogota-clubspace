@@ -19,6 +19,7 @@ import {
   Video,
   VideoOff,
   LogOut,
+  Eye,
   type Icon as LucideIcon,
   type LucideProps,
 } from "lucide-react";
@@ -46,6 +47,7 @@ export const Icons = {
   video: Video,
   videoOff: VideoOff,
   endStream: LogOut,
+  eye: Eye,
   gitHub: (props: LucideProps) => (
     <svg viewBox="0 0 438.549 438.549" {...props}>
       <path

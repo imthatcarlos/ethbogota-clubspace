@@ -8,6 +8,7 @@ import { getUrlForImageFromIpfs } from "@/utils";
 import { Icons } from "../ui";
 import { HostSection } from "./HostSection";
 import { ReactionsDialog } from "@/components/ReactionsDialog";
+import getLensPictureURL from "@/lib/utils/getLensPictureURL";
 
 const decoder = new TextDecoder();
 
@@ -99,7 +100,7 @@ export const DiscussionParticipant  = () => {
     };
   }, [remoteParticipantMessage]);
 
-  const name = useMemo(() => defaultProfile?.handle ? `@${defaultProfile?.handle}` : participant.identity, [defaultProfile, participant]);
+  const name = useMemo(() => defaultProfile?.handle ? `@${defaultProfile.handle.localName}` : participant.identity, [defaultProfile, participant]);
 
   return (
     <section className="relative min-w-0" title={name} key={name}>
@@ -113,8 +114,8 @@ export const DiscussionParticipant  = () => {
         >
           <div className="z-10 grid aspect-square items-center overflow-hidden rounded-full bg-beige transition-all will-change-transform">
             <img
-              src={defaultProfile ? getUrlForImageFromIpfs(defaultProfile?.picture?.original?.url) : "/anon.png"}
-              alt={defaultProfile ? defaultProfile?.handle : participant.identity}
+              src={defaultProfile?.metadata ? getLensPictureURL(defaultProfile) : "/anon.png"}
+              alt={defaultProfile?.handle ? defaultProfile.handle.localName : participant.identity}
               className="fade-in"
               width={150}
               height={150}

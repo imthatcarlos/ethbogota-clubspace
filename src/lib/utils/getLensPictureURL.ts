@@ -1,15 +1,6 @@
-import { defaultGatewayURL, lensGatewayURL } from "@/utils";
+import { formatProfilePicture } from "@imthatcarlos/widgets-react";
+import { DefaultLensProfile } from "@/types/lens";
 
-export default ({ picture }) => {
-  if (!picture) return '';
-
-  if (picture.original?.url) {
-    return picture.original.url.includes('https://')
-      ? picture.original.url
-      : lensGatewayURL(picture.original?.url);
-  }
-
-  return picture.uri.includes('https://')
-    ? picture.uri
-    : defaultGatewayURL(picture.uri);
+export default (profile: DefaultLensProfile) => {
+  return formatProfilePicture(profile).metadata.picture.url
 };

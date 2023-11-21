@@ -26,8 +26,8 @@ export const HostInfo = ({ space }: { space: any }) => {
           src={space.creatorAvatar}
           alt="avatar"
         />
-        <div className="flex flex-col gap-4">
-          <span className="font-light text-lg pl-4">{space.creatorLensHandle || space.handle}</span>
+        <div className="flex flex-col gap-2">
+          <span className="font-light text-lg pl-4">@{space.creatorLensHandle || space.handle}</span>
           <span className="font-bold text-xl pl-4">{space.roomName || 'Livestream on MadFi'}</span>
         </div>
       </div>

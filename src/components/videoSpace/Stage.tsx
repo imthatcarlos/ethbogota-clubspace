@@ -66,9 +66,6 @@ export const Stage = ({ space }: { space: any }) => {
         <ParticipantLoop participants={participants}>
           <ParticipantControls screenShareParticipant={screenShareParticipant} space={space} />
         </ParticipantLoop>
-
-        {/* <ParticipantDialogList /> */}
-        <PinnedPromotionDialog space={space} />
       </div>
     </>
     //  <GridLayout tracks={tracks}>
@@ -100,11 +97,8 @@ const ParticipantControls = ({
           }}
           className="border-none gap-2 flex items-center z-30"
         />
-        <EndStreamButton space={space} />
-
-        {/* <div className="bg-background flex items-center rounded-lg">
-          <button onClick={() => {}}></></button>
-        </div> */}
+        {/* TODO: handle ending stream gracefully */}
+        {/* <EndStreamButton space={space} /> */}
       </>
     );
   }
