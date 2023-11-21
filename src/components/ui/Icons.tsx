@@ -18,6 +18,7 @@ import {
   MonitorOff,
   Video,
   VideoOff,
+  LogOut,
   type Icon as LucideIcon,
   type LucideProps,
 } from "lucide-react";
@@ -44,6 +45,7 @@ export const Icons = {
   screenShareOff: MonitorOff,
   video: Video,
   videoOff: VideoOff,
+  endStream: LogOut,
   gitHub: (props: LucideProps) => (
     <svg viewBox="0 0 438.549 438.549" {...props}>
       <path

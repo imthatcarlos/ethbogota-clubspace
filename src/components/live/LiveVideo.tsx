@@ -9,6 +9,8 @@ import { DefaultLensProfile } from "@/types/lens";
 import { Stage } from "../videoSpace/Stage";
 import { HostInfo } from "../videoSpace/HostInfo";
 import { useAccount } from "wagmi";
+import { Footer } from "../MadfiFooter";
+import PinnedLensPost from "../PinnedLensPost";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
@@ -41,7 +43,7 @@ export const LiveVideo = ({
       let str = JSON.stringify({
         defaultProfile: defaultProfile ?? undefined,
         ensData: ensData ?? undefined,
-        address
+        address,
       });
       return str;
     } catch (err) {
@@ -62,11 +64,12 @@ export const LiveVideo = ({
   const token = useToken(env.NEXT_PUBLIC_LK_TOKEN_ENDPOINT, roomName, { userInfo });
 
   return (
-    <div className="w-full h-[100dvh] overflow-hidden bg-background">
+    <div className="w-full h-[95dvh] bg-background">
       <LiveKitRoom
         token={token}
         serverUrl={liveKitUrl}
         connect={tryToConnect}
+        audio={true}
         // simulateParticipants={2}
         onConnected={() => setConnected(true)}
         onDisconnected={() => {
@@ -74,8 +77,8 @@ export const LiveVideo = ({
           setConnected(false);
         }}
       >
-        <div className="flex max-w-[80%] mx-auto items-center w-full h-full min-[1921px]:h-[80%]">
-          <div className="flex gap-9">
+        <div className="flex max-w-[85%] mx-auto items-center w-full h-full min-[1921px]:h-[80%]">
+          <div className="flex gap-9 mt-[5dvh] flex-1">
             <div className="flex-1">
               <div className="relative">
                 <Stage space={space} />
@@ -87,13 +90,15 @@ export const LiveVideo = ({
               <RoomAudioRenderer />
             </div>
 
-            <div className="w-80">
+            <div className="w-full max-w-sm bg-foreground rounded-2xl pt-4 max-h-[80%]">
+              <PinnedLensPost small={true} url={space.pinnedLensPost} />
               <Chat viewerName={userIdentity} />
             </div>
           </div>
           {/* <DebugMode /> */}
         </div>
       </LiveKitRoom>
+      <Footer />
     </div>
   );
 };
