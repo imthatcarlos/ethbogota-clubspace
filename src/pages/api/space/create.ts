@@ -127,11 +127,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     //   });
     // }
 
-    // schedule the lambda to delete at `endAt`
-    const scheduleParams = { roomId, lambda: 'livepeer_delete_room', scheduleAtTs: spaceObject.endAt };
-    await axios.post(`${MADFI_API_URL}/schedule`, scheduleParams, {
-      headers: { 'x-api-key': MADFI_API_KEY },
-    });
+    // TODO: fix
+    // // schedule the lambda to delete at `endAt`
+    // const scheduleParams = { roomId, lambda: 'livepeer_delete_room', scheduleAtTs: spaceObject.endAt };
+    // await axios.post(`${MADFI_API_URL}/schedule`, scheduleParams, {
+    //   headers: { 'x-api-key': MADFI_API_KEY },
+    // });
 
     return res.status(200).json({ url: `${NEXT_PUBLIC_SITE_URL}/${handle}`, startAt });
   } catch (e) {
