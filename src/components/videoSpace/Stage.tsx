@@ -25,6 +25,7 @@ import {
   DialogTrigger,
   Icons,
 } from "../ui";
+import { useAccount } from "wagmi";
 
 export const Stage = ({ space }: { space: any }) => {
   // const participants = useParticipants();
@@ -82,11 +83,11 @@ const ParticipantControls = ({
   screenShareParticipant: LocalParticipant | RemoteParticipant;
   space: any;
 }) => {
+  const { address } = useAccount();
   const participant = useParticipantContext();
   const permissions = participant.permissions;
-  const isHost = useIsHost(participant.metadata);
 
-  if (permissions && permissions.canPublish && isHost) {
+  if (permissions && address === space.creatorAddress) {
     return (
       <>
         <CustomControls
