@@ -80,12 +80,11 @@ export const LiveVideo = ({
         <div className="flex max-w-[85%] mx-auto items-center w-full h-full min-[1921px]:h-[80%] mb-24">
           <div className="flex gap-9 mt-[5dvh] flex-1">
             <div className="flex-1">
-              <div className="relative">
+              <div className="relative flex gap-16">
                 <Stage space={space} />
-              </div>
-              {/* margin to account negative margin on buttons inside stage*/}
-              <div className="w-full mt-16">
-                <HostInfo space={space} />
+                <div className="w-full">
+                  <HostInfo space={space} />
+                </div>
               </div>
               <RoomAudioRenderer />
             </div>
