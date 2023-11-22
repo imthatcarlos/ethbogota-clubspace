@@ -10,7 +10,6 @@ import { useCallback } from "react";
 import { ShoppingBag } from "lucide-react";
 import { useSigner } from "wagmi";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
-import { ParticipantList } from "./ParticipantList";
 import useGetClubspaceDrop from "@/hooks/useGetClubspaceDrop";
 import { FeaturedDecentNFT } from "./../FeaturedDecentNFT";
 import { FeaturedSoundNFT } from "./../FeaturedSoundNFT";
