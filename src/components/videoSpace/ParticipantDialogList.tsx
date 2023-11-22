@@ -8,37 +8,10 @@ import {
 } from "@/components/ui/Dialog";
 import { Icons } from "@/components/ui";
 import { useParticipants, ParticipantLoop, useParticipantContext } from "@livekit/components-react";
-import { ParticipantList } from "./ParticipantList";
-import { useEffect, useMemo, useState } from "react";
-import { DefaultLensProfile } from "@/types/lens";
-import getLensPictureURL from "@/lib/utils/getLensPictureURL";
+import { ParticipantListItem, useMetadataInfo } from "./ParticipantListItem";
+import { useMemo } from "react";
 import { Participant } from "livekit-client";
 import { useAccount } from "wagmi";
-import Image from "next/image";
-
-// @TODO: place it on a more reusable place
-function useMetadataInfo(participant: Participant) {
-  const [avatar, setAvatar] = useState<string | undefined>(undefined);
-  const [displayName, setDisplayName] = useState<string | undefined>(undefined);
-  const [handle, setHandle] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    if (participant) {
-      try {
-        const { metadata } = participant;
-        const { defaultProfile, ensData }: { defaultProfile: DefaultLensProfile; ensData: any } = JSON.parse(metadata);
-
-        setAvatar(defaultProfile?.metadata ? getLensPictureURL(defaultProfile) : "/anon.png");
-        setDisplayName(defaultProfile?.metadata?.displayName ?? defaultProfile?.handle?.localName ?? ensData?.handle ?? participant.name);
-        setHandle(defaultProfile?.handle?.localName ? `@${defaultProfile?.handle?.localName}` : '');
-      } catch (err) {
-        console.log("Failed to parse metadata");
-      }
-    }
-  }, [participant]);
-
-  return { avatar, displayName, handle };
-}
 
 export const ParticipantDialogList = () => {
   const { address: userAddress } = useAccount();
@@ -58,7 +31,7 @@ export const ParticipantDialogList = () => {
     [participants]
   );
 
-  // filter out host from list to avoid fetching things on the ParticipantList
+  // filter out host from list to avoid fetching things on the ParticipantListItem
   let stageParticipants = participants.filter((p) => p.permissions?.canPublish);
   let regularParticipants = participants.filter((p) => !p.permissions?.canPublish);
 
@@ -83,12 +56,12 @@ export const ParticipantDialogList = () => {
               </ParticipantLoop>
             ) : null}
           </DialogHeader>
-          <h2 className="text-3xl font-semibold">
+          <h2 className="text-lg font-semibold">
             {host?.identity === userAddress ? "Invite to stage" : "Online now"}
           </h2>
           <DialogDescription className="space-y-6 max-h-60 overflow-auto">
             <ParticipantLoop participants={regularParticipants}>
-              <ParticipantList />
+              <ParticipantListItem />
             </ParticipantLoop>
           </DialogDescription>
         </>
