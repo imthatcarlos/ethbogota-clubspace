@@ -3,6 +3,7 @@ import { Participant } from "livekit-client";
 import { useParticipantContext } from "@livekit/components-react";
 import { DefaultLensProfile } from "@/types/lens";
 import getLensPictureURL from "@/lib/utils/getLensPictureURL";
+import { shortAddress } from "@/utils";
 
 export const useMetadataInfo = (participant: Participant) => {
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
@@ -16,7 +17,7 @@ export const useMetadataInfo = (participant: Participant) => {
         const { defaultProfile, ensData }: { defaultProfile: DefaultLensProfile; ensData: any } = JSON.parse(metadata);
 
         setAvatar(defaultProfile?.metadata ? getLensPictureURL(defaultProfile) : "/anon.png");
-        setDisplayName(defaultProfile?.metadata?.displayName ?? defaultProfile?.handle?.localName ?? ensData?.handle ?? participant.name);
+        setDisplayName(defaultProfile?.metadata?.displayName ?? defaultProfile?.handle?.localName ?? ensData?.handle ?? shortAddress(participant.name));
         setHandle(defaultProfile?.handle?.localName ? `@${defaultProfile?.handle?.localName}` : '');
       } catch (err) {
         console.log("Failed to parse metadata");

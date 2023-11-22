@@ -9,6 +9,10 @@ const _hash = (uriOrHash: string) => {
     : uriOrHash;
 };
 
+export function shortAddress(address: string) {
+  return address.slice(0, 5) + "..." + address.slice(address.length - 4);
+}
+
 export const defaultGatewayURL = (uriOrHash: string) => `${apiUrls.ipfs}/${_hash(uriOrHash)}`;
 
 export const lensGatewayURL = (uriOrHash: string) => `${apiUrls.lensGateway}/${_hash(uriOrHash)}`;

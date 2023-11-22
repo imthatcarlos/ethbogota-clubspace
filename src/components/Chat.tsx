@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils/cn";
 import { DefaultLensProfile } from "@/types/lens";
 import { useChat } from "@livekit/components-react";
 import getLensPictureURL from "@/lib/utils/getLensPictureURL";
+import { shortAddress } from "@/utils";
 
 type Props = {
   viewerName: string;
@@ -53,7 +54,7 @@ export default function Chat({ viewerName }: Props) {
         {reverseMessages.map((message) => {
           // assuming users have signed in with lens
           const { defaultProfile, ensData }: { defaultProfile: DefaultLensProfile, ensData: any } = JSON.parse(message.from?.metadata);
-          const displayName = defaultProfile ? `@${defaultProfile?.handle?.localName}` : message.from?.name;
+          const displayName = defaultProfile ? `@${defaultProfile?.handle?.localName}` : (message.from?.name?.includes("0x") ? shortAddress(message.from?.name) : message.from?.name);
           const avatar = getAvatar({ defaultProfile, ensData });
 
           return (
