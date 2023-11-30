@@ -27,8 +27,8 @@ export default ({ space }) => {
 
   return (
     <Dialog>
-      <DialogTrigger>
-        <div className="rounded-t-2xl w-[20rem] max-h-[7.6rem] bg-black m-auto p-4 -mt-4 drop-shadow-sm cursor-pointer">
+      <DialogTrigger asChild>
+        <div className="rounded-t-2xl min-w-[20rem] max-w-full max-h-[7.6rem] bg-black m-auto p-4 -mt-4 drop-shadow-sm cursor-pointer">
           <div className="flex mb-3">
             <span className="text-gray-500 text-sm">post by @{lensPost?.profile?.handle.localName}</span>
           </div>

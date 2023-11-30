@@ -49,7 +49,7 @@ export default function Chat({ viewerName }: Props) {
   };
 
   return (
-    <div className="relative h-[85%] max-h-[827px] bg-foreground rounded-2xl px-3 py-4 w-full">
+    <div className="relative h-[85%] max-h-[827px] bg-foreground rounded-b-2xl px-3 py-4 w-full">
       <div className="absolute top-4 bottom-14 overflow-y-auto pb-4 right-0 left-0 p-2">
         {reverseMessages.map((message) => {
           // assuming users have signed in with lens

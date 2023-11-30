@@ -79,17 +79,17 @@ export const LiveVideo = ({
       >
         <div className="flex max-w-[85%] mx-auto items-center w-full h-full min-[1921px]:h-[80%] mb-24">
           <div className="flex gap-9 mt-[5dvh] flex-1">
-            <div className="flex-1">
-              <div className="relative flex gap-16">
+            <div className="flex-1 max-w-fit">
+              <div className="relative">
                 <Stage space={space} />
-                <div className="w-full">
-                  <HostInfo space={space} />
-                </div>
+              </div>
+              <div className="w-full mt-16">
+                <HostInfo space={space} />
               </div>
               <RoomAudioRenderer />
             </div>
 
-            <div className="w-full max-w-sm bg-foreground rounded-2xl pt-4 max-h-[80%]">
+            <div className="w-full max-w-sm rounded-2xl pt-4 max-h-[80%]">
               <SponsoredPost space={space} />
               <Chat viewerName={userIdentity} />
             </div>
