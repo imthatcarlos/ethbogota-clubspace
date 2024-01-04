@@ -1,23 +1,19 @@
 import { useState } from "react";
 import { useWalletClient, useAccount, useNetwork } from "wagmi";
-import DecentLogo from "@/assets/svg/decent.svg";
 import SoundLogo from "@/assets/svg/sound.svg";
 import { MultiStepFormWrapper } from "./../MultiStepFormWrapper";
-import useGetDecentDrops from "@/hooks/useGetDecentDrops";
 import useGetSoundDrops from "@/hooks/useGetSoundDrops";
-import { DROP_PROTOCOL_DECENT, DROP_PROTOCOL_SOUND, IS_PRODUCTION } from "@/lib/consts";
-import DecentDrop from "./DecentDrop";
+import { DROP_PROTOCOL_SOUND, IS_PRODUCTION } from "@/lib/consts";
 import SoundDrop from "./SoundDrop";
 
 const SetFeaturedProduct = ({ selectDrop, drop, pinnedLensPost, updateFields }) => {
   const { address } = useAccount();
   const { chain } = useNetwork();
   const { data: walletClient } = useWalletClient();
-  const { data: decentDrops, isLoading: isLoadingDecent } = useGetDecentDrops(address, chain.id, walletClient);
   const { data: soundDrops, isLoading: isLoadingSound } = useGetSoundDrops(address);
-  const [selectedProtocol, setSelectedProtocol] = useState(DROP_PROTOCOL_DECENT);
+  const [selectedProtocol, setSelectedProtocol] = useState(DROP_PROTOCOL_SOUND);
 
-  const isLoading = isLoadingDecent || isLoadingSound;
+  const isLoading = isLoadingSound;
 
   return (
     <MultiStepFormWrapper>
@@ -30,26 +26,6 @@ const SetFeaturedProduct = ({ selectDrop, drop, pinnedLensPost, updateFields }) 
             {!isLoading && (
               <>
                 <div className="flex w-full justify-center relative grid-cols-2 gap-4">
-                  <div
-                    className="flex w-full items-center pl-4 border border-gray-200 rounded bg-white cursor-pointer"
-                    onClick={() => setSelectedProtocol(DROP_PROTOCOL_DECENT)}
-                  >
-                    <input
-                      id="radio-protocol-decent"
-                      type="radio"
-                      value=""
-                      name="bordered-radio"
-                      className="w-4 h-4 text-[color:var(--club-red)] bg-gray-100 border-gray-300 focus:ring-0 cursor-pointer"
-                      checked={selectedProtocol === DROP_PROTOCOL_DECENT}
-                    />
-                    <DecentLogo height={50} className="ml-5 mr-5" width={50} />
-                    <label
-                      htmlFor="radio-protocol-decent"
-                      className="w-full py-4 ml-2 text-sm font-medium text-black cursor-pointer"
-                    >
-                      Decent
-                    </label>
-                  </div>
                   <div
                     className="flex w-full items-center pl-4 border border-gray-200 rounded bg-white cursor-pointer"
                     onClick={() => setSelectedProtocol(DROP_PROTOCOL_SOUND)}
@@ -72,14 +48,6 @@ const SetFeaturedProduct = ({ selectDrop, drop, pinnedLensPost, updateFields }) 
                   </div>
                 </div>
               </>
-            )}
-            {selectedProtocol === DROP_PROTOCOL_DECENT && (
-              <DecentDrop
-                deployedProducts={decentDrops}
-                decentProduct={drop}
-                selectDrop={selectDrop}
-                protocol={DROP_PROTOCOL_DECENT}
-              />
             )}
             {selectedProtocol === DROP_PROTOCOL_SOUND && (
               <SoundDrop

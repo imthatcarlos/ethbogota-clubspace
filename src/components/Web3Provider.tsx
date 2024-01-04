@@ -2,7 +2,7 @@ import { WagmiConfig } from "wagmi";
 import {  RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import { useEffect, useMemo, useState } from "react";
 import { ToastBar, Toaster } from "react-hot-toast";
-import { LensProvider } from "@/pages/LensProvider";
+import LensProvider from "@/pages/LensProvider";
 import { appInfo, chains, wagmiConfig } from "@/lib/utils/rainbow";
 
 const Web3Provider = ({ children }) => {

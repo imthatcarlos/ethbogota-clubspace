@@ -5,7 +5,7 @@ import { LensProvider as Provider, development, production } from '@lens-protoco
 import { IS_PRODUCTION } from '@/lib/consts'
 import useIsMounted from '@/hooks/useIsMounted'
 
-export function LensProvider({ children }) {
+const LensProvider = ({ children }) => {
   const isMounted = useIsMounted();
 
   // refuse to init until we have window.localstorage
@@ -22,4 +22,6 @@ export function LensProvider({ children }) {
       {children}
     </Provider>
   )
-}
+};
+
+export default LensProvider;

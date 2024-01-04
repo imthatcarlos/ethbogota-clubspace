@@ -13,7 +13,7 @@ export default (options: UseQueryOptions = {}, { drop, signer }) => {
   }
 
   const result = useQuery<Profile[]>(
-    ["clubspace-drop", drop.contractAddress || drop.decentContractAddress],
+    ["clubspace-drop", drop.contractAddress],
     async () => {
       let data;
 
