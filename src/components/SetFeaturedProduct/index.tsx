@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSigner, useAccount, useNetwork } from "wagmi";
+import { useWalletClient, useAccount, useNetwork } from "wagmi";
 import DecentLogo from "@/assets/svg/decent.svg";
 import SoundLogo from "@/assets/svg/sound.svg";
 import { MultiStepFormWrapper } from "./../MultiStepFormWrapper";
@@ -12,8 +12,8 @@ import SoundDrop from "./SoundDrop";
 const SetFeaturedProduct = ({ selectDrop, drop, pinnedLensPost, updateFields }) => {
   const { address } = useAccount();
   const { chain } = useNetwork();
-  const { data: signer } = useSigner();
-  const { data: decentDrops, isLoading: isLoadingDecent } = useGetDecentDrops(address, chain.id, signer);
+  const { data: walletClient } = useWalletClient();
+  const { data: decentDrops, isLoading: isLoadingDecent } = useGetDecentDrops(address, chain.id, walletClient);
   const { data: soundDrops, isLoading: isLoadingSound } = useGetSoundDrops(address);
   const [selectedProtocol, setSelectedProtocol] = useState(DROP_PROTOCOL_DECENT);
 

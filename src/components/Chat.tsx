@@ -1,4 +1,11 @@
-import { useCallback, useMemo, useState, type KeyboardEvent } from "react";
+import {
+  useCallback,
+  useMemo,
+  useState,
+  useRef,
+  useEffect,
+  type KeyboardEvent,
+} from "react";
 import { Button, Icons, Textarea } from "./ui";
 
 import { cn } from "@/lib/utils/cn";
@@ -13,8 +20,16 @@ type Props = {
 
 export default function Chat({ viewerName }: Props) {
   const { chatMessages: messages, send } = useChat();
+  const messagesContainerRef = useRef(null);
 
   const reverseMessages = useMemo(() => messages.sort((a, b) => a.timestamp - b.timestamp), [messages]);
+
+  useEffect(() => {
+    if (messagesContainerRef && reverseMessages?.length > 5) {
+      const container = messagesContainerRef.current;
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [messagesContainerRef, reverseMessages]);
 
   const [message, setMessage] = useState("");
 
@@ -50,15 +65,18 @@ export default function Chat({ viewerName }: Props) {
 
   return (
     <div className="relative h-[85%] max-h-[827px] bg-foreground rounded-b-2xl px-3 py-4 w-full">
-      <div className="absolute top-4 bottom-14 overflow-y-auto pb-4 right-0 left-0 p-2">
-        {reverseMessages.map((message) => {
+      <div ref={messagesContainerRef} className="absolute top-4 bottom-14 overflow-y-auto pb-4 right-0 left-0 p-2">
+        {reverseMessages.map((message, idx) => {
           // assuming users have signed in with lens
           const { defaultProfile, ensData }: { defaultProfile: DefaultLensProfile, ensData: any } = JSON.parse(message.from?.metadata);
           const displayName = defaultProfile ? `@${defaultProfile?.handle?.localName}` : (message.from?.name?.includes("0x") ? shortAddress(message.from?.name) : message.from?.name);
           const avatar = getAvatar({ defaultProfile, ensData });
 
           return (
-            <div key={message.timestamp} className="flex flex-col p-2 hover:bg-background hover:transition-colors rounded-md">
+            <div
+              key={message.timestamp}
+              className="flex flex-col p-2 hover:bg-background hover:transition-colors rounded-md"
+            >
               <div className="flex justify-between items-center gap-2 p-2">
                 <div
                   className={cn(

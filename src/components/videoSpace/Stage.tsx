@@ -13,8 +13,6 @@ import { cn } from "@/lib/utils/cn";
 import { useMemo } from "react";
 import { ParticipantTileWithScreenShare } from "./ParticipantTileWithScreenShare";
 import { CustomControls } from "./CustomControls";
-// import { ParticipantDialogList } from "./ParticipantDialogList";
-import { PinnedPromotionDialog } from "./PinnedPromotionDialog";
 import {
   Button,
   Dialog,

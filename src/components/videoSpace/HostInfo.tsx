@@ -19,7 +19,7 @@ export const HostInfo = ({ space }: { space: any }) => {
   // const avatar = getPictureToDisplay(space.creatorAvatar);
 
   return (
-    <div className="flex items-center justify-between gap-2">
+    <div className="flex items-center justify-between gap-2 pt-4">
       <div className="text-xs font-semibold whitespace-nowrap inline-flex gap-1">
         <img
           className="h-20 w-20 rounded-full select-none pointer-events-none"

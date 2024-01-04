@@ -1,6 +1,7 @@
 import { env } from "@/env.mjs";
 import { LiveKitRoom, RoomAudioRenderer, useToken } from "@livekit/components-react";
 import { useEffect, useMemo, useState } from "react";
+import { useProfile } from "@lens-protocol/react-web";
 // import jwt, { type JwtPayload } from "jwt-decode";
 import Chat from "../Chat";
 // import { ParticipantList } from "../videoSpace/ParticipantList";
@@ -77,8 +78,8 @@ export const LiveVideo = ({
           setConnected(false);
         }}
       >
-        <div className="flex max-w-[85%] mx-auto items-center w-full h-full min-[1921px]:h-[80%] mb-24">
-          <div className="flex gap-9 mt-[5dvh] flex-1">
+        <div className="flex max-w-[85%] mx-auto items-center w-full h-full min-[1921px]:h-[80%] mb-18">
+          <div className="flex gap-9 flex-1">
             <div className="flex-1 max-w-fit">
               <div className="relative">
                 <Stage space={space} />

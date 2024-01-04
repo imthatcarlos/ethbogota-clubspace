@@ -3,13 +3,13 @@ import { GetServerSideProps, InferGetServerSidePropsType, NextPage } from "next"
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useEffect, useState, useReducer, useMemo } from "react";
-import {
-  DispatchPlayerContext,
-  PlayerContext,
-  playerInitialState,
-  playerReducer,
-  setAudioVolumeAction,
-} from "@madfi/ux-components";
+// import {
+//   DispatchPlayerContext,
+//   PlayerContext,
+//   playerInitialState,
+//   playerReducer,
+//   setAudioVolumeAction,
+// } from "@madfi/ux-components";
 import { useAccount } from "wagmi";
 import { Profile, useGetProfilesOwned } from "@/services/lens/getProfile";
 import useENS from "@/hooks/useENS";
@@ -156,22 +156,22 @@ const LivePageAtHandle: NextPageWithLayout = ({ clubSpaceObject }: { clubSpaceOb
         </div>
       ) : null}
       {!loadingDefaultProfile && ensDone && (!isLoadingBadge || !address) && (clubSpaceObject.queuedTrackIds?.length || clubSpaceObject.emptyPlaylist) && canEnter ? (
-        <PlayerContext.Provider value={audioPlayerState}>
-          <DispatchPlayerContext.Provider value={audioPlayerDispatch}>
-            <LiveSpace
-              clubSpaceObject={clubSpaceObject}
-              defaultProfile={defaultProfile}
-              isHost={defaultProfile?.id === clubSpaceObject.creatorLensProfileId}
-              isLoadingEntry={isLoadingEntry}
-              setIsLoadingEntry={setIsLoadingEntry}
-              address={address}
-              handle={defaultProfile?.handle || ensData?.handle || address}
-              hasBadge={hasBadge}
-              playerVolume={audioPlayerState.audioVolume}
-              setPlayerVolume={(volume: number) => audioPlayerDispatch(setAudioVolumeAction(volume))}
-            />
-          </DispatchPlayerContext.Provider>
-        </PlayerContext.Provider>
+        // <PlayerContext.Provider value={audioPlayerState}>
+        //   <DispatchPlayerContext.Provider value={audioPlayerDispatch}>
+        //     <LiveSpace
+        //       clubSpaceObject={clubSpaceObject}
+        //       defaultProfile={defaultProfile}
+        //       isHost={defaultProfile?.id === clubSpaceObject.creatorLensProfileId}
+        //       isLoadingEntry={isLoadingEntry}
+        //       setIsLoadingEntry={setIsLoadingEntry}
+        //       address={address}
+        //       handle={defaultProfile?.handle || ensData?.handle || address}
+        //       hasBadge={hasBadge}
+        //       playerVolume={audioPlayerState.audioVolume}
+        //       setPlayerVolume={(volume: number) => audioPlayerDispatch(setAudioVolumeAction(volume))}
+        //     />
+        //   </DispatchPlayerContext.Provider>
+        // </PlayerContext.Provider>
       ) : null}
     </>
   );

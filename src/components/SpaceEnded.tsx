@@ -1,7 +1,7 @@
 export const SpaceEnded = ({ handle }: { handle: string }) => {
   return (
     <div className="h-screen">
-      <div className="min-h-full px-4 py-16 sm:px-6 sm:py-24 md:grid md:place-items-center lg:px-8">
+      <div className="min-h-full px-4 py-8 sm:px-6 sm:py-24 md:grid md:place-items-center lg:px-8">
         <div className="mx-auto max-w-max">
           <main className="sm:flex">
             <div className="sm:ml-6">

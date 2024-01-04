@@ -1,6 +1,5 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { DROP_PROTOCOL_DECENT, DROP_PROTOCOL_SOUND } from "@/lib/consts";
-import { getContractData } from "@/services/decent/getDecentNFT";
+import { DROP_PROTOCOL_SOUND } from "@/lib/consts";
 import getSoundNFT from "@/services/sound/getSoundNFT";
 
 export default (options: UseQueryOptions = {}, { drop, signer }) => {
@@ -18,17 +17,7 @@ export default (options: UseQueryOptions = {}, { drop, signer }) => {
     async () => {
       let data;
 
-      if (drop.protocol === DROP_PROTOCOL_DECENT) {
-        data = await getContractData(
-          drop.decentContractAddress,
-          drop.decentContractChainId,
-          undefined,
-          drop.decentContractType
-        );
-
-        data.contractType = drop.decentContractType;
-        data.chainId = drop.decentContractChainId;
-      } else if (drop.protocol === DROP_PROTOCOL_SOUND) {
+      if (drop.protocol === DROP_PROTOCOL_SOUND) {
         data = await getSoundNFT(drop.contractAddress);
       } else {
         throw new Error("invalid value for drop.protocol: ");

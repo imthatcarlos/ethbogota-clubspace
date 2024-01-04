@@ -1,7 +1,10 @@
 import { env } from "@/env.mjs";
+import { polygon, polygonMumbai } from "viem/chains";
 
 export const IS_PRODUCTION = process.env.NEXT_PUBLIC_IS_PRODUCTION === "true";
 export const APP_NAME = "MadFi";
+export const VALID_CHAIN_ID = IS_PRODUCTION ? 137 : 80001; // for common lens stuff
+export const VALID_CHAIN = IS_PRODUCTION ? polygon : polygonMumbai;
 
 export const REDIS_SPACE_PREFIX = "space_v2";
 export const REDIS_STREAM_PREFIX = "stream";
@@ -13,6 +16,8 @@ export const LOCALSTORAGE_DEFAULT_PROFILE_ID = "DEFAULT_PROFILE_ID";
 export const NEXT_PUBLIC_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "live.madfi.xyz";
 export const LENSTER_URL = IS_PRODUCTION ? "https://hey.xyz" : "https://testnet.hey.xyz";
 export const MADFI_SITE_URL = IS_PRODUCTION ? 'https://madfi.xyz' : 'https://testnet.madfi.xyz';
+export const MADFI_BANNER_IMAGE_SMALL =
+  "https://link.storjshare.io/raw/jvnvg6pove7qyyfbyo5hqggdis6a/misc%2Fmadfi-banner.jpeg";
 
 export const LENS_HUB_V2_PREVIEW_ADDRESS = '0xC1E77eE73403B8a7478884915aA599932A677870';
 export const LENSHUB_PROXY = IS_PRODUCTION

@@ -46,7 +46,7 @@ export const ParticipantDialogList = () => {
           <ProfilePicList participants={participants.slice(0, 5)} />
         </div>
       </DialogTrigger>
-      <DialogContent className="max-w-[90%] sm:max-w-lg border-none">
+      <DialogContent className="sm:max-w-lg md:max-w-xl max-h-screen w-1/4">
         <>
           <DialogHeader className="mb-4">
             <DialogTitle className="mb-4">{stageParticipants.length > 0 ? "Stage" : "Stage is empty"}</DialogTitle>
@@ -105,7 +105,7 @@ const ProfilePicList = ({ participants }: { participants: Array<Participant> }) 
   return (
     <div className="flex -space-x-1">
       {participants.map((participant, index) => (
-        <div style={{ zIndex: participants.length - index }} className="relative">
+        <div key={`profilepic-${index}`} style={{ zIndex: participants.length - index }} className="relative">
           <ProfilePic participant={participant} key={participant.sid} />
         </div>
       ))}

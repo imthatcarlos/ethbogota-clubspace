@@ -23,6 +23,7 @@ module.exports = {
         "background": "hsl(var(--background))",
         "foreground": "hsl(var(--foreground))",
         "primary": "hsl(var(--primary))",
+        // secondary: "#FFFFFF",
       },
       backgroundImage: {
         "live-page-player": "url('/lil_buddy_low_res.png')",

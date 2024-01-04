@@ -1,48 +1,49 @@
-import { useTheme } from "next-themes";
-import { createClient, WagmiConfig } from "wagmi";
-import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
-import { getDefaultWallets, RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
-import { chain, configureChains } from "wagmi";
+import { WagmiConfig } from "wagmi";
+import {  RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import { useEffect, useMemo, useState } from "react";
-import { IS_PRODUCTION, JSON_RPC_URL_ALCHEMY_MAP } from "@/lib/consts";
-
-export const { chains, provider } = configureChains(
-  IS_PRODUCTION ? [chain.polygon, chain.mainnet, chain.optimism] : [chain.polygonMumbai, chain.goerli],
-  // IS_PRODUCTION ? [chain.polygon] : [chain.polygonMumbai],
-  [jsonRpcProvider({ rpc: (chain) => ({ http: JSON_RPC_URL_ALCHEMY_MAP[chain.id] }) })]
-);
-
-export const { connectors } = getDefaultWallets({
-  appName: "ClubSpace",
-  chains,
-});
-
-export const wagmiClient = createClient({
-  autoConnect: true,
-  connectors,
-  provider,
-});
+import { ToastBar, Toaster } from "react-hot-toast";
+import { LensProvider } from "@/pages/LensProvider";
+import { appInfo, chains, wagmiConfig } from "@/lib/utils/rainbow";
 
 const Web3Provider = ({ children }) => {
   const [mounted, setMounted] = useState(false);
-  const { resolvedTheme } = useTheme();
+
+  const rainbowTheme = useMemo(() => {
+    return darkTheme();
+  }, []);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const theme = useMemo(
-    () => darkTheme({ accentColor: "#FE202B", borderRadius: "small" }),
-    // resolvedTheme === "dark"
-    // ? darkTheme({ accentColor: "#FE202B", borderRadius: "small" })
-    // : lightTheme({ accentColor: "#4f46e5", borderRadius: "small" }),
-    [resolvedTheme]
-  );
   if (!mounted) return null;
+
   return (
-    <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider chains={chains} theme={theme}>
-        {children}
+    <WagmiConfig config={wagmiConfig}>
+      <RainbowKitProvider chains={chains} theme={rainbowTheme} appInfo={appInfo}>
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              backgroundColor: rainbowTheme.colors.modalBackground,
+              color: "white",
+            }
+          }}
+        >
+          {(t) => (
+            <ToastBar toast={t}>
+              {({ icon, message }) => (
+                <>
+                  {icon}
+                  {message}
+                </>
+              )}
+            </ToastBar>
+          )}
+        </Toaster>
+        <LensProvider>
+          {children}
+        </LensProvider>
       </RainbowKitProvider>
     </WagmiConfig>
   );

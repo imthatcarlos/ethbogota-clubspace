@@ -3,27 +3,22 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/Dialog";
 import { useCallback } from "react";
 import { ShoppingBag } from "lucide-react";
-import { useSigner } from "wagmi";
+import { useWalletClient } from "wagmi";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import useGetClubspaceDrop from "@/hooks/useGetClubspaceDrop";
-import { FeaturedDecentNFT } from "./../FeaturedDecentNFT";
 import { FeaturedSoundNFT } from "./../FeaturedSoundNFT";
 import PinnedLensPost from "./../PinnedLensPost";
-import {
-  DROP_PROTOCOL_DECENT,
-  DROP_PROTOCOL_SOUND,
-} from "@/lib/consts";
+import { DROP_PROTOCOL_SOUND } from "@/lib/consts";
 
 export const PinnedPromotionDialog = ({ space }) => {
-  const { data: signer } = useSigner();
+  const { data: walletClient } = useWalletClient();
   const { data: featuredDrop, isLoading: isLoadingFeauredDrop } = useGetClubspaceDrop(
     {},
-    { drop: space.drop, signer }
+    { drop: space.drop, signer: walletClient }
   );
 
   const DummyDecent = useCallback(
@@ -109,27 +104,20 @@ export const PinnedPromotionDialog = ({ space }) => {
       <DialogTrigger className="z-30 bg-background rounded-lg p-2 py-[0.62rem] hover:bg-foreground">
         <ShoppingBag size={24} className="ml-2 mr-2" />
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg md:max-w-xl max-h-screen">
+      <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogDescription className="space-y-4">
             {isLoadingFeauredDrop ? (
               <>{DummyDecent()}</>
             ) : (
               <>
-                {featuredDrop?.protocol === DROP_PROTOCOL_DECENT && (
-                  <FeaturedDecentNFT {...featuredDrop} semGroupIdHex={space.clubSpaceId} />
-                )}
                 {featuredDrop?.protocol === DROP_PROTOCOL_SOUND && (
                   <p>
                     <FeaturedSoundNFT {...featuredDrop} semGroupIdHex={space.clubSpaceId} />
                   </p>
                 )}
                 {space.pinnedLensPost && (
-                    <PinnedLensPost
-                      url={space.pinnedLensPost}
-                      small={!!space.drop}
-                      creatorAddress={space.creatorAddress}
-                    />
+                    <PinnedLensPost url={space.pinnedLensPost} />
                 )}
               </>
             )}

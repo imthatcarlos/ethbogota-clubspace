@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { watchReadContract, readContract } from '@wagmi/core';
-import { useAccount, useSigner } from "wagmi";
+import { useAccount, useWalletClient } from "wagmi";
 import { BigNumber } from "ethers";
 import toast from "react-hot-toast";
 import { MAD_SBT_CONTRACT_ADDRESS, REWARD_ENGAGEMENT_ACTION_MODULE } from '@/lib/consts';
@@ -14,7 +14,7 @@ export const LivePoints = ({
   isAuthenticated,
 }) => {
   const { address } = useAccount();
-  const { data: signer } = useSigner();
+  const { data: walletClient } = useWalletClient();
   const { data: authenticatedProfileId } = useAuthenticatedProfileId();
   const { data: isProfileManager, refetch: fetchIsProfileManager } = useIsProfileManager(authenticatedProfileId, REWARD_ENGAGEMENT_ACTION_MODULE);
   const [activeMadSBTCollectionId, setActiveMadSBTCollectionId] = useState('');
@@ -61,7 +61,7 @@ export const LivePoints = ({
     try {
       toastId = toast.loading('Signing message to approve rewards as profile manager');
 
-      await enableProfileManagerGasless(signer, REWARD_ENGAGEMENT_ACTION_MODULE);
+      await enableProfileManagerGasless(walletClient, REWARD_ENGAGEMENT_ACTION_MODULE);
       fetchIsProfileManager();
 
       toast.success(`Done! You can now claim rewards from rewarded publications`, { duration: 5_000, id: toastId });

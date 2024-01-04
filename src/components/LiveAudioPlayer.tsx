@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { ITrack } from "@spinamp/spinamp-sdk";
-import { IcecastPlayer } from "@madfi/ux-components";
+// import { IcecastPlayer } from "@madfi/ux-components";
 import { groupBy } from "lodash/collection";
 // import { isEmpty } from "lodash/lang";
 import toast from "react-hot-toast";
@@ -91,29 +91,29 @@ export const LiveAudioPlayer = ({
   if (streamEnded) return null;
 
   return (
-    <IcecastPlayer
-      streamURL={streamURL}
-      currentSong={{
-        songUrl: currentTrack?.websiteUrl,
-        project: currentTrack?.title,
-        website: currentTrack?.websiteUrl,
-        artist: currentTrack?.artist?.name,
-        image: currentTrack?.lossyArtworkUrl,
-      }}
-      nextSong={{
-        songUrl: nextTrack?.websiteUrl,
-        project: nextTrack?.title,
-        website: nextTrack?.websiteUrl,
-        artist: nextTrack?.artist?.name,
-        image: nextTrack?.lossyArtworkUrl,
-      }}
-      options={{ playbackMethod: 'html5' }}
-      // @ts-expect-error
-      callbackOnMetadata={onMetadata}
-      callbackOnPlay={() => {}}
-      callbackOnPause={() => {}}
-      // @ts-expect-error
-      theme={theme}
-    />
+    // <IcecastPlayer
+    //   streamURL={streamURL}
+    //   currentSong={{
+    //     songUrl: currentTrack?.websiteUrl,
+    //     project: currentTrack?.title,
+    //     website: currentTrack?.websiteUrl,
+    //     artist: currentTrack?.artist?.name,
+    //     image: currentTrack?.lossyArtworkUrl,
+    //   }}
+    //   nextSong={{
+    //     songUrl: nextTrack?.websiteUrl,
+    //     project: nextTrack?.title,
+    //     website: nextTrack?.websiteUrl,
+    //     artist: nextTrack?.artist?.name,
+    //     image: nextTrack?.lossyArtworkUrl,
+    //   }}
+    //   options={{ playbackMethod: 'html5' }}
+    //   // @ts-expect-error
+    //   callbackOnMetadata={onMetadata}
+    //   callbackOnPlay={() => {}}
+    //   callbackOnPause={() => {}}
+    //   // @ts-expect-error
+    //   theme={theme}
+    // />
   );
 };

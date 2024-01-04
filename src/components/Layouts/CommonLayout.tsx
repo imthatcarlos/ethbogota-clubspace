@@ -1,4 +1,3 @@
-import Footer from "../Footer";
 import { Header } from "../Header";
 
 export const CommonLayout = ({ children }) => {
@@ -6,7 +5,6 @@ export const CommonLayout = ({ children }) => {
     <div className="flex flex-col min-h-screen">
       <Header />
       {children}
-      <Footer />
     </div>
   );
 };

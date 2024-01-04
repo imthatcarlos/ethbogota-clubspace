@@ -1,4 +1,4 @@
-import { formatProfilePicture } from "@imthatcarlos/widgets-react";
+import { formatProfilePicture } from "@madfi/widgets-react";
 import { DefaultLensProfile } from "@/types/lens";
 
 export default (profile: DefaultLensProfile) => {

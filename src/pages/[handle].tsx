@@ -18,8 +18,8 @@ import { SpaceGated } from "@/components/SpaceGated";
 import { TIER_OPEN, REDIS_SPACE_PREFIX } from "@/lib/consts";
 import { generateName } from "@/lib/utils/nameGenerator";
 import { NextPageWithLayout } from "./_app";
-
-const USE_V1_PROFILE = true;
+import { useAuthenticatedProfileId } from "@/hooks/useLensLogin";
+import { ProfileId, useProfile, useOwnedHandles, useProfiles } from "@lens-protocol/react-web";
 
 const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefined }) => {
   // const [preJoinChoices, setPreJoinChoices] = useState<LocalUserChoices | undefined>(undefined);
@@ -30,7 +30,14 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
   } = useRouter();
 
   const { isConnected, address } = useAccount();
-  const { data: profilesOwned, isLoading: isLoadingProfiles } = useGetProfilesOwned({}, address, USE_V1_PROFILE);
+
+  const { data: authenticatedProfileId } = useAuthenticatedProfileId();
+  const { data: authenticatedProfile, loading: isLoadingProfile } = useProfile({
+    forProfileId: authenticatedProfileId as ProfileId,
+  });
+  const { data: handles } = useOwnedHandles({ for: address });
+  const { data: profilesOwned, loading: isLoadingProfilesOwned } = useProfiles({ where: { handles: handles?.map(({ fullHandle }) => fullHandle) } });
+
   // const {
   //   data: meetsGatedCondition,
   //   isLoading: isLoadingMeetsGated,
@@ -56,9 +63,9 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
   const userIdentity = useMemo(() => address ?? generateName(), [address]);
 
   useEffect(() => {
-    if (!(isLoadingProfiles || isLoadingENS)) {
+    if (!(isLoadingProfile || isLoadingProfilesOwned || isLoadingENS)) {
       // @ts-ignore
-      const defaultProfile = profilesOwned ? profilesOwned?.defaultProfile : null;
+      const defaultProfile = authenticatedProfile || (profilesOwned?.length ? profilesOwned[0] : null);
       if (defaultProfile) {
         // the bare minimum
         setDefaultProfile({
@@ -71,7 +78,7 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
       setLoadingDefaultProfile(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, isLoadingProfiles, isLoadingENS]);
+  }, [address, isLoadingProfile, isLoadingProfilesOwned, isLoadingENS]);
 
   // const preJoinSubmit = (values: LocalUserChoices) => {
   //   console.log("Joining with: ", values);
@@ -145,7 +152,7 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
 
   if (isConnected && loadingDefaultProfile) {
     return (
-      <div className="flex-1 min-h-screen">
+      <div className="bg-background flex-1 min-h-screen">
         <div className="abs-center items-center">
           <p className="animate-move-txt-bg gradient-txt text-4xl mb-4">Joining...</p>
         </div>
@@ -200,7 +207,7 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
   return <>{space.spaceType === "playlist" && <>go to old infra</>}</>;
 };
 
-LivePageAtHandle.getLayout = (page) => <>{page}</>;
+// LivePageAtHandle.getLayout = (page) => <>{page}</>;
 
 export default LivePageAtHandle;
 
