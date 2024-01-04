@@ -4,14 +4,16 @@ import { type Participant } from "livekit-client";
 import { Button } from "@/components/ui";
 import toast from "react-hot-toast";
 
-export const HostSection = ({ participant, spaceExp }: { participant: Participant, spaceExp: number }) => {
+const MAX_STAGE_COUNT = 2;
+
+export const HostSection = ({ participant, spaceExp, stageCount }: { participant: Participant, spaceExp: number, stageCount: number }) => {
   // const participant = useParticipantContext();
   const room = useRoomInfo();
 
-  const participantPermissions = participant.permissions;
-
   const { mutate: muteParticipant } = useMutation({
-    mutationFn: async (participant: Participant, promoting: boolean) => {
+    mutationFn: async (participant: Participant) => {
+      const promoting = !participant.permissions.canPublish;
+
       await fetch("/api/room/muteParticipant", {
         method: "POST",
         headers: {
@@ -21,17 +23,24 @@ export const HostSection = ({ participant, spaceExp }: { participant: Participan
           name: participant.name,
           roomName: room.name,
           canPublish: !participant.permissions.canPublish,
-          spaceExp
+          spaceExp,
+          identity: participant.identity,
         }),
       });
 
       toast.success(promoting ? 'Promoted to stage' : 'Removed from stage');
     }
   });
+
+  const stageFull = stageCount === MAX_STAGE_COUNT;
+  const buttonText = stageFull
+    ? "Stage Full"
+    : (participant.permissions?.canPublish ? "Kick 🚫" : "Invite 🎙");
+
   return (
     <>
-      <Button variant="white" size="md" onClick={() => muteParticipant(participant, !participantPermissions?.canPublish)}>
-        {participantPermissions?.canPublish ? "Kick 🚫" : "Invite 🎙"}
+      <Button disabled={stageFull} variant="white" size="md" onClick={() => muteParticipant(participant)}>
+        {buttonText}
       </Button>
     </>
   );

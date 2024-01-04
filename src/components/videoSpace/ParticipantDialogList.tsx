@@ -50,7 +50,7 @@ export const ParticipantDialogList = ({ creatorAddress, space }) => {
           </h2>
           <DialogDescription className="space-y-6 max-h-60 overflow-auto">
             <ParticipantLoop participants={regularParticipants}>
-              <ParticipantListItem isAdmin={isAdmin} space={space} />
+              <ParticipantListItem isAdmin={isAdmin} space={space} stageCount={stageParticipants.length} />
             </ParticipantLoop>
           </DialogDescription>
         </>

@@ -30,7 +30,7 @@ export default async function addUser(req: NextApiRequest, res: NextApiResponse)
       metadataWithHost = metadata;
     }
 
-    // console.log(`${name} canPublish: ${canPublish}`)
+    console.log(`${roomName} ${identity} canPublish: ${canPublish}`)
 
     const body = { name, canPublish, metadata: metadataWithHost };
     const url = `https://livepeer.studio/api/room/${roomName}/user`;

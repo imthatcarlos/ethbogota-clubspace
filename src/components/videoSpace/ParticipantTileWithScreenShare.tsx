@@ -115,7 +115,7 @@ export const ParticipantTileWithScreenShare = ({
                 />
               </div>
               <div className="absolute flex flex-row items-center justify-between gap-2 leading-none -bottom-1 inset-x-1">
-                <div className="flex items-center p-1">
+                <div className="flex items-center p-2">
                   <TrackMutedIndicator source={Track.Source.Microphone} show={"muted"}></TrackMutedIndicator>
                   <DisplayName defaultProfile={defaultProfile} ensData={ensData} />
                 </div>
@@ -133,12 +133,12 @@ export const ParticipantTileWithScreenShare = ({
 const DisplayName = ({ defaultProfile, ensData }: { defaultProfile?: DefaultLensProfile, ensData?: any }) => {
   if (defaultProfile?.handle) {
     return (
-      <span className="text-white text-xl font-bold select-none">@{defaultProfile.handle.localName}</span>
+      <span className="text-white text-sm font-bold select-none">@{defaultProfile.handle.localName}</span>
     );
   }
   if (ensData?.handle) {
     return (
-      <span className="text-white text-xl font-bold select-none">{ensData.handle}</span>
+      <span className="text-white text-sm font-bold select-none">{ensData.handle}</span>
     );
   }
   return <ParticipantName />;

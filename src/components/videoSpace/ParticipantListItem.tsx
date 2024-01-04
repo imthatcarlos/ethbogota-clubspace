@@ -29,7 +29,7 @@ export const useMetadataInfo = (participant: Participant) => {
   return { avatar, displayName, handle };
 }
 
-export const ParticipantListItem = ({ isAdmin, space }: { isAdmin: boolean, space: any }) => {
+export const ParticipantListItem = ({ isAdmin, space, stageCount }: { isAdmin: boolean, space: any, stageCount: number }) => {
   const participant = useParticipantContext();
   const { displayName, avatar, handle } = useMetadataInfo(participant);
   const [isHovered, setIsHovered] = useState(false);
@@ -53,7 +53,7 @@ export const ParticipantListItem = ({ isAdmin, space }: { isAdmin: boolean, spac
       <div className="col-span-1">
         {isAdmin && !isCreator && (
           <div className={`col-span-1 ${isHovered ? 'opacity-100' : 'opacity-0'} transition-opacity duration-50 mt-2`}>
-            <HostSection participant={participant} spaceExp={space.exp} />
+            <HostSection participant={participant} spaceExp={space.exp} stageCount={stageCount} />
           </div>
         )}
       </div>

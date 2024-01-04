@@ -5,8 +5,9 @@ import {
   useParticipantContext,
   useParticipants,
   useTracks,
+  useRemoteParticipant,
 } from "@livekit/components-react";
-import { LocalParticipant, RemoteParticipant, Track } from "livekit-client";
+import { LocalParticipant, RemoteParticipant, Track, ParticipantEvent } from "livekit-client";
 import { ParticipantTile } from "./ParticipantTile";
 import styles from "./videoSpace.module.css";
 import { cn } from "@/lib/utils/cn";
@@ -83,9 +84,10 @@ const ParticipantControls = ({
 }) => {
   const { address } = useAccount();
   const participant = useParticipantContext();
+  const updatedParticipant = useRemoteParticipant(participant.identity, { updateOnlyOn: ParticipantEvent.ParticipantPermissionsChanged });
 
   if (participant.name !== address) return null;
-  if (!(participant.permissions?.canPublish || participant.name === space.creatorAddress)) return null;
+  if (!(updatedParticipant.permissions?.canPublish || participant.name === space.creatorAddress)) return null;
 
   return (
     <>
