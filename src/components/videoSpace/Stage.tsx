@@ -83,25 +83,24 @@ const ParticipantControls = ({
 }) => {
   const { address } = useAccount();
   const participant = useParticipantContext();
-  const permissions = participant.permissions;
 
-  if (permissions && address === space.creatorAddress) {
-    return (
-      <>
-        <CustomControls
-          controls={{
-            microphone: true,
-            camera: true,
-            screenShare: screenShareParticipant ? participant?.identity === screenShareParticipant?.identity : true,
-          }}
-          className="border-none gap-2 flex items-center z-30"
-        />
-        {/* TODO: handle ending stream gracefully */}
-        {/* <EndStreamButton space={space} /> */}
-      </>
-    );
-  }
-  return null;
+  if (participant.name !== address) return null;
+  if (!(participant.permissions?.canPublish || participant.name === space.creatorAddress)) return null;
+
+  return (
+    <>
+      <CustomControls
+        controls={{
+          microphone: true,
+          camera: true,
+          screenShare: screenShareParticipant ? participant?.identity === screenShareParticipant?.identity : true,
+        }}
+        className="border-none gap-2 flex items-center z-30"
+      />
+      {/* TODO: handle ending stream gracefully */}
+      {/* <EndStreamButton space={space} /> */}
+    </>
+  );
 };
 
 const EndStreamButton = ({ space }: { space: any }) => {

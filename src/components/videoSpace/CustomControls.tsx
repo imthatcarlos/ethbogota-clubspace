@@ -93,7 +93,7 @@ export function CustomControls({ controls, ...props }: ControlBarProps) {
       <div className="lk-control-bar" {...props}>
         {visibleControls.microphone && (
           <div className="bg-background flex items-center rounded-lg group group-hover:bg-foreground">
-            <TrackToggle source={Track.Source.Microphone}></TrackToggle>
+            <TrackToggle source={Track.Source.Microphone} initialState={false}></TrackToggle>
             <div className="lk-button-group-menu">
               <MediaDeviceMenu kind="audioinput" />
             </div>
@@ -101,7 +101,7 @@ export function CustomControls({ controls, ...props }: ControlBarProps) {
         )}
         {visibleControls.camera && (
           <div className="bg-background flex items-center rounded-lg">
-            <TrackToggle source={Track.Source.Camera}></TrackToggle>
+            <TrackToggle source={Track.Source.Camera} initialState={false}></TrackToggle>
             <div className="lk-button-group-menu">
               <MediaDeviceMenu kind="videoinput" />
             </div>
@@ -112,6 +112,7 @@ export function CustomControls({ controls, ...props }: ControlBarProps) {
             source={Track.Source.ScreenShare}
             captureOptions={{ audio: true, selfBrowserSurface: "include" }}
             className="!rounded-lg"
+            initialState={false}
           ></TrackToggle>
         )}
         {/* <StartAudio label="Start Audio" className="" /> */}

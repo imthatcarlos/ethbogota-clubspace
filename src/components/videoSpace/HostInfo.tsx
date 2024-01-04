@@ -16,8 +16,6 @@ export function getPictureToDisplay(picture: any) {
 }
 
 export const HostInfo = ({ space }: { space: any }) => {
-  // const avatar = getPictureToDisplay(space.creatorAvatar);
-
   return (
     <div className="flex items-center justify-between gap-2 pt-4">
       <div className="text-xs font-semibold whitespace-nowrap inline-flex gap-1">
@@ -32,7 +30,7 @@ export const HostInfo = ({ space }: { space: any }) => {
         </div>
       </div>
       <div>
-        <ParticipantDialogList />
+        <ParticipantDialogList creatorAddress={space.creatorAddress} space={space} />
       </div>
     </div>
   );

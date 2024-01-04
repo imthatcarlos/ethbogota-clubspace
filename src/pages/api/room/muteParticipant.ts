@@ -1,33 +1,43 @@
 import { env } from "@/env.mjs";
-import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
+import redisClient from "@/lib/utils/redisClient";
 
-const apiKey = env.LIVEPEER_API_KEY;
-
+// HACK: using redis to manage our own permissions, reading in `/addUser` which seems to be called by livekit all the time :shrug:
 export default async function muteParticipant(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { identity, roomName, canPublish } = req.body;
+    const { name, roomName, canPublish, spaceExp } = req.body;
 
-    const url = `https://livepeer.studio/api/room/${roomName}/user/${identity}`;
-    const response = await axios.put(
-      url,
-      {
-        canPublish: !canPublish,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-        },
-      }
-    );
+    const permissionsKey = `perms/${roomName}/${name}`;
 
-    const result = await response.data;
-    console.log("result", result);
+    // console.log(`overwriting redis perms at ${permissionsKey}`);
+    // console.log(`canPublish: ${canPublish}`)
+    if (canPublish) {
+      await redisClient.set(permissionsKey, canPublish, "EX", spaceExp);
+    } else {
+      await redisClient.del(permissionsKey);
+    }
 
-    // {"id":"71d187fe-b74b-4fd9-988d-2f41b4f9a62e"}
-    res.status(200).json(result);
+    res.status(200).end();
   } catch (e) {
-    res.statusMessage = (e as Error).message;
+    console.log(e);
     res.status(500).end();
   }
 }
+
+// DEPRECATED...
+// const url = `https://livepeer.studio/api/room/${roomName}/user/${identity}`;
+// const response = await axios.put(
+//   url,
+//   {
+//     canPublish: !canPublish,
+//   },
+//   {
+//     headers: {
+//       Authorization: `Bearer ${apiKey}`,
+//     },
+//   }
+// );
+
+// const result = await response.data;
+
+// res.status(200).json(result);

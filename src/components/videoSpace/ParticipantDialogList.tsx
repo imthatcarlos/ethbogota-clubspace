@@ -9,30 +9,19 @@ import {
 import { Icons } from "@/components/ui";
 import { useParticipants, ParticipantLoop, useParticipantContext } from "@livekit/components-react";
 import { ParticipantListItem, useMetadataInfo } from "./ParticipantListItem";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Participant } from "livekit-client";
 import { useAccount } from "wagmi";
 
-export const ParticipantDialogList = () => {
+export const ParticipantDialogList = ({ creatorAddress, space }) => {
   const { address: userAddress } = useAccount();
   const participants = useParticipants();
-
-  const host = useMemo(
-    () =>
-      participants.find((p) => {
-        if (!p.metadata) return false;
-        try {
-          const { isHost } = JSON.parse(p.metadata);
-          return isHost;
-        } catch (err) {
-          return false;
-        }
-      }),
-    [participants]
-  );
+  const isAdmin = creatorAddress === userAddress;
 
   // filter out host from list to avoid fetching things on the ParticipantListItem
-  let stageParticipants = participants.filter((p) => p.permissions?.canPublish);
+  let stageParticipants = participants
+    .filter((p) => p.permissions?.canPublish)
+    .sort((a, b) => (a.name === creatorAddress ? -1 : b.name === creatorAddress ? 1 : 0));
   let regularParticipants = participants.filter((p) => !p.permissions?.canPublish);
 
   return (
@@ -48,41 +37,25 @@ export const ParticipantDialogList = () => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg md:max-w-xl max-h-screen w-1/4">
         <>
-          <DialogHeader className="mb-4">
+          <DialogHeader className="mb-4 gap-y-2">
             <DialogTitle className="mb-4">{stageParticipants.length > 0 ? "Stage" : "Stage is empty"}</DialogTitle>
             {stageParticipants.length > 0 ? (
               <ParticipantLoop participants={stageParticipants}>
-                <StageParticipant />
+                <ParticipantListItem isAdmin={isAdmin} space={space} />
               </ParticipantLoop>
             ) : null}
           </DialogHeader>
           <h2 className="text-lg font-semibold">
-            {host?.identity === userAddress ? "Invite to stage" : "Online now"}
+            {isAdmin ? "Invite to stage" : "Online now"}
           </h2>
           <DialogDescription className="space-y-6 max-h-60 overflow-auto">
             <ParticipantLoop participants={regularParticipants}>
-              <ParticipantListItem />
+              <ParticipantListItem isAdmin={isAdmin} space={space} />
             </ParticipantLoop>
           </DialogDescription>
         </>
       </DialogContent>
     </Dialog>
-  );
-};
-
-const StageParticipant = () => {
-  const participant = useParticipantContext();
-  const { displayName, avatar, handle } = useMetadataInfo(participant);
-
-  return (
-    <div className="flex gap-3">
-      <img className="h-12 w-12 rounded-full" src={avatar} alt={`Avatar of user ${displayName}`} />
-
-      <div className="flex flex-col">
-        {handle && <div className="font-light truncate max-w-[15ch] text-gray-400 text-sm">{handle}</div>}
-        <div className="font-bold truncate max-w-[15ch]">{displayName}</div>
-      </div>
-    </div>
   );
 };
 

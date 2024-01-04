@@ -4,6 +4,7 @@ import { useParticipantContext } from "@livekit/components-react";
 import { DefaultLensProfile } from "@/types/lens";
 import getLensPictureURL from "@/lib/utils/getLensPictureURL";
 import { shortAddress } from "@/utils";
+import { HostSection } from "@/components/discussionSpace/HostSection";
 
 export const useMetadataInfo = (participant: Participant) => {
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
@@ -28,17 +29,33 @@ export const useMetadataInfo = (participant: Participant) => {
   return { avatar, displayName, handle };
 }
 
-export const ParticipantListItem = ({}: {}) => {
+export const ParticipantListItem = ({ isAdmin, space }: { isAdmin: boolean, space: any }) => {
   const participant = useParticipantContext();
   const { displayName, avatar, handle } = useMetadataInfo(participant);
+  const [isHovered, setIsHovered] = useState(false);
+  const isCreator = participant.name === space.creatorAddress;
 
   return (
-    <div className="flex gap-3">
-      <img className="h-12 w-12 rounded-full" src={avatar} alt={`Avatar of user ${displayName}`} />
-
-      <div className="flex flex-col">
-        {handle && <div className="font-light truncate max-w-[15ch] text-gray-400 text-sm">{handle}</div>}
-        <div className="font-bold truncate max-w-[15ch]">{displayName}</div>
+    <div
+      className="grid grid-cols-3 gap-3"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="col-span-2">
+        <div className="flex gap-4">
+          <img className="h-12 w-12 rounded-full" src={avatar} alt={`avatar`} />
+          <div className="mt-1">
+            {handle && <div className="font-light truncate max-w-[25ch] text-gray-400 text-sm">{handle}</div>}
+            <div className="font-bold truncate max-w-[25ch]">{displayName}</div>
+          </div>
+        </div>
+      </div>
+      <div className="col-span-1">
+        {isAdmin && !isCreator && (
+          <div className={`col-span-1 ${isHovered ? 'opacity-100' : 'opacity-0'} transition-opacity duration-50 mt-2`}>
+            <HostSection participant={participant} spaceExp={space.exp} />
+          </div>
+        )}
       </div>
     </div>
   );
