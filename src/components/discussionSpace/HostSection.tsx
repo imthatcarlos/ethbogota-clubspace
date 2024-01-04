@@ -3,16 +3,20 @@ import { useRoomInfo } from "@livekit/components-react";
 import { type Participant } from "livekit-client";
 import { Button } from "@/components/ui";
 import toast from "react-hot-toast";
+import {useState} from "react";
 
 const MAX_STAGE_COUNT = 2;
 
 export const HostSection = ({ participant, spaceExp, stageCount }: { participant: Participant, spaceExp: number, stageCount: number }) => {
   // const participant = useParticipantContext();
   const room = useRoomInfo();
+  const [isSending, setIsSending] = useState(false);
 
   const { mutate: muteParticipant } = useMutation({
     mutationFn: async (participant: Participant) => {
+      setIsSending(true);
       const promoting = !participant.permissions.canPublish;
+      let toastId = toast.loading(promoting ? "Promoting" : "Kicking");
 
       await fetch("/api/room/muteParticipant", {
         method: "POST",
@@ -28,7 +32,8 @@ export const HostSection = ({ participant, spaceExp, stageCount }: { participant
         }),
       });
 
-      toast.success(promoting ? 'Promoted to stage' : 'Removed from stage');
+      toast.success(promoting ? 'Promoted to stage' : 'Kicked from stage', { id: toastId });
+      setIsSending(false);
     }
   });
 
@@ -39,7 +44,7 @@ export const HostSection = ({ participant, spaceExp, stageCount }: { participant
 
   return (
     <>
-      <Button disabled={stageFull} variant="white" size="md" onClick={() => muteParticipant(participant)}>
+      <Button disabled={stageFull || isSending} variant="white" size="md" onClick={() => muteParticipant(participant)}>
         {buttonText}
       </Button>
     </>
