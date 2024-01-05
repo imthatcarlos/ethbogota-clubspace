@@ -168,8 +168,8 @@ const PublicationContainer = ({
         // @ts-ignore
         operations={{
           ...publication?.operations || {},
-          hasUpvoted,
-          hasMirrored,
+          hasUpvoted: publication?.operations?.hasUpvoted || hasUpvoted,
+          hasMirrored: publication?.operations?.hasMirrored || hasMirrored,
         }}
         useToast={toast}
         rpcURLs={JSON_RPC_URL_ALCHEMY_MAP}

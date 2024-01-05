@@ -11,6 +11,7 @@ import { Button, Icons, Textarea } from "./ui";
 import { cn } from "@/lib/utils/cn";
 import { DefaultLensProfile } from "@/types/lens";
 import { useChat } from "@livekit/components-react";
+import { useAccount } from "wagmi";
 import getLensPictureURL from "@/lib/utils/getLensPictureURL";
 import { shortAddress } from "@/utils";
 
@@ -21,6 +22,7 @@ type Props = {
 export default function Chat({ viewerName }: Props) {
   const { chatMessages: messages, send } = useChat();
   const messagesContainerRef = useRef(null);
+  const { isConnected } = useAccount();
 
   const reverseMessages = useMemo(() => messages.sort((a, b) => a.timestamp - b.timestamp), [messages]);
 
@@ -109,7 +111,8 @@ export default function Chat({ viewerName }: Props) {
             setMessage(e.target.value);
           }}
           onKeyDown={onEnter}
-          placeholder="Type a message..."
+          placeholder={isConnected ? "Type a message..." : "Connect your wallet to chat."}
+          disabled={!isConnected}
         />
         <Button disabled={message.trim().length === 0} onClick={onSend} className="bg-primary focus-visible:ring-primary">
           <div className="flex items-center gap-2">

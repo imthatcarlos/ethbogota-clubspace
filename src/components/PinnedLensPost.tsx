@@ -69,8 +69,6 @@ const PinnedLensPost = ({
     setIsCollecting(false);
   };
 
-  console.log('re-rendering..');
-
   return (
     <>
       {/* {renderHeader && (

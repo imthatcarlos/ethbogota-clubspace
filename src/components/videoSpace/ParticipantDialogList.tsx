@@ -66,7 +66,7 @@ const ProfilePic = ({ participant }: { participant: Participant }) => {
     <img
       key={participant.sid}
       className="inline-block h-8 w-8 rounded-full ring-2 ring-foreground"
-      src={avatar}
+      src={avatar || "./anon.png"}
       alt={`profile of ${displayName}`}
       height={32}
       width={32}

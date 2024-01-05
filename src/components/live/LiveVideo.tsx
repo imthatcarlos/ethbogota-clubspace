@@ -28,7 +28,7 @@ export const LiveVideo = ({
   ensData?: any;
   space: any;
 }) => {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const isMounted = useIsMounted();
   const [tryToConnect, setTryToConnect] = useState(false);
   const [connected, setConnected] = useState(false);
@@ -40,6 +40,8 @@ export const LiveVideo = ({
   }, [isMounted]);
 
   const metadata = useMemo(() => {
+    if (!isConnected) return;
+
     try {
       let str = JSON.stringify({
         defaultProfile: defaultProfile ?? undefined,
@@ -51,7 +53,7 @@ export const LiveVideo = ({
       console.log("failed to stringify metadata");
       return undefined;
     }
-  }, [defaultProfile, ensData, address]);
+  }, [defaultProfile, ensData, address, isConnected]);
 
   const userInfo = useMemo(() => {
     return {

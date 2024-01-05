@@ -43,10 +43,10 @@ export const ParticipantListItem = ({ isAdmin, space, stageCount }: { isAdmin: b
     >
       <div className="col-span-2">
         <div className="flex gap-4">
-          <img className="h-12 w-12 rounded-full" src={avatar} alt={`avatar`} />
+          <img className="h-12 w-12 rounded-full" src={avatar || "./anon.png"} alt={`avatar`} />
           <div className="mt-1">
-            {handle && <div className="font-light truncate max-w-[25ch] text-gray-400 text-sm">{handle}</div>}
-            <div className="font-bold truncate max-w-[25ch]">{displayName}</div>
+            <div className="font-light truncate max-w-[25ch] text-gray-400 text-sm min-h-[10px]">{handle}</div>
+            <div className="font-bold truncate max-w-[25ch]">{displayName || participant.name}</div>
           </div>
         </div>
       </div>

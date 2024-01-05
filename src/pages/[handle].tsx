@@ -139,16 +139,16 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
     )
   }
 
-  if (!isConnected) {
-    return (
-      <div className="flex-1 min-h-screen">
-        <div className="abs-center items-center">
-          <p className="animate-move-txt-bg gradient-txt text-4xl mb-4">Connect your wallet to join</p>
-          <ConnectWallet />
-        </div>
-      </div>
-    );
-  }
+  // if (!isConnected) {
+  //   return (
+  //     <div className="flex-1 min-h-screen">
+  //       <div className="abs-center items-center">
+  //         <p className="animate-move-txt-bg gradient-txt text-4xl mb-4">Connect your wallet to join</p>
+  //         <ConnectWallet />
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   if (isConnected && loadingDefaultProfile) {
     return (
