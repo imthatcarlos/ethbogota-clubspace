@@ -1,7 +1,6 @@
 import { env } from "@/env.mjs";
-import { LiveKitRoom, RoomAudioRenderer, useToken } from "@livekit/components-react";
+import { LiveKitRoom, RoomAudioRenderer, useToken, useLocalParticipantPermissions } from "@livekit/components-react";
 import { useEffect, useMemo, useState } from "react";
-import { useProfile } from "@lens-protocol/react-web";
 // import jwt, { type JwtPayload } from "jwt-decode";
 import Chat from "../Chat";
 // import { ParticipantList } from "../videoSpace/ParticipantList";
@@ -86,7 +85,7 @@ export const LiveVideo = ({
               <div className="relative">
                 <Stage space={space} />
               </div>
-              <div className="w-full mt-16">
+              <div className={`w-full ${space.creatorAddress !== address ? 'mt-16' : 'mt-8'}`}>
                 <HostInfo space={space} />
               </div>
               <RoomAudioRenderer />

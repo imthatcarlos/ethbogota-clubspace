@@ -21,6 +21,10 @@ import { ReactNode, useCallback } from "react";
 import styles from "./videoSpace.module.css";
 import getLensPictureURL from "@/lib/utils/getLensPictureURL";
 
+interface ParticipantTilePropsExtended extends ParticipantTileProps {
+  isMuted: boolean; // mutes all tracks
+}
+
 export const ParticipantTile = ({
   participant,
   children,
@@ -28,8 +32,9 @@ export const ParticipantTile = ({
   onParticipantClick,
   publication,
   disableSpeakingIndicator,
+  isMuted,
   ...htmlProps
-}: ParticipantTileProps): ReactNode => {
+}: ParticipantTilePropsExtended): ReactNode => {
   const p = useEnsureParticipant(participant);
   const trackRef: TrackReferenceOrPlaceholder = useMaybeTrackContext() ?? {
     participant: p,
@@ -67,6 +72,8 @@ export const ParticipantTile = ({
     [trackRef.participant, layoutContext, trackRef.source]
   );
 
+  console.log(`isMuted: ${isMuted}`)
+
   return (
     <div
       {...elementProps}
@@ -87,30 +94,35 @@ export const ParticipantTile = ({
               </div>
             )}
             {trackRef.publication?.kind === "video" || trackRef.source === Track.Source.Camera ? (
-              <VideoTrack
-                participant={trackRef.participant}
-                source={trackRef.source}
-                publication={trackRef.publication}
-                onSubscriptionStatusChanged={handleSubscribe}
-                className="rounded-2xl w-full h-full"
-              />
+              <>
+                {!trackRef.publication.track.isMuted ? (
+                  <VideoTrack
+                    participant={trackRef.participant}
+                    source={trackRef.source}
+                    publication={trackRef.publication}
+                    onSubscriptionStatusChanged={handleSubscribe}
+                    className="rounded-2xl w-full h-full"
+                  />
+                ): (
+                    <div className="absolute bg-black inset-0 flex items-center justify-center pointer-events-none rounded-2xl">
+                      <img
+                        src={defaultProfile?.metadata ? getLensPictureURL(defaultProfile) : (ensData?.avatar || "./anon.png")}
+                        alt={defaultProfile?.handle ? defaultProfile?.handle.localName : (ensData?.avatar || p.identity)}
+                        className="rounded-full aspect-square w-32 h-32"
+                      />
+                    </div>
+                )}
+              </>
             ) : (
-              <AudioTrack
-                participant={trackRef.participant}
-                source={trackRef.source}
-                publication={trackRef.publication}
-                onSubscriptionStatusChanged={handleSubscribe}
-              />
+                <AudioTrack
+                  participant={trackRef.participant}
+                  source={trackRef.source}
+                  publication={trackRef.publication}
+                  onSubscriptionStatusChanged={handleSubscribe}
+                />
             )}
-            <div className="absolute inset-0 flex items-center justify-center bg-foreground pointer-events-none rounded-2xl opacity-0">
-              <img
-                src={defaultProfile?.metadata ? getLensPictureURL(defaultProfile) : (ensData?.avatar || "./anon.png")}
-                alt={defaultProfile?.handle ? defaultProfile?.handle.localName : (ensData?.avatar || p.identity)}
-                className="rounded-full aspect-square w-32 h-32"
-              />
-            </div>
             <div className="absolute flex flex-row items-center justify-between gap-2 leading-none bottom-1 inset-x-1">
-              <div className="flex items-center p-1">
+              <div className="flex items-center p-1 pl-2">
                 <TrackMutedIndicator source={Track.Source.Microphone} show={"muted"}></TrackMutedIndicator>
                 <DisplayName defaultProfile={defaultProfile} ensData={ensData} />
               </div>
@@ -127,12 +139,12 @@ export const ParticipantTile = ({
 const DisplayName = ({ defaultProfile, ensData }: { defaultProfile?: DefaultLensProfile, ensData?: any }) => {
   if (defaultProfile?.handle) {
     return (
-      <span className="text-white text-xl font-bold select-none">@{defaultProfile.handle.localName}</span>
+      <span className="text-white text-lg font-bold select-none">@{defaultProfile.handle.localName}</span>
     );
   }
   if (ensData?.handle) {
     return (
-      <span className="text-white text-xl font-bold select-none">{ensData.handle}</span>
+      <span className="text-white text-lg font-bold select-none">{ensData.handle}</span>
     );
   }
   return <ParticipantName />;

@@ -54,7 +54,7 @@ const LoginWithLensModal = ({ openLoginModal, setOpenLoginModal, authenticatedPr
           {profiles && profiles.length
             ? profiles.map((profile: Profile) => (
               <div className="md:w-1/2" key={profile.id}>
-                <div className="card bg-background p-4 rounded-sm shadow-sm max-h-fit border-grey rounded-lg border-2 shadow-lg flex flex-col gap-6">
+                <div className="card bg-background p-4 rounded-sm shadow-sm max-h-fit rounded-lg shadow-lg flex flex-col gap-6">
                   <div className="flex w-full items-center justify-between">
                     <img
                       src={formatProfilePicture(profile).metadata.picture.url}

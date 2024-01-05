@@ -1,3 +1,4 @@
+import { useAccount } from "wagmi";
 import {
   ParticipantLoop,
   TrackContext,
@@ -6,12 +7,14 @@ import {
   useParticipants,
   useTracks,
   useRemoteParticipant,
+  useLocalParticipantPermissions,
 } from "@livekit/components-react";
+import { useMemo, useState } from "react";
+import { PlayIcon, PauseIcon } from "@heroicons/react/solid";
 import { LocalParticipant, RemoteParticipant, Track, ParticipantEvent } from "livekit-client";
-import { ParticipantTile } from "./ParticipantTile";
 import styles from "./videoSpace.module.css";
+import { ParticipantTile } from "./ParticipantTile";
 import { cn } from "@/lib/utils/cn";
-import { useMemo } from "react";
 import { ParticipantTileWithScreenShare } from "./ParticipantTileWithScreenShare";
 import { CustomControls } from "./CustomControls";
 import {
@@ -24,13 +27,14 @@ import {
   DialogTrigger,
   Icons,
 } from "../ui";
-import { useAccount } from "wagmi";
 
 export const Stage = ({ space }: { space: any }) => {
   // const participants = useParticipants();
   const tracks = useTracks([Track.Source.Camera, Track.Source.ScreenShare], { onlySubscribed: true });
-
   const participants = useParticipants();
+  const localPartipantPermissions = useLocalParticipantPermissions();
+  const [isMuted, setIsMuted] = useState(false);
+
   const screenShareParticipant = useMemo(() => {
     return participants.find((p) => {
       return tracks.some((track) => track.source === Track.Source.ScreenShare);
@@ -38,21 +42,27 @@ export const Stage = ({ space }: { space: any }) => {
   }, [participants, tracks]);
   const hasScreenShare = screenShareParticipant !== undefined;
 
+  const tracksNotMuted = useMemo(() => {
+    if (!isMuted) return tracks;
+
+    return tracks.filter((t) => t.publication?.kind !== "audio" && t.source === Track.Source.Camera);
+  }, [tracks, isMuted]);
+
   return (
     <>
       <div
         className={cn(
-          "h-[62vh] w-[60vw] 2xl:h-[65vh] 2xl:w-[65vw] relative bg-none p-4 rounded-2xl",
+          "h-[62vh] w-[60vw] 2xl:h-[72vh] 2xl:w-[65vw] relative bg-none p-4 rounded-2xl",
           { "grid grid-cols-2 gap-6": !hasScreenShare },
           { "flex items-end justify-end flex-col gap-4 overflow-hidden": hasScreenShare },
           !hasScreenShare && styles.stage
         )}
       >
-        {tracks.length > 0 ? (
-          <TrackLoop tracks={tracks}>
+        {tracksNotMuted.length > 0 ? (
+          <TrackLoop tracks={tracksNotMuted}>
             <TrackContext.Consumer>
               {/* {(track) => track && <VideoTrack {...track} />} */}
-              {(track) => (track && !hasScreenShare ? <ParticipantTile /> : <ParticipantTileWithScreenShare />)}
+              {(track) => (track && !hasScreenShare ? <ParticipantTile isMuted={isMuted} /> : <ParticipantTileWithScreenShare isMuted={isMuted} />)}
             </TrackContext.Consumer>
           </TrackLoop>
         ) : (
@@ -62,7 +72,17 @@ export const Stage = ({ space }: { space: any }) => {
         )}
       </div>
 
-      <div className="-mt-16 flex items-center justify-center z-30 flex-1 gap-2">
+      {/* NOT WORKING */}
+      {/* Play/Pause */}
+      {/* {!localPartipantPermissions?.canPublish && (
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-2 opacity-0 hover:opacity-75 flex items-center justify-center w-1/2 h-1/2">
+          <Button variant="icon" size="md" onClick={() => setIsMuted(!isMuted)}>
+            {isMuted ? <PlayIcon className="h-24 w-24 text-black" /> : <PauseIcon className="h-24 w-24 text-black" />}
+          </Button>
+        </div>
+      )} */}
+
+      <div className="-mt-16 flex items-center justify-center z-30 flex-1 gap-2 hover:opacity-100 opacity-50 transition-opacity duration-200">
         <ParticipantLoop participants={participants}>
           <ParticipantControls screenShareParticipant={screenShareParticipant} space={space} />
         </ParticipantLoop>
