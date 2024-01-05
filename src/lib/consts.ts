@@ -13,7 +13,7 @@ export const REDIS_STREAM_PREFIX = "stream";
 export const REDIS_SPACE_EXP = 7200;
 
 export const LOCALSTORAGE_DEFAULT_PROFILE_ID = "DEFAULT_PROFILE_ID";
-export const NEXT_PUBLIC_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "live.madfi.xyz";
+export const NEXT_PUBLIC_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://live.madfi.xyz";
 export const LENSTER_URL = IS_PRODUCTION ? "https://hey.xyz" : "https://testnet.hey.xyz";
 export const MADFI_SITE_URL = IS_PRODUCTION ? 'https://madfi.xyz' : 'https://testnet.madfi.xyz';
 export const MADFI_BANNER_IMAGE_SMALL =
