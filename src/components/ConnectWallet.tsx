@@ -13,8 +13,8 @@ interface Props {
   setOpenSignInModal?: (b: boolean) => void;
   autoLensLogin?: boolean;
   authenticatedProfile: any;
-  signingIn: any;
-  logout: any;
+  signingIn?: any;
+  logout?: any;
 }
 
 export const ConnectWallet: FC<Props> = ({ className, setOpenSignInModal, authenticatedProfile, signingIn, logout }) => {

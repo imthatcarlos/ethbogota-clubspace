@@ -15,6 +15,8 @@ export default ({ space }) => {
   const [lensPubId, setLensPubId] = useState(null);
 
   useMemo(async () => {
+    if (!space.pinnedLensPost) return;
+
     const pubId = parsePublicationLink(space.pinnedLensPost);
     const post = await getPost(pubId);
 
@@ -24,6 +26,12 @@ export default ({ space }) => {
       setLensPost(post);
     }
   }, [space]);
+
+  // TODO: ADS
+  if (!space.pinnedLensPost) return (
+    <div className="rounded-t-2xl min-w-[20rem] max-w-full min-h-[3rem] bg-black m-auto p-4 -mt-4 drop-shadow-sm cursor-pointer">
+    </div>
+  )
 
   return (
     <Dialog>

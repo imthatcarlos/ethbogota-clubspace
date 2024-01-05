@@ -38,15 +38,14 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
   const { data: handles } = useOwnedHandles({ for: address });
   const { data: profilesOwned, loading: isLoadingProfilesOwned } = useProfiles({ where: { handles: handles?.map(({ fullHandle }) => fullHandle) } });
 
-  // const {
-  //   data: meetsGatedCondition,
-  //   isLoading: isLoadingMeetsGated,
-  //   refetch: refetchMeetsGatedCondition,
-  // } = useMeetsGatedCondition(address, getAccessToken(), space);
+  const {
+    data: meetsGatedCondition,
+    isLoading: isLoadingMeetsGated,
+  } = useMeetsGatedCondition(address, space.gated);
   const { data: ensData, isLoading: isLoadingENS } = useENS(address);
   const [defaultProfile, setDefaultProfile] = useState();
   const [loadingDefaultProfile, setLoadingDefaultProfile] = useState(true);
-  const [_canEnter, setCanEnter] = useState();
+  const [canEnter, setCanEnter] = useState();
 
   // IF WE WANT BETTER SECURITY
   // const {
@@ -98,25 +97,11 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
   //   setPreJoinChoices(values);
   // };
 
-  // useEffect(() => {
-  //   if (!isLoadingMeetsGated) {
-  //     setCanEnter(meetsGatedCondition);
-  //   }
-  // }, [isLoadingMeetsGated, meetsGatedCondition]);
-
-  // const canEnter = useMemo(() => {
-  //   // check for host first
-  //   if (space?.creatorLensProfileId === defaultProfile?.id) {
-  //     setIsHost(true);
-  //     return true; // is host
-  //   }
-  //   // @FIXME: gated is only an object or undefined, so this validation with TIER_OPEN
-  //   // doesn't make sense
-  //   // @see {@link CreateSpace} at 323
-  //   if (!space?.gated || space?.gated === TIER_OPEN) return true; // not gated
-
-  //   return _canEnter !== false;
-  // }, [defaultProfile, space, _canEnter]);
+  useEffect(() => {
+    if (!isLoadingMeetsGated) {
+      setCanEnter(meetsGatedCondition);
+    }
+  }, [isLoadingMeetsGated, meetsGatedCondition]);
 
   if (!space) {
     return <SpaceEnded handle={handle as string} />;
@@ -150,6 +135,19 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
   //   );
   // }
 
+  if (space.gated && address !== space.creatorAddress) {
+    if (isConnected && isLoadingMeetsGated) return null;
+    if (!isConnected || canEnter === false) {
+      return (
+        <SpaceGated
+          handle={space.handle}
+          gated={space.gated as GateData}
+          creatorLensHandle={space.creatorLensHandle}
+        />
+      );
+    }
+  }
+
   if (isConnected && loadingDefaultProfile) {
     return (
       <div className="bg-background flex-1 min-h-screen">
@@ -159,22 +157,6 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
       </div>
     );
   }
-
-  // if (status === "connected" && userIdentity === "user-identity") {
-  //   return <>loading...</>;
-  // }
-
-  // if (space.gated && (!getAccessToken() || canEnter === false)) {
-  //   return (
-  //     <SpaceGated
-  //       handle={space.handle}
-  //       gated={space.gated as GateData}
-  //       creatorLensProfileId={space.creatorLensProfileId}
-  //       lensPubId={space.lensPubId}
-  //       refetchMeetsGatedCondition={refetchMeetsGatedCondition}
-  //     />
-  //   );
-  // }
 
   if (space.spaceType === "video") {
     return (
