@@ -61,7 +61,10 @@ export const UpcomingItem = ({ activity }: { activity: any }) => {
               height="220"
               className="rounded-xl mb-2"
               loading="lazy"
-            />
+              style={{
+                maxWidth: "100%",
+                height: "auto"
+              }} />
           ) : (
             <video
               src={activity.drop.productBannerUrl || getUrlForImageFromIpfs(activity.productBannerUrl)}

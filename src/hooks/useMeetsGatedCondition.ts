@@ -1,32 +1,28 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
-import { TIER_OPEN, TIER_GATED_LENS_COLLECT } from "@/lib/consts";
-import { useLensRefresh } from "@/hooks/useLensLogin";
-import { hasCollectedPost } from "@/services/lens/getPost";
+import { TIER_GATED_BADGE_HOLDERS } from "@/lib/consts";
+// import { hasCollectedPost } from "@/services/lens/getPost";
+import getBadgeOwned from "@/services/madfi/getBadgeOwned";
 
 export default (
   address: string,
-  lensAccessToken: string,
-  clubSpaceObject: any | undefined,
-  options: UseQueryOptions = {}
+  gated?: { tier?: string, collectionId?: string },
+  options?: UseQueryOptions = {}
 ) => {
   const result = useQuery<any>(
     ['meets-gated-condition', address],
     async () => {
-      if (!clubSpaceObject) return;
-      const { creatorLensProfileId, lensPubId, gated } = clubSpaceObject;
-      if (!gated || gated.tier === TIER_OPEN) return true;
+      if (!gated) return true;
 
-      if (gated.tier === TIER_GATED_LENS_COLLECT) {
-        const publicationId = `${creatorLensProfileId}-${lensPubId}`;
-        return await hasCollectedPost(publicationId);
+      if (gated.tier === TIER_GATED_BADGE_HOLDERS) {
+        const tokenId = await getBadgeOwned(gated.collectionId, address.toLowerCase());
+        return !!tokenId;
       }
 
       throw new Error(`invalid gated.tier: ${gated.tier}`);
     },
     {
       ...(options as any),
-      // we immediately return true if tier is opne, no need for lens auth
-      enabled: !!address && !!lensAccessToken,
+      enabled: !!address,
     }
   );
 

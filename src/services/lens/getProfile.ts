@@ -2,100 +2,8 @@ import { apiUrls } from "@/constants/apiUrls";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { BigNumber } from "ethers";
 import request, { gql } from "graphql-request";
-
-export type Profile = {
-  id: string;
-  name: string | null;
-  bio: string | null;
-  metadata: string | null;
-  isDefault: boolean;
-  picture: {
-    uri: string;
-    original: {
-      url: string;
-    };
-  };
-  handle: string;
-  coverPicture: string | null;
-  ownedBy: string;
-  stats: {
-    totalFollowers: number;
-    totalFollowing: number;
-  };
-  followModule: string | null;
-  lensHandle: string | null;
-};
-
-const GET_PROFILE_BY_HANDLE = gql`
-  query ($handle: Handle!) {
-    profiles(request: { handles: [$handle], limit: 1 }) {
-      items {
-        id
-        name
-        bio
-        metadata
-        isDefault
-        picture {
-          ... on NftImage {
-            contractAddress
-            tokenId
-            uri
-            verified
-          }
-          ... on MediaSet {
-            original {
-              url
-              mimeType
-            }
-          }
-          __typename
-        }
-        handle
-        coverPicture {
-          ... on NftImage {
-            contractAddress
-            tokenId
-            uri
-            verified
-          }
-          ... on MediaSet {
-            original {
-              url
-              mimeType
-            }
-          }
-          __typename
-        }
-        ownedBy
-        stats {
-          totalFollowers
-          totalFollowing
-        }
-        followModule {
-          ... on FeeFollowModuleSettings {
-            type
-            amount {
-              asset {
-                symbol
-                name
-                decimals
-                address
-              }
-              value
-            }
-            recipient
-          }
-          ... on ProfileFollowModuleSettings {
-            type
-          }
-          ... on RevertFollowModuleSettings {
-            type
-          }
-        }
-      }
-    }
-  }
-`;
+import { lensClient } from "./client";
+import { ProfileFragment as Profile } from "@lens-protocol/client";
 
 const GET_PROFILES_OWNED = gql`
   query ($ownedBy: EthereumAddress!) {
@@ -205,44 +113,11 @@ const GET_PROFILES_BY_HANDLES = gql`
   }
 `;
 
-export const getProfileByHandle = async (handle: string): Promise<Profile | null> => {
-  try {
-    const { profiles } = await request({
-      url: apiUrls.lensAPI,
-      document: GET_PROFILE_BY_HANDLE,
-      variables: { handle },
-    });
-
-    return profiles?.items?.length ? profiles.items[0] : null;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const useGetProfileByHandle = (options: UseQueryOptions = {}, handle: string, cacheKey: string = 'useGetProfileByHandle') => {
-  const result = useQuery<Profile | null>(
-    [cacheKey, handle],
-    async () => {
-      const result = handle ? await getProfileByHandle(handle) : null;
-
-      return result;
-    },
-    {
-      ...(options as any),
-      enabled: !!handle,
-    }
-  );
-
-  return result;
-};
-
 export const getProfilesOwned = async (ownedBy: string): Promise<Profile[]> => {
   try {
-    const { profiles } = await request({
-      url: apiUrls.lensAPI,
-      document: GET_PROFILES_OWNED,
-      variables: { ownedBy },
-    });
+    const profiles = await lensClient.profile.fetchAll({
+      where: { ownedBy: [ownedBy] },
+    })
 
     return profiles?.items as unknown as Profile[];
   } catch (error) {
@@ -251,8 +126,8 @@ export const getProfilesOwned = async (ownedBy: string): Promise<Profile[]> => {
 };
 
 export const useGetProfilesOwned = (options: UseQueryOptions = {}, ownedBy: string) => {
-  const result = useQuery<Profile[]>(
-    ["profiles", ownedBy],
+  const result = useQuery(
+    ['owned-profiles'],
     async () => {
       if (!ownedBy) return {};
 

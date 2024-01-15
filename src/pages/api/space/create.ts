@@ -1,16 +1,27 @@
+import Cors from "cors";
+import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getAddress } from "ethers/lib/utils";
-import { BigNumber } from "ethers";
-import { PrivyClient } from "@privy-io/privy-node";
+import { env } from "@/env.mjs";
 import redisClient from "@/lib/utils/redisClient";
-import { REDIS_SPACE_PREFIX, REDIS_SPACE_EXP, NEXT_PUBLIC_SITE_URL, APP_NAME } from "@/lib/consts";
-import { startRadio } from "@/services/radio";
-import { fieldNamePrivy } from "@/utils";
-import Cors from "cors";
+// import { startRadio } from "@/services/radio";
+import {
+  REDIS_SPACE_PREFIX,
+  REDIS_SPACE_EXP,
+  NEXT_PUBLIC_SITE_URL,
+  LIVEPEER_STUDIO_API,
+  MADFI_API_URL,
+} from "@/lib/consts";
 
 const cors = Cors({
-  methods: ["POST", "GET", "HEAD"],
+  methods: ["HEAD", "POST", "GET"],
 });
+
+const {
+  SPACE_API_BEARER,
+  LIVEPEER_API_KEY,
+  MADFI_API_KEY,
+} = env;
 
 const runMiddleware = (req: NextApiRequest, res: NextApiResponse, fn: any) => {
   return new Promise((resolve, reject) => {
@@ -24,109 +35,114 @@ const runMiddleware = (req: NextApiRequest, res: NextApiResponse, fn: any) => {
   });
 };
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  await runMiddleware(req, res, cors);
+// check bearer
+const checkAuthorization = (req: NextApiRequest): boolean => {
+  const authHeader = req.headers.authorization;
+  const expectedAuthHeader = `Bearer ${process.env.SPACE_API_BEARER}`;
 
-  // write club space object to redis for lookup
+  if (authHeader !== expectedAuthHeader) {
+    return false;
+  }
+
+  return true;
+};
+
+// this api endpoint is only ever called from `madfi.xyz` or the clubspace-sdk
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
+    await runMiddleware(req, res, cors); // enable CORS
+
+    if (!checkAuthorization(req)) return res.status(403).json({ error: "forbidden" });
+
     const {
       creatorAddress,
       creatorLensHandle,
       creatorLensProfileId,
-      spinampPlaylistId,
-      b2bSpinampPlaylistIds,
-      emptyPlaylist,
+      creatorAvatar,
+      // spinampPlaylistId,
+      // b2bSpinampPlaylistIds,
       drop,
       lensPubId,
       handle,
-      clubSpaceId,
-      partyFavorContractAddress,
+      // partyFavorContractAddress,
       startAt, // ts UTC
       productBannerUrl,
       productBannerIsVideo,
       pinnedLensPost,
       gated,
+      spaceType,
+      roomName,
     } = req.body;
 
-    // if (!(creatorAddress && handle && (spinampPlaylistId || b2bSpinampPlaylistIds) && (drop || pinnedLensPost) && clubSpaceId)) {
-    if (!(creatorAddress && handle && (drop || pinnedLensPost) && clubSpaceId)) {
-      return res.status(400).json({ error: "missing a param sonnn" });
+    if (!(creatorAddress && handle)) {
+      return res.status(400).json({ error: "missing creatorAddress or handle" });
     }
 
-    const semGroupIdHex = `0x${clubSpaceId.replace(/-/g, "")}`;
+    const { data: { id: roomId } } = await axios.post(`${LIVEPEER_STUDIO_API}/room`, {}, {
+      headers: { Authorization: `Bearer ${LIVEPEER_API_KEY}` },
+    });
+
     const createdAt = Math.floor(Date.now() / 1000);
     const endAt = createdAt + REDIS_SPACE_EXP;
 
-    const clubSpaceObject = {
+    const spaceObject = {
+      roomName,
       creatorAddress: getAddress(creatorAddress),
       creatorLensHandle,
       creatorLensProfileId,
+      creatorAvatar,
       lensPubId,
-      emptyPlaylist,
-      spinampPlaylistId,
-      b2bSpinampPlaylistIds,
       drop,
-      clubSpaceId,
+      roomId,
       createdAt,
       endAt,
-      semGroupIdHex,
       handle,
-      partyFavorContractAddress,
       startAt,
       productBannerUrl,
       productBannerIsVideo,
       pinnedLensPost,
       gated,
+      spaceType,
+      exp: startAt ? startAt - createdAt + REDIS_SPACE_EXP : REDIS_SPACE_EXP
     };
-    console.log(JSON.stringify(clubSpaceObject, null, 2));
+
     const spaceRedisKey = `${REDIS_SPACE_PREFIX}/${handle}`;
 
-    // stick it in redis
-    const multiplier = b2bSpinampPlaylistIds?.length || 1;
-    const exp = startAt
-      ? startAt - Math.floor(Date.now() / 1000) + (REDIS_SPACE_EXP * multiplier)
-      : (REDIS_SPACE_EXP * multiplier);
-    clubSpaceObject.exp = exp;
     try {
-      console.log("setting redis");
-      await redisClient.set(spaceRedisKey, JSON.stringify(clubSpaceObject), "EX", exp);
-      console.log("set!");
+      console.log(`setting in redis [${spaceRedisKey}] with exp at ${endAt}`);
+      console.log(JSON.stringify(spaceObject, null, 2));
+      await redisClient.set(spaceRedisKey, JSON.stringify(spaceObject), "EX", spaceObject.exp);
     } catch (error) {
       console.log(error.stack);
     }
 
-    // create privy field for impressions
-    const client = new PrivyClient(process.env.PRIVY_API_KEY, process.env.PRIVY_API_SECRET);
+    // // post the playlist id for our api to create the audio stream async; scheduled if startAt != undefined
+    // if (spaceType === "playlist") {
+    //   await startRadio({
+    //     clubSpaceId,
+    //     spinampPlaylistId: b2bSpinampPlaylistIds ? undefined : spinampPlaylistId, // override just in case both were set
+    //     b2bSpinampPlaylistIds,
+    //     spaceRedisKey,
+    //     startAt,
+    //   });
+    // }
 
-    const fieldName = fieldNamePrivy(semGroupIdHex);
-    try {
-      await client.createField({
-        name: fieldName,
-        description: `club space impressions for semaphore group id: ${semGroupIdHex}`,
-        default_access_group: "self-admin",
-      });
-    } catch (error) {
-      // only happening if field already exits, won't happen unless creating test ones
-      // console.log(error);
-      console.log("ERROR - privy field exists");
-    }
+    // TODO: fix
+    // // schedule the lambda to delete at `endAt`
+    // const scheduleParams = { roomId, lambda: 'livepeer_delete_room', scheduleAtTs: spaceObject.endAt };
+    // await axios.post(`${MADFI_API_URL}/schedule`, scheduleParams, {
+    //   headers: { 'x-api-key': MADFI_API_KEY },
+    // });
 
-    if (!emptyPlaylist) {
-      // post the playlist id for our api to create the audio stream async;
-      // if startAt != undefined, it means this space should be scheduled
-      await startRadio({
-        clubSpaceId,
-        spinampPlaylistId: b2bSpinampPlaylistIds ? undefined: spinampPlaylistId, // override just in case both were set
-        b2bSpinampPlaylistIds,
-        spaceRedisKey,
-        startAt
-      });
-    }
-
-    return res.status(200).json({ url: `${NEXT_PUBLIC_SITE_URL}/live/${handle}`, semGroupIdHex, startAt });
+    return res.status(200).json({ url: `${NEXT_PUBLIC_SITE_URL}/${handle}`, startAt });
   } catch (e) {
     console.log(e);
-    return res.status(500).json({});
+
+    if (!res.writableEnded) {
+      return res.status(500).json({});
+    }
+
+    res.end();
   }
 };
 

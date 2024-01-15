@@ -2,7 +2,7 @@ import { v4 as uuid } from "uuid";
 import { defaultAbiCoder } from "ethers/lib/utils";
 import request, { gql } from "graphql-request";
 import { apiUrls } from "@/constants/apiUrls";
-import omitDeep from "omit-deep";
+import { omit } from "lodash/object";
 import { FREE_COLLECT_MODULE, IS_PRODUCTION } from "@/lib/consts";
 import createPostWithSig from "@/services/lens/createPostWithSig";
 
@@ -10,10 +10,6 @@ export const LENS_HUB_NFT_NAME = "Lens Protocol Profiles";
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 const trimify = (value: string): string => value?.replace(/\n\s*\n/g, "\n\n").trim();
-
-export const omit = (object: any, name: string) => {
-  return omitDeep(object, name);
-};
 
 export const publicationBody = (publicationContent, attachments, profileHandle) => ({
   version: "2.0.0",
@@ -159,9 +155,9 @@ const COLLECT_POST_TYPED_DATA = gql`
 `;
 
 const BROADCAST = gql`
-  mutation Broadcast($request: BroadcastRequest!) {
-    broadcast(request: $request) {
-      ... on RelayerResult {
+  mutation broadcastOnchain($request: BroadcastRequest!) {
+    broadcastOnchain(request: $request) {
+      ... on RelaySuccess {
         txHash
         txId
       }

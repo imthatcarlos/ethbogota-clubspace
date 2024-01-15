@@ -1,21 +1,29 @@
 import { env } from "@/env.mjs";
+import { polygon, polygonMumbai } from "viem/chains";
 
 export const IS_PRODUCTION = process.env.NEXT_PUBLIC_IS_PRODUCTION === "true";
-export const APP_NAME = "Clubspace";
+export const APP_NAME = "MadFi";
+export const VALID_CHAIN_ID = IS_PRODUCTION ? 137 : 80001; // for common lens stuff
+export const VALID_CHAIN = IS_PRODUCTION ? polygon : polygonMumbai;
 
-export const REDIS_SPACE_PREFIX = "space";
+export const REDIS_SPACE_PREFIX = "space_v2";
 export const REDIS_STREAM_PREFIX = "stream";
 
 // [seconds] 2hr exp for spaces; once the key is gone, the space has ended
 export const REDIS_SPACE_EXP = 7200;
 
 export const LOCALSTORAGE_DEFAULT_PROFILE_ID = "DEFAULT_PROFILE_ID";
-export const NEXT_PUBLIC_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.joinclubspace.xyz";
-export const LENSTER_URL = IS_PRODUCTION ? "https://lenster.xyz" : "https://testnet.lenster.xyz";
+export const NEXT_PUBLIC_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://live.madfi.xyz";
+export const LENSTER_URL = IS_PRODUCTION ? "https://hey.xyz" : "https://testnet.hey.xyz";
+export const MADFI_SITE_URL = IS_PRODUCTION ? 'https://madfi.xyz' : 'https://testnet.madfi.xyz';
+export const MADFI_BANNER_IMAGE_SMALL =
+  "https://link.storjshare.io/raw/jvnvg6pove7qyyfbyo5hqggdis6a/misc%2Fmadfi-banner.jpeg";
 
+export const LENS_HUB_V2_PREVIEW_ADDRESS = '0xC1E77eE73403B8a7478884915aA599932A677870';
 export const LENSHUB_PROXY = IS_PRODUCTION
   ? "0xDb46d1Dc155634FbC732f92E853b10B288AD5a1d"
-  : "0x60Ae865ee4C725cd04353b5AAb364553f56ceF82";
+  : LENS_HUB_V2_PREVIEW_ADDRESS; // TODO: they might change this after the migration
+
 export const FREE_COLLECT_MODULE = IS_PRODUCTION
   ? "0x23b9467334bEb345aAa6fd1545538F3d54436e96"
   : "0x0BE6bD7092ee83D44a6eC1D949626FeE48caB30c";
@@ -27,18 +35,8 @@ export const VERIFIER_ADDRESS = IS_PRODUCTION
 // polygon
 export const MULTIRECIPIENT_COLLECT_MODULE = '0xfa9dA21D0A18C7B7dE4566481c1e8952371F880a';
 
-const calculateSum = (arr) => {
-  return arr.reduce((total, current) => {
-    return total + current;
-  }, 0);
-};
-
-export const songTimes = [95, 227, 171, 121, 106, 177];
-export const totalTime = calculateSum(songTimes);
-
-export const STREAMR_PUBLIC_ID = process.env.NEXT_PUBLIC_STREAMR_STREAM_ID_PUBLIC ?? "";
-
-export const ZK_DEPLOYMENT_BLOCK = 28522249;
+export const LIVEPEER_STUDIO_API = "https://livepeer.studio/api";
+export const MADFI_API_URL = process.env.MADFI_API_URL || "api.madfi.xyz";
 
 export const SPACE_API_URL = env.NEXT_PUBLIC_SPACE_API_URL;
 
@@ -75,31 +73,14 @@ export const CHAIN_NAME_MAP = {
 };
 
 export const ALLOWED_CHAIN_IDS = IS_PRODUCTION ? [137, 1, 10] : [80001, 5];
-
-export const IM_WITH_THE_DJ = [
-  "0x7F0408bc8Dfe90C09072D8ccF3a1C544737BcDB6",
-  "0x6b500E03203Ae2D976C3d9ce0654DdCb39f998C4",
-  "0xB408a9Ee6332477B143C8cfe6C2C8899849A2EDf",
-  "0x5D7370fCD6e446bbC14A64c1EFfe5FBB1c893232",
-  "0xA7d53695aF1FD11E0b75d37695290C102D59D743",
-  "0x10795BE2b46fF958d126C257f300B725305E96Fe",
-  "0x30dCCa068F593CbFFB5afFe8A89F35AE49614972", // zombie shepherd
-  "0xB5bb48aF9510951FB869B34267b827e73f0Ab486",
-  "0xF1c5bACc57b29bD704B768DE3389359dA00986E7",
-  "0xc27773DD7e25D878C814fB238e5f7372F3a18A74",
-  "0x64dC62CB349780064F4fe831d5DE5817dB819D95",
-  "0x2954DbfBbDF8Dafd86c8DCaCe63b26796ef2bf52",
-  "0x419090A6ebfa48e2B0be7118C5B8AB643808E710",
-  "0x3585CA22dF80D70f6D1cC0867D8387c360181349",
-];
-
-export const GOOGLE_FORM_WAITLIST_URL = "https://w6iolkscuz1.typeform.com/to/DKIh7kV7";
+export const LENS_CHAIN_ID = IS_PRODUCTION ? 137 : 80001;
 
 export const DROP_PROTOCOL_DECENT = "DECENT_XYZ";
 export const DROP_PROTOCOL_SOUND = "SOUND_XYZ";
 
 export const TIER_OPEN = 'TIER_OPEN';
 export const TIER_GATED_LENS_COLLECT = 'GATED_LENS_COLLECT';
+export const TIER_GATED_BADGE_HOLDERS = 'BADGE_HOLDERS';
 export const CLUBSPACE_SERVICE_FEE_PCT = 20;
 export const CLUBSPACE_SERVICE_FEE_RECIPIENT = '0x7F0408bc8Dfe90C09072D8ccF3a1C544737BcDB6';
 
@@ -111,3 +92,11 @@ export const LENS_COLLECT_PAYMENT_TOKENS = IS_PRODUCTION
   : [
       { symbol: "WMATIC", address: "0x9c3c9283d3e44854697cd22d3faa240cfb032889" },
     ];
+
+export const REWARD_ENGAGEMENT_ACTION_MODULE = IS_PRODUCTION
+  ? ""
+  : "0xDBFAb3E615F9aD0ce056dDa90a04A569315ed5cb";
+
+export const MAD_SBT_CONTRACT_ADDRESS = IS_PRODUCTION
+  ? ""
+  : "0x31A1bb7c375e457523441d064961c1ddED687dC6";

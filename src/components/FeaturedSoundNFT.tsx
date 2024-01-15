@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from "react";
 import { Contract, BigNumber, BigNumberish, utils } from "ethers";
-import { useNetwork, useSigner, useSwitchNetwork, useAccount } from "wagmi";
+import { useNetwork, useWalletClient, useSwitchNetwork, useAccount } from "wagmi";
 import { MintSchedule } from '@soundxyz/sdk/types';
 import { SoundClient } from '@soundxyz/sdk';
 import toast from "react-hot-toast";
 import { unescape } from "lodash/string";
-import { logAction } from "@madfi/ts-sdk";
-import { fieldNamePrivy, wait } from "@/utils";
 import { CURRENCY_MAP, CHAIN_NAME_MAP } from "@/lib/consts";
+import { wait } from "@/utils";
+import { walletClientToSigner } from "@/lib/utils/wagmi";
 
 const MAX_DESCRIPTION_LENGTH = 250;
 
@@ -54,7 +54,7 @@ export const FeaturedSoundNFT = ({
 }: Props) => {
   const [isBuying, setIsBuying] = useState<boolean>(false);
   const { chain } = useNetwork();
-  const { data: signer } = useSigner();
+  const { data: walletClient } = useWalletClient();
   const { connector: activeConnector, address: userAddress } = useAccount();
   const { switchNetworkAsync } = useSwitchNetwork({ onSuccess: (data) => onBuyClick(true) });
 
@@ -74,11 +74,9 @@ export const FeaturedSoundNFT = ({
     }
 
     toast.promise(
-      new Promise(async (resolve, reject) => {
+      new Promise<void>(async (resolve, reject) => {
         try {
-          logAction(userAddress, fieldNamePrivy(semGroupIdHex), { action: "buy_drop", address: contractAddress });
-
-          const _signer = switched ? await activeConnector.getSigner() : signer;
+          const _signer = walletClientToSigner(walletClient);
           const client = SoundClient({ signer: _signer });
 
           const tx = await client.mint({
@@ -148,7 +146,6 @@ export const FeaturedSoundNFT = ({
                   <video
                     className="absolute t-0 left-0 right-0 w-full h-full object-cover opacity-50 rounded-md"
                     src={animatedCoverImage}
-                    alt=""
                     autoPlay
                     muted
                     loop

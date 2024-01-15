@@ -5,12 +5,25 @@ module.exports = {
   darkMode: "class",
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["Open sans", "sans-serif"],
+        owners: ["owners-narrow", "sans-serif"],
+        ownersx: ["owners-xnarrow", "sans-serif"],
+        "helvetica-display": ["HelveticaNowDisplay", "sans-serif"],
+        "helvetica-text": ["HelveticaNowText", "sans-serif"],
+        "helvetica-micro": ["HelveticaNowMicro", "sans-serif"],
+        "sf-pro-text": ["SF Pro Text", "system-ui", "Open Sans", "sans-serif"],
+      },
       screens: {
         xs: "520px",
       },
       colors: {
         "almost-black": "rgba(0, 0, 0, .8) !important",
         "club-red": "var(--club-red)",
+        "background": "hsl(var(--background))",
+        "foreground": "hsl(var(--foreground))",
+        "primary": "hsl(var(--primary))",
+        // secondary: "#FFFFFF",
       },
       backgroundImage: {
         "live-page-player": "url('/lil_buddy_low_res.png')",

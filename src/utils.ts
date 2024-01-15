@@ -3,6 +3,20 @@ import { BigNumber, utils, constants, Contract } from "ethers";
 import { apiUrls } from "@/constants/apiUrls";
 import { APP_NAME } from "./lib/consts";
 
+const _hash = (uriOrHash: string) => {
+  return typeof uriOrHash === "string" && uriOrHash.startsWith("ipfs://")
+    ? uriOrHash.split("ipfs://")[1]
+    : uriOrHash;
+};
+
+export function shortAddress(address: string) {
+  return address.slice(0, 5) + "..." + address.slice(address.length - 4);
+}
+
+export const defaultGatewayURL = (uriOrHash: string) => `${apiUrls.ipfs}/${_hash(uriOrHash)}`;
+
+export const lensGatewayURL = (uriOrHash: string) => `${apiUrls.lensGateway}/${_hash(uriOrHash)}`;
+
 export const getUrlForImageFromIpfs = (uri: string) => {
   if (!uri) return;
   const hash = uri.split("ipfs://")[1];
@@ -36,6 +50,11 @@ export const kFormatter = (num) => {
   }
 
   return Math.sign(num)*Math.abs(num);
+};
+
+export const parsePublicationLink = (link: string) => {
+  const parts = link.split("/");
+  return parts[parts.length - 1];
 };
 
 /** Calendar related date math functions */
