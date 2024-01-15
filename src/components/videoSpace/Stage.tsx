@@ -44,8 +44,7 @@ export const Stage = ({ space }: { space: any }) => {
 
   const tracksNotMuted = useMemo(() => {
     if (!isMuted) return tracks;
-
-    return tracks.filter((t) => t.publication?.kind !== "audio" && t.source === Track.Source.Camera);
+    return tracks.filter((t) => t.publication?.kind !== "audio" && t.source !== Track.Source.Microphone);
   }, [tracks, isMuted]);
 
   return (

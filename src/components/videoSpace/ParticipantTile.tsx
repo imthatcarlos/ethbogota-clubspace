@@ -42,6 +42,9 @@ export const ParticipantTile = ({
     publication,
   };
 
+  // TODO:
+  // if (isMuted && (trackRef.publication?.kind === "audio" && trackRef.source || Track.Source.Microphone)) return null;
+
   const { metadata, sid } = p;
 
   const { defaultProfile, isHost, ensData }: { defaultProfile?: DefaultLensProfile; isHost: boolean, ensData: any } = JSON.parse(metadata);

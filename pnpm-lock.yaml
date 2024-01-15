@@ -30,8 +30,8 @@ dependencies:
     specifier: ^1.0.2
     version: 1.0.2
   '@madfi/widgets-react':
-    specifier: ^2.1.10
-    version: 2.1.10(@lens-protocol/metadata@1.1.5)(react@18.2.0)
+    specifier: ^2.1.16
+    version: 2.1.16(@lens-protocol/metadata@1.1.5)(@tanstack/react-query@4.10.3)(react@18.2.0)
   '@pushprotocol/restapi':
     specifier: ^0.1.1
     version: 0.1.1(ethers@5.7.2)
@@ -1889,12 +1889,15 @@ packages:
     engines: {node: '>=14'}
     dev: false
 
-  /@madfi/widgets-react@2.1.10(@lens-protocol/metadata@1.1.5)(react@18.2.0):
-    resolution: {integrity: sha512-UDEZ7vFwwKik7AsLzJs87g+Xb5wj0gulmFDfy7LUEMgEXsly++7cWXRDHn2ud+qzUWRxo0Q6sbFd9c+x3g9h3w==}
+  /@madfi/widgets-react@2.1.16(@lens-protocol/metadata@1.1.5)(@tanstack/react-query@4.10.3)(react@18.2.0):
+    resolution: {integrity: sha512-TXiFo1GNpXMb02ZqURWu5csG1JaHZr3P/PwjOYYdJ3LRfjP08eT7oHOZQOhRn9BeOv6P3j+dqTJgMXGu7um7TQ==}
     engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@tanstack/react-query': ^4.22.0
     dependencies:
       '@emotion/css': 11.11.2
       '@lens-protocol/client': 2.0.0-alpha.27(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(ethers@5.7.2)(react@18.2.0)
+      '@tanstack/react-query': 4.10.3(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.2.46
       date-fns: 2.30.0
       ethers: 5.7.2
