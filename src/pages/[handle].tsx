@@ -41,7 +41,7 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
   const {
     data: meetsGatedCondition,
     isLoading: isLoadingMeetsGated,
-  } = useMeetsGatedCondition(address, space.gated);
+  } = useMeetsGatedCondition(address, space?.gated);
   const { data: ensData, isLoading: isLoadingENS } = useENS(address);
   const [defaultProfile, setDefaultProfile] = useState();
   const [loadingDefaultProfile, setLoadingDefaultProfile] = useState(true);
