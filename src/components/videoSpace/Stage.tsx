@@ -42,10 +42,10 @@ export const Stage = ({ space }: { space: any }) => {
   }, [participants, tracks]);
   const hasScreenShare = screenShareParticipant !== undefined;
 
-  const tracksNotMuted = useMemo(() => {
-    if (!isMuted) return tracks;
-    return tracks.filter((t) => t.publication?.kind !== "audio" && t.source !== Track.Source.Microphone);
-  }, [tracks, isMuted]);
+  // const tracksNotMuted = useMemo(() => {
+  //   if (!isMuted) return tracks;
+  //   return tracks.filter((t) => t.publication?.kind !== "audio" && t.source !== Track.Source.Microphone);
+  // }, [tracks, isMuted]);
 
   return (
     <>
@@ -57,8 +57,8 @@ export const Stage = ({ space }: { space: any }) => {
           !hasScreenShare && styles.stage
         )}
       >
-        {tracksNotMuted.length > 0 ? (
-          <TrackLoop tracks={tracksNotMuted}>
+        {tracks.length > 0 ? (
+          <TrackLoop tracks={tracks}>
             <TrackContext.Consumer>
               {/* {(track) => track && <VideoTrack {...track} />} */}
               {(track) => (track && !hasScreenShare ? <ParticipantTile isMuted={isMuted} /> : <ParticipantTileWithScreenShare isMuted={isMuted} />)}

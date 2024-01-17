@@ -75,8 +75,6 @@ export const ParticipantTile = ({
     [trackRef.participant, layoutContext, trackRef.source]
   );
 
-  console.log(`isMuted: ${isMuted}`)
-
   return (
     <div
       {...elementProps}

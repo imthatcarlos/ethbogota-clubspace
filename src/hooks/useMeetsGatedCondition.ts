@@ -11,14 +11,12 @@ export default (
   const result = useQuery<any>(
     ['meets-gated-condition', address],
     async () => {
-      if (!gated) return true;
+      if (!gated?.tier) return true;
 
       if (gated.tier === TIER_GATED_BADGE_HOLDERS) {
         const tokenId = await getBadgeOwned(gated.collectionId, address.toLowerCase());
         return !!tokenId;
       }
-
-      throw new Error(`invalid gated.tier: ${gated.tier}`);
     },
     {
       ...(options as any),
