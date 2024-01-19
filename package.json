@@ -17,7 +17,7 @@
     "@lens-protocol/wagmi": "^3.0.0-alpha.24",
     "@livekit/components-react": "^1.0.6",
     "@livekit/components-styles": "^1.0.2",
-    "@madfi/widgets-react": "^2.1.21",
+    "@madfi/widgets-react": "^2.1.23",
     "@pushprotocol/restapi": "^0.1.1",
     "@radix-ui/react-dialog": "^1.0.4",
     "@radix-ui/react-slider": "^1.1.1",

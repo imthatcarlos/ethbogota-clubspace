@@ -30,8 +30,8 @@ dependencies:
     specifier: ^1.0.2
     version: 1.0.2
   '@madfi/widgets-react':
-    specifier: ^2.1.21
-    version: 2.1.21(@lens-protocol/metadata@1.1.5)(@tanstack/react-query@4.10.3)(react@18.2.0)
+    specifier: ^2.1.23
+    version: 2.1.23(@lens-protocol/metadata@1.1.5)(@tanstack/react-query@4.10.3)(react@18.2.0)
   '@pushprotocol/restapi':
     specifier: ^0.1.1
     version: 0.1.1(ethers@5.7.2)
@@ -1889,8 +1889,8 @@ packages:
     engines: {node: '>=14'}
     dev: false
 
-  /@madfi/widgets-react@2.1.21(@lens-protocol/metadata@1.1.5)(@tanstack/react-query@4.10.3)(react@18.2.0):
-    resolution: {integrity: sha512-BvnOtCVOyoP6QA4jlMRNF8wcGsBFR/3rEyhKtmW0MbS0PUjZBzTUO5XvNVwuiolzxnIu/7OqCrx/57QFo4y7eg==}
+  /@madfi/widgets-react@2.1.23(@lens-protocol/metadata@1.1.5)(@tanstack/react-query@4.10.3)(react@18.2.0):
+    resolution: {integrity: sha512-34sn3i4OIpF1BPWXa7rRnQSQmp5UUbQTVRC1RWbY0JWgRUldOrimZ7q9g205KE5lEHC9Kr0bh6Nh/46IA1DrxQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@tanstack/react-query': ^4.22.0
