@@ -44,3 +44,10 @@ export const get = async (hash) => {
   const { data } = await axios.get(`${STORJ_API_URL}/ipfs/${hash}`);
   return data;
 };
+
+
+// only .png files are supported (this is what the seo/spaces endpoint in creator-portal does by default)
+export const bucketImageLinkStorj = (id: string, bucket = "seo") => {
+  const linkKey = bucket === "referrals" ? "jxjnhzuaz5wrox7k2qjvhcwcb5qq" : "jvxdv5ynbbikx455wrdynvc7tyhq";
+  return `https://link.storjshare.io/raw/${linkKey}/${bucket}/${id}${id.endsWith(".png") ? "" : ".png"}`;
+};

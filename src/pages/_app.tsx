@@ -15,6 +15,8 @@ import type { AppProps } from "next/app";
 import CommonLayout from "@/components/Layouts/CommonLayout";
 import Head from "next/head";
 import { NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
+import { bucketImageLinkStorj } from "@/services/storj/storj";
+import { trimText } from "@/utils";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,48 +38,40 @@ type AppPropsWithLayout = AppProps & {
 // getServerSideProps | other next function in route -> _app -> Route Component
 // Fix for SEO, see: https://github.com/vercel/next.js/issues/35172
 const HandleSEO = ({ pageProps }) => {
-  const { handle, space } = pageProps;
+  const { space } = pageProps;
 
   if (space) {
+    const title = `MadFi Live | ${space.roomName}`;
+    const description = trimText(`@${space?.creatorLensHandle} is hosting a livestream!`, 150);
+    const image = bucketImageLinkStorj(`live/${space.creatorLensHandle}`);
+    const altImage = "https://link.storjshare.io/raw/jvnvg6pove7qyyfbyo5hqggdis6a/misc%2Fmadfi-banner.jpeg";
+
     return (
       <Head>
-        <title>MadFi Live | @{space?.creatorLensHandle}</title>
-        <meta
-          name="description"
-          content={`@${space?.creatorLensHandle} is hosting a livestream!`}
-        ></meta>
-        <meta property="og:title" content={`MadFi | ${space?.creatorLensHandle}`}></meta>
-        <meta
-          property="og:description"
-          content={`@${space?.creatorLensHandle} is hosting a livestream!`}
-        ></meta>
-        <meta property="og:url" content={`${NEXT_PUBLIC_SITE_URL}/${space?.creatorLensHandle}`}></meta>
+        <title>{title}</title>
+        <meta name="description" content={description}></meta>
+        <meta property="og:title" content={title}></meta>
+        <meta property="og:description" content={description}></meta>
+        <meta property="og:url" content={NEXT_PUBLIC_SITE_URL}></meta>
         <meta property="og:type" content="website"></meta>
-        <meta
-          property="og:image"
-          content="https://link.storjshare.io/raw/jvnvg6pove7qyyfbyo5hqggdis6a/misc%2Fmadfi-banner.jpeg"
-        ></meta>
+        <meta property="og:image" content={image}></meta>
+        <meta property="og:image:alt" content={altImage}></meta>
         <meta property="og:image:width" content="1200"></meta>
         <meta property="og:image:height" content="630"></meta>
         <meta property="og:locale" content="en_IE"></meta>
-        <meta property="og:site_name" content="MadFi"></meta>
+        <meta property="og:site_name" content="MadFi Live"></meta>
         <meta name="twitter:creator" content="@madfiprotocol"></meta>
         <meta name="twitter:card" content="summary_large_image"></meta>
-        <meta name="twitter:title" content={`MadFi Live | @${space?.creatorLensHandle}`}></meta>
-        <meta
-          name="twitter:description"
-          content={`@${space?.creatorLensHandle} is hosting a livestream!`}
-        ></meta>
-        <meta
-          name="twitter:image"
-          content="https://link.storjshare.io/raw/jvnvg6pove7qyyfbyo5hqggdis6a/misc%2Fmadfi-banner.jpeg"
-        ></meta>
-        <link
+        <meta name="twitter:title" content={title}></meta>
+        <meta name="twitter:description" content={description}></meta>
+        <meta name="twitter:image" content={image}></meta>
+        {/* <link
           rel="iframely player audio"
           type="text/html"
           href={`${NEXT_PUBLIC_SITE_URL}/embed/${space?.creatorLensHandle}`}
           media="(aspect-ratio: 2/1)"
-        ></link>
+        ></link> */}
+        <meta name="theme-color" content="#141414"></meta>
       </Head>
     );
   }
@@ -106,14 +100,14 @@ const HandleSEO = ({ pageProps }) => {
         name="twitter:image"
         content="https://link.storjshare.io/raw/jvnvg6pove7qyyfbyo5hqggdis6a/misc%2Fmadfi-banner.jpeg"
       ></meta>
-      {handle && (
+      {/* {handle && (
         <link
           rel="iframely player audio"
           type="text/html"
           href={`${NEXT_PUBLIC_SITE_URL}/embed/${handle}`}
           media="(aspect-ratio: 2/1)"
         ></link>
-      )}
+      )} */}
     </Head>
   );
 };

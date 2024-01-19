@@ -13,6 +13,10 @@ export function shortAddress(address: string) {
   return address.slice(0, 5) + "..." + address.slice(address.length - 4);
 }
 
+export function trimText(text: string, length: number) {
+  return text.length > length ? text.substring(0, length) + "..." : text;
+}
+
 export const defaultGatewayURL = (uriOrHash: string) => `${apiUrls.ipfs}/${_hash(uriOrHash)}`;
 
 export const lensGatewayURL = (uriOrHash: string) => `${apiUrls.lensGateway}/${_hash(uriOrHash)}`;
