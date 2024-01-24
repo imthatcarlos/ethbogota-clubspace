@@ -30,8 +30,8 @@ dependencies:
     specifier: ^1.0.2
     version: 1.0.2
   '@madfi/widgets-react':
-    specifier: ^2.1.23
-    version: 2.1.23(@lens-protocol/metadata@1.1.5)(@tanstack/react-query@4.10.3)(react@18.2.0)
+    specifier: ^2.1.24
+    version: 2.1.24(@lens-protocol/metadata@1.1.5)(@tanstack/react-query@4.10.3)(react@18.2.0)
   '@pushprotocol/restapi':
     specifier: ^0.1.1
     version: 0.1.1(ethers@5.7.2)
@@ -1889,8 +1889,8 @@ packages:
     engines: {node: '>=14'}
     dev: false
 
-  /@madfi/widgets-react@2.1.23(@lens-protocol/metadata@1.1.5)(@tanstack/react-query@4.10.3)(react@18.2.0):
-    resolution: {integrity: sha512-34sn3i4OIpF1BPWXa7rRnQSQmp5UUbQTVRC1RWbY0JWgRUldOrimZ7q9g205KE5lEHC9Kr0bh6Nh/46IA1DrxQ==}
+  /@madfi/widgets-react@2.1.24(@lens-protocol/metadata@1.1.5)(@tanstack/react-query@4.10.3)(react@18.2.0):
+    resolution: {integrity: sha512-o6xJ0cA0LpxowvAlC7RncTuRQUIdAbKfuCERxC6WuE+XHvWSitKt1KdA3OymI89Zx9vvEkm79QnvIeAgqxNFcw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@tanstack/react-query': ^4.22.0
@@ -1903,6 +1903,7 @@ packages:
       ethers: 5.7.2
       graphql: 16.8.1
       lodash: 4.17.21
+      react-dropzone-esm: 15.0.1(react@18.2.0)
       react-markdown: 8.0.7(@types/react@18.2.46)(react@18.2.0)
       react-player: 2.14.1(react@18.2.0)
       rehype-raw: 6.1.1
@@ -7998,6 +7999,16 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+
+  /react-dropzone-esm@15.0.1(react@18.2.0):
+    resolution: {integrity: sha512-RdeGpqwHnoV/IlDFpQji7t7pTtlC2O1i/Br0LWkRZ9hYtLyce814S71h5NolnCZXsIN5wrZId6+8eQj2EBnEzg==}
+    engines: {node: '>= 10.13'}
+    peerDependencies:
+      react: '>= 16.8 || 18.0.0'
+    dependencies:
+      prop-types: 15.8.1
+      react: 18.2.0
+    dev: false
 
   /react-fast-compare@3.2.2:
     resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}

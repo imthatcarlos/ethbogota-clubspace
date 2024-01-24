@@ -135,7 +135,7 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
   //   );
   // }
 
-  if (space.gated && address !== space.creatorAddress) {
+  if (space.gated && space.gated !== "NONE" && address !== space.creatorAddress) {
     if (isConnected && isLoadingMeetsGated) return null;
     if (!isConnected || canEnter === false) {
       return (
