@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils/cn";
 import { DefaultLensProfile } from "@/types/lens";
-import { getUrlForImageFromIpfs } from "@/utils";
 import { type TrackReferenceOrPlaceholder, isParticipantSourcePinned } from "@livekit/components-core";
 import {
   AudioTrack,
@@ -42,13 +41,6 @@ export const ParticipantTile = ({
     publication,
   };
 
-  // TODO:
-  // if (isMuted && (trackRef.publication?.kind === "audio" && trackRef.source || Track.Source.Microphone)) return null;
-
-  const { metadata, sid } = p;
-
-  const { defaultProfile, isHost, ensData }: { defaultProfile?: DefaultLensProfile; isHost: boolean, ensData: any } = JSON.parse(metadata);
-
   const { elementProps } = useParticipantTile<HTMLDivElement>({
     participant: trackRef.participant,
     htmlProps,
@@ -74,6 +66,13 @@ export const ParticipantTile = ({
     },
     [trackRef.participant, layoutContext, trackRef.source]
   );
+
+  // TODO:
+  // if (isMuted && (trackRef.publication?.kind === "audio" && trackRef.source || Track.Source.Microphone)) return null;
+
+  const { metadata, sid } = p;
+
+  const { defaultProfile, isHost, ensData }: { defaultProfile?: DefaultLensProfile; isHost: boolean, ensData: any } = JSON.parse(metadata);
 
   return (
     <div

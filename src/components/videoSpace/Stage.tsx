@@ -8,6 +8,7 @@ import {
   useTracks,
   useRemoteParticipant,
   useLocalParticipantPermissions,
+  useTrackToggle,
 } from "@livekit/components-react";
 import { useMemo, useState } from "react";
 import { PlayIcon, PauseIcon } from "@heroicons/react/solid";
@@ -30,7 +31,7 @@ import {
 
 export const Stage = ({ space }: { space: any }) => {
   // const participants = useParticipants();
-  const tracks = useTracks([Track.Source.Camera, Track.Source.ScreenShare], { onlySubscribed: true });
+  const tracks = useTracks([{ source: Track.Source.Camera, withPlaceholder: true }, { source: Track.Source.ScreenShare, withPlaceholder: false }], { onlySubscribed: true });
   const participants = useParticipants();
   const localPartipantPermissions = useLocalParticipantPermissions();
   const [isMuted, setIsMuted] = useState(false);
@@ -41,6 +42,8 @@ export const Stage = ({ space }: { space: any }) => {
     });
   }, [participants, tracks]);
   const hasScreenShare = screenShareParticipant !== undefined;
+  // TODO: when being promoted to stage, we lose tracks without. trying this with `onlySubscribed = false`;
+  const tracksPublishing = useMemo(() => tracks?.filter((t) => !!t.publication?.track), [tracks]);
 
   // const tracksNotMuted = useMemo(() => {
   //   if (!isMuted) return tracks;
@@ -57,8 +60,8 @@ export const Stage = ({ space }: { space: any }) => {
           !hasScreenShare && styles.stage
         )}
       >
-        {tracks.length > 0 ? (
-          <TrackLoop tracks={tracks}>
+        {tracksPublishing.length > 0 ? (
+          <TrackLoop tracks={tracksPublishing}>
             <TrackContext.Consumer>
               {/* {(track) => track && <VideoTrack {...track} />} */}
               {(track) => (track && !hasScreenShare ? <ParticipantTile isMuted={isMuted} /> : <ParticipantTileWithScreenShare isMuted={isMuted} />)}
@@ -66,7 +69,7 @@ export const Stage = ({ space }: { space: any }) => {
           </TrackLoop>
         ) : (
           <div className="flex items-center justify-center">
-            <h1 className="text-4xl text-center">Nothing to see here...</h1>
+            <h1 className="text-2xl text-center">Nothing to see here. If you just got added/removed from the stage - try refreshing the page.</h1>
           </div>
         )}
       </div>
@@ -103,7 +106,15 @@ const ParticipantControls = ({
 }) => {
   const { address } = useAccount();
   const participant = useParticipantContext();
-  const updatedParticipant = useRemoteParticipant(participant.identity, { updateOnlyOn: ParticipantEvent.ParticipantPermissionsChanged });
+  const updatedParticipant = useRemoteParticipant(participant.identity, {
+    // updateOnlyOn: [
+    //   ParticipantEvent.ParticipantPermissionsChanged,
+    //   ParticipantEvent.TrackPublished,
+    //   ParticipantEvent.TrackSubscribed,
+    //   ParticipantEvent.TrackUnpublished,
+    //   ParticipantEvent.TrackUnsubscribed
+    // ]
+  });
 
   if (participant.name !== address) return null;
   if (!(updatedParticipant.permissions?.canPublish || participant.name === space.creatorAddress)) return null;
