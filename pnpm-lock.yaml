@@ -30,11 +30,11 @@ dependencies:
     specifier: ^1.0.2
     version: 1.0.2
   '@madfi/lens-oa-client':
-    specifier: ^0.1.5
-    version: 0.1.5(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(graphql@16.6.0)(react@18.2.0)
+    specifier: ^0.1.6
+    version: 0.1.6(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(graphql@16.6.0)(react@18.2.0)
   '@madfi/widgets-react':
-    specifier: ^2.2.2
-    version: 2.2.2(@lens-protocol/metadata@1.1.5)(@tanstack/react-query@4.10.3)(react@18.2.0)
+    specifier: ^2.2.3
+    version: 2.2.3(@lens-protocol/metadata@1.1.5)(@tanstack/react-query@4.10.3)(react@18.2.0)
   '@pushprotocol/restapi':
     specifier: ^0.1.1
     version: 0.1.1(ethers@5.7.2)
@@ -1892,8 +1892,8 @@ packages:
     engines: {node: '>=14'}
     dev: false
 
-  /@madfi/lens-oa-client@0.1.5(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(graphql@16.6.0)(react@18.2.0):
-    resolution: {integrity: sha512-HsJO5l+Oun8Fo9ZzhahZdlSu+XNI2kRl0LTwuTUkn0Pyy0gOZqmHZwFsm06RIrQcewctQmYrJ35OIfika6uZkQ==}
+  /@madfi/lens-oa-client@0.1.6(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(graphql@16.6.0)(react@18.2.0):
+    resolution: {integrity: sha512-8/vcpNwtqW/QFByBhvdzBkXB1UqocFyy1lTq18xiu91GU7R2VCjgSszSGhZyi9se2cYqTjiBtdpxWqhB8aQvrA==}
     engines: {node: '>=18.0.0'}
     dependencies:
       '@lens-protocol/client': 2.0.0-alpha.27(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(ethers@5.7.2)(react@18.2.0)
@@ -1926,8 +1926,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@madfi/lens-oa-client@0.1.5(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(graphql@16.8.1)(react@18.2.0):
-    resolution: {integrity: sha512-HsJO5l+Oun8Fo9ZzhahZdlSu+XNI2kRl0LTwuTUkn0Pyy0gOZqmHZwFsm06RIrQcewctQmYrJ35OIfika6uZkQ==}
+  /@madfi/lens-oa-client@0.1.6(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(graphql@16.8.1)(react@18.2.0):
+    resolution: {integrity: sha512-8/vcpNwtqW/QFByBhvdzBkXB1UqocFyy1lTq18xiu91GU7R2VCjgSszSGhZyi9se2cYqTjiBtdpxWqhB8aQvrA==}
     engines: {node: '>=18.0.0'}
     dependencies:
       '@lens-protocol/client': 2.0.0-alpha.27(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(ethers@5.7.2)(react@18.2.0)
@@ -1960,8 +1960,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@madfi/widgets-react@2.2.2(@lens-protocol/metadata@1.1.5)(@tanstack/react-query@4.10.3)(react@18.2.0):
-    resolution: {integrity: sha512-Rbjl7ZwNZ32/It4GiApmQEBqxdAXCZBY9DTzueVu8pTuZuAWQkrfviDbuaOb/BWh2PhZH0ekgwYj/oPfG0+FAw==}
+  /@madfi/widgets-react@2.2.3(@lens-protocol/metadata@1.1.5)(@tanstack/react-query@4.10.3)(react@18.2.0):
+    resolution: {integrity: sha512-Ff2HIdGbl5WGdDRsgtV4wP9wRNtJ4wo6gTvBj9Me59BEdKgZZ99LqEB0xbkKkBTH+yMt2FoHXRxOBloCEMNBgQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@tanstack/react-query': ^4.22.0
@@ -1969,7 +1969,7 @@ packages:
       '@emotion/css': 11.11.2
       '@ethersproject/providers': 5.7.2
       '@lens-protocol/client': 2.0.0-alpha.27(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(ethers@5.7.2)(react@18.2.0)
-      '@madfi/lens-oa-client': 0.1.5(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(graphql@16.8.1)(react@18.2.0)
+      '@madfi/lens-oa-client': 0.1.6(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(graphql@16.8.1)(react@18.2.0)
       '@tanstack/react-query': 4.10.3(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.2.46
       date-fns: 2.30.0

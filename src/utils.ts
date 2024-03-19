@@ -17,6 +17,11 @@ export function trimText(text: string, length: number) {
   return text.length > length ? text.substring(0, length) + "..." : text;
 }
 
+export const roundedToFixed = (input: number, digits: number = 4): string => {
+  const rounder = Math.pow(10, digits);
+  return (Math.round(input * rounder) / rounder).toFixed(digits);
+};
+
 export const defaultGatewayURL = (uriOrHash: string) => `${apiUrls.ipfs}/${_hash(uriOrHash)}`;
 
 export const lensGatewayURL = (uriOrHash: string) => `${apiUrls.lensGateway}/${_hash(uriOrHash)}`;
