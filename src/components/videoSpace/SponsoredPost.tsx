@@ -1,8 +1,4 @@
-import { useMemo, useState } from "react";
-import { useSupportedActionModule } from "@madfi/widgets-react";
-import { useProfile, ProfileId } from "@lens-protocol/react-web";
-import { useWalletClient, useBalance, useAccount, useSwitchNetwork, useNetwork } from "wagmi";
-import toast from "react-hot-toast";
+import { Button } from "@/components/ui";
 import {
   Dialog,
   DialogContent,
@@ -10,14 +6,18 @@ import {
   DialogHeader,
   DialogTrigger,
 } from "@/components/ui/Dialog";
-import { getPost } from "@/services/lens/getPost";
-import { parsePublicationLink, roundedToFixed, kFormatter, wait } from "@/utils";
+import { useAuthenticatedProfileId } from "@/hooks/useLensLogin";
 import { BONSAI_TOKEN_ADDRESS, BONSAI_TOKEN_DECIMALS, VALID_CHAIN_ID } from "@/lib/consts";
 import { LENS_ENVIRONMENT } from "@/services/lens/client";
-import { useAuthenticatedProfileId } from "@/hooks/useLensLogin";
-import PinnedLensPost from "../PinnedLensPost";
-import { Button } from "@/components/ui";
+import { getPost } from "@/services/lens/getPost";
 import actWithActionHandler from "@/services/madfi/actWithActionHandler";
+import { kFormatter, parsePublicationLink, roundedToFixed, wait } from "@/utils";
+import { ProfileId, useProfile } from "@lens-protocol/react-web";
+import { useSupportedActionModule } from "@madfi/widgets-react";
+import { useMemo, useState } from "react";
+import toast from "react-hot-toast";
+import { useAccount, useBalance, useNetwork, useSwitchNetwork, useWalletClient } from "wagmi";
+import PinnedLensPost from "../PinnedLensPost";
 
 export default ({ space }) => {
   const { address } = useAccount();
@@ -69,7 +69,7 @@ export default ({ space }) => {
   const tippingEnabled = useMemo(() => {
     if (isActionModuleSupported && !isLoadingActionModule) {
       const { metadata } = actionModuleHandler.getActionModuleConfig();
-    return metadata?.metadata?.name === "TipActionModule";
+      return metadata?.metadata?.name === "TipActionModule";
     }
   }, [isActionModuleSupported, isLoadingActionModule, actionModuleHandler]);
 

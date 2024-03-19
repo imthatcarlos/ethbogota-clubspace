@@ -1,23 +1,17 @@
-import { useAccount } from "wagmi";
+import { cn } from "@/lib/utils/cn";
 import {
   ParticipantLoop,
   TrackContext,
   TrackLoop,
+  useLocalParticipantPermissions,
   useParticipantContext,
   useParticipants,
-  useTracks,
   useRemoteParticipant,
-  useLocalParticipantPermissions,
-  useTrackToggle,
+  useTracks
 } from "@livekit/components-react";
+import { LocalParticipant, RemoteParticipant, Track } from "livekit-client";
 import { useMemo, useState } from "react";
-import { PlayIcon, PauseIcon } from "@heroicons/react/solid";
-import { LocalParticipant, RemoteParticipant, Track, ParticipantEvent } from "livekit-client";
-import styles from "./videoSpace.module.css";
-import { ParticipantTile } from "./ParticipantTile";
-import { cn } from "@/lib/utils/cn";
-import { ParticipantTileWithScreenShare } from "./ParticipantTileWithScreenShare";
-import { CustomControls } from "./CustomControls";
+import { useAccount } from "wagmi";
 import {
   Button,
   Dialog,
@@ -28,6 +22,10 @@ import {
   DialogTrigger,
   Icons,
 } from "../ui";
+import { CustomControls } from "./CustomControls";
+import { ParticipantTile } from "./ParticipantTile";
+import { ParticipantTileWithScreenShare } from "./ParticipantTileWithScreenShare";
+import styles from "./videoSpace.module.css";
 
 export const Stage = ({ space }: { space: any }) => {
   // const participants = useParticipants();
@@ -54,7 +52,7 @@ export const Stage = ({ space }: { space: any }) => {
     <>
       <div
         className={cn(
-          "h-[62vh] w-[60vw] 2xl:h-[72vh] 2xl:w-[65vw] relative bg-none p-4 rounded-2xl",
+          "h-full md:h-[62vh] w-[100vw] md:w-[60vw] 2xl:h-[72vh] 2xl:w-[65vw] relative bg-none md:p-4 rounded-2xl",
           { "grid grid-cols-2 gap-6": !hasScreenShare },
           { "flex items-end justify-end flex-col gap-4 overflow-hidden": hasScreenShare },
           !hasScreenShare && styles.stage

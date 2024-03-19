@@ -1,19 +1,19 @@
 import {
   useCallback,
-  useMemo,
-  useState,
-  useRef,
   useEffect,
+  useMemo,
+  useRef,
+  useState,
   type KeyboardEvent,
 } from "react";
 import { Button, Icons, Textarea } from "./ui";
 
 import { cn } from "@/lib/utils/cn";
+import getLensPictureURL from "@/lib/utils/getLensPictureURL";
 import { DefaultLensProfile } from "@/types/lens";
+import { shortAddress } from "@/utils";
 import { useChat } from "@livekit/components-react";
 import { useAccount } from "wagmi";
-import getLensPictureURL from "@/lib/utils/getLensPictureURL";
-import { shortAddress } from "@/utils";
 
 type Props = {
   viewerName: string;
@@ -24,7 +24,7 @@ export default function Chat({ viewerName }: Props) {
   const messagesContainerRef = useRef(null);
   const { isConnected } = useAccount();
 
-  const reverseMessages = useMemo(() => messages.sort((a, b) => a.timestamp - b.timestamp), [messages]);
+  const reverseMessages = useMemo(() => messages.sort((a, b) => b.timestamp - a.timestamp), [messages]);
 
   useEffect(() => {
     if (messagesContainerRef && reverseMessages?.length > 5) {
@@ -66,8 +66,8 @@ export default function Chat({ viewerName }: Props) {
   };
 
   return (
-    <div className="relative h-[85%] max-h-[827px] bg-foreground rounded-b-2xl px-3 py-4 w-full">
-      <div ref={messagesContainerRef} className="absolute top-4 bottom-14 overflow-y-auto pb-4 right-0 left-0 p-2">
+    <div className="mask-gradient-bottom md:relative md:h-[85%] h-[50%] md:max-h-[827px] opacity-[80%] md:bg-foreground rounded-b-2xl px-3 py-4 w-full absolute bottom-0 left-0 right-0 ">
+      <div ref={messagesContainerRef} className="flex flex-col-reverse md:flex-col absolute top-4 bottom-14 overflow-y-auto pb-4 right-0 left-0 p-2">
         {reverseMessages.map((message, idx) => {
           // assuming users have signed in with lens
           const { defaultProfile, ensData }: { defaultProfile: DefaultLensProfile, ensData: any } = JSON.parse(message.from?.metadata);
