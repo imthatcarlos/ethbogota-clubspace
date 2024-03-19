@@ -5,7 +5,7 @@ import { Button } from "@/components/ui";
 import toast from "react-hot-toast";
 import {useState} from "react";
 
-const MAX_STAGE_COUNT = 2;
+const MAX_STAGE_COUNT = 4;
 
 export const HostSection = ({ participant, spaceExp, stageCount }: { participant: Participant, spaceExp: number, stageCount: number }) => {
   // const participant = useParticipantContext();

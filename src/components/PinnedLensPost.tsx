@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { useNetwork, useWalletClient, useSwitchNetwork } from "wagmi";
-import { Publication, Theme } from "@madfi/widgets-react";
 import { approveToken, parsePublicationLink, wait } from "@/utils";
 import { getPost } from "@/services/lens/getPost";
 import { collectPostGasless } from "@/services/lens/gaslessTxs";
@@ -10,7 +9,6 @@ import {
   MULTIRECIPIENT_COLLECT_MODULE,
 } from "@/lib/consts";
 import { getAccessToken } from "@/hooks/useLensLogin";
-import getPublicationRewarded from "@/services/madfi/getPublicationRewarded";
 import PublicationContainer from "./PublicationContainer";
 
 const PinnedLensPost = ({

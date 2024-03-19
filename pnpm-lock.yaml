@@ -29,9 +29,12 @@ dependencies:
   '@livekit/components-styles':
     specifier: ^1.0.2
     version: 1.0.2
+  '@madfi/lens-oa-client':
+    specifier: ^0.1.5
+    version: 0.1.5(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(graphql@16.6.0)(react@18.2.0)
   '@madfi/widgets-react':
-    specifier: ^2.1.24
-    version: 2.1.24(@lens-protocol/metadata@1.1.5)(@tanstack/react-query@4.10.3)(react@18.2.0)
+    specifier: ^2.2.2
+    version: 2.2.2(@lens-protocol/metadata@1.1.5)(@tanstack/react-query@4.10.3)(react@18.2.0)
   '@pushprotocol/restapi':
     specifier: ^0.1.1
     version: 0.1.1(ethers@5.7.2)
@@ -1889,14 +1892,84 @@ packages:
     engines: {node: '>=14'}
     dev: false
 
-  /@madfi/widgets-react@2.1.24(@lens-protocol/metadata@1.1.5)(@tanstack/react-query@4.10.3)(react@18.2.0):
-    resolution: {integrity: sha512-o6xJ0cA0LpxowvAlC7RncTuRQUIdAbKfuCERxC6WuE+XHvWSitKt1KdA3OymI89Zx9vvEkm79QnvIeAgqxNFcw==}
+  /@madfi/lens-oa-client@0.1.5(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(graphql@16.6.0)(react@18.2.0):
+    resolution: {integrity: sha512-HsJO5l+Oun8Fo9ZzhahZdlSu+XNI2kRl0LTwuTUkn0Pyy0gOZqmHZwFsm06RIrQcewctQmYrJ35OIfika6uZkQ==}
+    engines: {node: '>=18.0.0'}
+    dependencies:
+      '@lens-protocol/client': 2.0.0-alpha.27(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(ethers@5.7.2)(react@18.2.0)
+      ethers: 5.7.2
+      lodash: 4.17.21
+      typescript: 5.3.3
+      urql: 3.0.4(graphql@16.6.0)(react@18.2.0)
+      viem: 1.20.3(typescript@5.3.3)(zod@3.22.4)
+      zod: 3.22.4
+    transitivePeerDependencies:
+      - '@azure/app-configuration'
+      - '@azure/cosmos'
+      - '@azure/data-tables'
+      - '@azure/identity'
+      - '@azure/keyvault-secrets'
+      - '@azure/storage-blob'
+      - '@capacitor/preferences'
+      - '@lens-protocol/metadata'
+      - '@netlify/blobs'
+      - '@planetscale/database'
+      - '@react-native-async-storage/async-storage'
+      - '@types/react'
+      - '@upstash/redis'
+      - '@vercel/kv'
+      - bufferutil
+      - encoding
+      - graphql
+      - react
+      - supports-color
+      - utf-8-validate
+    dev: false
+
+  /@madfi/lens-oa-client@0.1.5(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(graphql@16.8.1)(react@18.2.0):
+    resolution: {integrity: sha512-HsJO5l+Oun8Fo9ZzhahZdlSu+XNI2kRl0LTwuTUkn0Pyy0gOZqmHZwFsm06RIrQcewctQmYrJ35OIfika6uZkQ==}
+    engines: {node: '>=18.0.0'}
+    dependencies:
+      '@lens-protocol/client': 2.0.0-alpha.27(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(ethers@5.7.2)(react@18.2.0)
+      ethers: 5.7.2
+      lodash: 4.17.21
+      typescript: 5.3.3
+      urql: 3.0.4(graphql@16.8.1)(react@18.2.0)
+      viem: 1.20.3(typescript@5.3.3)(zod@3.22.4)
+      zod: 3.22.4
+    transitivePeerDependencies:
+      - '@azure/app-configuration'
+      - '@azure/cosmos'
+      - '@azure/data-tables'
+      - '@azure/identity'
+      - '@azure/keyvault-secrets'
+      - '@azure/storage-blob'
+      - '@capacitor/preferences'
+      - '@lens-protocol/metadata'
+      - '@netlify/blobs'
+      - '@planetscale/database'
+      - '@react-native-async-storage/async-storage'
+      - '@types/react'
+      - '@upstash/redis'
+      - '@vercel/kv'
+      - bufferutil
+      - encoding
+      - graphql
+      - react
+      - supports-color
+      - utf-8-validate
+    dev: false
+
+  /@madfi/widgets-react@2.2.2(@lens-protocol/metadata@1.1.5)(@tanstack/react-query@4.10.3)(react@18.2.0):
+    resolution: {integrity: sha512-Rbjl7ZwNZ32/It4GiApmQEBqxdAXCZBY9DTzueVu8pTuZuAWQkrfviDbuaOb/BWh2PhZH0ekgwYj/oPfG0+FAw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@tanstack/react-query': ^4.22.0
     dependencies:
       '@emotion/css': 11.11.2
+      '@ethersproject/providers': 5.7.2
       '@lens-protocol/client': 2.0.0-alpha.27(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(ethers@5.7.2)(react@18.2.0)
+      '@madfi/lens-oa-client': 0.1.5(@lens-protocol/metadata@1.1.5)(@types/react@18.2.46)(graphql@16.8.1)(react@18.2.0)
       '@tanstack/react-query': 4.10.3(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.2.46
       date-fns: 2.30.0
@@ -3694,6 +3767,15 @@ packages:
       '@typescript-eslint/types': 6.17.0
       eslint-visitor-keys: 3.4.3
     dev: true
+
+  /@urql/core@3.2.2(graphql@16.6.0):
+    resolution: {integrity: sha512-i046Cz8cZ4xIzGMTyHZrbdgzcFMcKD7+yhCAH5FwWBRjcKrc+RjEOuR9X5AMuBvr8c6IAaE92xAqa4wmlGfWTQ==}
+    peerDependencies:
+      graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+    dependencies:
+      graphql: 16.6.0
+      wonka: 6.3.4
+    dev: false
 
   /@urql/core@3.2.2(graphql@16.8.1):
     resolution: {integrity: sha512-i046Cz8cZ4xIzGMTyHZrbdgzcFMcKD7+yhCAH5FwWBRjcKrc+RjEOuR9X5AMuBvr8c6IAaE92xAqa4wmlGfWTQ==}
@@ -9194,6 +9276,18 @@ packages:
   /urix@0.1.0:
     resolution: {integrity: sha512-Am1ousAhSLBeB9cG/7k7r2R0zj50uDRlZHPGbazid5s9rlF1F/QKYObEKSIunSjIOkJZqwRRLpvewjEkM7pSqg==}
     deprecated: Please see https://github.com/lydell/urix#deprecated
+    dev: false
+
+  /urql@3.0.4(graphql@16.6.0)(react@18.2.0):
+    resolution: {integrity: sha512-okmQKQ9pF4t8O8iCC5gH9acqfFji5lkhW3nLBjx8WKDd2zZG7PXoUpUK19VQEMK87L6VFBOO/XZ52MMKFEI0AA==}
+    peerDependencies:
+      graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+      react: '>= 16.8.0'
+    dependencies:
+      '@urql/core': 3.2.2(graphql@16.6.0)
+      graphql: 16.6.0
+      react: 18.2.0
+      wonka: 6.3.4
     dev: false
 
   /urql@3.0.4(graphql@16.8.1)(react@18.2.0):

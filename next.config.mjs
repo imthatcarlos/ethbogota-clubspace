@@ -32,7 +32,7 @@ export default withPlugins(
   {
     reactStrictMode: true,
     swcMinify: true,
-    transpilePackages: ["@lens-protocol", "@madfi/widgets-react"],
+    transpilePackages: ["@lens-protocol", "@madfi"],
     webpack: (config) => {
       config.resolve.fallback = { fs: false };
 
