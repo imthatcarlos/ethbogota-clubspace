@@ -86,7 +86,7 @@ export const Stage = ({ space }: { space: any }) => {
         </div>
       )} */}
 
-      <div className="-mt-16 flex items-center justify-center z-30 flex-1 gap-2 hover:opacity-100 opacity-50 transition-opacity duration-200">
+      <div className="md:-mt-16 -mt-32 flex items-center justify-center z-30 flex-1 gap-2 hover:opacity-100 opacity-50 transition-opacity duration-200">
         <ParticipantLoop participants={participants}>
           <ParticipantControls screenShareParticipant={screenShareParticipant} space={space} />
         </ParticipantLoop>

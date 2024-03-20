@@ -186,7 +186,7 @@ const SponsoredPost = ({ space, opacity }) => {
     }
 
     setIsTipping(false);
-    
+
     confetti({
       particleCount: 100,
       spread: 70,
@@ -207,8 +207,7 @@ const SponsoredPost = ({ space, opacity }) => {
           style={{ opacity: opacity }}
         >
           {/* regular post preview */}
-          {/* {!tippingEnabled || !authenticatedProfileId && ( */}
-          {(
+          {!tippingEnabled || !authenticatedProfileId && (
             <>
               <div className="flex mb-3">
                 <span className="text-gray-500 text-sm">post by @{lensPost?.profile?.handle.localName}</span>
