@@ -2,7 +2,7 @@ import { ActionHandler } from "@madfi/lens-oa-client";
 import { IS_PRODUCTION } from "@/lib/consts";
 import { actWithSignedTypedata, actOnchain, actSignless } from "../lens/act";
 
-const actWithActionHandler = async (actionModuleHandler: ActionHandler, walletClient: any, authenticatedProfile: any, moduleActData: any) => {
+const actWithActionHandler = async (actionModuleHandler: ActionHandler, walletClient: any, authenticatedProfile: any, moduleActData: any): Promise<string> => {
   const { metadata } = actionModuleHandler.getActionModuleConfig();
   const useGasless = !IS_PRODUCTION || metadata?.sponsoredApproved;
   const useSignless = authenticatedProfile?.signless && (!IS_PRODUCTION || metadata?.signlessApproved);
@@ -41,6 +41,8 @@ const actWithActionHandler = async (actionModuleHandler: ActionHandler, walletCl
   console.log(`tx: ${tx}`)
 
   if (!tx) throw new Error("Failed");
+
+  return tx;
 }
 
 export default actWithActionHandler;
