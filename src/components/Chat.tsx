@@ -6,6 +6,7 @@ import {
   useState,
   type KeyboardEvent,
 } from "react";
+import { orderBy } from "lodash/collection";
 import { Button, Icons, Textarea } from "./ui";
 
 import { cn } from "@/lib/utils/cn";
@@ -30,7 +31,7 @@ export default function Chat({ viewerName, opacity, opacityToggled, isMobile }: 
   const { isConnected } = useAccount();
   const [mesagePreviewOpacity, setMessagePreviewOpacity] = useState(0);
 
-  const reverseMessages = useMemo(() => messages.sort((a, b) => b.timestamp - a.timestamp), [messages]);
+  const reverseMessages = useMemo(() => orderBy(messages, ['timestamp'], ['desc']), [messages]);
 
   useEffect(() => {
     if (messagesContainerRef && reverseMessages?.length > 5) {
@@ -68,8 +69,8 @@ export default function Chat({ viewerName, opacity, opacityToggled, isMobile }: 
     }
   }, [message, send])
 
-  // const displayMessages = isMobile ? reverseMessages : messages;
-  const displayMessages = reverseMessages;
+  const displayMessages = isMobile ? reverseMessages : messages;
+  // const displayMessages = reverseMessages;
   return (
     <>
       <div
@@ -78,7 +79,7 @@ export default function Chat({ viewerName, opacity, opacityToggled, isMobile }: 
           opacity: mesagePreviewOpacity,
         }}
       >
-        {MessageCell({ message: displayMessages[0]?.message, timestamp: reverseMessages[0]?.timestamp, from: reverseMessages[0]?.from }, viewerName)}
+        {MessageCell({ message: displayMessages[0]?.message, timestamp: displayMessages[0]?.timestamp, from: displayMessages[0]?.from }, viewerName)}
       </div>
       <div
         className="transition ease-in-out duration-300 mask-gradient-bottom md:relative md:h-[85%] h-[50%] md:max-h-[827px] md:bg-foreground rounded-b-2xl px-3 py-4 w-full absolute bottom-0 left-0 right-0"

@@ -53,7 +53,7 @@ export const Stage = ({ space }: { space: any }) => {
       <div
         className={cn(
           "h-full md:h-[62vh] w-[100vw] md:w-[60vw] 2xl:h-[72vh] 2xl:w-[65vw] relative bg-none md:p-4 rounded-2xl",
-          { "grid grid-cols-2 gap-6": !hasScreenShare },
+          { "grid grid-rows-3 md:grid-cols-2 gap-6": !hasScreenShare },
           { "flex items-end justify-end flex-col gap-4 overflow-hidden": hasScreenShare },
           !hasScreenShare && styles.stage
         )}
