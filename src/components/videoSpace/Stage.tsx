@@ -1,23 +1,17 @@
-import { useAccount } from "wagmi";
+import { cn } from "@/lib/utils/cn";
 import {
   ParticipantLoop,
   TrackContext,
   TrackLoop,
+  useLocalParticipantPermissions,
   useParticipantContext,
   useParticipants,
-  useTracks,
   useRemoteParticipant,
-  useLocalParticipantPermissions,
-  useTrackToggle,
+  useTracks
 } from "@livekit/components-react";
+import { LocalParticipant, RemoteParticipant, Track } from "livekit-client";
 import { useMemo, useState } from "react";
-import { PlayIcon, PauseIcon } from "@heroicons/react/solid";
-import { LocalParticipant, RemoteParticipant, Track, ParticipantEvent } from "livekit-client";
-import styles from "./videoSpace.module.css";
-import { ParticipantTile } from "./ParticipantTile";
-import { cn } from "@/lib/utils/cn";
-import { ParticipantTileWithScreenShare } from "./ParticipantTileWithScreenShare";
-import { CustomControls } from "./CustomControls";
+import { useAccount } from "wagmi";
 import {
   Button,
   Dialog,
@@ -28,6 +22,10 @@ import {
   DialogTrigger,
   Icons,
 } from "../ui";
+import { CustomControls } from "./CustomControls";
+import { ParticipantTile } from "./ParticipantTile";
+import { ParticipantTileWithScreenShare } from "./ParticipantTileWithScreenShare";
+import styles from "./videoSpace.module.css";
 
 export const Stage = ({ space }: { space: any }) => {
   // const participants = useParticipants();
@@ -54,7 +52,7 @@ export const Stage = ({ space }: { space: any }) => {
     <>
       <div
         className={cn(
-          "h-[62vh] w-[60vw] 2xl:h-[72vh] 2xl:w-[65vw] relative bg-none p-4 rounded-2xl",
+          "h-full md:h-[62vh] w-[100vw] md:w-[60vw] 2xl:h-[72vh] 2xl:w-[65vw] relative bg-none md:p-4 rounded-2xl",
           { "grid grid-cols-2 gap-6": !hasScreenShare },
           { "flex items-end justify-end flex-col gap-4 overflow-hidden": hasScreenShare },
           !hasScreenShare && styles.stage
@@ -68,8 +66,12 @@ export const Stage = ({ space }: { space: any }) => {
             </TrackContext.Consumer>
           </TrackLoop>
         ) : (
-          <div className="flex items-center justify-center">
-            <h1 className="text-2xl text-center">Nothing to see here. If you just got added/removed from the stage - try refreshing the page.</h1>
+          <div className="flex items-center justify-center pl-4 pr-4">
+            <h1 className="text-2xl text-center leading-10">Nothing to see here
+              <br />
+              If you're the host - connect your wallet & login with Lens
+              <br />
+              If you just got added/removed from the stage - try refreshing the page</h1>
           </div>
         )}
       </div>
@@ -84,7 +86,7 @@ export const Stage = ({ space }: { space: any }) => {
         </div>
       )} */}
 
-      <div className="-mt-16 flex items-center justify-center z-30 flex-1 gap-2 hover:opacity-100 opacity-50 transition-opacity duration-200">
+      <div className="md:-mt-16 -mt-32 flex items-center justify-center z-30 flex-1 gap-2 hover:opacity-100 opacity-50 transition-opacity duration-200">
         <ParticipantLoop participants={participants}>
           <ParticipantControls screenShareParticipant={screenShareParticipant} space={space} />
         </ParticipantLoop>

@@ -1,24 +1,23 @@
 import { cn } from "@/lib/utils/cn";
+import getLensPictureURL from "@/lib/utils/getLensPictureURL";
 import { DefaultLensProfile } from "@/types/lens";
-import { type TrackReferenceOrPlaceholder, isParticipantSourcePinned } from "@livekit/components-core";
+import { isParticipantSourcePinned, type TrackReferenceOrPlaceholder } from "@livekit/components-core";
 import {
   AudioTrack,
-  ConnectionQualityIndicator,
   FocusToggle,
   ParticipantContextIfNeeded,
   ParticipantName,
   ParticipantTileProps,
   TrackMutedIndicator,
-  VideoTrack,
   useEnsureParticipant,
   useMaybeLayoutContext,
   useMaybeTrackContext,
   useParticipantTile,
+  VideoTrack
 } from "@livekit/components-react";
 import { Track } from "livekit-client";
 import { ReactNode, useCallback } from "react";
 import styles from "./videoSpace.module.css";
-import getLensPictureURL from "@/lib/utils/getLensPictureURL";
 
 interface ParticipantTilePropsExtended extends ParticipantTileProps {
   isMuted: boolean; // mutes all tracks
@@ -103,25 +102,25 @@ export const ParticipantTile = ({
                     onSubscriptionStatusChanged={handleSubscribe}
                     className="rounded-2xl w-full h-full"
                   />
-                ): (
-                    <div className="absolute bg-black inset-0 flex items-center justify-center pointer-events-none rounded-2xl">
-                      <img
-                        src={defaultProfile?.metadata ? getLensPictureURL(defaultProfile) : (ensData?.avatar || "./anon.png")}
-                        alt={defaultProfile?.handle ? defaultProfile?.handle.localName : (ensData?.avatar || p.identity)}
-                        className="rounded-full aspect-square w-32 h-32"
-                      />
-                    </div>
+                ) : (
+                  <div className="absolute bg-black inset-0 flex items-center justify-center pointer-events-none rounded-2xl">
+                    <img
+                      src={defaultProfile?.metadata ? getLensPictureURL(defaultProfile) : (ensData?.avatar || "./anon.png")}
+                      alt={defaultProfile?.handle ? defaultProfile?.handle.localName : (ensData?.avatar || p.identity)}
+                      className="rounded-full aspect-square w-32 h-32"
+                    />
+                  </div>
                 )}
               </>
             ) : (
-                <AudioTrack
-                  participant={trackRef.participant}
-                  source={trackRef.source}
-                  publication={trackRef.publication}
-                  onSubscriptionStatusChanged={handleSubscribe}
-                />
+              <AudioTrack
+                participant={trackRef.participant}
+                source={trackRef.source}
+                publication={trackRef.publication}
+                onSubscriptionStatusChanged={handleSubscribe}
+              />
             )}
-            <div className="absolute flex flex-row items-center justify-between gap-2 leading-none bottom-1 inset-x-1">
+            <div className="top-0 md:top-auto absolute md:flex md:flex-row md:items-center justify-between gap-2 leading-none bottom-1 inset-x-1">
               <div className="flex items-center p-1 pl-2">
                 <TrackMutedIndicator source={Track.Source.Microphone} show={"muted"}></TrackMutedIndicator>
                 <DisplayName defaultProfile={defaultProfile} ensData={ensData} />

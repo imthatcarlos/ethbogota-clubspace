@@ -1,6 +1,3 @@
-import React, { useMemo, memo } from "react";
-import Image from "next/image";
-import { useParticipantContext } from "@livekit/components-react";
 import { ParticipantDialogList } from "./ParticipantDialogList";
 
 export function getPictureToDisplay(picture: any) {
@@ -17,7 +14,7 @@ export function getPictureToDisplay(picture: any) {
 
 export const HostInfo = ({ space }: { space: any }) => {
   return (
-    <div className="flex items-center justify-between gap-2 pt-4">
+    <div className="flex items-center justify-between gap-2 p-4">
       <div className="text-xs font-semibold whitespace-nowrap inline-flex gap-1">
         <img
           className="h-20 w-20 rounded-full select-none pointer-events-none"
