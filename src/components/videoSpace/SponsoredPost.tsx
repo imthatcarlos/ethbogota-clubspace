@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui";
 import {
   Dialog,
   DialogContent,
@@ -5,14 +6,8 @@ import {
   DialogHeader,
   DialogTrigger,
 } from "@/components/ui/Dialog";
-import {
-  BONSAI_TOKEN_ADDRESS,
-  BONSAI_TOKEN_DECIMALS,
-  IS_PRODUCTION,
-  JSON_RPC_URL_ALCHEMY_MAP,
-  TIP_ACTION_MODULE_EVENT_ABI,
-  VALID_CHAIN_ID
-} from "@/lib/consts";
+import { useAuthenticatedProfileId } from "@/hooks/useLensLogin";
+import { BONSAI_TOKEN_ADDRESS, BONSAI_TOKEN_DECIMALS, IS_PRODUCTION, JSON_RPC_URL_ALCHEMY_MAP, TIP_ACTION_MODULE_EVENT_ABI, VALID_CHAIN_ID } from "@/lib/consts";
 import { LENS_ENVIRONMENT } from "@/services/lens/client";
 import { getPost } from "@/services/lens/getPost";
 import actWithActionHandler from "@/services/madfi/actWithActionHandler";
@@ -26,6 +21,7 @@ import toast from "react-hot-toast";
 import { createPublicClient, decodeEventLog, formatUnits, http } from "viem";
 import { polygon, polygonMumbai } from "viem/chains";
 import { useAccount, useBalance, useNetwork, useSwitchNetwork, useWalletClient } from "wagmi";
+import PinnedLensPost from "../PinnedLensPost";
 
 export default ({ space }) => {
   const { address } = useAccount();
@@ -189,7 +185,7 @@ export default ({ space }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div className="rounded-t-2xl min-w-[20rem] max-w-full max-h-[7.8rem] bg-black m-auto p-4 -mt-4 drop-shadow-sm cursor-pointer">
+        <div className="hidden md:block rounded-t-2xl min-w-[20rem] max-w-full max-h-[7.8rem] bg-black m-auto p-4 -mt-4 drop-shadow-sm cursor-pointer">
           {/* regular post preview */}
           {!tippingEnabled || !authenticatedProfileId && (
             <>

@@ -66,12 +66,12 @@ export const Stage = ({ space }: { space: any }) => {
             </TrackContext.Consumer>
           </TrackLoop>
         ) : (
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center pl-4 pr-4">
             <h1 className="text-2xl text-center leading-10">Nothing to see here
-            <br/>
-            If you're the host - connect your wallet & login with Lens
-            <br/>
-            If you just got added/removed from the stage - try refreshing the page</h1>
+              <br />
+              If you're the host - connect your wallet & login with Lens
+              <br />
+              If you just got added/removed from the stage - try refreshing the page</h1>
           </div>
         )}
       </div>

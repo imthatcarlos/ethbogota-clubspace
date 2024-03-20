@@ -31,6 +31,7 @@ export const LiveVideo = ({
   const isMounted = useIsMounted();
   const [tryToConnect, setTryToConnect] = useState(false);
   const [connected, setConnected] = useState(false);
+  const [chatOpacity, setChatOpacity] = useState(1);
 
   useEffect(() => {
     if (isMounted) {
@@ -63,10 +64,17 @@ export const LiveVideo = ({
     };
   }, [userIdentity, metadata, space]);
 
+  const toggleChatOpacity = () => {
+    setChatOpacity(chatOpacity === 1 ? 0 : 1)
+  }
+
   const token = useToken(env.NEXT_PUBLIC_LK_TOKEN_ENDPOINT, roomName, { userInfo });
 
   return (
-    <div className="w-full bg-background" style={{ height: 'calc(100vh - 88px)' }}>
+    <div
+      className="w-full bg-background"
+      style={{ height: 'calc(100vh - 88px)' }}
+    >
       <LiveKitRoom
         token={token}
         serverUrl={liveKitUrl}
@@ -82,10 +90,10 @@ export const LiveVideo = ({
         <div className="flex md:max-w-[85%] max-width-[100%] mx-auto items-center w-full h-[100%] min-[1921px]:h-[80%] md:mb-18">
           <div className="flex md:gap-9 flex-1 h-full md:h-auto">
             <div className="flex-1 max-w-fit h-full md:h-auto">
-              <div className="relative h-full md:h-auto">
+              <div className="relative h-full md:h-auto" onClick={toggleChatOpacity}>
                 <Stage space={space} />
               </div>
-              <div className={`w-full ${space.creatorAddress !== address ? 'mt-16' : 'mt-8'}`}>
+              <div className={`w-full pt-[24px] pb-[24px] ${space.creatorAddress !== address ? 'md:mt-16' : 'md:mt-8'}`}>
                 <HostInfo space={space} />
               </div>
               <RoomAudioRenderer />
@@ -93,7 +101,7 @@ export const LiveVideo = ({
 
             <div className="w-full max-w-sm rounded-2xl pt-4 max-h-[80%]">
               <SponsoredPost space={space} />
-              <Chat viewerName={userIdentity} />
+              <Chat opacityToggled={toggleChatOpacity} opacity={chatOpacity} viewerName={userIdentity} />
             </div>
           </div>
           {/* <DebugMode /> */}
