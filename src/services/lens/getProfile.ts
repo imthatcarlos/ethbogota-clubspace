@@ -125,6 +125,18 @@ export const getProfilesOwned = async (ownedBy: string): Promise<Profile[]> => {
   }
 };
 
+export const getProfilesOwnedMultiple = async (ownedBy: string[]): Promise<Profile[]> => {
+  try {
+    const profiles = await lensClient.profile.fetchAll({
+      where: { ownedBy },
+    })
+
+    return profiles?.items as unknown as Profile[];
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const useGetProfilesOwned = (options: UseQueryOptions = {}, ownedBy: string) => {
   const result = useQuery(
     ['owned-profiles'],

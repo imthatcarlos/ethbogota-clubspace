@@ -103,3 +103,35 @@ export const MAD_SBT_CONTRACT_ADDRESS = IS_PRODUCTION
 
 export const BONSAI_TOKEN_ADDRESS = "0x3d2bD0e15829AA5C362a4144FdF4A1112fa29B5c";
 export const BONSAI_TOKEN_DECIMALS = 18;
+
+export const TIP_ACTION_MODULE_EVENT_ABI = [{
+  "type": "event",
+  "name": "TipCreated",
+  "inputs": [
+    {
+      "name": "transactionExecutor",
+      "type": "address",
+      "indexed": true,
+      "internalType": "address"
+    },
+    {
+      "name": "tipReceiver",
+      "type": "address",
+      "indexed": true,
+      "internalType": "address"
+    },
+    {
+      "name": "currency",
+      "type": "address",
+      "indexed": true,
+      "internalType": "address"
+    },
+    {
+      "name": "tipAmount",
+      "type": "uint256",
+      "indexed": false,
+      "internalType": "uint256"
+    }
+  ],
+  "anonymous": false
+}]

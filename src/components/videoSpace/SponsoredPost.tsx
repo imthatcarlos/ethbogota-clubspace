@@ -1,8 +1,12 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { createPublicClient, http, decodeEventLog, formatUnits } from "viem";
+import { polygon, polygonMumbai } from "viem/chains";
 import { useSupportedActionModule } from "@madfi/widgets-react";
 import { useProfile, ProfileId } from "@lens-protocol/react-web";
 import { useWalletClient, useBalance, useAccount, useSwitchNetwork, useNetwork } from "wagmi";
 import toast from "react-hot-toast";
+import { useChat } from "@livekit/components-react";
+import { groupBy } from "lodash/collection";
 import {
   Dialog,
   DialogContent,
@@ -12,12 +16,20 @@ import {
 } from "@/components/ui/Dialog";
 import { getPost } from "@/services/lens/getPost";
 import { parsePublicationLink, roundedToFixed, kFormatter, wait } from "@/utils";
-import { BONSAI_TOKEN_ADDRESS, BONSAI_TOKEN_DECIMALS, VALID_CHAIN_ID } from "@/lib/consts";
+import {
+  IS_PRODUCTION,
+  BONSAI_TOKEN_ADDRESS,
+  BONSAI_TOKEN_DECIMALS,
+  VALID_CHAIN_ID,
+  TIP_ACTION_MODULE_EVENT_ABI,
+  JSON_RPC_URL_ALCHEMY_MAP
+} from "@/lib/consts";
 import { LENS_ENVIRONMENT } from "@/services/lens/client";
 import { useAuthenticatedProfileId } from "@/hooks/useLensLogin";
 import PinnedLensPost from "../PinnedLensPost";
 import { Button } from "@/components/ui";
 import actWithActionHandler from "@/services/madfi/actWithActionHandler";
+import { getProfilesOwnedMultiple } from "@/services/lens/getProfile";
 
 export default ({ space }) => {
   const { address } = useAccount();
@@ -35,6 +47,7 @@ export default ({ space }) => {
   });
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork({ onSuccess: (data) => sendTip(true) });
+  const { send } = useChat();
 
   const [lensPost, setLensPost] = useState(null);
   const [lensPubId, setLensPubId] = useState(null);
@@ -73,6 +86,57 @@ export default ({ space }) => {
     }
   }, [isActionModuleSupported, isLoadingActionModule, actionModuleHandler]);
 
+
+  const fetchProfileHandlesForToast = async (datas) => {
+    // TODO: cannot do this as their event only contains tx executor
+    // const senders = datas.map(({ args }) => args.actorProfileAddress);
+    // const profiles = await getProfilesOwnedMultiple(senders);
+
+    // HACK: trying to fetch from redis cache
+    const txHashes = datas.map(({ transactionHash }) => transactionHash);
+    const grouped = groupBy(datas, "transactionHash");
+    const response = await fetch("/api/redis/get-tippers", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ txHashes }),
+    });
+    const tippers = await response.json();
+    tippers.forEach(({ txHash, handle }) => {
+      const name = handle ? `@${handle}` : "Someone";
+      const amount = formatUnits(grouped[txHash][0].event.args.tipAmount, 18);
+      toast(`${name} tipped ${amount} $bonsai`, { duration: 10000, icon: "🤑" });
+    });
+  }
+
+  useEffect(() => {
+    if (tippingEnabled) {
+      const chain = IS_PRODUCTION ? polygon : polygonMumbai;
+      const publicClient = createPublicClient({
+        chain,
+        transport: http(JSON_RPC_URL_ALCHEMY_MAP[chain.id]),
+      });
+      publicClient.watchContractEvent({
+        address: actionModuleHandler.address,
+        abi: TIP_ACTION_MODULE_EVENT_ABI,
+        eventName: "TipCreated",
+        onLogs: (logs: any[]) => {
+          const datas: { transactionHash?: `0x${string}`, event?: { args?: any } }[] = logs
+            .map((l) => {
+              try {
+                const event = decodeEventLog({ abi: TIP_ACTION_MODULE_EVENT_ABI, data: l.data, topics: l.topics });
+                return { event, transactionHash: l.transactionHash };
+              } catch {}
+            })
+            .filter((d) => d);
+
+          fetchProfileHandlesForToast(datas);
+        }
+      })
+    }
+  }, [tippingEnabled]);
+
   const sendTip = async (switched = false) => {
     setIsTipping(true);
 
@@ -91,7 +155,7 @@ export default ({ space }) => {
     let toastId = toast.loading("Sending tip");
 
     try {
-      await actWithActionHandler(
+      const txHash = await actWithActionHandler(
         actionModuleHandler,
         walletClient,
         authenticatedProfile,
@@ -101,7 +165,17 @@ export default ({ space }) => {
           tipAmountEther: selectedAmount.toString()
         }
       );
-      toast.success("Tipped!", { id: toastId });
+      toast.success("Tipped!", { id: toastId, duration: 5000 });
+
+      // HOTFIX: until open action sends the actor in the event, cache the txId => profileHandle
+      await fetch("/api/redis/set-tipper", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ txHash, profileHandle: authenticatedProfile.handle?.localName, spaceExp: space.exp }),
+      });
+
       setOpen(false);
     } catch (error) {
       console.log(error);

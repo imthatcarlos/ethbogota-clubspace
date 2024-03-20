@@ -1,11 +1,6 @@
 import { connectorsForWallets, getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig } from "wagmi";
-import {
-  mainnet,
-  goerli,
-  polygon,
-  polygonMumbai,
-} from "viem/chains";
+import { polygon, polygonMumbai } from "viem/chains";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { publicProvider } from "wagmi/providers/public";
 import { IS_PRODUCTION, JSON_RPC_URL_ALCHEMY_MAP } from "@/lib/consts";
