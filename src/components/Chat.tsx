@@ -68,7 +68,8 @@ export default function Chat({ viewerName, opacity, opacityToggled, isMobile }: 
     }
   }, [message, send])
 
-  const displayMessages = isMobile ? reverseMessages : messages;
+  // const displayMessages = isMobile ? reverseMessages : messages;
+  const displayMessages = reverseMessages;
   return (
     <>
       <div
