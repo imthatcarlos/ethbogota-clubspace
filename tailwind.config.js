@@ -22,6 +22,7 @@ module.exports = {
         "club-red": "var(--club-red)",
         "background": "hsl(var(--background))",
         "foreground": "hsl(var(--foreground))",
+        "foreground-transparent": "hsla(var(--foreground-transparent))",
         "primary": "hsl(var(--primary))",
         // secondary: "#FFFFFF",
       },
@@ -30,6 +31,9 @@ module.exports = {
       },
       xShadow: {
         "lens-profile-hover": "shadow-[0 0 0 4px #2980b9, 0 0 0 7px #0d293c]",
+      },
+      height: {
+        "full-minus-header": "calc(100vh - 88px)",
       },
       keyframes: {
         shimmer: {
@@ -133,5 +137,16 @@ module.exports = {
         }
       );
     }),
+    plugin(function ({ addUtilities, theme }) {
+      const newUtilities = {
+        '@media (max-width: 767px)': { // Just below the 'md' breakpoint
+          '.mask-gradient-bottom': {
+            '-webkit-mask-image': 'linear-gradient(to bottom, transparent, black 75%)',
+            'mask-image': 'linear-gradient(to bottom, transparent, black 75%)',
+          }
+        }
+      };
+      addUtilities(newUtilities, ['responsive']);
+    })
   ],
 };

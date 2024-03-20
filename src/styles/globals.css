@@ -18,6 +18,7 @@
 
   --background: 0, 0%, 8%;
   --foreground: 0, 0%, 15%;
+  --foreground-transparent: 0, 0%, 15% 20%;
 
   --primary: 8 99% 45%;
 }
@@ -25,6 +26,7 @@
 .dark {
   --background: 0, 0%, 8%;
   --foreground: 0, 0%, 15%;
+  --foreground-transparent: 0, 0%, 15% 20%;
 
   --primary: 8 99% 45%;
 }
@@ -33,6 +35,7 @@
   from {
     transform: translateX(-100%);
   }
+
   to {
     transform: translateX(100%);
   }
@@ -109,9 +112,11 @@ input[type="number"]::-webkit-outer-spin-button {
   0% {
     box-shadow: 0 0 20px var(--club-red-dark);
   }
+
   50% {
     box-shadow: 0 0 25px var(--club-red-light);
   }
+
   100% {
     box-shadow: 0 0 20px var(--club-red-dark);
   }
@@ -125,9 +130,11 @@ input[type="number"]::-webkit-outer-spin-button {
   0% {
     box-shadow: 0 0 10px var(--club-red-dark);
   }
+
   50% {
     box-shadow: 0 0 15px var(--club-red-light);
   }
+
   100% {
     box-shadow: 0 0 10px var(--club-red-dark);
   }

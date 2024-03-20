@@ -1,12 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
-import { createPublicClient, http, decodeEventLog, formatUnits } from "viem";
-import { polygon, polygonMumbai } from "viem/chains";
-import { useSupportedActionModule } from "@madfi/widgets-react";
-import { useProfile, ProfileId } from "@lens-protocol/react-web";
-import { useWalletClient, useBalance, useAccount, useSwitchNetwork, useNetwork } from "wagmi";
-import toast from "react-hot-toast";
-import { useChat } from "@livekit/components-react";
-import { groupBy } from "lodash/collection";
+import { Button } from "@/components/ui";
 import {
   Dialog,
   DialogContent,
@@ -14,26 +6,27 @@ import {
   DialogHeader,
   DialogTrigger,
 } from "@/components/ui/Dialog";
-import { getPost } from "@/services/lens/getPost";
-import { parsePublicationLink, roundedToFixed, kFormatter, wait } from "@/utils";
-import {
-  IS_PRODUCTION,
-  BONSAI_TOKEN_ADDRESS,
-  BONSAI_TOKEN_DECIMALS,
-  VALID_CHAIN_ID,
-  TIP_ACTION_MODULE_EVENT_ABI,
-  JSON_RPC_URL_ALCHEMY_MAP
-} from "@/lib/consts";
-import { LENS_ENVIRONMENT } from "@/services/lens/client";
 import { useAuthenticatedProfileId } from "@/hooks/useLensLogin";
-import PinnedLensPost from "../PinnedLensPost";
-import { Button } from "@/components/ui";
+import { BONSAI_TOKEN_ADDRESS, BONSAI_TOKEN_DECIMALS, IS_PRODUCTION, JSON_RPC_URL_ALCHEMY_MAP, TIP_ACTION_MODULE_EVENT_ABI, VALID_CHAIN_ID } from "@/lib/consts";
+import { LENS_ENVIRONMENT } from "@/services/lens/client";
+import { getPost } from "@/services/lens/getPost";
 import actWithActionHandler from "@/services/madfi/actWithActionHandler";
+import { kFormatter, parsePublicationLink, roundedToFixed, wait } from "@/utils";
+import { ProfileId, useProfile } from "@lens-protocol/react-web";
+import { useChat } from "@livekit/components-react";
+import { useSupportedActionModule } from "@madfi/widgets-react";
+import { groupBy } from "lodash/collection";
+import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
+import { createPublicClient, decodeEventLog, formatUnits, http } from "viem";
+import { polygon, polygonMumbai } from "viem/chains";
+import { useAccount, useBalance, useNetwork, useSwitchNetwork, useWalletClient } from "wagmi";
+import PinnedLensPost from "../PinnedLensPost";
 import { getProfilesOwnedMultiple } from "@/services/lens/getProfile";
 import { MAX_UINT, getApprovalAmount, approveToken } from "@/services/erc20/approvals";
 import { confetti } from "@tsparticles/confetti"
 
-const SponsoredPost = ({ space }) => {
+const SponsoredPost = ({ space, opacity }) => {
   const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
   const { data: authenticatedProfileId } = useAuthenticatedProfileId();
@@ -84,7 +77,7 @@ const SponsoredPost = ({ space }) => {
   const tippingEnabled = useMemo(() => {
     if (isActionModuleSupported && !isLoadingActionModule) {
       const { metadata } = actionModuleHandler.getActionModuleConfig();
-    return metadata?.metadata?.name === "TipActionModule";
+      return metadata?.metadata?.name === "TipActionModule";
     }
   }, [isActionModuleSupported, isLoadingActionModule, actionModuleHandler]);
 
@@ -129,7 +122,7 @@ const SponsoredPost = ({ space }) => {
               try {
                 const event = decodeEventLog({ abi: TIP_ACTION_MODULE_EVENT_ABI, data: l.data, topics: l.topics });
                 return { event, transactionHash: l.transactionHash };
-              } catch {}
+              } catch { }
             })
             .filter((d) => d);
 
@@ -209,9 +202,13 @@ const SponsoredPost = ({ space }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div className="rounded-t-2xl min-w-[20rem] max-w-full max-h-[7.8rem] bg-black m-auto p-4 -mt-4 drop-shadow-sm cursor-pointer">
+        <div
+          className="transition ease-in-out duration-300 absolute top-[24px] right-[12px] md:static rounded-2xl md:rounded-t-2xl md:rounded-b-none min-w-[20rem] max-w-full max-h-[7.8rem] bg-black m-auto bg-opacity-30 md:bg-opacity-100 p-4 -mt-4 drop-shadow-sm cursor-pointer"
+          style={{ opacity: opacity }}
+        >
           {/* regular post preview */}
-          {!tippingEnabled || !authenticatedProfileId && (
+          {/* {!tippingEnabled || !authenticatedProfileId && ( */}
+          {(
             <>
               <div className="flex mb-3">
                 <span className="text-gray-500 text-sm">post by @{lensPost?.profile?.handle.localName}</span>
