@@ -23,7 +23,7 @@ import { polygon, polygonMumbai } from "viem/chains";
 import { useAccount, useBalance, useNetwork, useSwitchNetwork, useWalletClient } from "wagmi";
 import PinnedLensPost from "../PinnedLensPost";
 
-export default ({ space }) => {
+export default ({ space, opacity }) => {
   const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
   const { data: authenticatedProfileId } = useAuthenticatedProfileId();
@@ -185,9 +185,13 @@ export default ({ space }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div className="hidden md:block rounded-t-2xl min-w-[20rem] max-w-full max-h-[7.8rem] bg-black m-auto p-4 -mt-4 drop-shadow-sm cursor-pointer">
+        <div
+          className="transition ease-in-out duration-300 absolute top-[24px] right-[12px] md:static rounded-2xl md:rounded-t-2xl md:rounded-b-none min-w-[20rem] max-w-full max-h-[7.8rem] bg-black m-auto bg-opacity-30 md:bg-opacity-100 p-4 -mt-4 drop-shadow-sm cursor-pointer"
+          style={{ opacity: opacity }}
+        >
           {/* regular post preview */}
-          {!tippingEnabled || !authenticatedProfileId && (
+          {/* {!tippingEnabled || !authenticatedProfileId && ( */}
+          {(
             <>
               <div className="flex mb-3">
                 <span className="text-gray-500 text-sm">post by @{lensPost?.profile?.handle.localName}</span>

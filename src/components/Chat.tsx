@@ -19,15 +19,15 @@ type Props = {
   viewerName: string;
   opacity: number;
   opacityToggled: () => void;
+  isMobile: true;
 };
 
 let timeout: NodeJS.Timeout;
 
-export default function Chat({ viewerName, opacity, opacityToggled }: Props) {
+export default function Chat({ viewerName, opacity, opacityToggled, isMobile }: Props) {
   const { chatMessages: messages, send } = useChat();
   const messagesContainerRef = useRef(null);
   const { isConnected } = useAccount();
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [mesagePreviewOpacity, setMessagePreviewOpacity] = useState(0);
 
   const reverseMessages = useMemo(() => messages.sort((a, b) => b.timestamp - a.timestamp), [messages]);
@@ -45,15 +45,6 @@ export default function Chat({ viewerName, opacity, opacityToggled }: Props) {
       }, 3000);
     }
   }, [messagesContainerRef, reverseMessages]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const [message, setMessage] = useState("");
 

@@ -1,3 +1,4 @@
+import { Icons } from "@/components/ui";
 import {
   Dialog,
   DialogContent,
@@ -6,12 +7,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/Dialog";
-import { Icons } from "@/components/ui";
-import { useParticipants, ParticipantLoop, useParticipantContext } from "@livekit/components-react";
-import { ParticipantListItem, useMetadataInfo } from "./ParticipantListItem";
-import { useMemo, useState } from "react";
+import { ParticipantLoop, useParticipants } from "@livekit/components-react";
 import { Participant } from "livekit-client";
 import { useAccount } from "wagmi";
+import { ParticipantListItem, useMetadataInfo } from "./ParticipantListItem";
 
 export const ParticipantDialogList = ({ creatorAddress, space }) => {
   const { address: userAddress } = useAccount();
@@ -35,7 +34,7 @@ export const ParticipantDialogList = ({ creatorAddress, space }) => {
           <ProfilePicList participants={participants.slice(0, 5)} />
         </div>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg md:max-w-xl max-h-screen w-1/4">
+      <DialogContent className="sm:max-w-lg md:max-w-xl max-h-screen md:w-3/4">
         <>
           <DialogHeader className="mb-4 gap-y-2">
             <DialogTitle className="mb-4">{stageParticipants.length > 0 ? "Stage" : "Stage is empty"}</DialogTitle>

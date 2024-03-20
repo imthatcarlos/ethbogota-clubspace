@@ -32,12 +32,22 @@ export const LiveVideo = ({
   const [tryToConnect, setTryToConnect] = useState(false);
   const [connected, setConnected] = useState(false);
   const [chatOpacity, setChatOpacity] = useState(1);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
     if (isMounted) {
       setTryToConnect(true);
     }
   }, [isMounted]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const metadata = useMemo(() => {
     if (!isConnected) return;
@@ -100,8 +110,8 @@ export const LiveVideo = ({
             </div>
 
             <div className="w-full max-w-sm rounded-2xl pt-4 max-h-[80%]">
-              <SponsoredPost space={space} />
-              <Chat opacityToggled={toggleChatOpacity} opacity={chatOpacity} viewerName={userIdentity} />
+              <SponsoredPost opacity={isMobile ? chatOpacity : 1} space={space} />
+              <Chat isMobile={isMobile} opacityToggled={toggleChatOpacity} opacity={chatOpacity} viewerName={userIdentity} />
             </div>
           </div>
           {/* <DebugMode /> */}
