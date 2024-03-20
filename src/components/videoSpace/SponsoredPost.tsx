@@ -22,8 +22,11 @@ import { createPublicClient, decodeEventLog, formatUnits, http } from "viem";
 import { polygon, polygonMumbai } from "viem/chains";
 import { useAccount, useBalance, useNetwork, useSwitchNetwork, useWalletClient } from "wagmi";
 import PinnedLensPost from "../PinnedLensPost";
+import { getProfilesOwnedMultiple } from "@/services/lens/getProfile";
+import { MAX_UINT, getApprovalAmount, approveToken } from "@/services/erc20/approvals";
+import { confetti } from "@tsparticles/confetti"
 
-export default ({ space, opacity }) => {
+const SponsoredPost = ({ space, opacity }) => {
   const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
   const { data: authenticatedProfileId } = useAuthenticatedProfileId();
@@ -144,6 +147,14 @@ export default ({ space, opacity }) => {
       await wait(1000);
     }
 
+    // approve $bonsai on the tip handler first
+    const appovalAmount = await getApprovalAmount(BONSAI_TOKEN_ADDRESS, address, actionModuleHandler.address);
+    if (appovalAmount < MAX_UINT) {
+      let toastId = toast.loading("Approving tokens...");
+      await approveToken(walletClient, BONSAI_TOKEN_ADDRESS, actionModuleHandler.address);
+      toast.dismiss(toastId);
+    }
+
     let toastId = toast.loading("Sending tip");
 
     try {
@@ -175,6 +186,12 @@ export default ({ space, opacity }) => {
     }
 
     setIsTipping(false);
+    
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.95 },
+    });
   };
 
   if (!space.pinnedLensPost) return (
@@ -263,3 +280,5 @@ export default ({ space, opacity }) => {
     </Dialog>
   );
 };
+
+export default SponsoredPost;
