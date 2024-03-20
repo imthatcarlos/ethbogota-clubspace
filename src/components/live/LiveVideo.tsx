@@ -2,11 +2,11 @@ import { env } from "@/env.mjs";
 import { LiveKitRoom, RoomAudioRenderer, useToken } from "@livekit/components-react";
 import { useEffect, useMemo, useState } from "react";
 // import jwt, { type JwtPayload } from "jwt-decode";
-import Chat from "../Chat";
 // import { ParticipantList } from "../videoSpace/ParticipantList";
 import useIsMounted from "@/hooks/useIsMounted";
 import { DefaultLensProfile } from "@/types/lens";
 import { useAccount } from "wagmi";
+import Chat from "../Chat";
 import { Footer } from "../MadfiFooter";
 import { HostInfo } from "../videoSpace/HostInfo";
 import SponsoredPost from "../videoSpace/SponsoredPost";
@@ -101,7 +101,7 @@ export const LiveVideo = ({
           <div className="flex md:gap-9 flex-1 h-full md:h-auto">
             <div className="flex-1 max-w-fit h-full md:h-auto">
               <div className="relative h-full md:h-auto" onClick={toggleChatOpacity}>
-                <Stage space={space} />
+                <Stage isMobile={isMobile} space={space} />
               </div>
               <div className={`w-full pt-[24px] pb-[24px] ${space.creatorAddress !== address ? 'md:mt-16' : 'md:mt-8'}`}>
                 <HostInfo space={space} />

@@ -1,12 +1,12 @@
-import * as React from "react";
-import { Track } from "livekit-client";
+import { supportsScreenSharing } from "@livekit/components-core";
 import {
   MediaDeviceMenu,
-  useLocalParticipantPermissions,
   TrackToggleProps,
+  useLocalParticipantPermissions,
   useTrackToggle,
 } from "@livekit/components-react";
-import { supportsScreenSharing } from "@livekit/components-core";
+import { Track } from "livekit-client";
+import * as React from "react";
 
 import type { ToggleSource } from "@livekit/components-core";
 import { Icons } from "../ui";

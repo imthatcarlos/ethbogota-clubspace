@@ -27,7 +27,7 @@ import { ParticipantTile } from "./ParticipantTile";
 import { ParticipantTileWithScreenShare } from "./ParticipantTileWithScreenShare";
 import styles from "./videoSpace.module.css";
 
-export const Stage = ({ space }: { space: any }) => {
+export const Stage = ({ space, isMobile }: { space: any, isMobile: boolean }) => {
   // const participants = useParticipants();
   const tracks = useTracks([{ source: Track.Source.Camera, withPlaceholder: true }, { source: Track.Source.ScreenShare, withPlaceholder: false }], { onlySubscribed: true });
   const participants = useParticipants();
@@ -47,15 +47,16 @@ export const Stage = ({ space }: { space: any }) => {
   //   if (!isMuted) return tracks;
   //   return tracks.filter((t) => t.publication?.kind !== "audio" && t.source !== Track.Source.Microphone);
   // }, [tracks, isMuted]);
-
+  const currentTracks = tracksPublishing.length > 0 ? tracksPublishing.length : 1;
   return (
     <>
       <div
         className={cn(
           "h-full md:h-[62vh] w-[100vw] md:w-[60vw] 2xl:h-[72vh] 2xl:w-[65vw] relative bg-none md:p-4 rounded-2xl",
-          { "grid grid-rows-3 md:grid-cols-2 gap-6": !hasScreenShare },
+          `${isMobile ? `grid grid-rows-${currentTracks} md:grid-cols-2 gap-2 md:gap-6` : ""}`,
+          { "grid grid-cols-2 gap-6": !hasScreenShare && !isMobile },
           { "flex items-end justify-end flex-col gap-4 overflow-hidden": hasScreenShare },
-          !hasScreenShare && styles.stage
+          !hasScreenShare && !isMobile && styles.stage
         )}
       >
         {tracksPublishing.length > 0 ? (
@@ -86,7 +87,7 @@ export const Stage = ({ space }: { space: any }) => {
         </div>
       )} */}
 
-      <div className="md:-mt-16 -mt-32 flex items-center justify-center z-30 flex-1 gap-2 hover:opacity-100 opacity-50 transition-opacity duration-200">
+      <div className="absolute right-[16px] top-[40%] md:top-auto md:left-auto md:static -mt-16 flex items-center justify-center z-30 flex-1 gap-2 hover:opacity-100 opacity-50 transition-opacity duration-200">
         <ParticipantLoop participants={participants}>
           <ParticipantControls screenShareParticipant={screenShareParticipant} space={space} />
         </ParticipantLoop>
@@ -129,7 +130,7 @@ const ParticipantControls = ({
           camera: true,
           screenShare: screenShareParticipant ? participant?.identity === screenShareParticipant?.identity : true,
         }}
-        className="border-none gap-2 flex items-center z-30"
+        className="border-none gap-2 flex items-center z-30 flex-col md:flex-row"
       />
       {/* TODO: handle ending stream gracefully */}
       {/* <EndStreamButton space={space} /> */}
