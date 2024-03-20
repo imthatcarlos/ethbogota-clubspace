@@ -132,6 +132,21 @@ const SponsoredPost = ({ space, opacity }) => {
     }
   }, [tippingEnabled]);
 
+  const shootConfetti = () => {
+    confetti({
+      angle: 45,
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.5, x: 0.0 },
+    });
+    confetti({
+      angle: 135,
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.5, x: 1 },
+    });
+  }
+
   const sendTip = async (switched = false) => {
     setIsTipping(true);
 
@@ -148,15 +163,16 @@ const SponsoredPost = ({ space, opacity }) => {
     }
 
     // approve $bonsai on the tip handler first
-    const appovalAmount = await getApprovalAmount(BONSAI_TOKEN_ADDRESS, address, actionModuleHandler.address);
+    const approvalAmount = await getApprovalAmount(BONSAI_TOKEN_ADDRESS, address, actionModuleHandler.address);
     let toastId;
-    if (appovalAmount < parseUnits(selectedAmount, BONSAI_TOKEN_DECIMALS)) {
+    if (approvalAmount < parseUnits(selectedAmount.toString(), BONSAI_TOKEN_DECIMALS)) {
       toastId = toast.loading("Approving tokens...");
       await approveToken(walletClient, BONSAI_TOKEN_ADDRESS, actionModuleHandler.address);
     }
 
     toastId = toast.loading("Sending tip", { id: toastId });
 
+    let success = false
     try {
       const txHash = await actWithActionHandler(
         actionModuleHandler,
@@ -168,7 +184,11 @@ const SponsoredPost = ({ space, opacity }) => {
           tipAmountEther: selectedAmount.toString()
         }
       );
+      shootConfetti()
       toast.success("Tipped!", { id: toastId, duration: 5000 });
+
+      setOpen(false);
+      setIsTipping(false);
 
       // HOTFIX: until open action sends the actor in the event, cache the txId => profileHandle
       await fetch("/api/redis/set-tipper", {
@@ -178,20 +198,12 @@ const SponsoredPost = ({ space, opacity }) => {
         },
         body: JSON.stringify({ txHash, profileHandle: authenticatedProfile.handle?.localName, spaceExp: space.exp }),
       });
-
-      setIsTipping(false);
-
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.95 },
-      });
+      success = true
     } catch (error) {
       console.log(error);
+      setOpen(false);
       toast.error("Failed to send", { id: toastId });
     }
-
-    setOpen(false);
   };
 
   if (!space.pinnedLensPost) return (
