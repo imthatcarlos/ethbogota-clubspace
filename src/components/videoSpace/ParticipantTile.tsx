@@ -11,7 +11,7 @@ import {
   TrackMutedIndicator,
   useEnsureParticipant,
   useMaybeLayoutContext,
-  useMaybeTrackContext,
+  useTrackRefContext,
   useParticipantTile,
   VideoTrack
 } from "@livekit/components-react";
@@ -34,7 +34,7 @@ export const ParticipantTile = ({
   ...htmlProps
 }: ParticipantTilePropsExtended): ReactNode => {
   const p = useEnsureParticipant(participant);
-  const trackRef: TrackReferenceOrPlaceholder = useMaybeTrackContext() ?? {
+  const trackRef: TrackReferenceOrPlaceholder = useTrackRefContext() ?? {
     participant: p,
     source,
     publication,
@@ -122,7 +122,7 @@ export const ParticipantTile = ({
             )}
             <div className="top-0 md:top-auto absolute md:flex md:flex-row md:items-center justify-between gap-2 leading-none bottom-1 inset-x-1">
               <div className="flex items-center p-1 pl-2">
-                <TrackMutedIndicator source={Track.Source.Microphone} show={"muted"}></TrackMutedIndicator>
+                {/* <TrackMutedIndicator source={Track.Source.Microphone} show={"muted"}></TrackMutedIndicator> */}
                 <DisplayName defaultProfile={defaultProfile} ensData={ensData} />
               </div>
               {/* <ConnectionQualityIndicator className="lk-participant-metadata-item" /> */}

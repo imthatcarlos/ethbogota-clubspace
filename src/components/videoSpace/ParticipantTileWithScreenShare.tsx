@@ -13,7 +13,7 @@ import {
   VideoTrack,
   useEnsureParticipant,
   useMaybeLayoutContext,
-  useMaybeTrackContext,
+  useTrackRefContext,
   useParticipantTile,
 } from "@livekit/components-react";
 import { Track } from "livekit-client";
@@ -36,7 +36,7 @@ export const ParticipantTileWithScreenShare = ({
   ...htmlProps
 }: ParticipantTilePropsExtended): ReactNode => {
   const p = useEnsureParticipant(participant);
-  const trackRef: TrackReferenceOrPlaceholder = useMaybeTrackContext() ?? {
+  const trackRef: TrackReferenceOrPlaceholder = useTrackRefContext() ?? {
     participant: p,
     source,
     publication,

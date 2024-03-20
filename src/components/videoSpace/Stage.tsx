@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils/cn";
 import {
   ParticipantLoop,
-  TrackContext,
+  TrackRefContext,
   TrackLoop,
   useLocalParticipantPermissions,
   useParticipantContext,
@@ -29,7 +29,8 @@ import styles from "./videoSpace.module.css";
 
 export const Stage = ({ space, isMobile }: { space: any, isMobile: boolean }) => {
   // const participants = useParticipants();
-  const tracks = useTracks([{ source: Track.Source.Camera, withPlaceholder: true }, { source: Track.Source.ScreenShare, withPlaceholder: false }], { onlySubscribed: true });
+  // const tracks = useTracks([{ source: Track.Source.Camera, withPlaceholder: true }, { source: Track.Source.ScreenShare, withPlaceholder: false }], { onlySubscribed: true });
+  const tracks = useTracks([Track.Source.Camera, Track.Source.ScreenShare], { onlySubscribed: true });
   const participants = useParticipants();
   const localPartipantPermissions = useLocalParticipantPermissions();
   const [isMuted, setIsMuted] = useState(false);
@@ -41,30 +42,30 @@ export const Stage = ({ space, isMobile }: { space: any, isMobile: boolean }) =>
   }, [participants, tracks]);
   const hasScreenShare = screenShareParticipant !== undefined;
   // TODO: when being promoted to stage, we lose tracks without. trying this with `onlySubscribed = false`;
-  const tracksPublishing = useMemo(() => tracks?.filter((t) => !!t.publication?.track), [tracks]);
+  // const tracksPublishing = useMemo(() => tracks?.filter((t) => !!t.publication?.track), [tracks]);
 
   // const tracksNotMuted = useMemo(() => {
   //   if (!isMuted) return tracks;
   //   return tracks.filter((t) => t.publication?.kind !== "audio" && t.source !== Track.Source.Microphone);
   // }, [tracks, isMuted]);
-  const currentTracks = tracksPublishing.length > 0 ? tracksPublishing.length : 1;
+  // const currentTracks = tracksPublishing.length > 0 ? tracksPublishing.length : 1;
   return (
     <>
       <div
         className={cn(
           "h-full md:h-[62vh] w-[100vw] md:w-[60vw] 2xl:h-[72vh] 2xl:w-[65vw] relative bg-none md:p-4 rounded-2xl",
-          `${isMobile ? `grid grid-rows-${currentTracks} md:grid-cols-2 gap-2 md:gap-6` : ""}`,
+          `${isMobile ? `grid grid-rows-${tracks} md:grid-cols-2 gap-2 md:gap-6` : ""}`,
           { "grid grid-cols-2 gap-6": !hasScreenShare && !isMobile },
           { "flex items-end justify-end flex-col gap-4 overflow-hidden": hasScreenShare },
           !hasScreenShare && !isMobile && styles.stage
         )}
       >
-        {tracksPublishing.length > 0 ? (
-          <TrackLoop tracks={tracksPublishing}>
-            <TrackContext.Consumer>
+        {tracks.length > 0 ? (
+          <TrackLoop tracks={tracks}>
+            <TrackRefContext.Consumer>
               {/* {(track) => track && <VideoTrack {...track} />} */}
               {(track) => (track && !hasScreenShare ? <ParticipantTile isMuted={isMuted} /> : <ParticipantTileWithScreenShare isMuted={isMuted} />)}
-            </TrackContext.Consumer>
+            </TrackRefContext.Consumer>
           </TrackLoop>
         ) : (
           <div className="flex items-center justify-center pl-4 pr-4">
