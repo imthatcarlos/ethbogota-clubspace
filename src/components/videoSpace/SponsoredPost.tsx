@@ -18,7 +18,7 @@ import { useSupportedActionModule } from "@madfi/widgets-react";
 import { groupBy } from "lodash/collection";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { createPublicClient, decodeEventLog, formatUnits, http } from "viem";
+import { createPublicClient, decodeEventLog, formatUnits, http, parseUnits } from "viem";
 import { polygon, polygonMumbai } from "viem/chains";
 import { useAccount, useBalance, useNetwork, useSwitchNetwork, useWalletClient } from "wagmi";
 import PinnedLensPost from "../PinnedLensPost";
@@ -149,13 +149,13 @@ const SponsoredPost = ({ space, opacity }) => {
 
     // approve $bonsai on the tip handler first
     const appovalAmount = await getApprovalAmount(BONSAI_TOKEN_ADDRESS, address, actionModuleHandler.address);
-    if (appovalAmount < MAX_UINT) {
-      let toastId = toast.loading("Approving tokens...");
+    let toastId;
+    if (appovalAmount < parseUnits(selectedAmount, BONSAI_TOKEN_DECIMALS)) {
+      toastId = toast.loading("Approving tokens...");
       await approveToken(walletClient, BONSAI_TOKEN_ADDRESS, actionModuleHandler.address);
-      toast.dismiss(toastId);
     }
 
-    let toastId = toast.loading("Sending tip");
+    toastId = toast.loading("Sending tip", { id: toastId });
 
     try {
       const txHash = await actWithActionHandler(
@@ -179,19 +179,19 @@ const SponsoredPost = ({ space, opacity }) => {
         body: JSON.stringify({ txHash, profileHandle: authenticatedProfile.handle?.localName, spaceExp: space.exp }),
       });
 
-      setOpen(false);
+      setIsTipping(false);
+
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.95 },
+      });
     } catch (error) {
       console.log(error);
       toast.error("Failed to send", { id: toastId });
     }
 
-    setIsTipping(false);
-
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.95 },
-    });
+    setOpen(false);
   };
 
   if (!space.pinnedLensPost) return (
