@@ -1,6 +1,6 @@
 {
-  "name": "clubspace",
-  "version": "0.2.2",
+  "name": "madfi-live-app",
+  "version": "0.3.0",
   "private": false,
   "scripts": {
     "dev": "next dev",
