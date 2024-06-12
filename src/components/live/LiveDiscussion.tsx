@@ -10,7 +10,6 @@ import {
 } from "@livekit/components-react";
 import { useState, useMemo } from "react";
 import { DiscussionParticipant } from "@/components/discussionSpace/DiscussionParticipant"
-import { PinnedPromotionDialog } from "@/components/videoSpace/PinnedPromotionDialog";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
@@ -86,7 +85,8 @@ export const LiveDiscussion = ({
             <Stage />
             <div className="flex flex-1 gap-2 w-full items-center justify-center">
               <ControlBar variation="minimal" controls={{ microphone: true, camera: false, screenShare: false }} />
-              <PinnedPromotionDialog space={space} />
+              {/* TOOD: SponsoredPost */}
+              {/* <PinnedPromotionDialog space={space} /> */}
             </div>
             <RoomAudioRenderer />
           </div>

@@ -1,5 +1,5 @@
 import { apiUrls } from "@/constants/apiUrls";
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { BigNumber } from "ethers";
 import request, { gql } from "graphql-request";
 import { lensClient } from "./client";
@@ -137,10 +137,10 @@ export const getProfilesOwnedMultiple = async (ownedBy: string[]): Promise<Profi
   }
 };
 
-export const useGetProfilesOwned = (options: UseQueryOptions = {}, ownedBy: string) => {
-  const result = useQuery(
-    ['owned-profiles'],
-    async () => {
+export const useGetProfilesOwned = (options = {}, ownedBy: string) => {
+  return useQuery({
+    queryKey: ['owned-profiles'],
+    queryFn: async () => {
       if (!ownedBy) return {};
 
       const profiles = await getProfilesOwned(ownedBy);
@@ -150,13 +150,9 @@ export const useGetProfilesOwned = (options: UseQueryOptions = {}, ownedBy: stri
         defaultProfile: profiles?.length ? profiles[0] : {}
       };
     },
-    {
-      ...(options as any),
-      enabled: true,
-    }
-  );
-
-  return result;
+    enabled: true,
+    ...(options as any),
+  });
 };
 
 export const getHandleById = async (id?: string): Promise<string> => {
@@ -175,21 +171,17 @@ export const getHandleById = async (id?: string): Promise<string> => {
   }
 };
 
-export const useGetHandleById = (options: UseQueryOptions = {}, id?: string) => {
-  const result = useQuery<string>(
-    ["profiles", id],
-    async () => {
+export const useGetHandleById = (options = {}, id?: string) => {
+  return useQuery({
+    queryKey: ["profiles", id],
+    queryFn: async () => {
       const result = await getHandleById(id);
 
       return result;
     },
-    {
-      ...(options as any),
-      enabled: !!id,
-    }
-  );
-
-  return result;
+    enabled: !!id,
+    ...(options as any),
+  });
 };
 
 export const getProfilesByHandles = async (handles?: string[], limit = 50): Promise<any> => {
@@ -221,19 +213,13 @@ export const getProfilesByHandles = async (handles?: string[], limit = 50): Prom
   }
 };
 
-export const useGetProfilesByHandles = (options: UseQueryOptions = {}, handles?: string[]) => {
-  const result = useQuery<Profile[]>(
-    ["profilesByHandles", handles],
-    async () => {
-      const result = await getProfilesByHandles(handles);
-
-      return result;
+export const useGetProfilesByHandles = (options = {}, handles?: string[]) => {
+  return useQuery({
+    queryKey: ["profilesByHandles", handles],
+    queryFn: async () => {
+      return await getProfilesByHandles(handles);
     },
-    {
-      ...(options as any),
-      enabled: !!handles,
-    }
-  );
-
-  return result;
+    enabled: !!handles,
+    ...(options as any),
+  });
 };

@@ -3,7 +3,7 @@ import { disconnect } from "@wagmi/core";
 import { formatProfilePicture } from "@madfi/widgets-react";
 import { CheckCircleIcon } from "@heroicons/react/solid";
 import toast from "react-hot-toast";
-import { useOwnedHandles, useProfiles, useLogin, useLazyProfile, Profile } from "@lens-protocol/react-web";
+import { useOwnedHandles, useProfiles, useLazyProfile, Profile } from "@lens-protocol/react-web";
 
 import { Dialog, DialogHeader, DialogContent } from '@/components/ui/Dialog';
 import { Button } from "@/components/ui";

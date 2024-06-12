@@ -1,9 +1,10 @@
 'use client'
 import { LensConfig } from '@lens-protocol/react-web'
-import { bindings as wagmiBindings } from '@lens-protocol/wagmi'
+import { bindings } from '@lens-protocol/wagmi'
 import { LensProvider as Provider, development, production } from '@lens-protocol/react-web'
 import { IS_PRODUCTION } from '@/lib/consts'
 import useIsMounted from '@/hooks/useIsMounted'
+import { wagmiConfig } from '@/lib/utils/rainbow'
 
 const LensProvider = ({ children }) => {
   const isMounted = useIsMounted();
@@ -12,7 +13,7 @@ const LensProvider = ({ children }) => {
   if (!isMounted) return children;
 
   const lensConfig: LensConfig = {
-    bindings: wagmiBindings(),
+    bindings: bindings(wagmiConfig),
     environment: IS_PRODUCTION ? production : development,
     storage: window.localStorage // TODO: not actually being used, on refresh have to login again...
   }

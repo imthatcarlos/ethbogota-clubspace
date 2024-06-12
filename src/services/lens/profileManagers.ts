@@ -90,17 +90,13 @@ export const getProfileManagers = async (profileId: string) => {
 };
 
 export const useIsProfileManager = (profileId: string, contractAddress: string) => {
-  const result = useQuery<boolean>(
-    ['is-profile-manager', `${profileId}/${contractAddress}`],
-    async () => {
+  return useQuery({
+    queryKey: ['is-profile-manager', `${profileId}/${contractAddress}`],
+    queryFn: async () => {
       const profileManagers = await getProfileManagers(profileId);
 
       return profileManagers.includes(contractAddress);
     },
-    {
-      enabled: !!profileId && !!contractAddress,
-    }
-  );
-
-  return result;
+    enabled: !!profileId && !!contractAddress,
+  });
 };

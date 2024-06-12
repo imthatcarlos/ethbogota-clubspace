@@ -24,18 +24,14 @@ export const doesFollow = async (followInfos) => {
   }
 };
 
-export const useDoesFollow = (options: UseQueryOptions = {}, { followerAddress, profileId }, cacheKey: string = 'useDoesFollow') => {
-  const result = useQuery<Profile | null>(
-    [cacheKey, `${followerAddress},${profileId}`],
-    async () => {
+export const useDoesFollow = (options = {}, { followerAddress, profileId }, cacheKey: string = 'useDoesFollow') => {
+  return useQuery({
+    queryKey: [cacheKey, `${followerAddress},${profileId}`],
+    queryFn: async () => {
       const { doesFollow: doesFollowData } = await doesFollow([{ followerAddress, profileId }]);
       return doesFollowData[0].follows;
     },
-    {
-      ...(options as any),
-      enabled: !!(followerAddress && profileId),
-    }
-  );
-
-  return result;
+    enabled: !!(followerAddress && profileId),
+    ...(options as any),
+  });
 };

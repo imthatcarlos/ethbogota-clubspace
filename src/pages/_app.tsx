@@ -6,7 +6,6 @@ import "@/styles/calendar-override.css";
 import "react-loading-skeleton/dist/skeleton.css";
 import Web3Provider from "@/components/Web3Provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster, ToastBar } from "react-hot-toast";
 import { Analytics } from "@vercel/analytics/react";
 import type { ReactElement, ReactNode } from "react";
@@ -18,13 +17,7 @@ import { NEXT_PUBLIC_SITE_URL } from "@/lib/consts";
 import { bucketImageLinkStorj } from "@/services/storj/storj";
 import { trimText } from "@/utils";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      cacheTime: 1000 * 60 * 60 * 24,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -146,7 +139,6 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
             </>
           )}
         </Web3Provider>
-        {/* <ReactQueryDevtools /> */}
       </QueryClientProvider>
     </>
   );

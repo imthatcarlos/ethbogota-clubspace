@@ -97,7 +97,7 @@ export const LiveVideo = ({
           setConnected(false);
         }}
       >
-        <div className="flex md:max-w-[85%] max-width-[100%] mx-auto items-center w-full h-[100%] min-[1921px]:h-[80%] md:mb-18">
+        <div className="flex md:max-w-[85%] max-width-[100%] mx-auto items-center w-full h-[100%] min-[1921px]:h-[80%] md:mb-18 md:pt-8">
           <div className="flex md:gap-9 flex-1 h-full md:h-auto">
             <div className="flex-1 max-w-fit h-full md:h-auto">
               <div className="relative h-full md:h-auto" onClick={toggleChatOpacity}>

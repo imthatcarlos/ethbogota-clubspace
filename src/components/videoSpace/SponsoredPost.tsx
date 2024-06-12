@@ -20,14 +20,14 @@ import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { createPublicClient, decodeEventLog, formatUnits, http, parseUnits } from "viem";
 import { polygon, polygonMumbai } from "viem/chains";
-import { useAccount, useBalance, useNetwork, useSwitchNetwork, useWalletClient } from "wagmi";
+import { useAccount, useBalance, useSwitchChain, useWalletClient } from "wagmi";
 import PinnedLensPost from "../PinnedLensPost";
 import { getProfilesOwnedMultiple } from "@/services/lens/getProfile";
 import { MAX_UINT, getApprovalAmount, approveToken } from "@/services/erc20/approvals";
 import { confetti } from "@tsparticles/confetti"
 
 const SponsoredPost = ({ space, opacity }) => {
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const { data: walletClient } = useWalletClient();
   const { data: authenticatedProfileId } = useAuthenticatedProfileId();
   const { data: authenticatedProfile } = useProfile({
@@ -35,13 +35,10 @@ const SponsoredPost = ({ space, opacity }) => {
   });
   const { data: bonsaiTokenBalanace } = useBalance({
     address,
-    watch: true,
     chainId: VALID_CHAIN_ID,
-    cacheTime: 5_000,
     token: BONSAI_TOKEN_ADDRESS
   });
-  const { chain } = useNetwork();
-  const { switchNetworkAsync } = useSwitchNetwork({ onSuccess: (data) => sendTip(true) });
+  const { switchChain } = useSwitchChain();
   const { send } = useChat();
 
   const [lensPost, setLensPost] = useState(null);
@@ -64,8 +61,13 @@ const SponsoredPost = ({ space, opacity }) => {
   useMemo(async () => {
     if (!space.pinnedLensPost) return;
 
-    const pubId = parsePublicationLink(space.pinnedLensPost);
-    const post = await getPost(pubId);
+    let pubId = parsePublicationLink(space.pinnedLensPost);
+    let post = await getPost(pubId);
+
+    if (post.__typename === "Mirror") {
+      post = post.mirrorOn;
+      pubId = post.id;
+    }
 
     if ((post?.profile || post?.by) && post?.metadata) {
       if (post?.by) post.profile = post.by; // HACK
@@ -153,7 +155,7 @@ const SponsoredPost = ({ space, opacity }) => {
     if (!switched && VALID_CHAIN_ID !== chain.id) {
       toast("Switching chains...");
       try {
-        await switchNetworkAsync(VALID_CHAIN_ID);
+        await switchChain({ chainId: VALID_CHAIN_ID });
       } catch (error) {
         setIsTipping(false);
       }
@@ -219,7 +221,7 @@ const SponsoredPost = ({ space, opacity }) => {
           style={{ opacity: opacity }}
         >
           {/* regular post preview */}
-          {!tippingEnabled || !authenticatedProfileId && (
+          {!tippingEnabled && (
             <>
               <div className="flex mb-3">
                 <span className="text-gray-500 text-sm">post by @{lensPost?.profile?.handle.localName}</span>
@@ -247,6 +249,7 @@ const SponsoredPost = ({ space, opacity }) => {
                 url={space.pinnedLensPost}
                 small={false}
                 pubData={lensPost}
+                pubId={lensPubId}
               />
             )}
             {tippingEnabled && authenticatedProfileId && (

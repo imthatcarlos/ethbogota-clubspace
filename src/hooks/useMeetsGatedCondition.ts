@@ -1,4 +1,4 @@
-import { useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { TIER_GATED_BADGE_HOLDERS } from "@/lib/consts";
 // import { hasCollectedPost } from "@/services/lens/getPost";
 import getBadgeOwned from "@/services/madfi/getBadgeOwned";
@@ -6,11 +6,11 @@ import getBadgeOwned from "@/services/madfi/getBadgeOwned";
 export default (
   address: string,
   gated?: { tier?: string, collectionId?: string },
-  options?: UseQueryOptions = {}
+  options = {}
 ) => {
-  const result = useQuery<any>(
-    ['meets-gated-condition', address],
-    async () => {
+  return useQuery({
+    queryKey: ['meets-gated-condition', address],
+    queryFn: async () => {
       if (!gated?.tier) return true;
 
       if (gated.tier === TIER_GATED_BADGE_HOLDERS) {
@@ -18,11 +18,7 @@ export default (
         return !!tokenId;
       }
     },
-    {
-      ...(options as any),
-      enabled: !!address,
-    }
-  );
-
-  return result;
+    enabled: !!address,
+    ...(options as any),
+  });
 };

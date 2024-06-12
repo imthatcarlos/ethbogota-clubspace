@@ -1,9 +1,9 @@
-import { WagmiConfig } from "wagmi";
+import { WagmiProvider } from 'wagmi'
 import {  RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import { useEffect, useMemo, useState } from "react";
 import { ToastBar, Toaster } from "react-hot-toast";
 import LensProvider from "@/pages/LensProvider";
-import { appInfo, chains, wagmiConfig } from "@/lib/utils/rainbow";
+import { appInfo, wagmiConfig } from "@/lib/utils/rainbow";
 
 const Web3Provider = ({ children }) => {
   const [mounted, setMounted] = useState(false);
@@ -19,8 +19,8 @@ const Web3Provider = ({ children }) => {
   if (!mounted) return null;
 
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains} theme={rainbowTheme} appInfo={appInfo}>
+    <WagmiProvider config={wagmiConfig}>
+      <RainbowKitProvider theme={rainbowTheme} appInfo={appInfo}>
         <Toaster
           position="bottom-right"
           toastOptions={{
@@ -45,7 +45,7 @@ const Web3Provider = ({ children }) => {
           {children}
         </LensProvider>
       </RainbowKitProvider>
-    </WagmiConfig>
+    </WagmiProvider>
   );
 };
 

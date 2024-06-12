@@ -1,7 +1,5 @@
 import { useMemo, useState } from "react";
-import { useRouter } from "next/router";
 import toast from "react-hot-toast";
-import { useNetwork, useWalletClient, useSwitchNetwork } from "wagmi";
 import { approveToken, parsePublicationLink, wait } from "@/utils";
 import { getPost } from "@/services/lens/getPost";
 import { collectPostGasless } from "@/services/lens/gaslessTxs";
@@ -17,14 +15,19 @@ const PinnedLensPost = ({
   gated = null,
   onCollect = () => null,
   pubData,
+  pubId,
 }) => {
   const [lensPost, setLensPost] = useState(null);
   const [lensPubId, setLensPubId] = useState(null);
   const [isCollecting, setIsCollecting] = useState(false);
 
   useMemo(async () => {
-    const pubId = parsePublicationLink(url);
-    setLensPubId(pubId);
+    if (!pubId) {
+      const _pubId = parsePublicationLink(url);
+      setLensPubId(_pubId);
+    } else {
+      setLensPubId(pubId);
+    }
 
     if (pubData) {
       setLensPost(pubData);
