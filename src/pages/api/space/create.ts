@@ -1,6 +1,7 @@
 import Cors from "cors";
 import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
+import { Livepeer } from "livepeer";
 import { getAddress } from "ethers/lib/utils";
 import { env } from "@/env.mjs";
 import redisClient from "@/lib/utils/redisClient";
@@ -82,6 +83,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       headers: { Authorization: `Bearer ${LIVEPEER_API_KEY}` },
     });
 
+    const livepeer = new Livepeer({ apiKey: LIVEPEER_API_KEY });
+    const { stream: { id: streamId, playbackId }} = await livepeer.stream.create({ name: roomId });
+    await livepeer.room.startEgress(roomId, { streamId });
+    const playbackURL = `https://livepeercdn.studio/hls/${playbackId}/index.m3u8`;
+
     const createdAt = Math.floor(Date.now() / 1000);
     const endAt = createdAt + REDIS_SPACE_EXP;
 
@@ -94,6 +100,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       lensPubId,
       drop,
       roomId,
+      streamId,
+      playbackId,
       createdAt,
       endAt,
       handle,
@@ -134,7 +142,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     //   headers: { 'x-api-key': MADFI_API_KEY },
     // });
 
-    return res.status(200).json({ url: `${NEXT_PUBLIC_SITE_URL}/${handle}`, startAt });
+    return res.status(200).json({ url: `${NEXT_PUBLIC_SITE_URL}/${handle}`, startAt, endAt, playbackURL });
   } catch (e) {
     console.log(e);
 
