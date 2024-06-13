@@ -73,6 +73,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       gated,
       spaceType,
       roomName,
+      enableRecording,
     } = req.body;
 
     if (!(creatorAddress && handle)) {
@@ -84,7 +85,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     });
 
     const livepeer = new Livepeer({ apiKey: LIVEPEER_API_KEY });
-    const { stream: { id: streamId, playbackId }} = await livepeer.stream.create({ name: roomId });
+    const { stream: { id: streamId, playbackId } }
+      = await livepeer.stream.create({ name: roomId, record: enableRecording });
     await livepeer.room.startEgress(roomId, { streamId });
     const playbackURL = `https://livepeercdn.studio/hls/${playbackId}/index.m3u8`;
 
