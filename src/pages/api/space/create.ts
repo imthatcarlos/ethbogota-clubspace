@@ -74,6 +74,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       spaceType,
       roomName,
       enableRecording,
+      tipPubId,
     } = req.body;
 
     if (!(creatorAddress && handle)) {
@@ -113,6 +114,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       pinnedLensPost,
       gated,
       spaceType,
+      tipPubId,
       exp: startAt ? startAt - createdAt + REDIS_SPACE_EXP : REDIS_SPACE_EXP
     };
 
