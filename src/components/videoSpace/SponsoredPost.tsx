@@ -39,9 +39,9 @@ const SponsoredPost = ({ space, opacity }) => {
     token: BONSAI_TOKEN_ADDRESS
   });
   const { switchChain } = useSwitchChain();
-  const { send } = useChat();
 
   const [lensPost, setLensPost] = useState(null);
+  const [tipPost, setTipPost] = useState(null);
   const [lensPubId, setLensPubId] = useState(null);
   const [isTipping, setIsTipping] = useState(false);
   const [selectedAmount, setSelectedAmount] = useState(100);
@@ -53,7 +53,7 @@ const SponsoredPost = ({ space, opacity }) => {
     isLoading: isLoadingActionModule,
   } = useSupportedActionModule(
     LENS_ENVIRONMENT,
-    lensPost,
+    tipPost,
     authenticatedProfileId,
     walletClient
   );
@@ -67,6 +67,15 @@ const SponsoredPost = ({ space, opacity }) => {
     if (post.__typename === "Mirror") {
       post = post.mirrorOn;
       pubId = post.id;
+    }
+
+    // for tipping
+    if (!!space.tipPubId) {
+      const _tipPost = await getPost(space.tipPubId);
+      if ((_tipPost?.profile || _tipPost?.by) && _tipPost?.metadata) {
+        if (_tipPost?.by) _tipPost.profile = _tipPost.by; // HACK
+        setTipPost(_tipPost);
+      }
     }
 
     if ((post?.profile || post?.by) && post?.metadata) {
@@ -103,7 +112,7 @@ const SponsoredPost = ({ space, opacity }) => {
     tippers.forEach(({ txHash, handle }) => {
       const name = handle ? `@${handle}` : "Someone";
       const amount = formatUnits(grouped[txHash][0].event.args.tipAmount, 18);
-      toast(`${name} tipped ${amount} $bonsai`, { duration: 10000, icon: "🤑" });
+      toast(`${name} tipped ${amount} $BONSAI`, { duration: 10000, icon: "🤑" });
     });
   }
 
@@ -236,7 +245,7 @@ const SponsoredPost = ({ space, opacity }) => {
               <div className="flex mb-3">
                 <p className="mb-2 truncate max-h-[2.5rem] pb-1 overflow-hidden line-clamp-3 text-left pb-2">{lensPost?.metadata?.content}</p>
               </div>
-              <p className="text-xs text-club-red absolute right-4 bottom-2">Tip $bonsai</p>
+              <p className="text-xs text-club-red absolute right-4 bottom-2">TIP $BONSAI</p>
             </>
           )}
         </div>
@@ -255,7 +264,7 @@ const SponsoredPost = ({ space, opacity }) => {
             {tippingEnabled && authenticatedProfileId && (
               <div className="gap-y-8">
                 <h2 className="my-4 text-3xl font-bold tracking-tight sm:text-2xl md:text-4xl drop-shadow-sm text-center drop-shadow-sm">
-                  Send a $bonsai tip
+                  Send a $BONSAI tip
                 </h2>
                 <div className="flex justify-center mb-4 text-sm gap-x-4">
                   <div className="grid grid-cols-3 gap-4">

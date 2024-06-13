@@ -1,6 +1,5 @@
-import { erc20ABI } from "wagmi";
 import { IS_PRODUCTION, JSON_RPC_URL_ALCHEMY_MAP } from "@/lib/consts";
-import { WalletClient, createPublicClient, http } from "viem";
+import { WalletClient, createPublicClient, http, erc20Abi } from "viem";
 import { polygon, polygonMumbai } from "viem/chains";
 
 export const MAX_UINT = BigInt("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
@@ -21,7 +20,7 @@ export const getApprovalAmount = async (
   const publicClient = setupPublicClient();
   const allowance = await publicClient.readContract({
     address: tokenAddress,
-    abi: erc20ABI,
+    abi: erc20Abi,
     functionName: "allowance",
     args: [userAddress, operatorAddress],
   });
@@ -38,7 +37,7 @@ export const approveToken = async (
     account: account,
     chain: IS_PRODUCTION ? polygon : polygonMumbai,
     address: tokenAddress,
-    abi: erc20ABI,
+    abi: erc20Abi,
     functionName: "approve",
     args: [operatorAddress, MAX_UINT],
   });
