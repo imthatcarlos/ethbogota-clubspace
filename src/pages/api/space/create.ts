@@ -3,15 +3,14 @@ import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Livepeer } from "livepeer";
 import { getAddress } from "ethers/lib/utils";
+import { MongoClient } from "mongodb";
 import { env } from "@/env.mjs";
 import redisClient from "@/lib/utils/redisClient";
-// import { startRadio } from "@/services/radio";
 import {
   REDIS_SPACE_PREFIX,
   REDIS_SPACE_EXP,
   NEXT_PUBLIC_SITE_URL,
   LIVEPEER_STUDIO_API,
-  MADFI_API_URL,
 } from "@/lib/consts";
 
 const cors = Cors({
@@ -46,6 +45,24 @@ const checkAuthorization = (req: NextApiRequest): boolean => {
   }
 
   return true;
+};
+
+const createMongoRecord = async (redisKey, space) => {
+  const client = new MongoClient(process.env.TIPS_MONGO_URI!);
+  await client.connect();
+  const database = client.db("madfi");
+  const collection = database.collection("spaces");
+  await collection.insertOne({
+    redisKey,
+    roomName: space.roomName,
+    roomId: space.roomId,
+    streamId: space.streamId,
+    playbackId: space.playbackId,
+    creatorLensProfileId: space.creatorLensProfileId,
+    endAt: space.endAt,
+    enableRecording: space.enableRecording,
+    createdAt: space.createdAt
+  });
 };
 
 // this api endpoint is only ever called from `madfi.xyz` or the clubspace-sdk
@@ -128,16 +145,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       console.log(error.stack);
     }
 
-    // // post the playlist id for our api to create the audio stream async; scheduled if startAt != undefined
-    // if (spaceType === "playlist") {
-    //   await startRadio({
-    //     clubSpaceId,
-    //     spinampPlaylistId: b2bSpinampPlaylistIds ? undefined : spinampPlaylistId, // override just in case both were set
-    //     b2bSpinampPlaylistIds,
-    //     spaceRedisKey,
-    //     startAt,
-    //   });
-    // }
+    await createMongoRecord(spaceRedisKey, spaceObject);
 
     // TODO: fix
     // // schedule the lambda to delete at `endAt`

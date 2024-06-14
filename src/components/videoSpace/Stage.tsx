@@ -12,6 +12,7 @@ import {
 import { LocalParticipant, RemoteParticipant, Track } from "livekit-client";
 import { useMemo, useState } from "react";
 import { useAccount } from "wagmi";
+import toast from "react-hot-toast";
 import {
   Button,
   Dialog,
@@ -119,6 +120,17 @@ const ParticipantControls = ({
     //   ParticipantEvent.TrackUnsubscribed
     // ]
   });
+  const { metadata } = participant;
+  const isHost = useMemo(() => {
+    if (!!metadata) {
+      try {
+        return JSON.parse(metadata).isHost;
+      } catch (err) {
+        console.error("couldn't parse metadata", err);
+      }
+    }
+    return false;
+  }, [metadata]);
 
   if (participant.name !== address) return null;
   if (!(updatedParticipant.permissions?.canPublish || participant.name === space.creatorAddress)) return null;
@@ -133,63 +145,54 @@ const ParticipantControls = ({
         }}
         className="border-none gap-2 flex items-center z-30 flex-col md:flex-row"
       />
-      {/* TODO: handle ending stream gracefully */}
-      {/* <EndStreamButton space={space} /> */}
+      {isHost && <EndStreamButton space={space} />}
     </>
   );
 };
 
 const EndStreamButton = ({ space }: { space: any }) => {
   const handleEndStream = async () => {
+    let toastId;
     try {
-      const res = await fetch("/api/stream/end", {
+      toastId = toast.loading("Ending stream...");
+      const res = await fetch("/api/space/end", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(space),
+        body: JSON.stringify({ space }),
       });
 
       if (res.status === 200) {
-        // window.location.reaload();
+        toast.success("Stream ended! Refreshing the page...", { id: toastId });
+        setTimeout(() => window.location.reload(), 5000);
+      } else {
+        toast.error("Failed to end stream", { id: toastId });
       }
-    } catch (err) {
-      console.error("failed to end stream", err);
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to end stream", { id: toastId });
     }
   };
 
   return (
     <Dialog>
       <DialogTrigger className="z-30 bg-background rounded-lg p-2 py-[0.62rem] hover:bg-foreground">
-        <>
-          <span className="sr-only">End stream</span>
+        <div className="flex">
           <Icons.endStream className="w-6 h-6" />
-        </>
+          <span className="pl-2">End Stream</span>
+        </div>
       </DialogTrigger>
       <DialogContent className="max-w-[90%] sm:max-w-lg border-none">
         <>
           <DialogHeader className="mb-4">
-            <DialogTitle className="mb-4">This will end the stream</DialogTitle>
+            <DialogTitle className="mb-4 mr-4">End the stream?</DialogTitle>
           </DialogHeader>
           <DialogDescription className="">
-            <p>Are you sure you want to continue?</p>
-            <Button onClick={handleEndStream}>End stream</Button>
+            <Button onClick={handleEndStream}>End Stream</Button>
           </DialogDescription>
         </>
       </DialogContent>
     </Dialog>
   );
-};
-
-const useIsHost = (metadata: string) => {
-  const isHost = useMemo(() => {
-    try {
-      const parsed = JSON.parse(metadata);
-      return parsed?.isHost;
-    } catch (err) {
-      console.log("failed to parse host metadata, setting to false");
-      return false;
-    }
-  }, [metadata]);
-  return isHost;
 };
