@@ -23,6 +23,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     // terminate stream
     const livepeer = new Livepeer({ apiKey: LIVEPEER_API_KEY });
     livepeer.stream.terminate(space.streamId);
+    livepeer.stream.update(space.streamId, { suspended: true });
 
     // remove from redis
     await redisClient.del(spaceRedisKey);
