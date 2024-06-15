@@ -20,7 +20,7 @@ export default async function muteParticipant(req: NextApiRequest, res: NextApiR
       await redisClient.del(permissionsKey);
     }
 
-    const response = await axios.put(
+    await axios.put(
       `https://livepeer.studio/api/room/${roomName}/user/${identity}`,
       { canPublish },
       {
