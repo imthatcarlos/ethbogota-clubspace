@@ -11,6 +11,7 @@ import { Footer } from "../MadfiFooter";
 import { HostInfo } from "../videoSpace/HostInfo";
 import SponsoredPost from "../videoSpace/SponsoredPost";
 import { Stage } from "../videoSpace/Stage";
+import { useIsAuthenticated } from "@/hooks/useLensLogin";
 
 const liveKitUrl = env.NEXT_PUBLIC_LIVEPEER_URL;
 
@@ -33,12 +34,14 @@ export const LiveVideo = ({
   const [connected, setConnected] = useState(false);
   const [chatOpacity, setChatOpacity] = useState(1);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const { data: isAuthenticated } = useIsAuthenticated();
 
-  useEffect(() => {
-    if (isMounted) {
-      setTryToConnect(true);
-    }
-  }, [isMounted]);
+  // uncomment to allow anyone to join
+  // useEffect(() => {
+  //   if (isMounted) {
+  //     setTryToConnect(true);
+  //   }
+  // }, [isMounted]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -49,30 +52,23 @@ export const LiveVideo = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const metadata = useMemo(() => {
-    if (!isConnected) return;
-
-    try {
-      let str = JSON.stringify({
-        defaultProfile: defaultProfile ?? undefined,
-        ensData: ensData ?? undefined,
-        address,
-      });
-      return str;
-    } catch (err) {
-      console.log("failed to stringify metadata");
-      return undefined;
-    }
-  }, [defaultProfile, ensData, address, isConnected]);
-
   const userInfo = useMemo(() => {
+    if (!isAuthenticated) return;
+
+    // only connect when we have a lens profile
+    setTryToConnect(true);
+
     return {
       identity: userIdentity,
       name: userIdentity,
-      metadata,
+      metadata: JSON.stringify({
+        defaultProfile: defaultProfile ?? undefined,
+        ensData: ensData ?? undefined,
+        address,
+      }),
       creatorAddress: space.creatorAddress,
     };
-  }, [userIdentity, metadata, space]);
+  }, [space, isConnected, isAuthenticated]);
 
   const toggleChatOpacity = () => {
     setChatOpacity(chatOpacity === 1 ? 0 : 1)

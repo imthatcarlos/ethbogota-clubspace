@@ -20,8 +20,10 @@ export const useMetadataInfo = (participant: Participant) => {
         setAvatar(defaultProfile?.metadata ? getLensPictureURL(defaultProfile) : "/anon.png");
         setDisplayName(defaultProfile?.metadata?.displayName ?? defaultProfile?.handle?.localName ?? ensData?.handle ?? shortAddress(participant.name));
         setHandle(defaultProfile?.handle?.localName ? `@${defaultProfile?.handle?.localName}` : '');
-      } catch (err) {
-        console.log("Failed to parse metadata");
+      } catch (error) {
+        console.log("=== Failed to parse metadata");
+        console.log(error);
+        console.log(participant);
       }
     }
   }, [participant]);

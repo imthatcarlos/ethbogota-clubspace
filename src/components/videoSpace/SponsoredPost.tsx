@@ -270,17 +270,17 @@ const SponsoredPost = ({ space, opacity }) => {
                   <div className="grid grid-cols-3 gap-4">
                     <div className="text-center my-3 px-3">
                       <Button variant={selectedAmount === 50 ? "default" : "white"} onClick={() => setSelectedAmount(50)} disabled={isTipping}>
-                        50
-                      </Button>
-                    </div>
-                    <div className="text-center my-3 px-3">
-                      <Button variant={selectedAmount === 100 ? "default" : "white"} onClick={() => setSelectedAmount(100)} disabled={isTipping}>
                         100
                       </Button>
                     </div>
                     <div className="text-center my-3 px-3">
-                      <Button variant={selectedAmount === 250 ? "default" : "white"} onClick={() => setSelectedAmount(250)} disabled={isTipping}>
+                      <Button variant={selectedAmount === 100 ? "default" : "white"} onClick={() => setSelectedAmount(100)} disabled={isTipping}>
                         250
+                      </Button>
+                    </div>
+                    <div className="text-center my-3 px-3">
+                      <Button variant={selectedAmount === 250 ? "default" : "white"} onClick={() => setSelectedAmount(250)} disabled={isTipping}>
+                        500
                       </Button>
                     </div>
                   </div>

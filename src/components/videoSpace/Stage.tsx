@@ -27,6 +27,7 @@ import { CustomControls } from "./CustomControls";
 import { ParticipantTile } from "./ParticipantTile";
 import { ParticipantTileWithScreenShare } from "./ParticipantTileWithScreenShare";
 import styles from "./videoSpace.module.css";
+import { useIsAuthenticated } from "@/hooks/useLensLogin";
 
 export const Stage = ({ space, isMobile }: { space: any, isMobile: boolean }) => {
   // const participants = useParticipants();
@@ -35,6 +36,7 @@ export const Stage = ({ space, isMobile }: { space: any, isMobile: boolean }) =>
   const participants = useParticipants();
   const localPartipantPermissions = useLocalParticipantPermissions();
   const [isMuted, setIsMuted] = useState(false);
+  const { data: isAuthenticated } = useIsAuthenticated();
 
   const screenShareParticipant = useMemo(() => {
     return participants.find((p) => {
@@ -69,13 +71,19 @@ export const Stage = ({ space, isMobile }: { space: any, isMobile: boolean }) =>
             </TrackRefContext.Consumer>
           </TrackLoop>
         ) : (
-          <div className="flex items-center justify-center pl-4 pr-4">
-            <h1 className="text-2xl text-center leading-10">Nothing to see here
-              <br />
-              If you're the host - connect your wallet & login with Lens
-              <br />
-              If you just got added/removed from the stage - try refreshing the page</h1>
-          </div>
+          <>
+            {isAuthenticated ? (
+              <div className="flex items-center justify-center pl-4 pr-4">
+                <h1 className="text-2xl text-center leading-10">Nothing to see here
+                  <br />
+                  If you just got added/removed from the stage - try refreshing the page</h1>
+              </div>
+            ) : (
+                  <div className="flex items-center justify-center pl-4 pr-4">
+                    <h1 className="text-2xl text-center leading-10">Connect & Login with Lens to join!</h1>
+                  </div>
+            )}
+          </>
         )}
       </div>
 

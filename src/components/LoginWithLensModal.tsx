@@ -7,12 +7,15 @@ import { useOwnedHandles, useProfiles, useLazyProfile, Profile } from "@lens-pro
 
 import { Dialog, DialogHeader, DialogContent } from '@/components/ui/Dialog';
 import { Button } from "@/components/ui";
+import { useAuthenticatedProfileId, useIsAuthenticated } from "@/hooks/useLensLogin";
 
 const LoginWithLensModal = ({ openLoginModal, setOpenLoginModal, authenticatedProfile, login, signingIn }) => {
   const { address } = useAccount();
   const { data: handles } = useOwnedHandles({ for: address });
   const { data: profiles } = useProfiles({ where: { handles: handles?.map(({ fullHandle }) => fullHandle) }});
   const { execute: fetchProfile } = useLazyProfile();
+  const { refetch: refetchAuthenticatedProfile } = useAuthenticatedProfileId();
+  const { refetch: refetchIsAuthenticated } = useIsAuthenticated();
 
   const signInWithLens = async (handle: string) => {
     let toastId = toast.loading("Signing in with Lens");
@@ -37,7 +40,10 @@ const LoginWithLensModal = ({ openLoginModal, setOpenLoginModal, authenticatedPr
 
     toast.success("Signed in with Lens", { id: toastId });
 
-    setOpenLoginModal(false)
+    refetchAuthenticatedProfile();
+    refetchIsAuthenticated();
+
+    setOpenLoginModal(false);
   };
 
   return (
