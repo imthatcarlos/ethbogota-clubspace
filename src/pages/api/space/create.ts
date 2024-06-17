@@ -92,6 +92,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       roomName,
       enableRecording,
       tipPubId,
+      invitedHandles,
     } = req.body;
 
     if (!(creatorAddress && handle)) {
@@ -143,6 +144,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       await redisClient.set(spaceRedisKey, JSON.stringify(spaceObject), "EX", spaceObject.exp);
     } catch (error) {
       console.log(error.stack);
+    }
+
+    if (!!invitedHandles) {
+      await Promise.all(invitedHandles.split(",").map(async(invitedHandle: string) => {
+        const permissionsKey = `perms/${roomId}/${invitedHandle}`;
+        await redisClient.set(permissionsKey, true, "EX", spaceObject.exp);
+      }));
     }
 
     await createMongoRecord(spaceRedisKey, spaceObject);

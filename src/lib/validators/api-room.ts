@@ -4,6 +4,7 @@ export const addUserReqValidator = z.object({
   identity: z.string(),
   name: z.string(),
   roomName: z.string().uuid(),
+  handle: z.string().optional(),
   metadata: z.string().optional(),
   creatorAddress: z.string().optional(),
 });

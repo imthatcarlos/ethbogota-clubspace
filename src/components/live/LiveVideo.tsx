@@ -61,6 +61,7 @@ export const LiveVideo = ({
     return {
       identity: userIdentity,
       name: userIdentity,
+      handle: defaultProfile?.handle?.localName,
       metadata: JSON.stringify({
         defaultProfile: defaultProfile ?? undefined,
         ensData: ensData ?? undefined,

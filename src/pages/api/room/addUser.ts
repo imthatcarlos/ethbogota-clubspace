@@ -15,9 +15,11 @@ const _getPermissions = async (roomName: string, identity: string) => {
 
 export default async function addUser(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { roomName, identity, name, metadata, creatorAddress } = addUserReqValidator.parse(req.query);
+    const { roomName, identity, name, metadata, creatorAddress, handle } = addUserReqValidator.parse(req.query);
 
-    const canPublish = creatorAddress === identity || await _getPermissions(roomName, identity);
+    const canPublish = creatorAddress === identity
+      || await _getPermissions(roomName, identity)
+      || await _getPermissions(roomName, handle);
 
     let metadataWithHost;
     try {
