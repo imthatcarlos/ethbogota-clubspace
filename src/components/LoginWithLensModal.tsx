@@ -3,7 +3,7 @@ import { disconnect } from "@wagmi/core";
 import { formatProfilePicture } from "@madfi/widgets-react";
 import { CheckCircleIcon } from "@heroicons/react/solid";
 import toast from "react-hot-toast";
-import { useOwnedHandles, useProfiles, useLazyProfile, Profile } from "@lens-protocol/react-web";
+import { useOwnedHandles, useProfiles, useLazyProfile, Profile, useProfilesManaged } from "@lens-protocol/react-web";
 
 import { Dialog, DialogHeader, DialogContent } from '@/components/ui/Dialog';
 import { Button } from "@/components/ui";
@@ -11,8 +11,9 @@ import { useAuthenticatedProfileId, useIsAuthenticated } from "@/hooks/useLensLo
 
 const LoginWithLensModal = ({ openLoginModal, setOpenLoginModal, authenticatedProfile, login, signingIn }) => {
   const { address } = useAccount();
-  const { data: handles } = useOwnedHandles({ for: address });
-  const { data: profiles } = useProfiles({ where: { handles: handles?.map(({ fullHandle }) => fullHandle) }});
+  // const { data: handles } = useOwnedHandles({ for: address });
+  // const { data: profiles } = useProfiles({ where: { handles: handles?.map(({ fullHandle }) => fullHandle) }});
+  const { data: profiles } = useProfilesManaged({ for: address });
   const { execute: fetchProfile } = useLazyProfile();
   const { refetch: refetchAuthenticatedProfile } = useAuthenticatedProfileId();
   const { refetch: refetchIsAuthenticated } = useIsAuthenticated();
@@ -56,10 +57,10 @@ const LoginWithLensModal = ({ openLoginModal, setOpenLoginModal, authenticatedPr
         <h2 className="font-bold text-xl mt-2">Profiles Owned</h2>
 
         {/* PROFILE SELECTION */}
-        <div className="flex flex-col md:flex-row md:gap-x-12 w-full gap-y-6 pb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-4">
           {profiles && profiles.length
             ? profiles.map((profile: Profile) => (
-              <div className="md:w-1/2" key={profile.id}>
+              <div className="" key={profile.id}>
                 <div className="card bg-background p-4 rounded-sm shadow-sm max-h-fit rounded-lg shadow-lg flex flex-col gap-6">
                   <div className="flex w-full items-center justify-between">
                     <img
