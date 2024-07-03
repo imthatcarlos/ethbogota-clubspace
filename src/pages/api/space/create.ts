@@ -123,6 +123,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       roomId,
       streamId,
       playbackId,
+      playbackURL,
       createdAt,
       endAt,
       handle,
