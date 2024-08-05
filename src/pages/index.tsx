@@ -1,7 +1,12 @@
-import { FC, useEffect, useState } from "react";
-import { Hero } from "@/components/Hero";
+import { useEffect, useState } from "react";
+import { Home } from "@/components/Home";
+import CreateSpace from "@/components/live/CreateSpace";
+import { useAuthenticatedProfileId } from "@/hooks/useLensLogin";
 
-const Home: FC = () => {
+export default () => {
+  // TODO: use result of qr code scan
+  const { data: authenticatedProfileId } = useAuthenticatedProfileId();
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -10,7 +15,5 @@ const Home: FC = () => {
 
   if (!mounted) return null;
 
-  return <Hero />;
+  return !authenticatedProfileId ? <Home /> : <CreateSpace />;
 };
-
-export default Home;

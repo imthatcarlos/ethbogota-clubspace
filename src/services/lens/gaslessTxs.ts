@@ -4,7 +4,6 @@ import request, { gql } from "graphql-request";
 import { apiUrls } from "@/constants/apiUrls";
 import { omit } from "lodash/object";
 import { FREE_COLLECT_MODULE, IS_PRODUCTION } from "@/lib/consts";
-import createPostWithSig from "@/services/lens/createPostWithSig";
 
 export const LENS_HUB_NFT_NAME = "Lens Protocol Profiles";
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";

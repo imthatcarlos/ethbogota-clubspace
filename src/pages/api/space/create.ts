@@ -73,25 +73,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (!checkAuthorization(req)) return res.status(403).json({ error: "forbidden" });
 
     const {
+      clubId,
       creatorAddress,
       creatorLensHandle,
       creatorLensProfileId,
       creatorAvatar,
-      // spinampPlaylistId,
-      // b2bSpinampPlaylistIds,
-      drop,
-      lensPubId,
+      coverImageURL,
       handle,
-      // partyFavorContractAddress,
       startAt, // ts UTC
-      productBannerUrl,
-      productBannerIsVideo,
       pinnedLensPost,
       gated,
       spaceType,
       roomName,
-      enableRecording,
-      tipPubId,
       invitedHandles,
     } = req.body;
 
@@ -113,13 +106,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const endAt = createdAt + REDIS_SPACE_EXP;
 
     const spaceObject = {
+      clubId, // orb club id
       roomName,
       creatorAddress: getAddress(creatorAddress),
       creatorLensHandle,
       creatorLensProfileId,
       creatorAvatar,
-      lensPubId,
-      drop,
+      coverImageURL,
       roomId,
       streamId,
       playbackId,
@@ -128,12 +121,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       endAt,
       handle,
       startAt,
-      productBannerUrl,
-      productBannerIsVideo,
       pinnedLensPost,
       gated,
       spaceType,
-      tipPubId,
       exp: startAt ? startAt - createdAt + REDIS_SPACE_EXP : REDIS_SPACE_EXP
     };
 

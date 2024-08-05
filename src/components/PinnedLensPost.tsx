@@ -72,19 +72,10 @@ const PinnedLensPost = ({
 
   return (
     <>
-      {/* {renderHeader && (
-        <h2 className="my-4 text-3xl font-bold tracking-tight sm:text-2xl md:text-4xl drop-shadow-sm text-center drop-shadow-sm">
-          Sponsored Post
-        </h2>
-      )} */}
       <div className="flex justify-center pt-8 mb-4 text-sm gap-x-4">
         <PublicationContainer publicationId={lensPubId} shouldGoToPublicationPage={true} />
       </div>
       <div className="flex justify-center mt-4 mb-4 text-sm gap-x-4 pb-8">
-        {/** NOT SHOWING THIS TILL WE KNOW THE CRETAOR HAS A MAD SBT BADGE */}
-        {/* <div className="absolute right-8 bottom-2">
-          <LivePoints creatorAddress={lensPost?.profile?.ownedBy?.address.toLowerCase()} isAuthenticated={isAuthenticated} />
-        </div> */}
       </div>
       {lensPost && (
         <>

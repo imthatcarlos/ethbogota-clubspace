@@ -35,3 +35,14 @@ export const useIsAuthenticated = () => {
     enabled: true,
   });
 };
+
+export const useAuthenticatedProfile = () => {
+  return useQuery({
+    queryKey: ["lens-authenticated-profile"],
+    queryFn: async () => {
+      const profileId = await lensClient.authentication.getProfileId();
+      return await lensClient.profile.fetch({ forProfileId: profileId });
+    },
+    enabled: true,
+  });
+};

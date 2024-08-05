@@ -16,7 +16,10 @@ dependencies:
     version: 1.0.6(react@18.2.0)
   '@lens-protocol/client':
     specifier: 2.2.0
-    version: 2.2.0(@lens-protocol/metadata@1.1.6)(@types/react@18.2.67)(ethers@5.7.2)(ioredis@5.4.1)(react@18.2.0)
+    version: 2.2.0(@lens-protocol/metadata@1.2.0)(@types/react@18.2.67)(ethers@5.7.2)(ioredis@5.4.1)(react@18.2.0)
+  '@lens-protocol/metadata':
+    specifier: ^1.2.0
+    version: 1.2.0(zod@3.22.4)
   '@lens-protocol/react-web':
     specifier: ^2.2.0
     version: 2.2.0(@types/react@18.2.67)(react-dom@18.2.0)(react@18.2.0)
@@ -31,13 +34,10 @@ dependencies:
     version: 1.0.12
   '@madfi/lens-oa-client':
     specifier: ^0.2.12
-    version: 0.2.12(@lens-protocol/metadata@1.1.6)(@types/react@18.2.67)(graphql@16.6.0)(ioredis@5.4.1)(react@18.2.0)
+    version: 0.2.12(@lens-protocol/metadata@1.2.0)(@types/react@18.2.67)(graphql@16.6.0)(ioredis@5.4.1)(react@18.2.0)
   '@madfi/widgets-react':
     specifier: ^2.2.8
-    version: 2.2.8(@lens-protocol/metadata@1.1.6)(@tanstack/react-query@5.45.0)(ioredis@5.4.1)(react@18.2.0)
-  '@pushprotocol/restapi':
-    specifier: ^0.1.1
-    version: 0.1.1(ethers@5.7.2)
+    version: 2.2.8(@lens-protocol/metadata@1.2.0)(@tanstack/react-query@5.45.0)(ioredis@5.4.1)(react@18.2.0)
   '@radix-ui/react-dialog':
     specifier: ^1.0.4
     version: 1.0.4(@types/react@18.2.67)(react-dom@18.2.0)(react@18.2.0)
@@ -3281,7 +3281,7 @@ packages:
       - wait-for-expect
     dev: false
 
-  /@lens-protocol/client@2.2.0(@lens-protocol/metadata@1.1.6)(@types/react@18.2.67)(ethers@5.7.2)(ioredis@5.4.1)(react@18.2.0):
+  /@lens-protocol/client@2.2.0(@lens-protocol/metadata@1.2.0)(@types/react@18.2.67)(ethers@5.7.2)(ioredis@5.4.1)(react@18.2.0):
     resolution: {integrity: sha512-UU+8ICeUmOsGEUQcaG/GdpX+y2MTMrHaM9zvZmm3AeHqnwpC3WPO1AiouWuXcXV3XKdaG4ZizPVsXD5Kwqt87Q==}
     engines: {node: '>=18 <21'}
     peerDependencies:
@@ -3299,8 +3299,8 @@ packages:
       '@ethersproject/providers': 5.7.2
       '@ethersproject/wallet': 5.7.0
       '@lens-protocol/blockchain-bindings': 0.10.2
-      '@lens-protocol/gated-content': 0.5.1(@ethersproject/abi@5.7.0)(@ethersproject/address@5.7.0)(@ethersproject/bignumber@5.7.0)(@ethersproject/contracts@5.7.0)(@ethersproject/hash@5.7.0)(@ethersproject/providers@5.7.2)(@ethersproject/wallet@5.7.0)(@lens-protocol/metadata@1.1.6)(@types/react@18.2.67)(ethers@5.7.2)(ioredis@5.4.1)(react@18.2.0)(zod@3.22.4)
-      '@lens-protocol/metadata': 1.1.6(zod@3.22.4)
+      '@lens-protocol/gated-content': 0.5.1(@ethersproject/abi@5.7.0)(@ethersproject/address@5.7.0)(@ethersproject/bignumber@5.7.0)(@ethersproject/contracts@5.7.0)(@ethersproject/hash@5.7.0)(@ethersproject/providers@5.7.2)(@ethersproject/wallet@5.7.0)(@lens-protocol/metadata@1.2.0)(@types/react@18.2.67)(ethers@5.7.2)(ioredis@5.4.1)(react@18.2.0)(zod@3.22.4)
+      '@lens-protocol/metadata': 1.2.0(zod@3.22.4)
       '@lens-protocol/shared-kernel': 0.12.0
       '@lens-protocol/storage': 0.8.1
       graphql: 16.8.1
@@ -3361,7 +3361,7 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /@lens-protocol/gated-content@0.5.1(@ethersproject/abi@5.7.0)(@ethersproject/address@5.7.0)(@ethersproject/bignumber@5.7.0)(@ethersproject/contracts@5.7.0)(@ethersproject/hash@5.7.0)(@ethersproject/providers@5.7.2)(@ethersproject/wallet@5.7.0)(@lens-protocol/metadata@1.1.6)(@types/react@18.2.67)(ethers@5.7.2)(ioredis@5.4.1)(react@18.2.0)(zod@3.22.4):
+  /@lens-protocol/gated-content@0.5.1(@ethersproject/abi@5.7.0)(@ethersproject/address@5.7.0)(@ethersproject/bignumber@5.7.0)(@ethersproject/contracts@5.7.0)(@ethersproject/hash@5.7.0)(@ethersproject/providers@5.7.2)(@ethersproject/wallet@5.7.0)(@lens-protocol/metadata@1.2.0)(@types/react@18.2.67)(ethers@5.7.2)(ioredis@5.4.1)(react@18.2.0)(zod@3.22.4):
     resolution: {integrity: sha512-rXD0/lkdFIGrwi7+LLgxYwb1Bbsnbi3XouUxfXbqBD32YwKkpYRNb0EfYcB3HZOQv9vmeTTlyrozNKxWoCBJ3A==}
     peerDependencies:
       '@ethersproject/abi': ^5.7.0
@@ -3381,7 +3381,7 @@ packages:
       '@ethersproject/hash': 5.7.0
       '@ethersproject/providers': 5.7.2
       '@ethersproject/wallet': 5.7.0
-      '@lens-protocol/metadata': 1.1.6(zod@3.22.4)
+      '@lens-protocol/metadata': 1.2.0(zod@3.22.4)
       '@lens-protocol/shared-kernel': 0.12.0
       '@lens-protocol/storage': 0.8.1
       '@lit-protocol/constants': 2.1.62
@@ -3415,8 +3415,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@lens-protocol/metadata@1.1.6(zod@3.22.4):
-    resolution: {integrity: sha512-GswaavJLD6iBW/i3ShcBTeV3oiYTaHa4qIGSVZWxNfAChOxonJC9FHw7UH2bVlj4GzURhuwzL0mSGthecGLibQ==}
+  /@lens-protocol/metadata@1.2.0(zod@3.22.4):
+    resolution: {integrity: sha512-fUB8+GvYiVt1uMqYJi/iN/aw/lzE+oEfpTjraTI87MqWPgYubbx0vFySjJs7uAdI7oftczvlwhthmMUl5DDuGA==}
     engines: {node: '>=18 <21'}
     peerDependencies:
       zod: ^3.22.3
@@ -3424,6 +3424,7 @@ packages:
       zod:
         optional: true
     dependencies:
+      json-stable-stringify: 1.1.1
       uuid: 9.0.1
       zod: 3.22.4
     dev: false
@@ -3483,7 +3484,7 @@ packages:
       '@lens-protocol/api-bindings': 0.12.1(@apollo/client@3.10.5)(react@18.2.0)
       '@lens-protocol/blockchain-bindings': 0.10.2
       '@lens-protocol/domain': 0.12.0
-      '@lens-protocol/metadata': 1.1.6(zod@3.22.4)
+      '@lens-protocol/metadata': 1.2.0(zod@3.22.4)
       '@lens-protocol/shared-kernel': 0.12.0
       '@lens-protocol/storage': 0.8.1
       '@types/react': 18.2.67
@@ -3806,11 +3807,11 @@ packages:
       '@bufbuild/protobuf': 1.8.0
     dev: false
 
-  /@madfi/lens-oa-client@0.2.12(@lens-protocol/metadata@1.1.6)(@types/react@18.2.67)(graphql@16.6.0)(ioredis@5.4.1)(react@18.2.0):
+  /@madfi/lens-oa-client@0.2.12(@lens-protocol/metadata@1.2.0)(@types/react@18.2.67)(graphql@16.6.0)(ioredis@5.4.1)(react@18.2.0):
     resolution: {integrity: sha512-R2ev0oq3YNAjcZFLuyzlapekE+KCA+YfzcxP2ieEBKdUzjj3f5PmwM2Dm5Nn39EWzHEVB1vBfj/rbKrl1+YyQw==}
     engines: {node: '>=18.0.0'}
     dependencies:
-      '@lens-protocol/client': 2.2.0(@lens-protocol/metadata@1.1.6)(@types/react@18.2.67)(ethers@5.7.2)(ioredis@5.4.1)(react@18.2.0)
+      '@lens-protocol/client': 2.2.0(@lens-protocol/metadata@1.2.0)(@types/react@18.2.67)(ethers@5.7.2)(ioredis@5.4.1)(react@18.2.0)
       ethers: 5.7.2
       lodash: 4.17.21
       typescript: 5.4.5
@@ -3846,11 +3847,11 @@ packages:
       - wait-for-expect
     dev: false
 
-  /@madfi/lens-oa-client@0.2.12(@lens-protocol/metadata@1.1.6)(@types/react@18.2.67)(graphql@16.8.1)(ioredis@5.4.1)(react@18.2.0):
+  /@madfi/lens-oa-client@0.2.12(@lens-protocol/metadata@1.2.0)(@types/react@18.2.67)(graphql@16.8.1)(ioredis@5.4.1)(react@18.2.0):
     resolution: {integrity: sha512-R2ev0oq3YNAjcZFLuyzlapekE+KCA+YfzcxP2ieEBKdUzjj3f5PmwM2Dm5Nn39EWzHEVB1vBfj/rbKrl1+YyQw==}
     engines: {node: '>=18.0.0'}
     dependencies:
-      '@lens-protocol/client': 2.2.0(@lens-protocol/metadata@1.1.6)(@types/react@18.2.67)(ethers@5.7.2)(ioredis@5.4.1)(react@18.2.0)
+      '@lens-protocol/client': 2.2.0(@lens-protocol/metadata@1.2.0)(@types/react@18.2.67)(ethers@5.7.2)(ioredis@5.4.1)(react@18.2.0)
       ethers: 5.7.2
       lodash: 4.17.21
       typescript: 5.4.5
@@ -3886,7 +3887,7 @@ packages:
       - wait-for-expect
     dev: false
 
-  /@madfi/widgets-react@2.2.8(@lens-protocol/metadata@1.1.6)(@tanstack/react-query@5.45.0)(ioredis@5.4.1)(react@18.2.0):
+  /@madfi/widgets-react@2.2.8(@lens-protocol/metadata@1.2.0)(@tanstack/react-query@5.45.0)(ioredis@5.4.1)(react@18.2.0):
     resolution: {integrity: sha512-bQhSaO35ZClkV7hbDviIOZflwQmN1bwXahCFhF790PwUkse9F3Bm1dnOHyurTqCGyeI8aMDZQULpfu6lBEG+Wg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
@@ -3894,8 +3895,8 @@ packages:
     dependencies:
       '@emotion/css': 11.11.2
       '@ethersproject/providers': 5.7.2
-      '@lens-protocol/client': 2.2.0(@lens-protocol/metadata@1.1.6)(@types/react@18.2.67)(ethers@5.7.2)(ioredis@5.4.1)(react@18.2.0)
-      '@madfi/lens-oa-client': 0.2.12(@lens-protocol/metadata@1.1.6)(@types/react@18.2.67)(graphql@16.8.1)(ioredis@5.4.1)(react@18.2.0)
+      '@lens-protocol/client': 2.2.0(@lens-protocol/metadata@1.2.0)(@types/react@18.2.67)(ethers@5.7.2)(ioredis@5.4.1)(react@18.2.0)
+      '@madfi/lens-oa-client': 0.2.12(@lens-protocol/metadata@1.2.0)(@types/react@18.2.67)(graphql@16.8.1)(ioredis@5.4.1)(react@18.2.0)
       '@tanstack/react-query': 5.45.0(react@18.2.0)
       '@types/react': 18.2.67
       date-fns: 2.30.0
@@ -4485,19 +4486,6 @@ packages:
       '@parcel/watcher-win32-arm64': 2.4.1
       '@parcel/watcher-win32-ia32': 2.4.1
       '@parcel/watcher-win32-x64': 2.4.1
-    dev: false
-
-  /@pushprotocol/restapi@0.1.1(ethers@5.7.2):
-    resolution: {integrity: sha512-Am95rcEu6p/7XbvkuiBr8SlQ9/or9q1FN5Zu7LsScBPv6vp6cKF5MeQFebdZcKvvKru9k/HkxtIeNVQxFjQr4Q==}
-    peerDependencies:
-      ethers: ^5.6.8
-    dependencies:
-      axios: 0.27.2
-      ethers: 5.7.2
-      tslib: 2.6.2
-      uuid: 9.0.0
-    transitivePeerDependencies:
-      - debug
     dev: false
 
   /@radix-ui/number@1.0.0:
@@ -7348,15 +7336,6 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /axios@0.27.2:
-    resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
-    dependencies:
-      follow-redirects: 1.15.6
-      form-data: 4.0.0
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
   /axios@1.1.2:
     resolution: {integrity: sha512-bznQyETwElsXl2RK7HLLwb5GPpOLlycxHCtrpDR/4RqqBzjARaOTo3jz4IgtntWUYee7Ne4S8UHd92VCuzPaWA==}
     dependencies:
@@ -10176,7 +10155,6 @@ packages:
 
   /isarray@2.0.5:
     resolution: {integrity: sha512-xHjhDr3cNBK0BzdUJSPXZntQUx/mwMS5Rw4A7lPJ90XGAO6ISP/ePDNuo0vhqOZU+UD5JoodwCAAoZQd3FeAKw==}
-    dev: true
 
   /isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
@@ -10822,6 +10800,16 @@ packages:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==}
     dev: true
 
+  /json-stable-stringify@1.1.1:
+    resolution: {integrity: sha512-SU/971Kt5qVQfJpyDveVhQ/vya+5hvrjClFOcr8c0Fq5aODJjMwutrOfCU+eCnVD5gpx1Q3fEqkyom77zH1iIg==}
+    engines: {node: '>= 0.4'}
+    dependencies:
+      call-bind: 1.0.7
+      isarray: 2.0.5
+      jsonify: 0.0.1
+      object-keys: 1.1.1
+    dev: false
+
   /json5@0.5.1:
     resolution: {integrity: sha512-4xrs1aW+6N5DalkqSVA8fxh458CXvR99WU8WLKmq4v8eWAL86Xo3BVqyd3SkA9wEVjCMqyvvRRkshAdOnBp5rw==}
     hasBin: true
@@ -10848,6 +10836,10 @@ packages:
     resolution: {integrity: sha512-m6F1R3z8jjlf2imQHS2Qez5sjKWQzbuuhuJ/FKYFRZvPE3PuHcSMVZzfsLhGVOkfd20obL5SWEBew5ShlquNxg==}
     optionalDependencies:
       graceful-fs: 4.2.11
+    dev: false
+
+  /jsonify@0.0.1:
+    resolution: {integrity: sha512-2/Ki0GcmuqSrgFyelQq9M05y7PS0mEwuIzrf3f1fPqkVDVRvZrPZtVSMHxdgo8Aq0sxAOb/cr2aqqA3LeWHVPg==}
     dev: false
 
   /jsonwebtoken@8.5.1:
@@ -12112,7 +12104,6 @@ packages:
   /object-keys@1.1.1:
     resolution: {integrity: sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==}
     engines: {node: '>= 0.4'}
-    dev: true
 
   /object.assign@4.1.5:
     resolution: {integrity: sha512-byy+U7gp+FVwmyzKPYhW2h5l3crpmGsxl7X2s8y43IgxvG4g3QZ6CffDtsNQy1WsmZpQbO+ybo0AlW7TY6DcBQ==}

@@ -5,6 +5,12 @@ const { STORJ_API_USERNAME, STORJ_API_PASSWORD } = process.env;
 
 const STORJ_API_URL = 'https://www.storj-ipfs.com';
 
+const _hash = (uriOrHash: string) => {
+  return typeof uriOrHash === "string" && uriOrHash.startsWith("ipfs://")
+    ? uriOrHash.split("ipfs://")[1]
+    : uriOrHash;
+};
+
 const _client = () => axios.create({
   baseURL: `${STORJ_API_URL}/api/v0`,
   auth: { username: STORJ_API_USERNAME, password: STORJ_API_PASSWORD }
@@ -16,7 +22,7 @@ export const addJSON = async (json) => {
 
   const headers = { 'Content-Type': 'multipart/form-data', ...formData.getHeaders() };
 
-  const { data } = await _client().post('add', formData.getBuffer(), { headers });
+  const { data } = await _client().post('add?cid-version=1', formData.getBuffer(), { headers });
 
   return data.Hash;
 };
@@ -51,3 +57,5 @@ export const bucketImageLinkStorj = (id: string, bucket = "seo") => {
   const linkKey = bucket === "referrals" ? "jxjnhzuaz5wrox7k2qjvhcwcb5qq" : "jvxdv5ynbbikx455wrdynvc7tyhq";
   return `https://link.storjshare.io/raw/${linkKey}/${bucket}/${id}${id.endsWith(".png") ? "" : ".png"}`;
 };
+
+export const storjGatewayURL = (uriOrHash: string) => `${STORJ_API_URL}/ipfs/${_hash(uriOrHash)}`;
