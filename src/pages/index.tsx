@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { Home } from "@/components/Home";
 import CreateSpace from "@/components/live/CreateSpace";
 import { useAuthenticatedProfileId } from "@/hooks/useLensLogin";
+import { NextPageWithLayout } from "./_app";
 
-export default () => {
+const LiveIndexPage = () => {
   // TODO: use result of qr code scan
   const { data: authenticatedProfileId } = useAuthenticatedProfileId();
 
@@ -17,3 +18,5 @@ export default () => {
 
   return !authenticatedProfileId ? <Home /> : <CreateSpace />;
 };
+
+export default LiveIndexPage;

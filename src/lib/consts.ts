@@ -38,12 +38,6 @@ export const MULTIRECIPIENT_COLLECT_MODULE = '0xfa9dA21D0A18C7B7dE4566481c1e8952
 export const LIVEPEER_STUDIO_API = "https://livepeer.studio/api";
 export const MADFI_API_URL = process.env.MADFI_API_URL || "api.madfi.xyz";
 
-export const SPACE_API_URL = env.NEXT_PUBLIC_SPACE_API_URL;
-
-export const JSON_RPC_URL_POKT = IS_PRODUCTION
-  ? process.env.NEXT_PUBLIC_POKT_RPC_POLYGON
-  : process.env.NEXT_PUBLIC_POKT_RPC_MUMBAI;
-
 export const JSON_RPC_URL_ALCHEMY = IS_PRODUCTION
   ? process.env.NEXT_PUBLIC_ALCHEMY_RPC_POLYGON
   : process.env.NEXT_PUBLIC_ALCHEMY_RPC_MUMBAI;

@@ -172,19 +172,6 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
     );
   }
 
-  if (space.spaceType === "discussion") {
-    return (
-      <LiveDiscussion
-        // preJoinSubmit={preJoinSubmit}
-        roomName={roomName}
-        // preJoinChoices={preJoinChoices}
-        userIdentity={userIdentity}
-        defaultProfile={defaultProfile}
-        space={space}
-      />
-    );
-  }
-
   // @TODO: create component from old [handle] page and pass props from here
   return <>{space.spaceType === "playlist" && <>go to old infra</>}</>;
 };
