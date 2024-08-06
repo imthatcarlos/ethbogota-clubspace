@@ -104,6 +104,8 @@ export const MAD_SBT_CONTRACT_ADDRESS = IS_PRODUCTION
 export const BONSAI_TOKEN_ADDRESS = "0x3d2bD0e15829AA5C362a4144FdF4A1112fa29B5c";
 export const BONSAI_TOKEN_DECIMALS = 18;
 
+export const BLACKJACK_ACTION_MODULE_ADDRESS = "0xa7774490374363bf53E6e18b1fB05C92BcB6B74C";
+
 export const TIP_ACTION_MODULE_EVENT_ABI = [{
   "type": "event",
   "name": "TipCreated",
@@ -135,3 +137,29 @@ export const TIP_ACTION_MODULE_EVENT_ABI = [{
   ],
   "anonymous": false
 }]
+
+export const BLACKJACK_ACTION_MODULE_ABI = [
+  {
+    "type": "event",
+    "name": "GameClosed",
+    "inputs": [
+      { "name": "player", "type": "address", "indexed": false, "internalType": "address" },
+      { "name": "tableId", "type": "bytes32", "indexed": false, "internalType": "bytes32" },
+      { "name": "won", "type": "bool", "indexed": false, "internalType": "bool" }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "function",
+    "name": "tables",
+    "inputs": [{ "name": "tableId", "type": "bytes32", "internalType": "bytes32" }],
+    "outputs": [
+      { "name": "remainingBalance", "type": "uint256", "internalType": "uint256" },
+      { "name": "size", "type": "uint256", "internalType": "uint256" },
+      { "name": "creator", "type": "address", "internalType": "address" },
+      { "name": "gameCount", "type": "uint256", "internalType": "uint256" },
+      { "name": "paused", "type": "uint256", "internalType": "uint256" }
+    ],
+    "stateMutability": "view"
+  }
+]

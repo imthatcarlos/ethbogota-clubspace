@@ -70,7 +70,11 @@ const LivePageAtHandle: NextPageWithLayout = ({ space }: { space: any | undefine
         setDefaultProfile({
           // @ts-ignore
           id: defaultProfile.id,
-          metadata: defaultProfile.metadata,
+          metadata: {
+            displayName: defaultProfile.metadata.displayName,
+            picture: defaultProfile.metadata.picture,
+            coverPicture: defaultProfile.metadata.coverPicture
+          },
           handle: defaultProfile.handle,
         });
       }

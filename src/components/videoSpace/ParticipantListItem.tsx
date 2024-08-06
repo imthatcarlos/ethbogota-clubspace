@@ -15,10 +15,10 @@ export const useMetadataInfo = (participant: Participant) => {
     if (participant) {
       try {
         const { metadata } = participant;
-        const { defaultProfile, ensData }: { defaultProfile: DefaultLensProfile; ensData: any } = JSON.parse(metadata);
+        const { defaultProfile, ensData }: { defaultProfile: DefaultLensProfile; ensData: any } = JSON.parse(metadata || "{}");
 
         setAvatar(defaultProfile?.metadata ? getLensPictureURL(defaultProfile) : "/anon.png");
-        setDisplayName(defaultProfile?.metadata?.displayName ?? defaultProfile?.handle?.localName ?? ensData?.handle ?? shortAddress(participant.name));
+        setDisplayName(defaultProfile?.metadata?.displayName ?? defaultProfile?.handle?.localName ?? ensData?.handle ?? shortAddress(participant.name || ""));
         setHandle(defaultProfile?.handle?.localName ? `@${defaultProfile?.handle?.localName}` : '');
       } catch (error) {
         console.log("=== Failed to parse metadata");
