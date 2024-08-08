@@ -82,8 +82,6 @@ export default () => {
       const data = await response.json();
       const { url, endAt, playbackURL } = data;
 
-      // TODO: send notifs for invited handles via orb api
-
       await handleCreatePost({
         roomName,
         description,

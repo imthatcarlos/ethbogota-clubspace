@@ -4,7 +4,7 @@ import { useParticipantContext } from "@livekit/components-react";
 import { DefaultLensProfile } from "@/types/lens";
 import getLensPictureURL from "@/lib/utils/getLensPictureURL";
 import { shortAddress } from "@/utils";
-import { HostSection } from "@/components/discussionSpace/HostSection";
+import { HostSection } from "./HostSection";
 
 export const useMetadataInfo = (participant: Participant) => {
   const [avatar, setAvatar] = useState<string | undefined>(undefined);

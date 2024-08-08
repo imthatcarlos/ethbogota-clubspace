@@ -137,6 +137,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       console.log(error.stack);
     }
 
+    // TODO: send notifs for orb
     if (!!invitedHandles) {
       await Promise.all(invitedHandles.split(",").map(async(invitedHandle: string) => {
         const permissionsKey = `perms/${roomId}/${invitedHandle}`;
