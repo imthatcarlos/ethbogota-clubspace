@@ -25,8 +25,9 @@ const INITIAL_DATA: MultiFormData = {
 };
 
 export default () => {
-  const { address } = useAccount();
-  const { data: walletClient } = useWalletClient();
+  // TODO: new hook to use orb jwt token
+  let address = "";
+  // const { data: walletClient } = useWalletClient();
   const { data: authenticatedProfile } = useAuthenticatedProfile();
 
   const [uploading, setUploading] = useState<boolean>();
@@ -70,6 +71,7 @@ export default () => {
           roomName,
           enableRecording: true, // needed for hls playback
           invitedHandles: invitedHandles.length ? invitedHandles.join(",") : undefined,
+          // TODO: add more form data (cover, clubId)
         })
       });
 
@@ -116,6 +118,7 @@ ${description}`;
     // TODO: encrypt with orb api with club
     const { data: postIpfsHash } = await addJSON(publicationMetadata);
 
+    // TODO: new function to create post with jwt token
     const broadcastResult = await createPostMomoka(
       walletClient,
       storjGatewayURL(`ipfs://${postIpfsHash}`),

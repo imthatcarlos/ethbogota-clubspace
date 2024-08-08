@@ -111,7 +111,7 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
     <>
       <HandleSEO pageProps={pageProps} />
       <QueryClientProvider client={queryClient}>
-        <Web3Provider>
+        <>
           <Toaster
             position="bottom-right"
             toastOptions={{
@@ -138,7 +138,7 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
               <Analytics />
             </>
           )}
-        </Web3Provider>
+        </>
       </QueryClientProvider>
     </>
   );

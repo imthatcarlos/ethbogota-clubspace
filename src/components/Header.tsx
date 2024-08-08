@@ -7,12 +7,12 @@ import LoginWithLensModal from "./LoginWithLensModal";
 
 export const Header = () => {
   const [openLoginModal, setOpenLoginModal] = useState(false);
-  const { execute: login, loading: signingIn } = useLogin();
-  const { execute: logout } = useLogout();
+  // const { execute: login, loading: signingIn } = useLogin();
+  // const { execute: logout } = useLogout();
   const { data: authenticatedProfileId } = useAuthenticatedProfileId();
-  const { data: authenticatedProfile } = useProfile({
-    forProfileId: authenticatedProfileId as ProfileId,
-  });
+  // const { data: authenticatedProfile } = useProfile({
+  //   forProfileId: authenticatedProfileId as ProfileId,
+  // });
 
   if (!authenticatedProfileId) {
     return (
@@ -38,21 +38,8 @@ export const Header = () => {
           <div className="hidden lg:block">
             { /** <SearchApp />  */}
           </div>
-          <ConnectWallet
-            setOpenSignInModal={setOpenLoginModal}
-            authenticatedProfile={authenticatedProfile}
-            signingIn={signingIn}
-            logout={logout}
-          />
         </div>
       </nav>
-      <LoginWithLensModal
-        openLoginModal={openLoginModal}
-        setOpenLoginModal={setOpenLoginModal}
-        login={login}
-        authenticatedProfile={authenticatedProfile}
-        signingIn={signingIn}
-      />
     </header>
   );
 };

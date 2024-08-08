@@ -20,6 +20,7 @@ export const useAuthenticatedProfileId = () => {
   return useQuery({
     queryKey: ["lens-authenticated-profileId"],
     queryFn: async () => {
+      // TODO: use the results of the orb jwt token
       return await lensClient.authentication.getProfileId();
     },
     enabled: true,
