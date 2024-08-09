@@ -15,6 +15,7 @@ import {
   useMaybeLayoutContext,
   useTrackRefContext,
   useParticipantTile,
+  useIsSpeaking,
 } from "@livekit/components-react";
 import { Track } from "livekit-client";
 import { ReactNode, useCallback } from "react";
@@ -32,7 +33,7 @@ export const ParticipantTileWithScreenShare = ({
   onParticipantClick,
   publication,
   disableSpeakingIndicator,
-  isMuted,
+  // isMuted,
   ...htmlProps
 }: ParticipantTilePropsExtended): ReactNode => {
   const p = useEnsureParticipant(participant);
@@ -41,6 +42,8 @@ export const ParticipantTileWithScreenShare = ({
     source,
     publication,
   };
+  const isSpeaking = useIsSpeaking(trackRef.participant);
+  const isMuted = trackRef.participant?.audioTrackPublications?.values().next().value.track?.isMuted;
 
   const { metadata, sid } = p;
 
@@ -78,9 +81,7 @@ export const ParticipantTileWithScreenShare = ({
         <ParticipantContextIfNeeded participant={trackRef.participant}>
           {children ?? (
             <VideoTrack
-              participant={trackRef.participant}
-              source={trackRef.source}
-              publication={trackRef.publication}
+              trackRef={trackRef}
               onSubscriptionStatusChanged={handleSubscribe}
               className="rounded-2xl"
             />
@@ -100,9 +101,7 @@ export const ParticipantTileWithScreenShare = ({
                 <>
                   {!trackRef.publication.track.isMuted ? (
                     <VideoTrack
-                      participant={trackRef.participant}
-                      source={trackRef.source}
-                      publication={trackRef.publication}
+                      trackRef={trackRef}
                       onSubscriptionStatusChanged={handleSubscribe}
                       className="rounded-2xl w-full h-full"
                     />
@@ -118,16 +117,16 @@ export const ParticipantTileWithScreenShare = ({
                 </>
               ) : (
                 <AudioTrack
-                  participant={trackRef.participant}
-                  source={trackRef.source}
-                  publication={trackRef.publication}
+                  trackRef={trackRef}
                   onSubscriptionStatusChanged={handleSubscribe}
-                  volume={isMuted ? 0 : 1}
                 />
               )}
               <div className="absolute flex flex-row items-center justify-between gap-2 leading-none -bottom-1 inset-x-1">
                 <div className="flex items-center p-2">
-                  <TrackMutedIndicator source={Track.Source.Microphone} show={"muted"}></TrackMutedIndicator>
+                  {isSpeaking
+                    ? 'speaking... '
+                    : (isMuted ? 'muted ' : 'normal ')
+                  }
                   <DisplayName defaultProfile={defaultProfile} ensData={ensData} />
                 </div>
                 {/* <ConnectionQualityIndicator className="lk-participant-metadata-item" /> */}

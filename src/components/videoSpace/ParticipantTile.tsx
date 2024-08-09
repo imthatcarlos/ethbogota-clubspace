@@ -13,6 +13,7 @@ import {
   useMaybeLayoutContext,
   useTrackRefContext,
   useParticipantTile,
+  useIsSpeaking,
   VideoTrack
 } from "@livekit/components-react";
 import { Track } from "livekit-client";
@@ -30,10 +31,11 @@ export const ParticipantTile = ({
   onParticipantClick,
   publication,
   disableSpeakingIndicator,
-  isMuted,
+  // isMuted,
   ...htmlProps
 }: ParticipantTilePropsExtended): ReactNode => {
   const p = useEnsureParticipant(participant);
+
   const trackRef: TrackReferenceOrPlaceholder = useTrackRefContext() ?? {
     participant: p,
     source,
@@ -48,6 +50,9 @@ export const ParticipantTile = ({
     disableSpeakingIndicator,
     onParticipantClick,
   });
+
+  const isSpeaking = useIsSpeaking(trackRef.participant);
+  const isMuted = trackRef.participant?.audioTrackPublications?.values().next().value.track?.isMuted;
 
   const layoutContext = useMaybeLayoutContext();
 
@@ -66,9 +71,6 @@ export const ParticipantTile = ({
     [trackRef.participant, layoutContext, trackRef.source]
   );
 
-  // TODO:
-  // if (isMuted && (trackRef.publication?.kind === "audio" && trackRef.source || Track.Source.Microphone)) return null;
-
   const { metadata, sid } = p;
 
   const { defaultProfile, isHost, ensData }: { defaultProfile?: DefaultLensProfile; isHost: boolean, ensData: any } = JSON.parse(metadata);
@@ -84,9 +86,7 @@ export const ParticipantTile = ({
             {trackRef.source === Track.Source.ScreenShare && (
               <div className="absolute top-0 left-0 p-1 z-0">
                 <VideoTrack
-                  participant={trackRef.participant}
-                  source={trackRef.source}
-                  publication={trackRef.publication}
+                  trackRef={trackRef}
                   onSubscriptionStatusChanged={handleSubscribe}
                   className="rounded-2xl"
                 />
@@ -96,9 +96,7 @@ export const ParticipantTile = ({
               <>
                 {!trackRef.publication.track.isMuted ? (
                   <VideoTrack
-                    participant={trackRef.participant}
-                    source={trackRef.source}
-                    publication={trackRef.publication}
+                    trackRef={trackRef}
                     onSubscriptionStatusChanged={handleSubscribe}
                     className="rounded-2xl w-full h-full"
                   />
@@ -114,22 +112,23 @@ export const ParticipantTile = ({
               </>
             ) : (
               <AudioTrack
-                participant={trackRef.participant}
-                source={trackRef.source}
-                publication={trackRef.publication}
+                trackRef={trackRef}
                 onSubscriptionStatusChanged={handleSubscribe}
               />
             )}
             <div className="top-0 md:top-auto absolute md:flex md:flex-row md:items-center justify-between gap-2 leading-none bottom-1 inset-x-1">
               <div className="flex items-center p-1 pl-2">
-                {/* <TrackMutedIndicator source={Track.Source.Microphone} show={"muted"}></TrackMutedIndicator> */}
+                {isSpeaking
+                  ? 'speaking... '
+                  : (isMuted ? 'muted ' : 'normal ')
+                }
                 <DisplayName defaultProfile={defaultProfile} ensData={ensData} />
               </div>
               {/* <ConnectionQualityIndicator className="lk-participant-metadata-item" /> */}
             </div>
           </>
         )}
-        <FocusToggle trackSource={trackRef.source} />
+        <FocusToggle />
       </ParticipantContextIfNeeded>
     </div>
   );
