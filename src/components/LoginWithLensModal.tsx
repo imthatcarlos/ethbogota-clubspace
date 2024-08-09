@@ -8,6 +8,7 @@ import { useOwnedHandles, useProfiles, useLazyProfile, Profile, useProfilesManag
 import { Dialog, DialogHeader, DialogContent } from '@/components/ui/Dialog';
 import { Button } from "@/components/ui";
 import { useAuthenticatedProfileId, useIsAuthenticated } from "@/hooks/useLensLogin";
+import { wagmiConfig } from "@/lib/utils/rainbow";
 
 const LoginWithLensModal = ({ openLoginModal, setOpenLoginModal, authenticatedProfile, login, signingIn }) => {
   const { address } = useAccount();
@@ -100,18 +101,13 @@ const LoginWithLensModal = ({ openLoginModal, setOpenLoginModal, authenticatedPr
             <div className="absolute right-8 bottom-2">
               <span
                 className="link link-hover mb-8 cursor-pointer"
-                onClick={async () => { await disconnect(); setOpenLoginModal(false); }}
+                onClick={async () => { await disconnect(wagmiConfig); setOpenLoginModal(false); }}
               >
                 Switch wallets
               </span>
-
             </div>
           </div>
         </div>
-
-        {/* PFP SELECTION */}
-        <h2 className="font-bold text-xl">Token-bound accounts</h2>
-        <p className="font-light italic mt-2">Coming soon</p>
       </DialogContent>
     </Dialog>
   );
