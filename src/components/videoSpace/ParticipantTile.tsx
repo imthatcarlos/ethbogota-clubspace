@@ -118,10 +118,11 @@ export const ParticipantTile = ({
             )}
             <div className="top-0 md:top-auto absolute md:flex md:flex-row md:items-center justify-between gap-2 leading-none bottom-1 inset-x-1">
               <div className="flex items-center p-1 pl-2">
-                {isSpeaking
+                {/* TODO: need icons */}
+                {/* {isSpeaking
                   ? 'speaking... '
                   : (isMuted ? 'muted ' : 'normal ')
-                }
+                } */}
                 <DisplayName defaultProfile={defaultProfile} ensData={ensData} />
               </div>
               {/* <ConnectionQualityIndicator className="lk-participant-metadata-item" /> */}
