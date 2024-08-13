@@ -9,8 +9,9 @@ import { Dialog, DialogHeader, DialogContent } from '@/components/ui/Dialog';
 import { Button } from "@/components/ui";
 import { useAuthenticatedProfileId, useIsAuthenticated } from "@/hooks/useLensLogin";
 import { wagmiConfig } from "@/lib/utils/rainbow";
+import { logout as lensLogout } from "@/hooks/useLensLogin";
 
-const LoginWithLensModal = ({ openLoginModal, setOpenLoginModal, authenticatedProfile, login, signingIn }) => {
+const LoginWithLensModal = ({ openLoginModal, setOpenLoginModal, authenticatedProfile, login, signingIn, refetch }) => {
   const { address } = useAccount();
   // const { data: handles } = useOwnedHandles({ for: address });
   // const { data: profiles } = useProfiles({ where: { handles: handles?.map(({ fullHandle }) => fullHandle) }});
@@ -101,7 +102,16 @@ const LoginWithLensModal = ({ openLoginModal, setOpenLoginModal, authenticatedPr
             <div className="absolute right-8 bottom-2">
               <span
                 className="link link-hover mb-8 cursor-pointer"
-                onClick={async () => { await disconnect(wagmiConfig); setOpenLoginModal(false); }}
+                onClick={async () => {
+                  await disconnect(wagmiConfig);
+
+                  if (authenticatedProfile?.id) {
+                    await lensLogout();
+                    refetchAuthenticatedProfile();
+                    refetchIsAuthenticated();
+                  }
+
+                  setOpenLoginModal(false); }}
               >
                 Switch wallets
               </span>

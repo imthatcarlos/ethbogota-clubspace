@@ -19,14 +19,7 @@ interface Props {
 
 export const ConnectWallet: FC<Props> = ({ className, setOpenSignInModal, authenticatedProfile, signingIn, logout }) => {
   const isAuthenticated = !!authenticatedProfile?.id;
-
-  // logout from lens
-  const onDisconnect = async () => {
-    if (authenticatedProfile) {
-      await logout();
-    }
-  };
-  const { address } = useAccount({ onDisconnect });
+  const { address } = useAccount();
   const { data: ensData, isLoading: loadingENS } = useENS(address);
   const ensName = ensData?.handle;
 
@@ -98,7 +91,7 @@ export const ConnectWallet: FC<Props> = ({ className, setOpenSignInModal, authen
                   <div className="flex gap-3">
                     <Button
                       className={`${className}`}
-                      onClick={openAccountModal}
+                      onClick={() => setOpenSignInModal(true)}
                     // iconStart={<Wallet />}
                     >
                       <span className="flex items-center">

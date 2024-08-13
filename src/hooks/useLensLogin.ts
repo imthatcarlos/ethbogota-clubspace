@@ -35,3 +35,7 @@ export const useIsAuthenticated = () => {
     enabled: true,
   });
 };
+
+export const logout = async () => {
+  await lensClient.authentication.logout();
+};
